@@ -34,7 +34,9 @@ subject to.
 
 Installation
 --------------
-Copy the files to /usr/local/etc (Or wherever)
+Copy the files to /usr/local/etc (Or wherever).  See
+install.sh for details.  You might want to edit that
+before running it.
 
 Edit /usr/local/etc/LongTail for the locations of your 
 /var/log/messages and /var/log/httpd/access_log files.
