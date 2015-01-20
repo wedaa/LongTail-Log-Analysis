@@ -32,6 +32,12 @@ LongTail also analyzes your /var/log/httpd/access_log files
 to analyze the attacks and probes that your webserver is
 subject to.
 
+LongTail is for small (1 server)  to medium size (50 servers)
+organizations.  If you have a large organization, then you'll 
+probably have too much data to be analyzed.  Of course if you
+run this on larger installations and it works, please let me
+know so I can increase this number.
+
 Installation
 --------------
 Copy the files to /usr/local/etc (Or wherever).  See
