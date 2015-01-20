@@ -40,10 +40,6 @@ know so I can increase this number.
 
 Installation
 --------------
-Copy the files to /usr/local/etc (Or wherever).  See
-install.sh for details.  You might want to edit that
-before running it.
-
 Edit /usr/local/etc/LongTail for the locations of your 
 /var/log/messages and /var/log/httpd/access_log files.
 
@@ -51,7 +47,7 @@ Edit /usr/local/etc/LongTail for the location of your
 /honey directory (or whatever you call the directory
 you want your reports to go to.
 
-Copy index.html to the /honey directory.
+Copy index.html to the $HTML_DIR/honey directory.
 
 Edit /usr/local/etc/LongTail-exclude-accounts.grep to
 add your valid local accounts.  This will exclude these
@@ -64,6 +60,20 @@ add your local IP addresses.  This will exclude these
 IPs from your reports.  (You wouldn't want to have
 your personal or work IPs exposed in your reports,
 now would you?)
+
+Copy the files to /usr/local/etc (Or wherever).  See
+install.sh for details.  You need to edit that before 
+running it.
+
+Download a copy of openssh from http://www.openssh.com/portable.html#ftp
+Untar the file and modify auth-passwd.c to add the 
+following line to the auth_password function(See the
+included auth-passwd.c file for exact placing) :
+ logit("PassLog: Username: %s Password: %s", authctxt->user, password);
+
+Then configure, make, and install openssh on your server.
+I assume since you're interested in HoneyPots, you 
+know your OS well enough to do this.
 
 Run LongTail by hand as the account you want it to run
 as to make sure it works.  (And that it can write to 
