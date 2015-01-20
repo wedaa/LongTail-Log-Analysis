@@ -1,0 +1,4 @@
+# These are accounts you want to TOTALLY ignore in your ssh reports
+# You really need the "Username: " so that it matches properly
+Username: wedaa
+Username: shepherd

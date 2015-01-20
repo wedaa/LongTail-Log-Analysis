@@ -1,0 +1,253 @@
+s///
+s/ ad$/ Andorra, Principality of/i
+s/ ae$/ United Arab Emirates/i
+s/ af$/ Afghanistan, Islamic State of/i
+s/ ag$/ Antigua and Barbuda/i
+s/ ai$/ Anguilla/i
+s/ al$/ Albania/i
+s/ am$/ Armenia/i
+s/ an$/ Netherlands Antilles/i
+s/ ao$/ Angola/i
+s/ aq$/ Antarctica/i
+s/ ar$/ Argentina/i
+s/ as$/ American Samoa/i
+s/ at$/ Austria/i
+s/ au$/ Australia/i
+s/ aw$/ Aruba/i
+s/ az$/ Azerbaidjan/i
+s/ ba$/ Bosnia-Herzegovina/i
+s/ bb$/ Barbados/i
+s/ bd$/ Bangladesh/i
+s/ be$/ Belgium/i
+s/ bf$/ Burkina Faso/i
+s/ bg$/ Bulgaria/i
+s/ bh$/ Bahrain/i
+s/ bi$/ Burundi/i
+s/ bj$/ Benin/i
+s/ bm$/ Bermuda/i
+s/ bn$/ Brunei Darussalam/i
+s/ bo$/ Bolivia/i
+s/ br$/ Brazil/i
+s/ BR$/ Brazil/i
+s/ bs$/ Bahamas/i
+s/ bt$/ Bhutan/i
+s/ bv$/ Bouvet Island/i
+s/ bw$/ Botswana/i
+s/ by$/ Belarus/i
+s/ bz$/ Belize/i
+s/ ca$/ Canada/i
+s/ cc$/ Cocos (Keeling) Islands/i
+s/ cf$/ Central African Republic/i
+s/ cd$/ Congo, The Democratic Republic of the/i
+s/ cg$/ Congo/i
+s/ ch$/ Switzerland/i
+s/ ci$/ Ivory Coast (Cote D'Ivoire)/i
+s/ ck$/ Cook Islands/i
+s/ cl$/ Chile/i
+s/ cm$/ Cameroon/i
+s/ cn$/ China/i
+s/ co$/ Colombia/i
+s/ com$/ Commercial/i
+s/ cr$/ Costa Rica/i
+s/ cs$/ Former Czechoslovakia/i
+s/ cu$/ Cuba/i
+s/ cv$/ Cape Verde/i
+s/ cx$/ Christmas Island/i
+s/ cy$/ Cyprus/i
+s/ cz$/ Czech Republic/i
+s/ de$/ Germany/i
+s/ dj$/ Djibouti/i
+s/ dk$/ Denmark/i
+s/ dm$/ Dominica/i
+s/ do$/ Dominican Republic/i
+s/ dz$/ Algeria/i
+s/ ec$/ Ecuador/i
+s/ edu$/ Educational/i
+s/ ee$/ Estonia/i
+s/ eg$/ Egypt/i
+s/ eh$/ Western Sahara/i
+s/ er$/ Eritrea/i
+s/ es$/ Spain/i
+s/ et$/ Ethiopia/i
+s/ fi$/ Finland/i
+s/ fj$/ Fiji/i
+s/ fk$/ Falkland Islands/i
+s/ fm$/ Micronesia/i
+s/ fo$/ Faroe Islands/i
+s/ fr$/ France/i
+s/ fx$/ France (European Territory)/i
+s/ ga$/ Gabon/i
+s/ gb$/ Great Britain/i
+s/ gd$/ Grenada/i
+s/ ge$/ Georgia/i
+s/ gf$/ French Guyana/i
+s/ gh$/ Ghana/i
+s/ gi$/ Gibraltar/i
+s/ gl$/ Greenland/i
+s/ gm$/ Gambia/i
+s/ gn$/ Guinea/i
+s/ go$v/ USA Government/i
+s/ gp$/ Guadeloupe (French)/i
+s/ gq$/ Equatorial Guinea/i
+s/ gr$/ Greece/i
+s/ gs$/ S. Georgia & S. Sandwich Isls./i
+s/ gt$/ Guatemala/i
+s/ gu$/ Guam (USA)/i
+s/ gw$/ Guinea Bissau/i
+s/ gy$/ Guyana/i
+s/ hk$/ Hong Kong/i
+s/ hm$/ Heard and McDonald Islands/i
+s/ hn$/ Honduras/i
+s/ hr$/ Croatia/i
+s/ ht$/ Haiti/i
+s/ hu$/ Hungary/i
+s/ id$/ Indonesia/i
+s/ ie$/ Ireland/i
+s/ il$/ Israel/i
+s/ in$/ India/i
+s/ int$/ International/i
+s/ io$/ British Indian Ocean Territory/i
+s/ iq$/ Iraq/i
+s/ ir$/ Iran/i
+s/ is$/ Iceland/i
+s/ it$/ Italy/i
+s/ jm$/ Jamaica/i
+s/ jo$/ Jordan/i
+s/ jp$/ Japan/i
+s/ ke$/ Kenya/i
+s/ kg$/ Kyrgyz Republic (Kyrgyzstan)/i
+s/ kh$/ Cambodia, Kingdom of/i
+s/ ki$/ Kiribati/i
+s/ km$/ Comoros/i
+s/ kn$/ Saint Kitts & Nevis Anguilla/i
+s/ kp$/ North Korea/i
+s/ kr$/ South Korea/i
+s/ kw$/ Kuwait/i
+s/ ky$/ Cayman Islands/i
+s/ kz$/ Kazakhstan/i
+s/ la$/ Laos/i
+s/ lb$/ Lebanon/i
+s/ lc$/ Saint Lucia/i
+s/ li$/ Liechtenstein/i
+s/ lk$/ Sri Lanka/i
+s/ lr$/ Liberia/i
+s/ ls$/ Lesotho/i
+s/ lt$/ Lithuania/i
+s/ lu$/ Luxembourg/i
+s/ lv$/ Latvia/i
+s/ ly$/ Libya/i
+s/ ma$/ Morocco/i
+s/ mc$/ Monaco/i
+s/ md$/ Moldavia/i
+s/ mg$/ Madagascar/i
+s/ mh$/ Marshall Islands/i
+s/ mil$/ USA Military/i
+s/ mk$/ Macedonia/i
+s/ ml$/ Mali/i
+s/ mm$/ Myanmar/i
+s/ mn$/ Mongolia/i
+s/ mo$/ Macau/i
+s/ mp$/ Northern Mariana Islands/i
+s/ mq$/ Martinique (French)/i
+s/ mr$/ Mauritania/i
+s/ ms$/ Montserrat/i
+s/ mt$/ Malta/i
+s/ mu$/ Mauritius/i
+s/ mv$/ Maldives/i
+s/ mw$/ Malawi/i
+s/ mx$/ Mexico/i
+s/ my$/ Malaysia/i
+s/ mz$/ Mozambique/i
+s/ na$/ Namibia/i
+s/ nc$/ New Caledonia (French)/i
+s/ ne$/ Niger/i
+s/ net$/ Network/i
+s/ nf$/ Norfolk Island/i
+s/ ng$/ Nigeria/i
+s/ ni$/ Nicaragua/i
+s/ nl$/ Netherlands/i
+s/ no$/ Norway/i
+s/ np$/ Nepal/i
+s/ nr$/ Nauru/i
+s/ nt$/ Neutral Zone/i
+s/ nu$/ Niue/i
+s/ nz$/ New Zealand/i
+s/ om$/ Oman/i
+s/ org$/ Non-Profit Making Organisations (sic)/i
+s/ pa$/ Panama/i
+s/ pe$/ Peru/i
+s/ pf$/ Polynesia (French)/i
+s/ pg$/ Papua New Guinea/i
+s/ ph$/ Philippines/i
+s/ pk$/ Pakistan/i
+s/ pl$/ Poland/i
+s/ pm$/ Saint Pierre and Miquelon/i
+s/ pn$/ Pitcairn Island/i
+s/ pr$/ Puerto Rico/i
+s/ pt$/ Portugal/i
+s/ pw$/ Palau/i
+s/ py$/ Paraguay/i
+s/ qa$/ Qatar/i
+s/ re$/ Reunion (French)/i
+s/ ro$/ Romania/i
+s/ ru$/ Russian Federation/i
+s/ rw$/ Rwanda/i
+s/ sa$/ Saudi Arabia/i
+s/ sb$/ Solomon Islands/i
+s/ sc$/ Seychelles/i
+s/ sd$/ Sudan/i
+s/ se$/ Sweden/i
+s/ sg$/ Singapore/i
+s/ sh$/ Saint Helena/i
+s/ si$/ Slovenia/i
+s/ sj$/ Svalbard and Jan Mayen Islands/i
+s/ sk$/ Slovak Republic/i
+s/ sl$/ Sierra Leone/i
+s/ sm$/ San Marino/i
+s/ sn$/ Senegal/i
+s/ so$/ Somalia/i
+s/ sr$/ Suriname/i
+s/ st$/ Saint Tome (Sao Tome) and Principe/i
+s/ su$/ Former USSR/i
+s/ sv$/ El Salvador/i
+s/ sy$/ Syria/i
+s/ sz$/ Swaziland/i
+s/ tc$/ Turks and Caicos Islands/i
+s/ td$/ Chad/i
+s/ tf$/ French Southern Territories/i
+s/ tg$/ Togo/i
+s/ th$/ Thailand/i
+s/ tj$/ Tadjikistan/i
+s/ tk$/ Tokelau/i
+s/ tm$/ Turkmenistan/i
+s/ tn$/ Tunisia/i
+s/ to$/ Tonga/i
+s/ tp$/ East Timor/i
+s/ tr$/ Turkey/i
+s/ tt$/ Trinidad and Tobago/i
+s/ tv$/ Tuvalu/i
+s/ tw$/ Taiwan/i
+s/ tz$/ Tanzania/i
+s/ ua$/ Ukraine/i
+s/ ug$/ Uganda/i
+s/ uk$/ United Kingdom/i
+s/ um$/ USA Minor Outlying Islands/i
+s/ us$/ United States/i
+s/ uy$/ Uruguay/i
+s/ uz$/ Uzbekistan/i
+s/ va$/ Holy See (Vatican City State)/i
+s/ vc$/ Saint Vincent & Grenadines/i
+s/ ve$/ Venezuela/i
+s/ vg$/ Virgin Islands (British)/i
+s/ vi$/ Virgin Islands (USA)/i
+s/ vn$/ Vietnam/i
+s/ vu$/ Vanuatu/i
+s/ wf$/ Wallis and Futuna Islands/i
+s/ ws$/ Samoa/i
+s/ ye$/ Yemen/i
+s/ yt$/ Mayotte/i
+s/ yu$/ Yugoslavia/i
+s/ za$/ South Africa/i
+s/ zm$/ Zambia/i
+s/ zr$/ Zaire/i
+s/ zw$/ Zimbabwe/i

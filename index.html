@@ -4,36 +4,51 @@
 </HEAD>
 <BODY bgcolor=#00f0FF>
 <H1>LongTail Log Analysis</H1>
-<P>This page is updated hourly
-<P>Last updated on Wed Jan 14 09:59:01 EST 2015
+<P>This page is updated hourly.
+Last updated on Mon Jan 19 18:46:08 EST 2015
 <HR>
 <H2>SSH Attacks and Probes</H2>
+<P>
+SSH Activity Today: 0
+<BR>
+SSH Activity This Month: 138025
+<BR>
+SSH Activity This Year: 138025
+<BR>
+SSH Activity Since Logging Started: 138025
+<H3>What you're probably most interested in are trends</H3>
+<a href ="/honey/trends-in-non-root-passwords">Historical trends in Top Non 20 Root Passwords</a>
+<BR>
+<a href ="/honey/trends-in-root-passwords">Historical trends in Top 20 Root Passwords</a>
 <H3>Today's Activity</H3>
-<a href ="/honey/non-root-passwords">Non Root Passwords</a>
+<a href ="/honey/current-non-root-passwords">Non Root Passwords</a>
 <BR>
-<a href ="/honey/top-20-non-root-passwords">Top 20 Non Root Passwords</a>
-<BR>
-<BR>
-<a href ="/honey/non-root-accounts">Non Root Accounts</a>
-<BR>
-<a href ="/honey/top-20-non-root-accounts">Top 20 Non Root Accounts</a>
+<a href ="/honey/current-top-20-non-root-passwords">Top 20 Non Root Passwords</a>
 <BR>
 <BR>
-<a href ="/honey/non-root-pairs">Non Root pairs</a>
+<a href ="/honey/current-non-root-accounts">Non Root Accounts</a>
 <BR>
-<a href ="/honey/top-20-non-root-pairs">Top 20 Non Root pairs</a>
-<BR>
-<BR>
-<a href ="/honey/root-passwords">Root Passwords</a>
-<BR>
-<a href ="/honey/top-20-root-passwords">Top 20 Root Passwords</a>
+<a href ="/honey/current-top-20-non-root-accounts">Top 20 Non Root Accounts</a>
 <BR>
 <BR>
-<a href="/honey/ip-addresses">IP Addresses</a>
+<a href ="/honey/current-non-root-pairs">Non Root pairs</a>
 <BR>
-<a href="/honey/top-20-ip-addresses">Top 20 IP Addresses</a>
+<a href ="/honey/current-top-20-non-root-pairs">Top 20 Non Root pairs</a>
 <BR>
-<a href="/honey/attacks-by-country">Attacks By Country, By IP Address </a>
+<BR>
+<a href ="/honey/current-root-passwords">Root Passwords</a>
+<BR>
+<a href ="/honey/current-top-20-root-passwords">Top 20 Root Passwords</a>
+<BR>
+<BR>
+<a href="/honey/current-ip-addresses">IP Addresses</a>
+<BR>
+<a href="/honey/current-top-20-ip-addresses">Top 20 IP Addresses</a>
+<BR>
+<a href="/honey/current-attacks-by-country">Attacks By Country, By IP Address </a>
+<BR>
+<BR>
+<a href="/honey/current-raw-data.gz">Current Raw Data</a>
 <BR>
 <H3>
 Historical Data
@@ -41,6 +56,8 @@ Historical Data
 <a href ="/honey/historical-non-root-passwords">Historical Non Root Passwords</a>
 <BR>
 <a href ="/honey/historical-top-20-non-root-passwords">Historical Top 20 Non Root Passwords</a>
+<BR>
+<a href ="/honey/trends-in-non-root-passwords">Historical trends in Top Non 20 Root Passwords</a>
 <BR>
 <BR>
 <a href ="/honey/historical-non-root-accounts">Historical Non Root Accounts</a>
@@ -57,6 +74,8 @@ Historical Data
 <BR>
 <a href ="/honey/historical-top-20-root-passwords">Historical Top 20 Root Passwords</a>
 <BR>
+<a href ="/honey/trends-in-root-passwords">Historical trends in Top 20 Root Passwords</a>
+<BR>
 <BR>
 <a href="/honey/historical-ip-addresses">Historical IP Addresses</a>
 <BR>
@@ -67,78 +86,91 @@ Historical Data
 <a href="/honey/historical-ssh-attacks-by-time-of-day">Historical Attacks By Time of Day </a>
 <BR>
 <BR>
-<a href="/honey/historical/">Long term historical data</A>
+<a href="/honey/historical-raw-data.gz">Historical Raw Data</a>
+<BR>
+<BR>
+<a href="/honey/historical/">Long Term Historical Reports</A>
 <HR>
 <BR>
 <H2>HTTP Attacks and Probes</H2>
 <BR>
 <H3>Access Logs</H3>
-<a href="/honey/access_log">Todays Apache access log</a>
+<a href="/honey/current-access-log">Todays Apache access log</a>
 <BR>
-<a href="/honey/historical_access_log">Historical Apache Access Log</a>
+<a href="/honey/historical-access-log">Historical Apache Access Log</a>
 <BR>
 <BR>
 <H3>Today's Activity</H3>
-<P>What webpages are they looking for?
+<P>Shellshock:What webpages are they looking for?
 <BR>
-<a href="/honey/webpages">Webpages<a/>
+<a href="/honey/current-shellshock-webpages">Shellshock Webpages<a/>
 <BR>
-<a href="/honey/top-20-webpages">Top 20 Webpages</a>
+<a href="/honey/current-top-20-shellshock-webpages">Top 20 Shellshock Webpages</a>
 <BR>
 <BR>
 <P>What are the actual attacks they are trying to run?
 <BR>
-<a href="/honey/attacks">Attacks</a>
+<a href="/honey/current-attacks">Attacks</a>
 <BR>
-<a href="/honey/top-20-attacks">Top 20 Attacks</a>
+<a href="/honey/current-top-20-attacks">Top 20 Attacks</a>
 <BR>
 <BR>
 <P>Where are they getting their payloads from or trying to connect to with bash?
 <BR>
-<a href="/honey/payloads">Payloads</A>
+<a href="/honey/current-payloads">Payloads</A>
 <BR>
-<a href="/honey/top-20-payloads">Top 20 Payloads</a>
+<a href="/honey/current-top-20-payloads">Top 20 Payloads</a>
 <BR>
 <P>What are they trying to rm?
 <BR>
-<a href="/honey/rm-attempts">`rm` attempts</a>
+<a href="/honey/current-rm-attempts">`rm` attempts</a>
 <BR>
-<a href="/honey/top-20-rm-attempts">Top 20 `rm` attempts</a>
+<a href="/honey/current-top-20-rm-attempts">Top 20 `rm` attempts</a>
 <BR>
 <BR>
 <P>Shellshock attacks not explitly using perl
 <BR>
-<a href="/honey/shellshock-not-using-perl">Shellshock Attacks not explicitly using perl</A>
+<a href="/honey/current-shellshock-not-using-perl">Shellshock Attacks not explicitly using perl</A>
 <BR>
-<a href="/honey/top-20-shellshock-not-using-perl">Top 20 Shellshock Attacks not explicitly using perl</A>
+<a href="/honey/current-top-20-shellshock-not-using-perl">Top 20 Shellshock Attacks not explicitly using perl</A>
 <BR>
 <BR>
 <P>Shellshock logs
 <BR>
-<a href="/honey/access_log_shell_shock">Todays Apache Shell Shock log</a>
+<a href="/honey/current-access-log-shell-shock">Todays Apache Shell Shock log</a>
 <BR>
-<a href="/honey/country_access_log_shell_shock">Todays Apache Shell Shock Country log</a>
+<a href="/honey/current-country-access-log-shell-shock">Todays Apache Shell Shock Country log</a>
 <BR>
-<a href="/honey/ip_access_log_shell_shock">Todays Apache Shell Shock IP log</a>
+<a href="/honey/current-ip-access-log-shell-shock">Todays Apache Shell Shock IP log</a>
 <BR>
 <BR>
 <P> 404 Probes
 <BR>
-<a href="/honey/access_log_404">Today's 404 Probes Log</a>
+<a href="/honey/current-access-log-404">Today's 404 Probes Log</a>
 <BR>
-<a href="/honey/ip_access_log_404">Today's 404 Probes IP Log</a>
 <BR>
-<a href="/honey/country_access_log_404">Today's 404 Probes Country Log</a>
+<a href="/honey/current-open-proxy-log-404">Today's Open Proxy Log</a>
+<BR>
+<a href="/honey/current-ip-open-proxy-404">Today's IP Open Proxy Log</a>
+<BR>
+<a href="/honey/current-country-open-proxy-log-404">Today's Country Open Proxy Log</a>
+<BR>
+<BR>
+<a href="/honey/current-ip-access-log-404">Today's 404 Probes IP Log</a>
+<BR>
+<a href="/honey/current-top-20-ip-access-log-404">Today's Top 20 404 Probes IP Log</a>
+<BR>
+<a href="/honey/current-country-access-log-404">Today's 404 Probes Country Log</a>
 <BR>
 <BR>
 <H3>
 Historical
 </H3>
-<P>What webpages are they looking for?
+<P>Shellshock: What webpages are they looking for?
 <BR>
-<a href="/honey/historical-webpages">Historical Webpages<a/>
+<a href="/honey/historical-shellshock-webpages">Historical Shellshock Webpages<a/>
 <BR>
-<a href="/honey/historical-top-20-webpages">Historical Top 20 Webpages</a>
+<a href="/honey/historical-top-20-shellshock-webpages">Historical Top 20 Shellshock Webpages</a>
 <BR>
 <BR>
 <P>What are the actual attacks they are trying to run?
@@ -171,25 +203,38 @@ Historical
 <BR>
 <P>Shellshock logs
 <BR>
-<a href="/honey/historical_access_log_shell_shock">Historical Apache Shell Shock log</a>
+<a href="/honey/historical-access-log-shell-shock">Historical Apache Shell Shock log</a>
 <BR>
-<a href="/honey/historical_country_access_log_shell_shock">Historical Apache Shell Shock Country log</a>
+<a href="/honey/historical-country-access-log-shell-shock">Historical Apache Shell Shock Country log</a>
 <BR>
-<a href="/honey/historical_ip_access_log_shell_shock">Historical Apache Shell Shock IP log</a>
+<a href="/honey/historical-ip-access-log-shell-shock">Historical Apache Shell Shock IP log</a>
 <BR>
 <a href="/honey/historical-shellshock-by-time-of-day">Historical Apache Shell Shock by Time of Day</a>
 <BR>
 <BR>
 <P> 404 Probes
 <BR>
-<a href="/honey/historical_access_log_404">Historical 404 Probes Log</a>
+<a href="/honey/historical-access-log-404">Historical 404 Probes Log</a>
 <BR>
-<a href="/honey/historical_ip_access_log_404">Historical 404 Probes IP Log</a>
 <BR>
-<a href="/honey/historical_country_access_log_404">Historical 404 Probes Country Log</a>
+<a href="/honey/historical-open-proxy-log-404">Historical Open Proxy Log</a>
+<BR>
+<a href="/honey/historical-ip-open-proxy-404">Historical IP Open Proxy Log</a>
+<BR>
+<a href="/honey/historical-country-open-proxy-log-404">Historical Country Open Proxy Log</a>
+<BR>
+<BR>
+<a href="/honey/historical-ip-access-log-404">Historical 404 Probes IP Log</a>
+<BR>
+<a href="/honey/historical-top-20-ip-access-log-404">Historical Top 20 404 Probes IP Log</a>
+<BR>
+<a href="/honey/historical-country-access-log-404">Historical 404 Probes Country Log</a>
 <BR>
 <BR>
 <HR>
 <a href="/honey/historical/">Long term historical data</A>
 <HR>
+<P>Get the source code at <a href="https://github.com/wedaa/LongTail-Log-Analysis">https://github.com/wedaa/LongTail-Log-Analysis</a>
+<P>Read my blog at <a href="https://ewedaa.wordpress.com/">https://ewedaa.wordpress.com/</a>
+<P>LongTail Copyright 2015 by Eric Wedaa, under GPLV2
 </BODY>
