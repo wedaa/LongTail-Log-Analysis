@@ -15,15 +15,34 @@
 #
 ############################################################################
 # Assorted Variables
-HOUR=`date +%H` # This is used at the end of the program but we want to know it NOW
+# Do we obfuscate/rename the IP addresses?  You might want to do this if
+# you are copying your reports to a public site.
+# HIDE_IP_ADDRESSES=1 will hide addresses
+# HIDE_IP_ADDRESSES=0 will NOT hide addresses
+HIDE_IP_ADDRESSES=0
+
+# Where are the scripts we need to run?
 SCRIPT_DIR="/usr/local/etc/"
-TODAY=`date`
-YEAR=`date +%Y`
+
+# Where do we put the reports?
 HTML_DIR="/var/www/html/honey/"
+
+#Where is the messages file?
 #PATH_TO_VAR_LOG="/var/log/"
+
+#Where is the apache access_log file?
 #PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/"
+
+
 PATH_TO_VAR_LOG="/home/wedaa/source/LongTail/var/log/"
 PATH_TO_VAR_LOG_HTTPD="/home/wedaa/source/LongTail/var/log/httpd/"
+
+############################################################################
+# You don't need to edit after this.
+#
+TODAY=`date`
+YEAR=`date +%Y`
+HOUR=`date +%H` # This is used at the end of the program but we want to know it NOW
 
 ############################################################################
 # Lets make sure we can write to the directory
@@ -44,6 +63,7 @@ function is_directory_good {
 function change_date_date_in_index {
 	DATE=`date`
 	sed -i "s/updated on..*$/updated on $DATE/" $1/index.html
+	sed -i "s/updated on..*$/updated on $DATE/" $1/index-long.html
 }
 	
 ############################################################################
@@ -87,8 +107,14 @@ function make_header {
 	echo "<H1>LongTail Log Analysis</H1><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<H3>$TITLE</H3><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<P>Created on $MAKE_HEADER_DATE<!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
-	echo "<BR><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
-	echo "<BR><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
+	
+	if [ $HIDE_IP_ADDRESSES -gt 0 ] ; then
+		echo "<P>IP Addresses have been obfuscated to hide the guilty. <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
+		echo "ALL IP addresses have been reset to end in .127. <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
+	fi
+
+#	echo "<BR><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
+#	echo "<BR><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<TABLE border=1><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<TR><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	while (( "$#" )); do
@@ -118,9 +144,30 @@ function make_footer {
 	echo "</TABLE><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
 	echo "</BODY><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
 	echo "</HTML><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
+	if [ $HIDE_IP_ADDRESSES -gt 0 ] ; then
+		hide_ip $1
+	fi
 }
 
-	
+
+############################################################################
+# Obfuscate any IP addresses found by setting the last octet to 128
+# I am assuming that any address in a class C address is controlled
+# or owned by whoever owns the Class C
+#
+# This way the report doesn't name any single user, but blames the
+# owner of the Class C range.
+#
+function hide_ip {
+	# One argument, the full path including the filename you want to write to
+	if [ "$#" == "0" ]; then
+		echo "You forgot to pass arguments, exiting now"
+		exit 1
+	fi
+	sed -i -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g' $1
+}
+
+
 ############################################################################
 # Count ssh attacks and modify $HTML_DIR/index.html
 #
@@ -138,12 +185,19 @@ function count_ssh_attacks {
 	TMP_MONTH=`date +%m`
 
 	cd $PATH_TO_VAR_LOG
-	TODAY=`cat $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
 
 	cd $TMP_HTML_DIR/historical/
-	THIS_MONTH=`zcat $TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep ssh | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
-	THIS_YEAR=`zcat $TMP_YEAR/*/*/current-raw-data.gz |grep ssh | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
-	TOTAL=`zcat */*/*/current-raw-data.gz |grep ssh | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+	TMP=`zcat $TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep ssh | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+	THIS_MONTH=`expr $TMP + $TODAY`
+
+	# This was tested and works with 365 files :-)
+	TMP=`zcat $TMP_YEAR/*/*/current-raw-data.gz |grep ssh | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+	THIS_YEAR=`expr $TMP + $TODAY`
+
+	# I have no idea where this breaks, but it's a big-ass number of files
+	TMP=`zcat */*/*/current-raw-data.gz |grep ssh | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+	TOTAL=`expr $TMP + $TODAY`
 
 	#NOTE TO SELF
 	# These commands rely upon the ability to have a REALLY long command string.
@@ -155,6 +209,11 @@ function count_ssh_attacks {
 	sed -i "s/SSH Activity This Month.*$/SSH Activity This Month: $THIS_MONTH/" $1/index.html
 	sed -i "s/SSH Activity This Year.*$/SSH Activity This Year: $THIS_YEAR/" $1/index.html
 	sed -i "s/SSH Activity Since Logging Started.*$/SSH Activity Since Logging Started: $TOTAL/" $1/index.html
+	
+	sed -i "s/SSH Activity Today.*$/SSH Activity Today: $TODAY/" $1/index-long.html
+	sed -i "s/SSH Activity This Month.*$/SSH Activity This Month: $THIS_MONTH/" $1/index-long.html
+	sed -i "s/SSH Activity This Year.*$/SSH Activity This Year: $THIS_YEAR/" $1/index-long.html
+	sed -i "s/SSH Activity Since Logging Started.*$/SSH Activity Since Logging Started: $TOTAL/" $1/index-long.html
 
 	cd $ORIGINAL_DIRECTORY
 }
@@ -223,13 +282,9 @@ function ssh_attacks {
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country"
 	
 	# Figuring out most common non-root pairs
-echo "DEBUG-make_header $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs "
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs" "Non Root Pairs" "Count" "Account:Password"
-echo "DEBUG-make_header $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs "
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs" "Top 20 Non Root Pairs" "Count" "Account:Password"
-echo "DEBUG-making $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs"
 	$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep Password |grep -v Username\:\ root |awk '{printf ("%s:%s\n",$8, $NF)}' |sort |uniq -c|sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}'>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs
-echo "DEBUG-making $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs"
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs"
@@ -241,9 +296,12 @@ echo "DEBUG-making $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs"
 	#-------------------------------------------------------------------------
 	# raw data compressed 
 	# This only prints the account and the password
-	# $SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password\|password |awk '{printf ("%s:%s\n",$8, $NF)}' |gzip -c >>$TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
-	$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password\|password |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
-	echo "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz"
+	if [ $HIDE_IP_ADDRESSES -gt 0 ] ; then
+		$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password\|password |sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
+	else
+		$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password\|password |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
+	fi
+	#echo "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz"
 
 	#
 	# read and run any LOCALLY WRITTEN reports
@@ -292,7 +350,7 @@ function http_attacks {
 	#echo "What webpages are they looking for?"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-shellshock-webpages" "Shellshock Requests" "Count" "Webpage"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock-webpages" "Top 20 Shellshock Requests" "Count" "Webpage"
-	cat $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep \:\; |sed 's/^..*\"GET\ //'| sed 's/^..*\"HEAD\ //' |sed 's/ ..*$//'|sort |uniq -c |sort -n |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-shellshock-webpages
+	$SCRIPT_DIR/catall.sh $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep \:\; |sed 's/^..*\"GET\ //'| sed 's/^..*\"HEAD\ //' |sed 's/ ..*$//'|sort |uniq -c |sort -n |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-shellshock-webpages
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-shellshock-webpages |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock-webpages
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock-webpages"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-shellshock-webpages"
@@ -302,7 +360,7 @@ function http_attacks {
 	#echo "What are the actual attacks they are trying to run?"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-attacks" "Attacks"  "Count" "Attack"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks" "Top 20 Attacks"  "Count" "Attack"
-	cat $ACCESS_LOG  |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep \:\; |sed 's/^..*\"GET\ //'| sed 's/^..*\"HEAD\ //' | sed 's/^..*:;//' |sed 's/\}\;//'|sort |uniq -c|sort -n  |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks
+	$SCRIPT_DIR/catall.sh $ACCESS_LOG  |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep \:\; |sed 's/^..*\"GET\ //'| sed 's/^..*\"HEAD\ //' | sed 's/^..*:;//' |sed 's/\}\;//'|sort |uniq -c|sort -n  | sed -r 's/^ +/<TR><TD>/'|sed 's/ /<\/TD><TD>/'|sed 's/$/<\/TD><\/TR>/' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-attacks  |grep -v HEADERLINE>> $TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-attacks"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks"
@@ -311,7 +369,7 @@ function http_attacks {
 	#echo "Where are they getting their payloads from or trying to connect to with bash?"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-payloads" "Payloads"  "Count" "Attack"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-payloads" "Top 20 Payloads"  "Count" "Attack"
-	cat $ACCESS_LOG  |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep \:\; |sed 's/^..*\"GET\ //'| sed 's/^..*\"HEAD\ //' | sed 's/^..*:;//' |sed 's/\}\;//' |sed 's/^..*http/http/'|sed 's/^..*ftp/ftp/' |sed 's/;..*//'| sed 's/^..*\/dev\/tcp/\/dev\/tcp/' |sed 's/0>.*//' |sed 's/>.*//' |sort |uniq -c |sort -n  |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-payloads
+	$SCRIPT_DIR/catall.sh $ACCESS_LOG  |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep \:\; |sed 's/^..*\"GET\ //'| sed 's/^..*\"HEAD\ //' | sed 's/^..*:;//' |sed 's/\}\;//' |sed 's/^..*http/http/'|sed 's/^..*ftp/ftp/' |sed 's/;..*//'| sed 's/^..*\/dev\/tcp/\/dev\/tcp/' |sed 's/0>.*//' |sed 's/>.*//' |sort |uniq -c |sort -n  |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-payloads
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-payloads  |grep -v HEADERLINE>> $TMP_HTML_DIR/$FILE_PREFIX-top-20-payloads
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-payloads"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-payloads"
@@ -429,7 +487,8 @@ function create_historical_copies {
 	if [ $HOUR -eq 23 ]; then
 		cd  $TMP_HTML_DIR
 		mkdir -p $TMP_HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
-		for FILE in `ls |grep -v historical|grep -v index.html` ; do
+		cp $TMP_HTML_DIR/index-historical.html $TMP_HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`/index.html
+		for FILE in `ls |grep -v historical|egrep -v index.html\|index-long.html` ; do
 			cp $FILE $TMP_HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`/$FILE.$DATE
 		done
 		chmod a+rx $TMP_HTML_DIR/historical
@@ -455,9 +514,35 @@ count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
 
 #----------------------------------------------------------------
 # Lets check the ssh logs
-echo "DEBUG Doing ssh analysis now"
+#echo "DEBUG Doing ssh analysis now"
 ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$DATE"  "messages" "current"
 ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "."      "messages*" "historical"
+
+LAST_WEEK=""
+for i in 1 2 3 4 5 6 7 ; do
+	TMP_DATE=`date +"%b %d" --date="$i day ago"`
+	if [ "$LAST_WEEK" == "" ] ; then
+		LAST_WEEK="$TMP_DATE"
+	else
+		LAST_WEEK="$LAST_WEEK\\|$TMP_DATE"
+	fi
+done
+#echo $LAST_WEEK
+ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$LAST_WEEK"      "messages*" "last-7-days"
+
+
+LAST_MONTH=""
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+	TMP_DATE=`date +"%b %d" --date="$i day ago"`
+	if [ "$LAST_MONTH" == "" ] ; then
+		LAST_MONTH="$TMP_DATE"
+	else
+		LAST_MONTH="$LAST_MONTH\\|$TMP_DATE"
+	fi
+done
+#echo $LAST_MONTH
+ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$LAST_MONTH"      "messages*" "last-30-days"
+
 
 # This is an example of how to call ssh_attacks for past dates and 
 # put the reports in the $HTML_DIR/historical/Year/month/date directory
@@ -478,7 +563,7 @@ ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "."      "messages*" "historical"
 # Now lets do some long term ssh reports....  Lets do a comparison of 
 # top 20 non-root-passwords and top 20 root passwords
 #-----------------------------------------------------------------
-echo "DEBUG Doing trend analysis now"
+#echo "DEBUG Doing trend analysis now"
 cd $HTML_DIR/historical 
 make_header "$HTML_DIR/trends-in-non-root-passwords" "Trends in Non Root Passwords From 20th to Most Common" "Date" "20" "19" "18" "17" "16" "15" "14" "13" "12" "11" "10" "9" "8" "7" "6" "5" "4" "3" "2" "1"
 
@@ -523,12 +608,36 @@ cd $HTML_DIR/historical
 # Lets check the httpd access_logs logs
 # Reset the date to an access_log format
 DATE=`date +%d/%b/%Y`
-echo "DEBUG Doing http analysis now"
+#echo "DEBUG Doing http analysis now"
 http_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG_HTTPD "$DATE"  "access_log"  "current"
 http_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG_HTTPD "."      "access_log*" "historical"
 
-# Old Stuff-Turned off for testing #http_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG_MESSAGES
-# Old Stuff-Turned off for testing #historical_http_attacks  $HTML_DIR $YEAR $PATH_TO_VAR_LOG_MESSAGES
+LAST_WEEK=""
+for i in 1 2 3 4 5 6 7 ; do
+  TMP_DATE=`date +"%d/%b/%Y" --date="$i day ago"`
+  if [ "$LAST_WEEK" == "" ] ; then
+    LAST_WEEK="$TMP_DATE"
+  else
+    LAST_WEEK="$LAST_WEEK\\|$TMP_DATE"
+  fi
+done
+#echo $LAST_WEEK
+http_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG_HTTPD "$LAST_WEEK"      "access_log*" "last-7-days"
+
+
+LAST_MONTH=""
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+  TMP_DATE=`date +"%d/%b/%Y" --date="$i day ago"`
+  if [ "$LAST_MONTH" == "" ] ; then
+    LAST_MONTH="$TMP_DATE"
+  else
+    LAST_MONTH="$LAST_MONTH\\|$TMP_DATE"
+  fi
+done
+#echo $LAST_MONTH
+http_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG_HTTPD "$LAST_MONTH"      "access_log*" "last-30-days"
+
+
 
 # Now, if we have access to other access_logs, we put them in a 
 # different directory.  That way they don't get com-mingled with
