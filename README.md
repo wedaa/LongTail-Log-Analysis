@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 What LongTail does
 --------------
 Longtail analyzes your /var/log/messages files to report on 
-the ssh attacks against your server.  LongTail pre-supposes
-that you have compiled your own openssh daemon as described
+the ssh attacks against your server.  LongTail pre-supposes 
+that you have compiled your own openssh daemon as described 
 below.
 
 LongTail also analyzes your /var/log/httpd/access_log files
@@ -41,24 +41,29 @@ know so I can increase this number.
 New SSHD Installation
 --------------
 Download a copy of openssh from http://www.openssh.com/portable.html#ftp
+
 Untar the file and modify auth-passwd.c to add the 
 following line to the auth_password function(See the
 included auth-passwd.c file for exact placing) :
  logit("PassLog: Username: %s Password: %s", authctxt->user, password);
 
-Then configure, make, and install openssh on your server.
-I assume since you're interested in HoneyPots, you 
-know your OS well enough to do this.
+Then configure, make, and install openssh on your server.  I 
+assume since you're interested in HoneyPots, you know your OS 
+well enough to do this.
 
-You can also run a second sshd on your system on a 
-different port.  BUT...  To be able to tell which 
-sshd is on which port, you should eit auth-passwd.c 
-again, and instead of "PassLog", use "Pass2222Log.
-Note that the port number is in the middle of the 
-word PassLog.  This is because the search string
-LongTail uses in "PassLog"  Making the string 
-"Pass2222Log" makes it possible to search for
-ssh attempts to the different ports.
+You can also run a second sshd on your system on a different 
+port.  BUT...  To be able to tell which sshd is on which port, 
+you should eit auth-passwd.c again, and instead of "PassLog", 
+use "Pass2222Log.  Note that the port number is in the middle 
+of the word PassLog.  This is because the search string LongTail 
+uses in "PassLog"  Making the string "Pass2222Log" makes it 
+possible to search for ssh attempts to the different ports.
+
+And of course, you should run a "real" sshd on some very high 
+number port so that you can ssh into your server and not have 
+your account and password show up in the log files.  You can 
+use your default /etc/ssh/sshd_config file to reset your port 
+number.
 
 LongTail Installation
 --------------
@@ -73,35 +78,32 @@ Edit Longtail.sh for OBFUSCATE_IP_ADDRESSES and OBFUSCATE_URLS.
 If you are copying your reports to a public site you might 
 want to do this.
 
-Edit LongTail-exclude-accounts.grep to
-add your valid local accounts.  This will exclude these
-accounts from your reports.  (You wouldn't want to have
-your password or account name showing up in your reports,
+Edit LongTail-exclude-accounts.grep to add your valid local 
+accounts.  This will exclude these accounts from your reports.  
+(You wouldn't want to have your password or account name 
+showing up in your reports, now would you?)
+
+Edit LongTail-exclude-IPs.grep to add your local IP addresses.  
+This will exclude these IPs from your reports.  (You wouldn't 
+want to have your personal or work IPs exposed in your reports, 
 now would you?)
 
-Edit LongTail-exclude-IPs.grep to
-add your local IP addresses.  This will exclude these
-IPs from your reports.  (You wouldn't want to have
-your personal or work IPs exposed in your reports,
-now would you?)
+Edit LongTail-exclude-webpages.grep to add any local webpages 
+you don't want in your LongTail reports.
 
-Edit LongTail-exclude-webpages.grep to add any local
-webpages you don't want in your LongTail reports.
-
-Edit install.sh for SCRIPT_DIR, HTML_DIR, and OWNER.
-You also need to comment out the "exit" command, which 
-is there to make sure you edit the install.sh script.
+Edit install.sh for SCRIPT_DIR, HTML_DIR, and OWNER.  You also 
+need to comment out the "exit" command, which is there to make 
+sure you edit the install.sh script.
 
 Run ./install.sh to install everything.
 
-Run LongTail by hand as the account you want it to run
-as to make sure it works.  (And that it can write to 
-the /honey directory.)
+Run LongTail by hand as the account you want it to run as to 
+make sure it works.  (And that it can write to the /honey 
+directory.)
 
-After you have run LongTail for "a while", you may wish
-to add your own special reports.  Those reports should
-be included in two special files that will NOT be 
-overwritten by install.sh
+After you have run LongTail for "a while", you may wish to 
+add your own special reports.  Those reports should be included 
+in two special files that will NOT be overwritten by install.sh
 
 These scripts are:
 	$SCRIPT_DIR/Longtail-ssh-local-reports
