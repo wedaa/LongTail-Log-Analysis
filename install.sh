@@ -1,10 +1,12 @@
 #!/bin/sh
 
-#echo "You need to edit LongTail.sh.  Please see LongTail.sh for details"
-#echo ""
-#echo "You need to edit this file for SCRIPT_DIR, HTML_DIR, and OWNER"
-#echo "And then comment out the exit statement"
-#exit
+echo "You need to edit LongTail.sh.  Please see LongTail.sh for details"
+echo ""
+echo "You need to edit this file for SCRIPT_DIR, HTML_DIR, OWNER,"
+echo "OBFUSCATE_IP_ADDRESSES, OBFUSCATE_URLS."
+
+echo "And then comment out the exit statement"
+exit
 
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
 HTML_DIR="/var/www/html/honey" # Where do we put the HTML files?
@@ -21,12 +23,19 @@ cp index-long.html $HTML_DIR
 cp index-historical.html $HTML_DIR
 
 if [ ! -e $SCRIPT_DIR/LongTail-exclude-accounts.grep ] ; then
-echo "LongTail-exclude-accounts.grep not in $SCRIPT_DIR"
+	echo "LongTail-exclude-accounts.grep not in $SCRIPT_DIR"
+	cp LongTail-exclude-accounts.grep $SCRIPT_DIR
 fi
 
-#cp LongTail-exclude-accounts.grep $SCRIPT_DIR
-#cp LongTail-exclude-webpages.grep $SCRIPT_DIR
-#cp LongTail-exclude-IPs.grep $SCRIPT_DIR
+if [ ! -e $SCRIPT_DIR/LongTail-exclude-IPs.grep ] ; then
+	echo "LongTail-exclude-IPs.grep not in $SCRIPT_DIR"
+	cp LongTail-exclude-IPs.grep $SCRIPT_DIR
+fi
+
+if [ ! -e $SCRIPT_DIR/LongTail-exclude-webpages.grep ] ; then
+	echo "LongTail-exclude-webpages.grep not in $SCRIPT_DIR"
+	cp LongTail-exclude-webpages.grep $SCRIPT_DIR
+fi
 
 
 chmod a+rx catall.sh $SCRIPT_DIR/catall.sh
