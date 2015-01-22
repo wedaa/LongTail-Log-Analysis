@@ -17,9 +17,10 @@
 # Assorted Variables
 # Do we obfuscate/rename the IP addresses?  You might want to do this if
 # you are copying your reports to a public site.
-# HIDE_IP_ADDRESSES=1 will hide addresses
-# HIDE_IP_ADDRESSES=0 will NOT hide addresses
-HIDE_IP_ADDRESSES=0
+# OBFUSCATE_IP_ADDRESSES=1 will hide addresses
+# OBFUSCATE_IP_ADDRESSES=0 will NOT hide addresses
+OBFUSCATE_IP_ADDRESSES=0
+OBFUSCATE_URLS=0
 
 # Where are the scripts we need to run?
 SCRIPT_DIR="/usr/local/etc/"
@@ -108,7 +109,7 @@ function make_header {
 	echo "<H3>$TITLE</H3><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<P>Created on $MAKE_HEADER_DATE<!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	
-	if [ $HIDE_IP_ADDRESSES -gt 0 ] ; then
+	if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
 		echo "<P>IP Addresses have been obfuscated to hide the guilty. <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 		echo "ALL IP addresses have been reset to end in .127. <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	fi
@@ -144,7 +145,7 @@ function make_footer {
 	echo "</TABLE><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
 	echo "</BODY><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
 	echo "</HTML><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
-	if [ $HIDE_IP_ADDRESSES -gt 0 ] ; then
+	if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
 		hide_ip $1
 	fi
 }
@@ -260,8 +261,9 @@ function ssh_attacks {
 	
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts" "Non Root Accounts" "Count" "Account"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts" "Top 20 Non Root Accounts" "Count" "Account"
-	$SCRIPT_DIR/catall.sh $MESSAGES | grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep Password |grep -v Username\:\ root |awk '{print $8}' |sort |uniq -c|sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts
-	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts
+	#$SCRIPT_DIR/catall.sh $MESSAGES | grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep Password |grep -v Username\:\ root |awk '{print $8}' |sort |uniq -c|sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts
+	$SCRIPT_DIR/catall.sh $MESSAGES | grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep Password |awk '{print $8}' |sort |uniq -c|sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts
+	tail -21 $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts"
 	
@@ -296,7 +298,7 @@ function ssh_attacks {
 	#-------------------------------------------------------------------------
 	# raw data compressed 
 	# This only prints the account and the password
-	if [ $HIDE_IP_ADDRESSES -gt 0 ] ; then
+	if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
 		$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password\|password |sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 	else
 		$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password\|password |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
