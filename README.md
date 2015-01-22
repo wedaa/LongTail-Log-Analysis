@@ -38,33 +38,8 @@ probably have too much data to be analyzed.  Of course if you
 run this on larger installations and it works, please let me
 know so I can increase this number.
 
-Installation
+New SSHD Installation
 --------------
-Edit /usr/local/etc/LongTail for the locations of your 
-/var/log/messages and /var/log/httpd/access_log files.
-
-Edit /usr/local/etc/LongTail for the location of your 
-/honey directory (or whatever you call the directory
-you want your reports to go to.
-
-Copy index.html to the $HTML_DIR/honey directory.
-
-Edit /usr/local/etc/LongTail-exclude-accounts.grep to
-add your valid local accounts.  This will exclude these
-accounts from your reports.  (You wouldn't want to have
-your password or account name showing up in your reports,
-now would you?)
-
-Edit /usr/local/etc/LongTail-exclude-IPs.grep to
-add your local IP addresses.  This will exclude these
-IPs from your reports.  (You wouldn't want to have
-your personal or work IPs exposed in your reports,
-now would you?)
-
-Copy the files to /usr/local/etc (Or wherever).  See
-install.sh for details.  You need to edit that before 
-running it.
-
 Download a copy of openssh from http://www.openssh.com/portable.html#ftp
 Untar the file and modify auth-passwd.c to add the 
 following line to the auth_password function(See the
@@ -75,9 +50,63 @@ Then configure, make, and install openssh on your server.
 I assume since you're interested in HoneyPots, you 
 know your OS well enough to do this.
 
+You can also run a second sshd on your system on a 
+different port.  BUT...  To be able to tell which 
+sshd is on which port, you should eit auth-passwd.c 
+again, and instead of "PassLog", use "Pass2222Log.
+Note that the port number is in the middle of the 
+word PassLog.  This is because the search string
+LongTail uses in "PassLog"  Making the string 
+"Pass2222Log" makes it possible to search for
+ssh attempts to the different ports.
+
+LongTail Installation
+--------------
+Edit LongTail.sh for the locations of your 
+/var/log/messages and /var/log/httpd/access_log files.
+
+Edit LongTail.sh for the location of your 
+/honey directory (or whatever you call the directory
+you want your reports to go to.
+
+Edit Longtail.sh for OBFUSCATE_IP_ADDRESSES and OBFUSCATE_URLS. 
+If you are copying your reports to a public site you might 
+want to do this.
+
+Edit LongTail-exclude-accounts.grep to
+add your valid local accounts.  This will exclude these
+accounts from your reports.  (You wouldn't want to have
+your password or account name showing up in your reports,
+now would you?)
+
+Edit LongTail-exclude-IPs.grep to
+add your local IP addresses.  This will exclude these
+IPs from your reports.  (You wouldn't want to have
+your personal or work IPs exposed in your reports,
+now would you?)
+
+Edit LongTail-exclude-webpages.grep to add any local
+webpages you don't want in your LongTail reports.
+
+Edit install.sh for SCRIPT_DIR, HTML_DIR, and OWNER.
+You also need to comment out the "exit" command, which 
+is there to make sure you edit the install.sh script.
+
+Run ./install.sh to install everything.
+
 Run LongTail by hand as the account you want it to run
 as to make sure it works.  (And that it can write to 
 the /honey directory.)
+
+After you have run LongTail for "a while", you may wish
+to add your own special reports.  Those reports should
+be included in two special files that will NOT be 
+overwritten by install.sh
+
+These scripts are:
+	$SCRIPT_DIR/Longtail-ssh-local-reports
+	$SCRIPT_DIR/Longtail-httpd-local-reports
+
 
 Add a crontab entry like this one:
 59 * * * * /usr/local/etc/LongTail >> /tmp/LongTail.out 2>> /tmp/LongTail.out
