@@ -1,6 +1,16 @@
 README for LongTail Log Analysis.
 ==============
 
+WARNING
+--------------
+If you manage to stumble across this at GitHub, this is
+not ready to be released.  I'M STILL WORKING ON IT.  OTOH,
+I'm close enough to actually be putting it up here so that
+I can test the install procedure on a different server 
+than the one I'm developing on.
+
+If you're that interested, drop me an email to wedaa@wedaa.com
+
 Licensing
 --------------
 LongTail is a messages and access_log analyzer
