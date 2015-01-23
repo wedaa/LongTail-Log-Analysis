@@ -48,6 +48,11 @@ probably have too much data to be analyzed.  Of course if you
 run this on larger installations and it works, please let me
 know so I can increase this number.
 
+LongTail ALSO refers to a statistical distribution where there
+are many "Hits" at the left, and tapering down to a "Long Tail"
+towards the right.  See http://en.wikipedia.org/wiki/Long_tail
+for more details.
+
 New SSHD Installation
 --------------
 Download a copy of openssh from http://www.openssh.com/portable.html#ftp
