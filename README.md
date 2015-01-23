@@ -128,3 +128,14 @@ These scripts are:
 Add a crontab entry like this one:
 59 * * * * /usr/local/etc/LongTail >> /tmp/LongTail.out 2>> /tmp/LongTail.out
 
+WARNING about reports before you have enough data
+--------------
+Some of the reports are going to look a little "off" until you
+have a few days worth of data.  This is because I am currently
+assuming that after a few days, attacks will have come in at
+every hour of the day.
+
+Also, historical trends reports will look "off" until you actually
+have a few days worth of data to do a trend report on.
+
+These issues will not be fixed anytime soon.
