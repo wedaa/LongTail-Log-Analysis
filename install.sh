@@ -12,6 +12,8 @@ SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
 HTML_DIR="/var/www/html/honey" # Where do we put the HTML files?
 OWNER="wedaa"                  # What is the owner of the process running LongTail?
 
+mkdir -p $HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
+
 cp catall.sh $SCRIPT_DIR
 cp ip-to-country $SCRIPT_DIR
 cp LongTail.sh $SCRIPT_DIR
@@ -27,9 +29,14 @@ if [ ! -e $SCRIPT_DIR/LongTail-exclude-accounts.grep ] ; then
 	cp LongTail-exclude-accounts.grep $SCRIPT_DIR
 fi
 
-if [ ! -e $SCRIPT_DIR/LongTail-exclude-IPs.grep ] ; then
-	echo "LongTail-exclude-IPs.grep not in $SCRIPT_DIR"
-	cp LongTail-exclude-IPs.grep $SCRIPT_DIR
+if [ ! -e $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep ] ; then
+	echo "LongTail-exclude-IPs-httpd.grep not in $SCRIPT_DIR"
+	cp LongTail-exclude-IPs-httpd.grep $SCRIPT_DIR
+fi
+
+if [ ! -e $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep ] ; then
+	echo "LongTail-exclude-IPs-ssh.grep not in $SCRIPT_DIR"
+	cp LongTail-exclude-IPs-ssh.grep $SCRIPT_DIR
 fi
 
 if [ ! -e $SCRIPT_DIR/LongTail-exclude-webpages.grep ] ; then
