@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh 
 
 ############################################################################
 # This is my crontab entry
@@ -35,14 +35,14 @@ SCRIPT_DIR="/usr/local/etc/"
 HTML_DIR="/var/www/html/honey/"
 
 #Where is the messages file?
-#PATH_TO_VAR_LOG="/var/log/"
+PATH_TO_VAR_LOG="/var/log/"
 
 #Where is the apache access_log file?
-#PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/"
+PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/"
 
 
-PATH_TO_VAR_LOG="/home/wedaa/source/LongTail/var/log/"
-PATH_TO_VAR_LOG_HTTPD="/home/wedaa/source/LongTail/var/log/httpd/"
+#PATH_TO_VAR_LOG="/home/wedaa/source/LongTail/var/log/"
+#PATH_TO_VAR_LOG_HTTPD="/home/wedaa/source/LongTail/var/log/httpd/"
 
 ############################################################################
 # You don't need to edit after this.
@@ -386,7 +386,7 @@ function http_attacks {
 	#echo "What are they trying to rm?"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-rm-attempts" "rm Attempts"  "Count" "Attack"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-rm-attempts" "Top 20 rm Attempts"  "Count" "Attack"
-	grep \:\; $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep perl|sed 's/..*perl/perl/'|sed 's/^..*rm/rm/' |sort |uniq -c|sort -n |grep rm |sed 's/;.*//' |sort -n |sed 's/^/<TR><TD>/'|sed 's/$/<\/TD><\/TR>/'|sed 's/ rm/<\/TD><TD>rm/' >> $TMP_HTML_DIR/$FILE_PREFIX-rm-attempts
+	grep -h \:\; $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep perl|sed 's/..*perl/perl/'|sed 's/^..*rm/rm/' |sort |uniq -c|sort -n |grep rm |sed 's/;.*//' |sort -n |sed 's/^/<TR><TD>/'|sed 's/$/<\/TD><\/TR>/'|sed 's/ rm/<\/TD><TD>rm/' >> $TMP_HTML_DIR/$FILE_PREFIX-rm-attempts
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-rm-attempts  |grep -v HEADERLINE>> $TMP_HTML_DIR/$FILE_PREFIX-top-20-rm-attempts
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-rm-attempts"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-rm-attempts"
@@ -414,7 +414,7 @@ function http_attacks {
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-ip-access-log-shell-shock"
 
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-country-access-log-shell-shock" "country-access-log-shell-shock"  "Count" "Country"
-	for IP in `grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep  $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep \:\; | awk '{print $1}' |sort |uniq` ;do $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-country-access-log-shell-shock
+	for IP in `grep -vhf $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep  $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |grep $DATE |grep \:\; | awk '{print $1}' |sort |uniq` ;do $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-country-access-log-shell-shock
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-country-access-log-shell-shock"
 	sed -i -f $SCRIPT_DIR/translate_country_codes.sed.orig  $TMP_HTML_DIR/$FILE_PREFIX-country-access-log-shell-shock
 	
@@ -441,7 +441,7 @@ function http_attacks {
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-open-proxy-404"
 
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-country-open-proxy-log-404" "country-open-proxy-log-404"  "Count" "Country"
-	for IP in `grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep  $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep |grep -v \:\; |grep $DATE |grep \ 404\ |grep 'GET http:'  | awk '{print $1}' |sort |uniq` ;do $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-country-open-proxy-log-404
+	for IP in `grep -vhf $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep  $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep |grep -v \:\; |grep $DATE |grep \ 404\ |grep 'GET http:'  | awk '{print $1}' |sort |uniq` ;do $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-country-open-proxy-log-404
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-country-open-proxy-log-404"
 	sed -i -f $SCRIPT_DIR/translate_country_codes.sed.orig  $TMP_HTML_DIR/$FILE_PREFIX-country-open-proxy-log-404
 
@@ -456,7 +456,7 @@ function http_attacks {
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-access-log-404"
 
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-country-access-log-404" "country-access-log-404"  "Count" "Country"
-	for IP in `grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep  $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep |grep -v \:\; |grep $DATE |grep \ 404\  | awk '{print $1}' |sort |uniq` ;do $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-country-access-log-404
+	for IP in `grep -vhf $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep  $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep |grep -v \:\; |grep $DATE |grep \ 404\  | awk '{print $1}' |sort |uniq` ;do $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-country-access-log-404
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-country-access-log-404"
 	sed -i -f $SCRIPT_DIR/translate_country_codes.sed.orig  $TMP_HTML_DIR/$FILE_PREFIX-country-access-log-404
 
@@ -496,8 +496,10 @@ function create_historical_copies {
 		cd  $TMP_HTML_DIR
 		mkdir -p $TMP_HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
 		cp $TMP_HTML_DIR/index-historical.html $TMP_HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`/index.html
-		for FILE in `ls |grep -v historical|egrep -v index.html\|index-long.html` ; do
-			cp $FILE $TMP_HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`/$FILE.$DATE
+		for FILE in `ls |grep -v historical|egrep -v index.html\|index-long.html\last-30\|last-7` ; do
+			echo "DEBUG- Copying $FILE to historical"
+			#cp $FILE $TMP_HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`/$FILE.$DATE
+			cp $FILE $TMP_HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`/
 		done
 		chmod a+rx $TMP_HTML_DIR/historical
 		chmod a+rx $TMP_HTML_DIR/historical/`date +%Y`
@@ -525,6 +527,9 @@ count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
 #echo "DEBUG Doing ssh analysis now"
 ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$DATE"  "messages" "current"
 ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "."      "messages*" "historical"
+
+#echo "DEBUG exiting now for DEBUG"
+#exit
 
 LAST_WEEK=""
 for i in 1 2 3 4 5 6 7 ; do
