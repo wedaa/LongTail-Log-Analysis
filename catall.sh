@@ -8,6 +8,12 @@ while (( "$#" )); do
 	#	exit
 	#fi
 	case $1 in
+		*bz2)
+			bzcat $1
+		;;
+		*bz)
+			bzcat $1
+		;;
 		*gz)
 			zcat $1
 		;;
