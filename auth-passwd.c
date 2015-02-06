@@ -1,14 +1,6 @@
 /* $OpenBSD: auth-passwd.c,v 1.44 2014/07/15 15:54:14 millert Exp $ */
 /*
- * Please look for the line marked ERICW to see exactly where I 
- * put the "logit" function to send both username AND password
- * to syslog
- *
- * All the rest came from the openssh project
- *
-*/
-
-/* Author: Tatu Ylonen <ylo@cs.hut.fi>
+ * Author: Tatu Ylonen <ylo@cs.hut.fi>
  * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
  *                    All rights reserved
  * Password authentication.  This file contains the functions to check whether
@@ -63,6 +55,9 @@
 #include "auth.h"
 #include "auth-options.h"
 
+/* Added by ERICW  so we can do IP lookups*/
+#include "canohost.h"
+
 extern Buffer loginmsg;
 extern ServerOptions options;
 
@@ -95,7 +90,11 @@ auth_password(Authctxt *authctxt, const char *password)
 
 
 /* ERICW ADDED logit */
-logit("PassLog: Username: %s Password: %s", authctxt->user, password);
+logit("IP: %s PassLog: Username: %s Password: %s", get_remote_ipaddr(), authctxt->user, password); 
+
+/* ERICW ADDED return 0 so the password ALWAYS fails */
+ return 0;
+
 #if defined(USE_SHADOW) && defined(HAS_SHADOW_EXPIRE)
 	static int expire_checked = 0;
 #endif
