@@ -7,18 +7,17 @@
 #
 # Usage : whois.perl <IPV4-address>
 open (FILE, "/usr/local/etc/ip-to-country") || die "can not open /usr/local/etc/ip-to-country\n";
+
+$ip=$ARGV[0];
+
 while (<FILE>){
-	#print "DEBUG $_";
 	chomp;
 	($ip_address,$file_country)=split (/\s+/,$_,2);
-	#$ip_table{$ip_address}=$file_country;
 	$ip_table{"$ip_address"}=$file_country;
 	#print "DEBUG-ip_address is $ip_address, country is $file_country\n";
-	#print "DEBUG-$ip_table{$ip_address}\n";
+	if ($ip_table{$ip}){  last; }
 }
 close (FILE);
-#print "DEBUG-ARGV[0] is $ARGV[0]\n";
-$ip=$ARGV[0];
 
 if ($ip_table{$ip}){ 
 	#print "in the file\n";
