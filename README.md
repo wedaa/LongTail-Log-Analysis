@@ -175,3 +175,26 @@ right on some systems (notably my CentOS 6.5 using the Atomic
 PHP repos.  On a vanilla Fedora Core 20 system the labels show
 up properly under the appropriate bar.  I am looking into this 
 issue.
+
+KNOWN ISSUES
+--------------
+I don't know if it handles spaces at the start or end of the passwords
+properly.
+
+I don't deal with blank/empty passwords at all
+
+I need to add a chart of password lengths
+
+It would be nice in the "Trends" tables if the first time an entry 
+is used that it showed up in a different color.
+
+I should make a line chart of attacks per day.
+
+I should make a line chart of number of attacks for an account 
+per day.
+
+I should make a line chart of number of uses of a password for 
+an account per day.
+
+I still need to finish my third level analysis of brute force
+attacks, which is the real reason I wrote LongTail.
