@@ -178,6 +178,12 @@ issue.
 
 KNOWN ISSUES
 --------------
+I need to go through each and every webpage and make sure it 
+looks "good".
+
+I need to fix the X and Y axis labels so they are not buried
+with the "tick" information.
+
 I don't know if it handles spaces at the start or end of the passwords
 properly.
 
@@ -200,3 +206,4 @@ I still need to finish my third level analysis of brute force
 attacks, which is the real reason I wrote LongTail.
 
 Can I "googlefy" my account/password pairs?
+
