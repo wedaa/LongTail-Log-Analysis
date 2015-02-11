@@ -89,9 +89,20 @@ Edit LongTail.sh for the location of your
 /honey directory (or whatever you call the directory
 you want your reports to go to.
 
-Edit Longtail.sh for OBFUSCATE_IP_ADDRESSES and OBFUSCATE_URLS. 
-If you are copying your reports to a public site you might 
-want to do this.
+Edit Longtail.sh for the following variables (which are explained
+in the script): 
+	GRAPHS
+	DEBUG
+	DO_SSH
+	DO_HTTPD
+	OBFUSCATE_IP_ADDRESSES
+	OBFUSCATE_URLS
+	PASSLOG
+	PASSLOG2222
+	SCRIPT_DIR
+	HTML_DIR
+	PATH_TO_VAR_LOG
+	PATH_TO_VAR_LOG_HTTPD
 
 Edit LongTail-exclude-accounts.grep to add your valid local 
 accounts.  This will exclude these accounts from your reports.  
@@ -106,6 +117,9 @@ now would you?)
 Edit LongTail-exclude-webpages.grep to add any local webpages 
 you don't want in your LongTail reports.
 
+Edit LongTail_make_graph.php for the appropriate location of
+the jpgraph installation.
+
 Edit install.sh for SCRIPT_DIR, HTML_DIR, and OWNER.  You also 
 need to comment out the "exit" command, which is there to make 
 sure you edit the install.sh script.
@@ -116,6 +130,8 @@ Run LongTail by hand as the account you want it to run as to
 make sure it works.  (And that it can write to the /honey 
 directory.)
 
+Site Specific Reports
+--------------
 After you have run LongTail for "a while", you may wish to 
 add your own special reports.  Those reports should be included 
 in two special files that will NOT be overwritten by install.sh
@@ -125,7 +141,14 @@ These scripts are:
 	$SCRIPT_DIR/Longtail-httpd-local-reports
 
 
-Add a crontab entry like this one:
+CRON Entry
+--------------
+You'll need to run this through cron every hour.  PLEASE NOTE
+that it starts at the 59 minute mark.  If you want to run this
+just once a day, I would advise running it at 11:59 PM, as there
+is code that only runs during the 11 PM time frame.
+
+MY crontab entry looks like this one:
 59 * * * * /usr/local/etc/LongTail >> /tmp/LongTail.out 2>> /tmp/LongTail.out
 
 WARNING about reports before you have enough data
@@ -139,3 +162,16 @@ Also, historical trends reports will look "off" until you actually
 have a few days worth of data to do a trend report on.
 
 These issues will not be fixed anytime soon.
+
+WARNING about jpgraph alignment issues
+--------------
+Two warnings about jpgraph alignment issues.
+
+ONE) Right now the X and Y axis labels can be overwritten by the
+tick marks for the axis.  I am looking into this issue.
+
+TWO) For some reason, the X axis labels show up shifted to the
+right on some systems (notably my CentOS 6.5 using the Atomic
+PHP repos.  On a vanilla Fedora Core 20 system the labels show
+up properly under the appropriate bar.  I am looking into this 
+issue.
