@@ -50,7 +50,7 @@ know so I can increase this number.
 
 LongTail ALSO refers to a statistical distribution where there
 are many "Hits" at the left, and tapering down to a "Long Tail"
-towards the left.  See http://en.wikipedia.org/wiki/Long_tail
+towards the right.  See http://en.wikipedia.org/wiki/Long_tail
 for more details.
 
 New SSHD Installation
@@ -171,7 +171,7 @@ ONE) Right now the X and Y axis labels can be overwritten by the
 tick marks for the axis.  I am looking into this issue.
 
 TWO) For some reason, the X axis labels show up shifted to the
-right on some systems (notably my CentOS 6.5 using the Atomic
+left on some systems (notably my CentOS 6.5 using the Atomic
 PHP repos.  On a vanilla Fedora Core 20 system the labels show
 up properly under the appropriate bar.  I am looking into this 
 issue.
