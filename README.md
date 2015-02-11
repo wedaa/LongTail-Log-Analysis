@@ -198,3 +198,5 @@ an account per day.
 
 I still need to finish my third level analysis of brute force
 attacks, which is the real reason I wrote LongTail.
+
+Can I "googlefy" my account/password pairs?
