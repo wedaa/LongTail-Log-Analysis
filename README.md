@@ -50,7 +50,7 @@ know so I can increase this number.
 
 LongTail ALSO refers to a statistical distribution where there
 are many "Hits" at the left, and tapering down to a "Long Tail"
-towards the right.  See http://en.wikipedia.org/wiki/Long_tail
+towards the left.  See http://en.wikipedia.org/wiki/Long_tail
 for more details.
 
 New SSHD Installation
