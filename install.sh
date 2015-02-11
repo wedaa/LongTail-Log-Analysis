@@ -17,6 +17,7 @@ mkdir -p $HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
 cp catall.sh $SCRIPT_DIR
 cp ip-to-country $SCRIPT_DIR
 cp LongTail.sh $SCRIPT_DIR
+cp LongTail_make_graph.php $SCRIPT_DIR
 cp translate_country_codes.sed $SCRIPT_DIR
 cp translate_country_codes.sed.orig $SCRIPT_DIR
 cp whois.pl $SCRIPT_DIR
@@ -53,6 +54,7 @@ chmod a+r $SCRIPT_DIR/LongTail-exclude-accounts.grep
 chmod a+r $SCRIPT_DIR/LongTail-exclude-webpages.grep 
 chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs.grep
 chmod a+rx $SCRIPT_DIR/LongTail.sh
+chmod a+rx $SCRIPT_DIR/LongTail_make_graph.php
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed.orig
 chmod a+rx $SCRIPT_DIR/whois.pl
