@@ -7,8 +7,20 @@
 #
 # Usage : whois.perl <IPV4-address>
 #
+######################################################################
+#
+# Initialize variables
+#
+sub init_vars {
+	$SCRIPT_DIR="/usr/local/etc/";
+	$ip=$ARGV[0];
+}
+######################################################################
+#
+# subroutine to find a country code if it's not in the file....
+#
 sub look_up_country {
-	print (STDERR "In look_up_country\n");
+	#print (STDERR "In look_up_country\n");
 	$found_country=1;
 	#print "DEBUG IP is $ARGV[0]\n";
 	open (PIPE, "whois $ARGV[0]|") || die "Can not open whois command\n";
@@ -58,17 +70,20 @@ sub look_up_country {
 	}
 	print "country: $country\n";
 	$ip_table{"$ip"}=$country;
-	open (FILE, ">>/usr/local/etc/ip-to-country") || die "can not open /usr/local/etc/ip-to-country\n";
+	open (FILE, ">>$SCRIPT_DIR/ip-to-country") || die "can not open $SCRIPT_DIR/ip-to-country\n";
 	print (FILE "$ARGV[0] $country\n");
 	close (FILE);
 }
-
-$ip=$ARGV[0];
+######################################################################
+#
+# Main line of code
+#
+&init_vars;
 
 if ( $ip eq "NAMEDPIPE" ){
 	#OK, so we start as a daemon, and get killed later...
 	$PIPE=$ARGV[1];
-	open (FILE, "/usr/local/etc/ip-to-country") || die "can not open /usr/local/etc/ip-to-country\n";
+	open (FILE, "$SCRIPT_DIR/ip-to-country") || die "can not open $SCRIPT_DIR/ip-to-country\n";
 	while (<FILE>){
 		chomp;
 		($ip_address,$file_country)=split (/\s+/,$_,2);
@@ -83,9 +98,9 @@ if ( $ip eq "NAMEDPIPE" ){
 			close (INPUT);
 		}
 		$tmp="Not Set";
-		print "Fell through loop\n";
+		#print "Fell through loop\n";
 		open (OUT, '>', "pipe2") || die "Can not open named pipe pipe2\n";
-		print "Writing to pipe2\n";
+		#print "Writing to pipe2\n";
 		if ($ip_table{$ip}){ 
 			$tmp=$ip_table{$ip};
 		}
@@ -95,7 +110,7 @@ if ( $ip eq "NAMEDPIPE" ){
 		print (OUT "country: $tmp\n");
 		close (OUT);
 	}
-	print "Fell through\n";
+	#print "Fell through\n";
 	close (INPUT);
 }
 else {
