@@ -52,7 +52,8 @@ chown $OWNER $SCRIPT_DIR/ip-to-country
 
 chmod a+r $SCRIPT_DIR/LongTail-exclude-accounts.grep
 chmod a+r $SCRIPT_DIR/LongTail-exclude-webpages.grep 
-chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs.grep
+chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep
+chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep
 chmod a+rx $SCRIPT_DIR/LongTail.sh
 chmod a+rx $SCRIPT_DIR/LongTail_make_graph.php
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed
