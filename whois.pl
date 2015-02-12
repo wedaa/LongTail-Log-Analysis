@@ -97,9 +97,12 @@ if ( $ip eq "NAMEDPIPE" ){
 			$ip=$_;
 			close (INPUT);
 		}
+		if ($ip eq "EXIT") {
+			print (STDERR "Exit received\n");
+			last;
+		}
 		$tmp="Not Set";
 		#print "Fell through loop\n";
-		open (OUT, '>', "pipe2") || die "Can not open named pipe pipe2\n";
 		#print "Writing to pipe2\n";
 		if ($ip_table{$ip}){ 
 			$tmp=$ip_table{$ip};
@@ -107,6 +110,7 @@ if ( $ip eq "NAMEDPIPE" ){
 		else {
 			&look_up_country;
 		}
+		open (OUT, '>', "pipe2") || die "Can not open named pipe pipe2\n";
 		print (OUT "country: $tmp\n");
 		close (OUT);
 	}
@@ -116,7 +120,7 @@ if ( $ip eq "NAMEDPIPE" ){
 else {
 	#OK, so we run interactively
 	
-	open (FILE, "/usr/local/etc/ip-to-country") || die "can not open /usr/local/etc/ip-to-country\n";
+	open (FILE, "$SCRIPT_DIR/ip-to-country") || die "can not open /usr/local/etc/ip-to-country\n";
 	while (<FILE>){
 		chomp;
 		($ip_address,$file_country)=split (/\s+/,$_,2);
