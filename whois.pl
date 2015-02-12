@@ -8,6 +8,59 @@
 # Usage : whois.perl <IPV4-address>
 #
 sub look_up_country {
+	print (STDERR "In look_up_country\n");
+	$found_country=1;
+	#print "DEBUG IP is $ARGV[0]\n";
+	open (PIPE, "whois $ARGV[0]|") || die "Can not open whois command\n";
+	while (<PIPE>){
+		# Sometimes whois lookups for some IPs do not return a Country Code:-(
+		# This is a hack to force a country code
+		if ((/com\.tw/i)||(/hinet-net/i)){
+			$country="TW";
+			$found_country=0;
+			#print "DEBUG .tw found\n";
+		}
+		if (/leaseweb/i){
+			$country="KR";
+			$found_country=0;
+		}
+		if ((/kornet/i)||(/BORANET/i)||(/address.*seoul/i)||(/\.co\.kr/i)){
+			$country="KR";
+			$found_country=0;
+		}
+		if ((/Comcast Cable/i)||(/Comcast Business Communications/i)||
+			(/Comcast IP/i)||(/Optimum Online/i)||
+			(/Cox Communications/i)||(/MCI Communications/i)){
+			$country="US";
+			$found_country=0;
+		}
+		if (/country/i){
+			$found_country=0;
+			#print "DEBUG Country line found:$_\n";
+			$_ =~ s/:/: /g;
+			#($trash,$country)=split(/\s+/, $_);
+			$size=@line_array=split(/\s+/, $_);
+			#print "size is $size, country: $line_array[$size-1]\n";
+			$country=$line_array[$size-1];
+			last;
+		}
+	}
+	close (PIPE);
+	if ($found_country){
+		$country="UNKNOWN";
+		$tmp=`wget -qO- ipinfo.io/$ip |grep -i country`;
+		$tmp=~ s/"|,|://g;
+		$tmp =~ s/^\s+//;
+		($tmp2,$country)=split(/\s+/, $tmp);
+		if ( length($country) == 0){
+			$country="UNKNOWN";
+		}
+	}
+	print "country: $country\n";
+	$ip_table{"$ip"}=$country;
+	open (FILE, ">>/usr/local/etc/ip-to-country") || die "can not open /usr/local/etc/ip-to-country\n";
+	print (FILE "$ARGV[0] $country\n");
+	close (FILE);
 }
 
 $ip=$ARGV[0];
@@ -35,7 +88,9 @@ if ( $ip eq "NAMEDPIPE" ){
 		print "Writing to pipe2\n";
 		if ($ip_table{$ip}){ 
 			$tmp=$ip_table{$ip};
-			#print "DEBUG country is $tmp\n";
+		}
+		else {
+			&look_up_country;
 		}
 		print (OUT "country: $tmp\n");
 		close (OUT);
@@ -59,63 +114,8 @@ else {
 		$tmp=$ip_table{$ip};
 		print "country: $tmp\n";
 	}
-	else {
-		$found_country=1;
-		#print "DEBUG IP is $ARGV[0]\n";
-		open (PIPE, "whois $ARGV[0]|") || die "Can not open whois command\n";
-		while (<PIPE>){
-			# Sometimes whois lookups for some IPs do not return a Country Code:-(
-			# This is a hack to force a country code
-			if ((/com\.tw/i)||(/hinet-net/i)){
-				$country="TW";
-				$found_country=0;
-				#print "DEBUG .tw found\n";
-			}
-			if (/leaseweb/i){
-				$country="KR";
-				$found_country=0;
-			}
-			if ((/kornet/i)||(/BORANET/i)||(/address.*seoul/i)||(/\.co\.kr/i)){
-				$country="KR";
-				$found_country=0;
-			}
-			if ((/Comcast Cable/i)||(/Comcast Business Communications/i)||
-				(/Comcast IP/i)||(/Optimum Online/i)||
-				(/Cox Communications/i)||(/MCI Communications/i)){
-				$country="US";
-				$found_country=0;
-			}
-			if (/country/i){
-				$found_country=0;
-				#print "DEBUG Country line found:$_\n";
-				$_ =~ s/:/: /g;
-				#($trash,$country)=split(/\s+/, $_);
-				$size=@line_array=split(/\s+/, $_);
-				#print "size is $size, country: $line_array[$size-1]\n";
-				$country=$line_array[$size-1];
-				last;
-			}
-		}
-		close (PIPE);
-		if ($found_country){
-			#print "DEBUG Information NOT found, something is wrong, Setting to UNKNOWN now.\n";
-			$country="UNKNOWN";
-			#print "DEBUG-wget -qO- ipinfo.io/$ip\n";
-			#$tmp=`wget -qO- ipinfo.io/$ip |grep -i country`;
-			$tmp=`wget -qO- ipinfo.io/$ip |grep -i country`;
-			#print "DEBUG-$tmp\n";
-			$tmp=~ s/"|,|://g;
-			$tmp =~ s/^\s+//;
-			($tmp2,$country)=split(/\s+/, $tmp);
-			#print "DEBUG Country is $country\n";
-			if ( length($country) == 0){
-				$country="UNKNOWN";
-			}
-		}
-		print "country: $country\n";
-		$ip_table{"$ip"}=$country;
-		open (FILE, ">>/usr/local/etc/ip-to-country") || die "can not open /usr/local/etc/ip-to-country\n";
-		print (FILE "$ARGV[0] $country\n");
-		close (FILE);
+	else { #It's not in the file or the array :-(
+			&look_up_country;
 	}
+
 }
