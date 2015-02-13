@@ -19,23 +19,30 @@
 # Do you want Pretty graphs using jpgraph?  Set this to 1
 # http://jpgraph.net/  JpGraph - Most powerful PHP-driven charts
 GRAPHS=1;
+
 # Do you want debug output?  Set this to 1
 DEBUG=1;
+
 # Do you want ssh analysis?  Set this to 1
 DO_SSH=1
+
 # Do you want httpd analysis?  Set this to 1
 DO_HTTPD=1
-#
+
 # Do we obfuscate/rename the IP addresses?  You might want to do this if
 # you are copying your reports to a public site.
 # OBFUSCATE_IP_ADDRESSES=1 will hide addresses
 # OBFUSCATE_IP_ADDRESSES=0 will NOT hide addresses
 OBFUSCATE_IP_ADDRESSES=0
+
+# OBFUSCATE_URLS=1 will hide URLs in the http report
+# OBFUSCATE_URLS=0 will NOT hide URLs in the http report
+# This may not work properly yet.
 OBFUSCATE_URLS=0
 
 # These are the search strings from the "LogIt" function in auth-passwd.c
 # and are used to figure out which ports are being brute-forced.
-# This code has not yet been written.
+# The code for PASSLOG2222 has not yet been written.
 PASSLOG="PassLog"
 PASSLOG2222="Pass2222Log"
 
@@ -51,7 +58,8 @@ PATH_TO_VAR_LOG="/var/log/"
 #Where is the apache access_log file?
 PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/"
 
-
+# This is for my personal debugging, just leave them
+# commented out if you aren't me.
 #PATH_TO_VAR_LOG="/home/wedaa/source/LongTail/var/log/"
 #PATH_TO_VAR_LOG_HTTPD="/home/wedaa/source/LongTail/var/log/httpd/"
 
@@ -714,24 +722,24 @@ function do_ssh {
 	if [ $GRAPHS == 1 ] ; then
 		for FILE in *.data ; do 
 			if [ ! "$FILE" == "current-attack-count.data" ] ; then
+				GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
+				TITLE=`echo $FILE | sed 's/-/ /g' |sed 's/.data//'`
 				if [ -s "$FILE" ] ; then
-					ls -l $FILE                   
-
-					GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
-					TITLE=`echo $FILE | sed 's/-/ /g' |sed 's/.data//'`
-					ls -l $FILE                   
 					if [[ $FILE == *"accounts"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries"> $GRAPHIC_FILE
 					fi
-
 					if [[ $FILE == *"password"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries"> $GRAPHIC_FILE
 					fi
-
-					#else                    
-					#copy a no-data-yet.png file  
-					#echo "copy a no-data-yet.png file" 
-					#fi                      
+				else #We have an empty file, deal with it here
+					echo "0 0" >/tmp/LongTail.data.$$
+					if [[ $FILE == *"accounts"* ]] ; then
+						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Accounts" "Number of Tries"> $GRAPHIC_FILE
+					fi
+					if [[ $FILE == *"password"* ]] ; then
+						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries"> $GRAPHIC_FILE
+					fi
+					rm /tmp/LongTail.data.$$
 				fi
 			fi
 		done        
