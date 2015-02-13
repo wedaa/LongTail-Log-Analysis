@@ -80,6 +80,13 @@ your account and password show up in the log files.  You can
 use your default /etc/ssh/sshd_config file to reset your port 
 number.
 
+LongTail Prerequisites
+--------------
+yum install jwhois
+yum install php php-common php-cli php-xml php-pear php-pdo php-gd
+yum install httpd
+jpgraph from http://jpgraph.net/download/ installed into /usr/local/php/jpgraph.  (Don't forget to edit the include line in /etc/php.ini to reference /usr/local/php).
+
 LongTail Installation
 --------------
 Edit LongTail.sh for the locations of your 
@@ -109,10 +116,10 @@ accounts.  This will exclude these accounts from your reports.
 (You wouldn't want to have your password or account name 
 showing up in your reports, now would you?)
 
-Edit LongTail-exclude-IPs.grep to add your local IP addresses.  
-This will exclude these IPs from your reports.  (You wouldn't 
-want to have your personal or work IPs exposed in your reports, 
-now would you?)
+Edit LongTail-exclude-IPs-httpd.grep and LongTail-exclude-IPs-ssh.grep 
+to add your local IP addresses.  This will exclude these IPs from your 
+reports.  (You wouldn't want to have your personal or work IPs exposed 
+in your reports, now would you?)
 
 Edit LongTail-exclude-webpages.grep to add any local webpages 
 you don't want in your LongTail reports.
@@ -178,32 +185,45 @@ issue.
 
 KNOWN ISSUES
 --------------
-I need to go through each and every webpage and make sure it 
+1) I need to go through each and every webpage and make sure it 
 looks "good".
 
-I need to fix the X and Y axis labels so they are not buried
+2) I need to fix the X and Y axis labels so they are not buried
 with the "tick" information.
 
-I don't know if it handles spaces at the start or end of the passwords
+3) I don't know if it handles spaces at the start or end of the passwords
 properly.
 
-I don't deal with blank/empty passwords at all
+4) I don't deal with blank/empty passwords at all
 
-I need to add a chart of password lengths
+5) I need to add a chart of password lengths
 
-It would be nice in the "Trends" tables if the first time an entry 
+6) It would be nice in the "Trends" tables if the first time an entry 
 is used that it showed up in a different color.
 
-I should make a line chart of attacks per day.
+7) I should make a line chart of attacks per day.
 
-I should make a line chart of number of attacks for an account 
+8) I should make a line chart of number of attacks for an account 
 per day.
 
-I should make a line chart of number of uses of a password for 
-an account per day.
+9) NOT GOING TO HAPPEN, There are too many passwords and I'd have to 
+make this dynamic, and I'd rather not suck up CPU OR make a bazillion
+premade graphs.  I should make a line chart of number of uses of 
+a password for an account per day.
 
-I still need to finish my third level analysis of brute force
+10) I still need to finish my third level analysis of brute force
 attacks, which is the real reason I wrote LongTail.
 
-Can I "googlefy" my account/password pairs?
+11) Can I "googlefy" my account/password pairs?
 
+12) I need to fix the graph on non-root accounts to filter out the
+root attempts...
+
+13) I need to break-out the editable fields in LongTail.sh, etc,
+into a separate file.
+
+14) I need to set up a "-f" option so we can run multiple instances.
+
+15) I need to set it up so it can search only by hostname in the
+messages/access_log files so I can have multiple hosts sending
+data to the server.
