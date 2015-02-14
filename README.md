@@ -227,3 +227,12 @@ into a separate file.
 15) I need to set it up so it can search only by hostname in the
 messages/access_log files so I can have multiple hosts sending
 data to the server.
+
+16) Fix password printing for alternate syslog line styles (with and 
+without IP address in the line.
+
+17) Need to do the mean, median, mode, range for number of ssh attempts.
+
+18) Need to do the mean, median, mode, range for number of IP addresses
+with more than one attempt  (so I filter out the single attempts from
+distributed brute force bots).
