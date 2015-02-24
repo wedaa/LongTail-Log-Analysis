@@ -661,7 +661,7 @@ function do_ssh {
 	# Lets check the ssh logs for the last 7 days
 	LAST_WEEK=""
 	for i in 1 2 3 4 5 6 7 ; do
-		TMP_DATE=`date +"+%Y-%m-%e" --date="$i day ago"`
+		TMP_DATE=`date "+%Y-%m-%e" --date="$i day ago"`
 		if [ "$LAST_WEEK" == "" ] ; then
 			LAST_WEEK="$TMP_DATE"
 		else
@@ -675,7 +675,7 @@ function do_ssh {
 	# Lets check the ssh logs for the last 30 days
 	LAST_MONTH=""
 	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
-		TMP_DATE=`date +"+%Y-%m-%e" --date="$i day ago"`
+		TMP_DATE=`date "+%Y-%m-%e" --date="$i day ago"`
 		if [ "$LAST_MONTH" == "" ] ; then
 			LAST_MONTH="$TMP_DATE"
 		else
@@ -834,6 +834,8 @@ function do_httpd {
 	# Reset the date to an access_log format
 	DATE=`date +%d/%b/%Y`
 	#DATE=`date +%Y-%m-%e`
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_httpd now" ; fi
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-YEAR is $YEAR, PATH_TO_VAR_LOG_HTTPD is $PATH_TO_VAR_LOG_HTTPD " ; fi
 	
 	http_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG_HTTPD "$DATE"  "access_log"  "current"
 	http_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG_HTTPD "."      "access_log*" "historical"
