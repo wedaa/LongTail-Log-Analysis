@@ -1,14 +1,4 @@
-#These are IP addresses to ignore for sshd
-#Due to the way I am filtering please do not have any
-#blank lines in this file.
-#
-#Please make sure all IP addresses start with a "^" character
-#
-#Addresses with just the first three octets MUST end in a "." 
-#for matching to work properly.
-#
-#Please check that there are no trailing spaces or tabs
-#
-#Most of these came from http://myip.ms/info/bots/Google_Bing_Yahoo_Facebook_etc_Bot_IP_Addresses.html
  ::1
 ^::1
+ 148.100
+^148.100
