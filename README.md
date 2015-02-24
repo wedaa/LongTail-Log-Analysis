@@ -183,6 +183,29 @@ PHP repos.  On a vanilla Fedora Core 20 system the labels show
 up properly under the appropriate bar.  I am looking into this 
 issue.
 
+WARNING about running rsyslog
+--------------
+1) This has only been tested using rsyslog.  Not syslog, not
+syslog-ng.
+
+2) If you are also logging to a remote host, and you are using 
+a port OTHER than 514, AND you are running selinux, make sure
+you remember to run this command on BOTH hosts
+	semanage port -a -t syslogd_port_t -p tcp NewPortNumber
+
+3) This is the line I use on my honeypot to report to my consolidation
+master:
+	auth.* @@#.#.#.#:####
+where #.#.#.# is the IP address of the receiving host and #### is the
+TCP Port where rsyslog is listening on the receiving host.  This way
+we are only sending SSH messages to the remote host, instead of
+filling it's logs with ALL the messages from the honeypot.
+
+4) You must use the following line in your honeypot's (and if you are
+using a consolidation server's ) rsyslog.conf file.
+  $ActionFileDefaultTemplate RSYSLOG_FileFormat
+
+
 KNOWN ISSUES
 --------------
 1) I need to go through each and every webpage and make sure it 
@@ -191,10 +214,11 @@ looks "good".
 2) I need to fix the X and Y axis labels so they are not buried
 with the "tick" information.
 
-3) I don't know if it handles spaces at the start or end of the passwords
-properly.
+3) DONE (See #20)  Does NOT handle spaces at the start or end of 
+the passwords properly.
 
-4) I don't deal with blank/empty passwords at all
+4) DONE: I think this works now, 2015-02-14.  I don't deal with 
+blank/empty passwords at all
 
 5) I need to add a chart of password lengths
 
@@ -204,35 +228,62 @@ is used that it showed up in a different color.
 7) I should make a line chart of attacks per day.
 
 8) I should make a line chart of number of attacks for an account 
-per day.
+per day.  This might be a little ridiculous though...
 
 9) NOT GOING TO HAPPEN, There are too many passwords and I'd have to 
 make this dynamic, and I'd rather not suck up CPU OR make a bazillion
 premade graphs.  I should make a line chart of number of uses of 
 a password for an account per day.
 
-10) I still need to finish my third level analysis of brute force
+10) DONE: LongTail_analyze_attacks.pl  I still need to finish my third level analysis of brute force
 attacks, which is the real reason I wrote LongTail.
 
 11) Can I "googlefy" my account/password pairs?
 
-12) I need to fix the graph on non-root accounts to filter out the
+12) DONE. I need to fix the graph on non-root accounts to filter out the
 root attempts...
 
-13) I need to break-out the editable fields in LongTail.sh, etc,
-into a separate file.
+13) DONE.  /usr/local/etc/LongTail.config now works. I need to 
+break-out the editable fields in LongTail.sh, etc, into a 
+separate file.
 
 14) I need to set up a "-f" option so we can run multiple instances.
+This is a long term goal to aid in analyzing multiple sites while
+running on the same server.
 
 15) I need to set it up so it can search only by hostname in the
 messages/access_log files so I can have multiple hosts sending
-data to the server.
+data to the server.  This is a long term goal to aid in analyzing 
+multiple sites while running on the same server.
 
-16) Fix password printing for alternate syslog line styles (with and 
+16) DONE: Fix password printing for alternate syslog line styles (with and 
 without IP address in the line.
 
-17) Need to do the mean, median, mode, range for number of ssh attempts.
+17) DONE: Need to do the mean, median, mode, range for number 
+of ssh attempts.
 
 18) Need to do the mean, median, mode, range for number of IP addresses
 with more than one attempt  (so I filter out the single attempts from
 distributed brute force bots).
+
+19) DONE: I'm going to setup a secondary "Consolidation" server to 
+consolidate data on.  Too much work otherwise. How do I consolidate 
+data from several servers?  I'm leaning towards a secondary reporter 
+server using syslog to consolidate data from several servers and 
+running LongTail on that server also.
+
+20) Does not handle spaces in password for account:password pairs
+
+21) Make a pretty graph of countries attacking.
+
+22) Make a pretty graph of attacks per day over the last 30 days.
+
+23) Make a pretty graph of unique IP addresses per day over the last 30 days.
+
+24) Make a chart of IP addresses that attack more than one host.
+
+25) There's a "bug" in the .grep files where a "#" character matches
+some of the lines even though the rest of the line does not exist.  This
+is due to my not fully understanding how the grep -vf command works.
+
+26) Need to work on code for the "consolidation" server.
