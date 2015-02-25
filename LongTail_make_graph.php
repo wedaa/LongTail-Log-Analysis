@@ -17,21 +17,37 @@ $y_axis_title =  $argv[4];
  
 // We need some data
 $counter=0;
+# Initialize it just in case there's no data
+$datay[$counter]=0;
+$datax[$counter]="NO DATA";
  
 $myfile = fopen($file, "r") 
 	or die("Unable to open file!");
 if ($myfile) {
-    while (($buffer = fgets($myfile, 4096)) !== false) {
-				list($count,$account) = explode(" ",$buffer);
+	while (($buffer = fgets($myfile, 4096)) !== false) {
+		list($count,$account) = explode(" ",$buffer);
+		$account = chop($account);
+		if (strpos($file, 'non-root-accounts.data') !== false) {
+			// print "non-root-accounts.data found\n";
+			if ("$account" != "root"){
+				// print "non-root-accounts found --$account--\n";
 				$datay[$counter]=$count;
 				$datax[$counter]=$account;
 				$counter++;
-    }
+			}
+		}
+		else {
+			$datay[$counter]=$count;
+			$datax[$counter]=$account;
+			$counter++;
+		}
+	}
     if (!feof($myfile)) {
         echo "Error: unexpected fgets() fail\n";
     }
     fclose($myfile);
 }
+
 
 // TEST DATA if I need it
 // $datay=array(1300,555,21,5,31,6,5,4,3,2,1,12,13,14,15,16,17,18,19,20);
@@ -59,7 +75,7 @@ $graph->yscale->ticks->SupressZeroLabel(false);
 
 // Setup X-axis labels
 $graph->xaxis->SetTickLabels($datax);
-$graph->xaxis->SetLabelAngle(90);
+$graph->xaxis->SetLabelAngle(45);
 
 // Create the bar pot
 $bplot = new BarPlot($datay);
