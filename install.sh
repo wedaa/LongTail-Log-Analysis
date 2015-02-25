@@ -75,6 +75,20 @@ touch $SCRIPT_DIR/Longtail-ssh-local-reports
 touch $SCRIPT_DIR/Longtail-httpd-local-reports
 
 #
+# Make a default file THISYEAR/THISMONTH/TODAY/current-attack-count.data
+# To clear a divide by 0 error that shows up on the fist day running it.
+
+
+YEAR=`date +%Y`
+MONTH=`date +%m`
+DAY=`date +%d`
+
+mkdir -p $HTML_DIR/historical/$YEAR/$MONTH/$DAY
+echo "0" > $HTML_DIR/historical/$YEAR/$MONTH/$DAY/current-attack-count.data
+chown -r $OWNER $HTML_DIR/historical
+chmod a+rx $HTML_DIR $HTML_DIR/historical $HTML_DIR/historical/$YEAR $HTML_DIR/historical/$YEAR/$MONTH $HTML_DIR/historical/$YEAR/$MONTH/$DAY $HTML_DIR/historical/$YEAR/$MONTH/$DAY/current-attack-count.data 
+
+#
 # Check for required software here
 #
 #Check for required software here
