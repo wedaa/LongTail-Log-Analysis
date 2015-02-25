@@ -14,6 +14,7 @@ OWNER="wedaa"                  # What is the owner of the process running LongTa
 
 mkdir -p $HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
 
+cp LongTail_analyze_attacks.pl $SCRIPT_DIR
 cp catall.sh $SCRIPT_DIR
 cp ip-to-country $SCRIPT_DIR
 cp LongTail.sh $SCRIPT_DIR
@@ -50,6 +51,7 @@ chmod a+rx catall.sh $SCRIPT_DIR/catall.sh
 chmod a+rx ip-to-country $SCRIPT_DIR/ip-to-country
 chown $OWNER $SCRIPT_DIR/ip-to-country
 
+chmod a+rx $SCRIPT_DIR/LongTail_analyze_attacks.pl
 chmod a+r $SCRIPT_DIR/LongTail-exclude-accounts.grep
 chmod a+r $SCRIPT_DIR/LongTail-exclude-webpages.grep 
 chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep
