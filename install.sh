@@ -25,6 +25,7 @@ cp whois.pl $SCRIPT_DIR
 cp index.html $HTML_DIR
 cp index-long.html $HTML_DIR
 cp index-historical.html $HTML_DIR
+cp graphics.html $HTML_DIR
 
 if [ ! -e $SCRIPT_DIR/LongTail-exclude-accounts.grep ] ; then
 	echo "LongTail-exclude-accounts.grep not in $SCRIPT_DIR"
@@ -67,6 +68,8 @@ chmod a+r $HTML_DIR/index-long.html
 chown $OWNER $HTML_DIR/index-long.html 
 chmod a+r $HTML_DIR/index-historical.html
 chown $OWNER $HTML_DIR/index-historical.html 
+chmod a+r $HTML_DIR/graphics.html
+chown $OWNER $HTML_DIR/graphics.html 
 
 touch $SCRIPT_DIR/Longtail-ssh-local-reports
 touch $SCRIPT_DIR/Longtail-httpd-local-reports
