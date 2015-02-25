@@ -82,6 +82,8 @@ number.
 
 LongTail Prerequisites
 --------------
+yum install zlib-devel # For the openssh honeypot
+yum install openssl-devel # For the openssh honeypot
 yum install jwhois
 yum install php php-common php-cli php-xml php-pear php-pdo php-gd
 yum install httpd
@@ -287,3 +289,14 @@ some of the lines even though the rest of the line does not exist.  This
 is due to my not fully understanding how the grep -vf command works.
 
 26) Need to work on code for the "consolidation" server.
+
+27) KNOWN BUG in LongTail.sh on first run instances
+DEBUG this month statistics
+cat: 2015/02/*/current-attack-count.data: No such file or directory
+Illegal division by zero at -e line 1.
+DEBUG this year statistics
+Illegal division by zero at -e line 1.
+DEBUG ALL  statistics
+Illegal division by zero at -e line 1.
+
+28) 
