@@ -20,7 +20,7 @@ cp ip-to-country $SCRIPT_DIR
 cp LongTail.sh $SCRIPT_DIR
 cp LongTail_make_graph.php $SCRIPT_DIR
 cp translate_country_codes.sed $SCRIPT_DIR
-cp translate_country_codes.sed.orig $SCRIPT_DIR
+#cp translate_country_codes.sed.orig $SCRIPT_DIR
 cp whois.pl $SCRIPT_DIR
 cp index.html $HTML_DIR
 cp index-long.html $HTML_DIR
@@ -70,3 +70,19 @@ chown $OWNER $HTML_DIR/index-historical.html
 
 touch $SCRIPT_DIR/Longtail-ssh-local-reports
 touch $SCRIPT_DIR/Longtail-httpd-local-reports
+
+#
+# Check for required software here
+#
+#Check for required software here
+#
+for i in perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
+	echo -n "Checking for $i...  "
+	which $i >/dev/null 
+	if [ $? -eq 0 ]; then
+		echo "$i found"
+	else
+		echo "$i not found, you need to install this"
+	fi
+done
+
