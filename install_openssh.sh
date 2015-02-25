@@ -56,3 +56,9 @@ echo ""
 echo "/usr/local/sbin/sshd-22 -f /usr/local/etc/sshd_config-22 " 
 echo "/usr/local/sbin/sshd-2222 -f /usr/local/etc/sshd_config-2222 "
 
+echo ""
+echo "If this failed, you might need to run the following commands:"
+echo "yum install zlib-devel "
+echo "yum install openssl-devel "
+echo ""
+
