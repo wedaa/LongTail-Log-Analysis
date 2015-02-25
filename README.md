@@ -83,10 +83,23 @@ number.
 LongTail Prerequisites
 --------------
 yum install zlib-devel # For the openssh honeypot
+
 yum install openssl-devel # For the openssh honeypot
+
 yum install jwhois
+
 yum install php php-common php-cli php-xml php-pear php-pdo php-gd
+
 yum install httpd
+
+Look up the properl EPEL repo at  https://fedoraproject.org/wiki/EPEL/FAQ
+
+rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+
+yum install http://sourceforge.net/projects/mscorefonts2/files/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
+
+yum install rpm-build ttmkfdir
+
 jpgraph from http://jpgraph.net/download/ installed into /usr/local/php/jpgraph.  (Don't forget to edit the include line in /etc/php.ini to reference /usr/local/php).
 
 LongTail Installation
