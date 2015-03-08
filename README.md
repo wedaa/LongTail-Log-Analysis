@@ -96,11 +96,18 @@ Look up the properl EPEL repo at  https://fedoraproject.org/wiki/EPEL/FAQ
 
 rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
 
+yum install rpm-build ttmkfdir
 yum install http://sourceforge.net/projects/mscorefonts2/files/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
 
-yum install rpm-build ttmkfdir
+cd /usr/share/fonts
 
-jpgraph from http://jpgraph.net/download/ installed into /usr/local/php/jpgraph.  (Don't forget to edit the include line in /etc/php.ini to reference /usr/local/php).
+ln -s msttcore truetype 
+
+jpgraph from http://jpgraph.net/download/ installed into /usr/local/php/jpgraph.  
+
+Edit the include line in /etc/php.ini to reference /usr/local/php.
+
+Fix the timezone line in /etc/php.ini to reference your timezone. (I use America/New_York ).
 
 LongTail Installation
 --------------
@@ -223,7 +230,7 @@ using a consolidation server's ) rsyslog.conf file.
 
 KNOWN ISSUES
 --------------
-1) I need to go through each and every webpage and make sure it 
+1) DONE.  I need to go through each and every webpage and make sure it 
 looks "good".
 
 2) I need to fix the X and Y axis labels so they are not buried
@@ -250,8 +257,9 @@ make this dynamic, and I'd rather not suck up CPU OR make a bazillion
 premade graphs.  I should make a line chart of number of uses of 
 a password for an account per day.
 
-10) DONE: LongTail_analyze_attacks.pl  I still need to finish my third level analysis of brute force
-attacks, which is the real reason I wrote LongTail.
+10) DONE: LongTail_analyze_attacks.pl  I still need to finish my third 
+level analysis of brute force attacks, which is the real reason I wrote
+LongTail.
 
 11) Can I "googlefy" my account/password pairs?
 
@@ -262,14 +270,15 @@ root attempts...
 break-out the editable fields in LongTail.sh, etc, into a 
 separate file.
 
-14) I need to set up a "-f" option so we can run multiple instances.
-This is a long term goal to aid in analyzing multiple sites while
-running on the same server.
+14) DONE. (It's really just a hostname passed) I need to set up a 
+"-f" option so we can run multiple instances.  This is a long 
+term goal to aid in analyzing multiple sites while running on the 
+same server.
 
-15) I need to set it up so it can search only by hostname in the
-messages/access_log files so I can have multiple hosts sending
-data to the server.  This is a long term goal to aid in analyzing 
-multiple sites while running on the same server.
+15) DONE (See #14) I need to set it up so it can search only by 
+hostname in the messages/access_log files so I can have multiple hosts 
+sending data to the server.  This is a long term goal to aid in 
+analyzing multiple sites while running on the same server.
 
 16) DONE: Fix password printing for alternate syslog line styles (with and 
 without IP address in the line.
@@ -305,11 +314,11 @@ is due to my not fully understanding how the grep -vf command works.
 
 27) KNOWN BUG in LongTail.sh on first run instances
 DEBUG this month statistics
-cat: 2015/02/*/current-attack-count.data: No such file or directory
+cat: 2015/02/day/current-attack-count-data: no such file or directory
 Illegal division by zero at -e line 1.
 DEBUG this year statistics
 Illegal division by zero at -e line 1.
 DEBUG ALL  statistics
 Illegal division by zero at -e line 1.
 
-28) 
+28) Need to speed up whois.pl.

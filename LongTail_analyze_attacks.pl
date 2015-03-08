@@ -18,7 +18,7 @@ sub init {
   	jul 7  aug 8  sep 9  oct 10 nov 11 dec 12
 	);
 	$|=1;
-	$DEBUG=0;
+	$DEBUG=1;
 	$honey_dir="/var/www/html/honey/";
 	$attacks_dir="/var/www/html/honey/attacks/";
 	$DATE=`date`;
@@ -69,6 +69,8 @@ sub create_attack_logs {
 	#
 	# Ok, find does NOT work in the proper order....  Gotta use the ls command.
 	#
+	# This is ugly and will break once I get a ton of data
+	#
 	unlink ("/tmp/tmp.data");
 	chdir ("$honey_dir/historical/");
 	open (LS, "/bin/ls */*/*/current-raw-data.gz |") || 
@@ -79,6 +81,9 @@ sub create_attack_logs {
 	}
 	close (LS);
 
+	#
+	# This is ugly and will break once I get a ton of data
+	#
 	if ($DEBUG){print "DEBUG Done making /tmp/tmp.data\n";}
 	open (FILE, "/usr/local/etc/catall.sh /tmp/tmp.data |") || 
 		die "Can not open /tmp/tmp.data for reading\n";
@@ -87,52 +92,36 @@ sub create_attack_logs {
 		$good_line=0;
 		$username="";
 		$password="";
-		if ((/ IP: /) && (/ PassLog: /)){
-			#print "DEBUG-PassLog\n";
+		if ((/ IP: /o) && (/ PassLog: /o)){
 			#if ($DEBUG){print "P";}
-			# 2015-02-23T23:02:29.061917-05:00 shepherd kernel:
-			# WAS ($month,$day,$time,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
 			($timestamp,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
-print "DEBUG-0 $_\n";
-print "DEBUG-1 $timestamp\n";
 			($date,$time)=split(/T/,$timestamp);
-print "DEBUG-1 $date == $time\n";
 			($year,$month,$day)=split(/-/,$date);
-print "DEBUG-1 $year $month $day\n";
 			($time,$trash)=split(/\./,$time);
 			($hour,$minute,$second)=split(/:/,$time);
-print "DEBUG-1$hour,$minute,$second\n";
-			print "DEBUG-AA $second,$minute,$hour,$day,$month,$year\n";
 			$good_line=1;
 	 	}
-		elsif (/Failed password/){
-			# Feb 15 02:58:10 shepherd sshd-22[5208]: Failed password for invalid user ubnt from 223.203.217.202 port 45769 ssh2
-			# Feb  8 03:59:02 shepherd sshd[7245]: Failed password for root from 61.234.146.22 port 52574 ssh2
+		elsif (/Failed password/o){
 			#if ($DEBUG){print "F";}
+			# 2015-02-23T23:02:29.061917-05:00 shepherd sshd-22[5208]: Failed password for invalid user ubnt from 223.203.217.202 port 45769 ssh2
+			# 2015-02-23T23:02:29.061917-05:00 shepherd sshd[7245]: Failed password for root from 61.234.146.22 port 52574 ssh2
+			#if ($DEBUG){print "Failed password\n";}
 			$good_line=1;
 			# WAS ($month,$day,$time,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
 			($timestamp,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
-
+			$username="";
 			$size=@my_array=split(/ +/,$_);
 			$timestamp=$my_array[0];
-			#$month=$my_array[0];
-			#$day=$my_array[1];
-			#$time=$my_array[2];
-			#($hour,$minute,$second)=split(/:/,$time);
 			($date,$time)=split(/T/,$timestamp);
 			($year,$month,$day)=split(/-/,$date);
 			($time,$trash)=split(/\./,$time);
 			($hour,$minute,$second)=split(/:/,$time);
-			print "DEBUG-A $second,$minute,$hour,$day,$month,$year\n";
-
 			$ip=$my_array[$size-4];
 		}
  	
 		if ($good_line){
-			#$month_number=$mon2num{ lc substr($month, 0, 3) };
-			#WAS $epoch=timelocal($second,$minute,$hour,$day,$month_number-1,2015);
-			print "DEBUG-B $second,$minute,$hour,$day,$month,$year\n";
-			$epoch=timelocal($second,$minute,$hour,$day,$month,$year);
+			#if ($DEBUG){print ".";}
+			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
 			if (! defined $ip_epoch{$ip}) {
 				$ip_earliest_seen_time{$ip}=$epoch;
 				$ip_latest_seen_time{$ip}=$epoch;
@@ -142,12 +131,13 @@ print "DEBUG-1$hour,$minute,$second\n";
 			$ip_age{$ip}=$ip_latest_seen_time{$ip}-$ip_earliest_seen_time{$ip};
 	
 			$difference = $epoch - $ip_epoch{$ip};
-			if ( (($ip_epoch{$ip} + (60*30) ) < $epoch) || (! defined $ip_epoch{$ip}) ) {
-				#if ($DEBUG){print "\n\nDEBUG - new Attack from $ip\n";}
-				#if ($DEBUG){print "DEBUG - Date is $month,$day,$hour\n";}
+			# 180 is hardcoded to be 180 seconds to speed things up
+			if ( (($ip_epoch{$ip} + (180) ) < $epoch) || (! defined $ip_epoch{$ip}) ) {
+				if ($DEBUG){$TRASH=system("date"); print $TRASH; print "DEBUG - new attack from $ip\n";}
+				if ($DEBUG){print "DEBUG - Date is $year,$month,$day,$hour,$minute,$second\n";}
 				$ip_epoch{$ip}=$epoch;
 				$ip_number_of_attacks{$ip}+=1;
-				$ip_date_of_attacks{$ip}="$month_number.$day.$hour.$minute.$second";
+				$ip_date_of_attacks{$ip}="$year.$month.$day.$hour.$minute.$second";
 				#if ($DEBUG){print "count is $ip $ip_number_of_attacks{$ip},$month,$day,$time\n";}
 			}
 			else {
@@ -155,6 +145,7 @@ print "DEBUG-1$hour,$minute,$second\n";
 			}
 			if (length($username)>0){
 				#if ($DEBUG){print "W";}
+#print "DEBUG-Appending to file $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
 				open (IP_FILE,">>$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}") || die "Can not write to $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
 				print (IP_FILE "$username ->$password<-\n");
 				close (IP_FILE);
@@ -226,8 +217,9 @@ sub analyze {
 		print (FILE_FORMATTED "<BR><A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n");
 		if ($DEBUG){print "DEBUG Looking for file dict-$checksum.txt\n";}
 		if ( ! -e "dict-$checksum.txt" ){
-			print "DEBUG Making dictionary dict-$checksum.txt\n";
+			#print "DEBUG Making dictionary dict-$checksum.txt\n";
 			$temp=`cp $filename dict-$checksum.txt`;
+			$temp=`cat $filename dict-$checksum.txt |wc -l > dict-$checksum.txt.wc`;
 			#print "DEBUG output is $temp\n";
 		}
 		#else {print "dict-$checksum.txt apparently exists?\n";}
@@ -271,8 +263,9 @@ sub analyze {
 		print (FILE_FORMATTED "<BR><A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n");
 		if ($DEBUG){print "DEBUG Looking for file dict-$checksum.txt\n";}
 		if ( ! -e "dict-$checksum.txt" ){
-			print "DEBUG Making dictionary dict-$checksum.txt\n";
+			#print "DEBUG Making dictionary dict-$checksum.txt\n";
 			$temp=`cp $filename dict-$checksum.txt`;
+			#DEBUG
 			$temp=`/usr/bin/wc -l dict-$checksum.txt |awk '{print \$1}' > dict-$checksum.txt.wc`;
 			#print "DEBUG output is $temp\n";
 		}
@@ -292,6 +285,7 @@ sub analyze {
 #
 # printing out by sorting on AGE of IP address (How long it was alive)
 sub show_lifetime_of_ips {
+#print "DEBUG In show_lifetime_of_ips\n";
 	#print "DEBUG ===================================================\n\n";
 	#print "DEBUG- Trying to sort by age of ip\n";
 	open (FILE_DATA, "> $honey_dir/current_attackers_lifespan.data")||die "Can not write to $honey_dir/current_attackers_lifespan.data\n";
@@ -309,7 +303,6 @@ sub show_lifetime_of_ips {
 	print (FILE_FORMATTED "<TR><TH>Lifetime In Seconds</TH><TH>IP</TH><TH>Lifetime In Days</TH><TH>First Date Seen</TH><TH>Last Date Seen</TH><TH>Number of Attack Patterns Recorded</TH></TR>\n");
 
 	foreach $key (sort {$ip_age{$b} <=> $ip_age{$a}} keys %ip_age){
-		#if ( $DEBUG){print "key is $key\n";}
 		$days=$ip_age{$key}/60/60/24;
 		$first_seen=scalar localtime($ip_earliest_seen_time{$key});
 		$last_seen=scalar localtime($ip_latest_seen_time{$key});
@@ -377,6 +370,11 @@ sub show_attacks_of_ips {
 			($ip_and_host,$date)=split(/-/,$file,2);
 			($year,$month,$day,$hour,$minute,$second)=split(/\./,$date);
 			($ip_1,$ip_2,$ip_3,$ip_4,$host,$attack_number)=split(/\./,$ip_and_host);
+			# I shouldn't have to do this but it's faster than finding
+			# the borked code
+			if ( ! -e "dict-$checksum.txt.wc" ){
+				$temp=`cat dict-$checksum.txt | wc -l  > dict-$checksum.txt.wc`;
+			}
 			open (FILE2, "dict-$checksum.txt.wc");
 			while (<FILE2>){
 				chomp;
@@ -432,6 +430,7 @@ sub create_dict_webpage {
 		$COUNT=0;
 		open (SUM_FILE, "sum2.data") || die "Can not open sum2.data, this is bad\n";
 		while (<SUM_FILE>){
+#print "DEBUG-SUM_FILE line is $_";
 			chomp;
 			if (/dict-/){next;}
 			if (/$SUM/){
@@ -440,8 +439,9 @@ sub create_dict_webpage {
 				#$year=2015;
 				#2.16.16.38.53
 			($year,$month,$day,$hour,$minute,$second)=split(/\./,$date_string);
+#print "DEBUG-SUM_FILE $year,$month,$day,$hour,$minute,$second\n";
 
-			$epoch=timelocal($second,$minute,$hour,$day,$month,$year);
+			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
 			if ($first_seen_epoch == 0){$first_seen_epoch=$epoch};
 			if ($epoch > $last_seen_epoch ){$last_seen_epoch=$epoch};
 			if ($epoch < $first_seen_epoch ){$first_seen_epoch=$epoch};
