@@ -803,7 +803,7 @@ function do_ssh {
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh now" ; fi
 	#-----------------------------------------------------------------
 	# Lets count the ssh attacks
-	count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
+	#count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
 	
 	#----------------------------------------------------------------
 	# Lets check the ssh logs
@@ -956,6 +956,10 @@ function do_ssh {
 	
 	make_footer "$HTML_DIR/trends-in-accounts"
 	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-accounts
+	#-----------------------------------------------------------------
+	# Lets count the ssh attacks
+	#count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
+
 	cd $HTML_DIR/historical 
 
 	#-----------------------------------------------------------------
