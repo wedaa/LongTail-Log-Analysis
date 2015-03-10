@@ -322,3 +322,7 @@ DEBUG ALL  statistics
 Illegal division by zero at -e line 1.
 
 28) Need to speed up whois.pl.
+
+29) I need to cleanup all the temp files so that they are deleted, AND they
+are unique.  Unique is important so multiple copies of LongTail can be run
+at the same time.
