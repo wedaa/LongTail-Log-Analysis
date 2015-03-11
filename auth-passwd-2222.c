@@ -1,4 +1,4 @@
-/* $OpenBSD: auth-passwd.c,v 1.43 2007/09/21 08:15:29 djm Exp $ */
+/* $OpenBSD: auth-passwd.c,v 1.44 2014/07/15 15:54:14 millert Exp $ */
 /*
  * Author: Tatu Ylonen <ylo@cs.hut.fi>
  * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
@@ -48,17 +48,19 @@
 #include "packet.h"
 #include "buffer.h"
 #include "log.h"
+#include "misc.h"
 #include "servconf.h"
 #include "key.h"
 #include "hostfile.h"
 #include "auth.h"
 #include "auth-options.h"
 
-/* Added by ERICW so we can do IP lookups*/
+/* Added by ERICW  so we can do IP lookups*/
 #include "canohost.h"
 
 extern Buffer loginmsg;
 extern ServerOptions options;
+
 
 #ifdef HAVE_LOGIN_CAP
 extern login_cap_t *lc;
@@ -85,15 +87,17 @@ auth_password(Authctxt *authctxt, const char *password)
 {
 	struct passwd * pw = authctxt->pw;
 	int result, ok = authctxt->valid;
+
+
+/* ERICW ADDED logit */
+logit("IP: %s Pass2222Log: Username: %s Password: %s", get_remote_ipaddr(), authctxt->user, password); 
+
+/* ERICW ADDED return 0 so the password ALWAYS fails */
+ return 0;
+
 #if defined(USE_SHADOW) && defined(HAS_SHADOW_EXPIRE)
 	static int expire_checked = 0;
 #endif
-//logit("Pass2222Log: Username: %s Password: %s", authctxt->user, password);
-
-/* ERICW ADDED logit */
-logit("IP: %s Pass2222Log: Username: %s Password: %s", get_remote_ipaddr(), authctxt->user, password);
-/* ERICW ADDED return 0 so the password ALWAYS fails */
-return 0;
 
 #ifndef HAVE_CYGWIN
 	if (pw->pw_uid == 0 && options.permit_root_login != PERMIT_YES)
