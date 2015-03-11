@@ -26,6 +26,7 @@ chmod a+rx sshd /usr/local/sbin/sshd-22
 cd ..
 
 ######################################################
+cd /usr/local/source/openssh
 cd openssh-2222
 wget http://mirrors.nycbug.org/pub/OpenBSD/OpenSSH/portable/openssh-6.7p1.tar.gz
 tar -xf openssh-6.7p1.tar.gz
