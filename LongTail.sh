@@ -115,13 +115,13 @@ function is_directory_good {
 	fi
 }
 ############################################################################
-# Change the date in index.html
+# Change the date in index.shtml
 #
 function change_date_date_in_index {
 	DATE=`date`
-	sed -i "s/updated on..*$/updated on $DATE/" $1/index.html
-	sed -i "s/updated on..*$/updated on $DATE/" $1/index-long.html
-	sed -i "s/updated on..*$/updated on $DATE/" $1/graphics.html
+	sed -i "s/updated on..*$/updated on $DATE/" $1/index.shtml
+	sed -i "s/updated on..*$/updated on $DATE/" $1/index-long.shtml
+	sed -i "s/updated on..*$/updated on $DATE/" $1/graphics.shtml
 }
 	
 ############################################################################
@@ -167,6 +167,7 @@ function make_header {
 
 	echo "</HEAD><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<BODY BGCOLOR=#00f0FF><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
+	echo "<!--#include virtual="/honey/header.html" --> <!--HEADERLINE --> " >> $MAKE_HEADER_FILENAME
 	echo "<H1>LongTail Log Analysis</H1><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<H3>$TITLE</H3><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<P>$DESCRIPTION <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
@@ -177,8 +178,6 @@ function make_header {
 		echo "ALL IP addresses have been reset to end in .127. <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	fi
 
-#	echo "<BR><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
-#	echo "<BR><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<TABLE border=1><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<TR><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	while (( "$#" )); do
@@ -206,6 +205,7 @@ function make_footer {
 	fi
 	echo "" >> $MAKE_FOOTER_FILENAME
 	echo "</TABLE><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
+	echo "<!--#include virtual="/honey/footer.html" --> <!--HEADERLINE --> " >> $MAKE_FOOTER_FILENAME
 	echo "</BODY><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
 	echo "</HTML><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
 	if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
@@ -278,7 +278,11 @@ function count_ssh_attacks {
 	# TODAY
 	#
 	cd $PATH_TO_VAR_LOG
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+	else
+		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+	fi
 	echo $TODAY > $TMP_HTML_DIR/current-attack-count.data
 #echo "DEBUG TODAY = $TODAY"
 #exit;
@@ -300,8 +304,8 @@ function count_ssh_attacks {
 	# No real statistics yet.
 	#
 	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
-	if [ -e $TMP_YEAR/$TMP_MONTH/01/current-attack-count.data ] ; then 
-		cat $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
+	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
+		cat $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;}; $n; print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
 		rm $TMPFILE
@@ -404,25 +408,25 @@ function count_ssh_attacks {
 	EVERYTHING_AVERAGE=`printf '%.2f' $EVERYTHING_AVERAGE`
 	EVERYTHING_STD=`printf '%.2f' $EVERYTHING_STD`
 	
-	sed -i "s/SSH Activity Today.*$/SSH Activity Today: $TODAY/" $1/index.html
-	sed -i "s/SSH Activity This Month.*$/SSH Activity This Month: $THIS_MONTH/" $1/index.html
-	sed -i "s/SSH Activity This Year.*$/SSH Activity This Year: $THIS_YEAR/" $1/index.html
-	sed -i "s/SSH Activity Since Logging Started.*$/SSH Activity Since Logging Started: $TOTAL/" $1/index.html
+	sed -i "s/SSH Activity Today.*$/SSH Activity Today: $TODAY/" $1/index.shtml
+	sed -i "s/SSH Activity This Month.*$/SSH Activity This Month: $THIS_MONTH/" $1/index.shtml
+	sed -i "s/SSH Activity This Year.*$/SSH Activity This Year: $THIS_YEAR/" $1/index.shtml
+	sed -i "s/SSH Activity Since Logging Started.*$/SSH Activity Since Logging Started: $TOTAL/" $1/index.shtml
 
 
 	# Real Statistics here
-	make_header "$1/statistics.html" "Assorted Statistics" "Analysis does not include today's numbers. Numbers rounded to two decimal places" "Time<BR>Frame" "Number<BR>of Days" "Total<BR>SSH attempts" "Average" "Std. Dev." "Median" "Max" "Min"
-	echo "<TR><TD>So Far Today</TD><TD>1</TD><TD>$TODAY</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD></TR>" >>$1/statistics.html
-	echo "<TR><TD>This Month</TD><TD> $MONTH_COUNT</TD><TD> $MONTH_SUM</TD><TD> $MONTH_AVERAGE</TD><TD> $MONTH_STD</TD><TD> $MONTH_MEDIAN</TD><TD> $MONTH_MAX</TD><TD> $MONTH_MIN" >>$1/statistics.html
-	echo "<TR><TD>Last Month</TD><TD> $LAST_MONTH_COUNT</TD><TD> $LAST_MONTH_SUM</TD><TD> $LAST_MONTH_AVERAGE</TD><TD> $LAST_MONTH_STD</TD><TD> $LAST_MONTH_MEDIAN</TD><TD> $LAST_MONTH_MAX</TD><TD> $LAST_MONTH_MIN" >>$1/statistics.html
-	echo "<TR><TD>This Year</TD><TD> $YEAR_COUNT</TD><TD> $YEAR_SUM</TD><TD> $YEAR_AVERAGE</TD><TD> $YEAR_STD</TD><TD> $YEAR_MEDIAN</TD><TD> $YEAR_MAX</TD><TD> $YEAR_MIN" >>$1/statistics.html
-	echo "<TR><TD>Since Logging Started</TD><TD> $EVERYTHING_COUNT</TD><TD> $EVERYTHING_SUM</TD><TD> $EVERYTHING_AVERAGE</TD><TD> $EVERYTHING_STD</TD><TD> $EVERYTHING_MEDIAN</TD><TD> $EVERYTHING_MAX</TD><TD> $EVERYTHING_MIN" >>$1/statistics.html
-	make_footer "$1/statistics.html"
+	make_header "$1/statistics.shtml" "Assorted Statistics" "Analysis does not include today's numbers. Numbers rounded to two decimal places" "Time<BR>Frame" "Number<BR>of Days" "Total<BR>SSH attempts" "Average" "Std. Dev." "Median" "Max" "Min"
+	echo "<TR><TD>So Far Today</TD><TD>1</TD><TD>$TODAY</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD></TR>" >>$1/statistics.shtml
+	echo "<TR><TD>This Month</TD><TD> $MONTH_COUNT</TD><TD> $MONTH_SUM</TD><TD> $MONTH_AVERAGE</TD><TD> $MONTH_STD</TD><TD> $MONTH_MEDIAN</TD><TD> $MONTH_MAX</TD><TD> $MONTH_MIN" >>$1/statistics.shtml
+	echo "<TR><TD>Last Month</TD><TD> $LAST_MONTH_COUNT</TD><TD> $LAST_MONTH_SUM</TD><TD> $LAST_MONTH_AVERAGE</TD><TD> $LAST_MONTH_STD</TD><TD> $LAST_MONTH_MEDIAN</TD><TD> $LAST_MONTH_MAX</TD><TD> $LAST_MONTH_MIN" >>$1/statistics.shtml
+	echo "<TR><TD>This Year</TD><TD> $YEAR_COUNT</TD><TD> $YEAR_SUM</TD><TD> $YEAR_AVERAGE</TD><TD> $YEAR_STD</TD><TD> $YEAR_MEDIAN</TD><TD> $YEAR_MAX</TD><TD> $YEAR_MIN" >>$1/statistics.shtml
+	echo "<TR><TD>Since Logging Started</TD><TD> $EVERYTHING_COUNT</TD><TD> $EVERYTHING_SUM</TD><TD> $EVERYTHING_AVERAGE</TD><TD> $EVERYTHING_STD</TD><TD> $EVERYTHING_MEDIAN</TD><TD> $EVERYTHING_MAX</TD><TD> $EVERYTHING_MIN" >>$1/statistics.shtml
+	make_footer "$1/statistics.shtml"
 
-	sed -i "s/SSH Activity Today.*$/SSH Activity Today: $TODAY/" $1/index-long.html
-	sed -i "s/SSH Activity This Month.*$/SSH Activity This Month: $THIS_MONTH/" $1/index-long.html
-	sed -i "s/SSH Activity This Year.*$/SSH Activity This Year: $THIS_YEAR/" $1/index-long.html
-	sed -i "s/SSH Activity Since Logging Started.*$/SSH Activity Since Logging Started: $TOTAL/" $1/index-long.html
+	sed -i "s/SSH Activity Today.*$/SSH Activity Today: $TODAY/" $1/index-long.shtml
+	sed -i "s/SSH Activity This Month.*$/SSH Activity This Month: $THIS_MONTH/" $1/index-long.shtml
+	sed -i "s/SSH Activity This Year.*$/SSH Activity This Year: $THIS_YEAR/" $1/index-long.shtml
+	sed -i "s/SSH Activity Since Logging Started.*$/SSH Activity Since Logging Started: $TOTAL/" $1/index-long.shtml
 
 	cd $ORIGINAL_DIRECTORY
 }
@@ -465,116 +469,115 @@ function ssh_attacks {
 		echo "hostname is not set"
 		$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > /tmp/LongTail-messages.$$
 	else
-		echo "hostname IS set"
+		echo "hostname IS set to $HOSTNAME."
 		$SCRIPT_DIR/catall.sh $MESSAGES |awk '$2 == "'$HOSTNAME'" {print}' |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > /tmp/LongTail-messages.$$
-		exit
 	fi
 
 	#-------------------------------------------------------------------------
 	# Root
 	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-ssh_attack 1 " ; date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-root-passwords" "Root Passwords" " " "Count" "Password"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml" "Root Passwords" " " "Count" "Password"
 
 	cat /tmp/LongTail-messages.$$ |grep Username\:\ root |\
 	awk -F'Username: ' '/Username/{print $2}' | awk '{print $3} ' |\
 	sort |uniq -c|sort -nr |\
-	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-root-passwords
+	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml
 
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords" "Top 20 Root Passwords" "" "Count" "Password"
-	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-root-passwords | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-root-passwords"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords"
-	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml" "Top 20 Root Passwords" "" "Count" "Password"
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-root-passwords | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml"
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data
 
 
 
 	#-------------------------------------------------------------------------
 	# admin
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 2 "  ;date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords" "Admin Passwords" " " "Count" "Password"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml" "Admin Passwords" " " "Count" "Password"
 	cat /tmp/LongTail-messages.$$ |grep Username\:\ admin |\
 	awk -F'Username: ' '/Username/{print $2}' | awk '{print $3} ' |\
 	sort |uniq -c|sort -nr |\
-	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords
+	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml
 
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords" "Top 20 Admin Passwords" " " "Count" "Password"
-	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml" "Top 20 Admin Passwords" " " "Count" "Password"
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml"
 	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.data
 
 
 	#-------------------------------------------------------------------------
 	# Not root or admin PASSWORDS
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 3 "  ; date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords" "Non Root Passwords" " " "Count" "Password"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml" "Non Root Passwords" " " "Count" "Password"
 	cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
 	awk -F'Username: ' '/Username/{print $2}' | awk '{print $3} '  |\
 	sort |uniq -c|sort -nr |\
-	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}'  >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords
+	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}'  >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml
 
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords" "Top 20 Non Root Passwords" " " "Count" "Password"
-	#tail -20 $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords
-	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords | head -20  >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml" "Top 20 Non Root Passwords" " " "Count" "Password"
+	#tail -20 $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml | head -20  >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml"
 	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.data
 	
 	#-------------------------------------------------------------------------
 	# Not root or admin ACCOUNTS
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 4 " ;date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts" "Accounts Tried" " " "Count" "Account"
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts" "Top 20 Accounts Tried" "" "Count" "Account"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml" "Accounts Tried" " " "Count" "Account"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml" "Top 20 Accounts Tried" "" "Count" "Account"
 	cat /tmp/LongTail-messages.$$ |\
 	awk -F'Username: ' '/Username/{print $2}' | awk '{print $1}'|\
-	sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts
+	sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml
 # NEED tac HERE
-	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts
-	#tail -20 $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts"
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml
+	#tail -20 $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml"
 	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD>/ /'|sed 's/<.TD><.TR>//' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data
 	
 	#-------------------------------------------------------------------------
 	# This works but gives only IP addresses
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 5 " ; date ; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses" "IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted"
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses" "Top 20 IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml" "IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml" "Top 20 IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted"
 	# I need to make a temp file for this
-	#cat /tmp/LongTail-messages.$$  | grep IP: |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TR>\n",$1,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses
-	cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TR>\n",$1,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses
-	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses |head -20 |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses"
+	#cat /tmp/LongTail-messages.$$  | grep IP: |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TR>\n",$1,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
+	cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TR>\n",$1,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml |head -20 |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml"
 	
 	#-------------------------------------------------------------------------
 	# This translates IPs to countries
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 6, doing whois.pl lookups " ; date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country" "Attacks by Country" " " "Count" "Country"
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country" "Top 20 Countries" " " "Count" "Country"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml" "Attacks by Country" " " "Count" "Country"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml" "Top 20 Countries" " " "Count" "Country"
 	# I need to make a temp file for this
-	#for IP in `cat /tmp/LongTail-messages.$$  |grep IP: |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq |grep -v \:\:1`; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country
-	for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq |grep -v \:\:1`; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country
-	sed -i -f $SCRIPT_DIR/translate_country_codes.sed  $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country
-	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country"
+	#for IP in `cat /tmp/LongTail-messages.$$  |grep IP: |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq |grep -v \:\:1`; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
+	for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq |grep -v \:\:1`; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
+	sed -i -f $SCRIPT_DIR/translate_country_codes.sed  $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
+	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml"
 	
 	#-------------------------------------------------------------------------
 	# Figuring out most common non-root pairs
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 7 Figuring out most common non-root pairs " ; date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs" "Non Root Pairs" " " "Count" "Account:Password"
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs" "Top 20 Non Root Pairs" " " "Count" "Account:Password"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml" "Non Root Pairs" " " "Count" "Account:Password"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml" "Top 20 Non Root Pairs" " " "Count" "Account:Password"
 
 		cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
 		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/'|\
-		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}'>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs
+		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}'>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
 
 	if [ $FILE_PREFIX == "current" ] ;
 	then
 		cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
 		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/'|\
-		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}'>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs
+		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}'>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
 
 		cat /tmp/LongTail-messages.$$ |\
 		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/' |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-account-password-pairs.data.gz
@@ -583,21 +586,21 @@ function ssh_attacks {
 		echo "DATE is $DATE"
 		cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
 		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/'|\
-		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}'>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs
+		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}'>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
 		
 	fi
 
-	cat  $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs |grep -v HEADERLINE |head -20 >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs
+	cat  $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml |grep -v HEADERLINE |head -20 >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml
 
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml"
 
 	#-------------------------------------------------------------------------
 	# Figuring out ssh-attacks-by-time-of-day
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 7B Figuring out ssh-attacks-by-time-of-day " ; date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ssh-attacks-by-time-of-day" "Historical SSH Attacks By Time Of Day" "" "Count" "Hour of Day"
-	grep ssh /tmp/LongTail-messages.$$ | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep Password | awk '{print $1}'| awk -FT '{print $2}' | awk -F: '{print $1}' |sort |uniq -c| awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ssh-attacks-by-time-of-day
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-ssh-attacks-by-time-of-day"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ssh-attacks-by-time-of-day.shtml" "Historical SSH Attacks By Time Of Day" "" "Count" "Hour of Day"
+	grep ssh /tmp/LongTail-messages.$$ | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep Password | awk '{print $1}'| awk -FT '{print $2}' | awk -F: '{print $1}' |sort |uniq -c| awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ssh-attacks-by-time-of-day.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-ssh-attacks-by-time-of-day.shtml"
 
 	#-------------------------------------------------------------------------
 	# raw data compressed 
@@ -803,7 +806,7 @@ function do_ssh {
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh now" ; fi
 	#-----------------------------------------------------------------
 	# Lets count the ssh attacks
-	#count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
+	count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
 	
 	#----------------------------------------------------------------
 	# Lets check the ssh logs
@@ -861,9 +864,17 @@ function do_ssh {
 #		mkdir -p $HTML_DIR/historical/2015/02/$LOOP
 #		ssh_attacks $HTML_DIR/historical/2015/02/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-02-$LOOP"      "messages*" "current"
 #	done
-#	for LOOP in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 ; do
+#	for LOOP in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28; do
 #		mkdir -p $HTML_DIR/historical/2015/02/$LOOP
 #		ssh_attacks $HTML_DIR/historical/2015/02/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-02-$LOOP"      "messages*" "current"
+#	done
+#	for LOOP in 01 02 03 04 05 06 07 08 09 ; do
+#		mkdir -p $HTML_DIR/historical/2015/03/$LOOP
+#		ssh_attacks $HTML_DIR/historical/2015/03/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-03-$LOOP"      "messages*" "current"
+#	done
+#	for LOOP in 10 11 12 13 ; do
+#		mkdir -p $HTML_DIR/historical/2015/03/$LOOP
+#		ssh_attacks $HTML_DIR/historical/2015/03/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-03-$LOOP"      "messages*" "current"
 #	done
 
 # Example of getting a single date.  Make sure you edit the date in BOTH places in the line.
@@ -878,88 +889,84 @@ function do_ssh {
 	# top 20 non-root-passwords and top 20 root passwords
 	#-----------------------------------------------------------------
 	cd $HTML_DIR/historical 
-	make_header "$HTML_DIR/trends-in-non-root-passwords" "Trends in Non Root Passwords From Most Common to 20th"  "Format is Number of Tries :  Password tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	make_header "$HTML_DIR/trends-in-non-root-passwords.shtml" "Trends in Non Root Passwords From Most Common to 20th"  "Format is Number of Tries :  Password tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
 	
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-non-root-passwords" ; fi
-	for FILE in `find . -name 'current-top-20-non-root-passwords'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+	for FILE in `find . -name 'current-top-20-non-root-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
 		echo -n "$FILE $FILE"  |\
-		sed 's/current-top-20-non-root-passwords//g' |\
+		sed 's/current-top-20-non-root-passwords.shtml//g' |\
 		sed 's/\.\///g' |\
 		sed 's/^/<A HREF=\"historical\//' |\
 		sed 's/\/ /\/\">/' |\
 		sed 's/$/ <\/a>/' ; \
 		echo -n "</TD>"; grep TR $FILE |\
 		grep -v HEADERLINE | \
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $HTML_DIR/trends-in-non-root-passwords
+		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $HTML_DIR/trends-in-non-root-passwords.shtml
 	
-	make_footer "$HTML_DIR/trends-in-non-root-passwords"
-	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-non-root-passwords
+	make_footer "$HTML_DIR/trends-in-non-root-passwords.shtml"
+	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-non-root-passwords.shtml
 	
 
 	#-----------------------------------------------------------------
 	cd $HTML_DIR/historical 
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-root-passwords" ; fi
-	make_header "$HTML_DIR/trends-in-root-passwords" "Trends in Root Passwords From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	make_header "$HTML_DIR/trends-in-root-passwords.shtml" "Trends in Root Passwords From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
 
-	for FILE in `find . -name 'current-top-20-root-passwords'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+	for FILE in `find . -name 'current-top-20-root-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
 		echo -n "$FILE $FILE" |\
-		sed 's/current-top-20-root-passwords//g'|\
+		sed 's/current-top-20-root-passwords.shtml//g'|\
 		sed 's/\.\///g' |\
 		sed 's/^/<A HREF=\"historical\//' |\
 		sed 's/\/ /\/\">/' |\
 		sed 's/$/ <\/a>/' ; \
 		echo -n "</TD>"; grep TR $FILE |\
 		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $HTML_DIR/trends-in-root-passwords
+		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $HTML_DIR/trends-in-root-passwords.shtml
 	
-	make_footer "$HTML_DIR/trends-in-root-passwords"
-	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-root-passwords
+	make_footer "$HTML_DIR/trends-in-root-passwords.shtml"
+	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-root-passwords.shtml
 	cd $HTML_DIR/historical 
 	
 	#-----------------------------------------------------------------
 	cd $HTML_DIR/historical 
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-admin-passwords" ; fi
 
-	make_header "$HTML_DIR/trends-in-admin-passwords" "Trends in Admin Passwords From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	make_header "$HTML_DIR/trends-in-admin-passwords.shtml" "Trends in Admin Passwords From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
 	
-	for FILE in `find . -name 'current-top-20-admin-passwords'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+	for FILE in `find . -name 'current-top-20-admin-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
 		echo -n "$FILE $FILE" |\
-		sed 's/current-top-20-admin-passwords//g'|\
+		sed 's/current-top-20-admin-passwords.shtml//g'|\
 		sed 's/\.\///g' |\
 		sed 's/^/<A HREF=\"historical\//' |\
 		sed 's/\/ /\/\">/' |\
 		sed 's/$/ <\/a>/' ; \
 		echo -n "</TD>"; grep TR $FILE |\
 		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $HTML_DIR/trends-in-admin-passwords
+		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $HTML_DIR/trends-in-admin-passwords.shtml
 	
-	make_footer "$HTML_DIR/trends-in-admin-passwords"
-	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-admin-passwords
+	make_footer "$HTML_DIR/trends-in-admin-passwords.shtml"
+	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-admin-passwords.shtml
 	cd $HTML_DIR/historical 
 
 	#-----------------------------------------------------------------
 	cd $HTML_DIR/historical 
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-Accounts" ; fi
 
-	make_header "$HTML_DIR/trends-in-accounts" "Trends in Accounts Tried From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	make_header "$HTML_DIR/trends-in-accounts.shtml" "Trends in Accounts Tried From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
 	
-	for FILE in `find . -name 'current-top-20-non-root-accounts'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+	for FILE in `find . -name 'current-top-20-non-root-accounts.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
 		echo -n "$FILE $FILE" |\
-		sed 's/current-top-20-non-root-accounts//g'|\
+		sed 's/current-top-20-non-root-accounts.shtml//g'|\
 		sed 's/\.\///g' |\
 		sed 's/^/<A HREF=\"historical\//' |\
 		sed 's/\/ /\/\">/' |\
 		sed 's/$/ <\/a>/' ; \
 		echo -n "</TD>"; grep TR $FILE |\
 		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $HTML_DIR/trends-in-accounts
+		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $HTML_DIR/trends-in-accounts.shtml
 	
-	make_footer "$HTML_DIR/trends-in-accounts"
-	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-accounts
-	#-----------------------------------------------------------------
-	# Lets count the ssh attacks
-	#count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
-
+	make_footer "$HTML_DIR/trends-in-accounts.shtml"
+	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-accounts.shtml
 	cd $HTML_DIR/historical 
 
 	#-----------------------------------------------------------------
@@ -1045,22 +1052,15 @@ function set_permissions {
 ############################################################################
 # Create historical copies of the data
 #
-# OK, I admit it, I'm counting on it taking at least one minute of runtinme
-# to get to this point in the code
 #
-# This also sucks because I should really rebuild yesterdays data in order
-# to catch that the messages file can rotate during the middle of the day
 #
 function create_historical_copies {
 	TMP_HTML_DIR=$1
-	if [ $HOUR -eq 23 ]; then
+	if [ $HOUR -eq 1 ]; then
 		cd  $TMP_HTML_DIR
 		mkdir -p $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME
-		cp $TMP_HTML_DIR/index-historical.html $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/index.html
-		#for FILE in `ls |grep -v historical|egrep -v index.html\|index-long.html\last-30\|last-7` ; do
-		#	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Copying $FILE to historical" ; fi
-		#	cp $FILE $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME
-		#done
+		cp $TMP_HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/index.shtml
+		# I do individual chmods so I don't do chmod's of thousands of files...
 		chmod a+rx $TMP_HTML_DIR/historical
 		chmod a+rx $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME
 		chmod a+rx $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME
@@ -1074,6 +1074,9 @@ function create_historical_copies {
 ############################################################################
 # Main 
 #
+
+echo -n "Started LongTail.sh at:"
+date
 
 HOSTNAME=$1
 if [ "x$HOSTNAME" != "x" ] ;then
@@ -1090,12 +1093,12 @@ if [ ! -d $HTML_DIR/$HOSTNAME ] ; then
 	echo "Can not find $HTML_DIR/$HOSTNAME making it  now"
 	mkdir $HTML_DIR/$HOSTNAME
 	chmod a+rx $HTML_DIR/$HOSTNAME
-	cp $HTML_DIR/index.html $HTML_DIR/$HOSTNAME
-	chmod a+r $HTML_DIR/$HOSTNAME/index.html
-	cp $HTML_DIR/index-long.html $HTML_DIR/$HOSTNAME
-	chmod a+r $HTML_DIR/$HOSTNAME/index-long.html
-	cp $HTML_DIR/graphics.html $HTML_DIR/$HOSTNAME
-	chmod a+r $HTML_DIR/$HOSTNAME/graphics.html
+	cp $HTML_DIR/index.shtml $HTML_DIR/$HOSTNAME
+	chmod a+r $HTML_DIR/$HOSTNAME/index.shtml
+	cp $HTML_DIR/index-long.shtml $HTML_DIR/$HOSTNAME
+	chmod a+r $HTML_DIR/$HOSTNAME/index-long.shtml
+	cp $HTML_DIR/graphics.shtml $HTML_DIR/$HOSTNAME
+	chmod a+r $HTML_DIR/$HOSTNAME/graphics.shtml
 fi
 
 HTML_DIR="$HTML_DIR$HOSTNAME"
@@ -1119,6 +1122,12 @@ create_historical_copies  $HTML_DIR
 # directory it may leave you in....
 # echo "Trying to run SCRIPT_DIR/LongTail_analyze_attacks.pl now"
 # Turned off for debugging and tuning $SCRIPT_DIR/LongTail_analyze_attacks.pl 2> /dev/null
-$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
+echo -n "Done with LongTail.sh at:"
+date
+echo "Starting analysis now"
+if [ "x$HOSTNAME" == "x/" ] ;then
+	echo "hostname is not set, running analyze now"
+	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
+fi
 
 exit
