@@ -18,7 +18,7 @@ sub init {
   	jul 7  aug 8  sep 9  oct 10 nov 11 dec 12
 	);
 	$|=1;
-	$DEBUG=1;
+	$DEBUG=0;
 	$honey_dir="/var/www/html/honey/";
 	$attacks_dir="/var/www/html/honey/attacks/";
 	$DATE=`date`;
@@ -36,6 +36,7 @@ sub cleanup_old_files {
 			chomp;
 			if (/dict-/){next;}
 			if (/.html/){next;}
+			if (/.shtml/){next;}
 			unlink ("$_");
 			#if ($DEBUG){print ".";}
 		}
@@ -188,12 +189,14 @@ sub analyze {
 	# Keep the interesting stuff near the top of the report
 	if ($DEBUG){print "DEBUG Doing multiple attack data now\n";}
 	open (FILE, "sum.data")||die "can not open sum.data\n";
-	open (FILE_FORMATTED, ">$honey_dir/attack_patterns.html") || die "Can not write to $honey_dir/attack_patterns.html\n";
+	open (FILE_FORMATTED, ">$honey_dir/attack_patterns.shtml") || die "Can not write to $honey_dir/attack_patterns.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
 	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Multiple Use Of Same Dictionary Attacks</TITLE>\n");
 	print (FILE_FORMATTED "</HEAD>\n");
 	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
+	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
+	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Multiple Use Of Same Dictionary Attacks</H1>\n");
 	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
 	print (FILE_FORMATTED "Last updated on $DATE\n");
@@ -215,7 +218,7 @@ sub analyze {
 		}
 		$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
 		print (FILE_FORMATTED "<BR><A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n");
-		if ($DEBUG){print "DEBUG Looking for file dict-$checksum.txt\n";}
+#		if ($DEBUG){print "DEBUG Looking for file dict-$checksum.txt\n";}
 		if ( ! -e "dict-$checksum.txt" ){
 			#print "DEBUG Making dictionary dict-$checksum.txt\n";
 			$temp=`cp $filename dict-$checksum.txt`;
@@ -234,12 +237,14 @@ sub analyze {
 
 	if ($DEBUG){print "DEBUG Doing single attack data now\n";}
 	open (FILE, "sum.single.attack.data")||die "can not open sum.single.attack.data\n";
-	open (FILE_FORMATTED, ">$honey_dir/attack_patterns_single.html") || die "Can not write to $honey_dir/attack_patterns_single.html\n";
+	open (FILE_FORMATTED, ">$honey_dir/attack_patterns_single.shtml") || die "Can not write to $honey_dir/attack_patterns_single.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
 	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Single Use Dictionary Attacks</TITLE>\n");
 	print (FILE_FORMATTED "</HEAD>\n");
 	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
+	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
+	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Single Use Dictionary Attacks</H1>\n");
 	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
 	print (FILE_FORMATTED "Last updated on $DATE\n");
@@ -289,12 +294,14 @@ sub show_lifetime_of_ips {
 	#print "DEBUG ===================================================\n\n";
 	#print "DEBUG- Trying to sort by age of ip\n";
 	open (FILE_DATA, "> $honey_dir/current_attackers_lifespan.data")||die "Can not write to $honey_dir/current_attackers_lifespan.data\n";
-	open (FILE_FORMATTED, ">$honey_dir/current_attackers_lifespan.html") || die "Can not write to $honey_dir/current_attackers_lifespan.html\n";
+	open (FILE_FORMATTED, ">$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
 	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Attackers Lifespan</TITLE>\n");
 	print (FILE_FORMATTED "</HEAD>\n");
 	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
+	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
+	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Attackers Lifespan</H1>\n");
 	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
 	print (FILE_FORMATTED "<P>Last updated on $DATE\n");
@@ -325,12 +332,14 @@ sub show_attacks_of_ips {
 
 	chdir ("$honey_dir/attacks");
 
-	open (FILE_FORMATTED, ">$honey_dir/attacks/ip_attacks.html") || die "Can not write to $honey_dir/attacks/ip_attacks.html\n";
+	open (FILE_FORMATTED, ">$honey_dir/attacks/ip_attacks.shtml") || die "Can not write to $honey_dir/attacks/ip_attacks.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
 	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis IP Attacks</TITLE>\n");
 	print (FILE_FORMATTED "</HEAD>\n");
 	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
+	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
+	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis IP Attacks</H1>\n");
 	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
 	print (FILE_FORMATTED "<P>Last updated on $DATE\n");
@@ -397,13 +406,15 @@ sub show_attacks_of_ips {
 #
 sub create_dict_webpage {
 	if ($DEBUG){print "DEBUG Making dict webpage now\n";}
-	open (FILE_FORMATTED, ">$honey_dir/dictionaries.html") || die "Can not write to $honey_dir/dictionaries.html\n";
+	open (FILE_FORMATTED, ">$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
 	open (FILE_FORMATTED_TEMP, ">/tmp/dictionaries.temp") || die "Can not write to $honey_dir/dictionaries.temp\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
 	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Dictionaries</TITLE>\n");
 	print (FILE_FORMATTED "</HEAD>\n");
 	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
+	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
+	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Dictionaries</H1>\n");
 	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
 	print (FILE_FORMATTED "Last updated on $DATE\n");
@@ -456,7 +467,7 @@ sub create_dict_webpage {
 	close (PIPE);
 	close (FILE_FORMATTED_TEMP);
 
-	#system ("sort -nr /tmp/dictionaries.temp >> $honey_dir/dictionaries.html");
+	#system ("sort -nr /tmp/dictionaries.temp >> $honey_dir/dictionaries.shtml");
 	system ("sort -nr /tmp/dictionaries.temp > /tmp/dictionaries.temp.sorted");
 	open (FILE, "/tmp/dictionaries.temp.sorted");
 	while (<FILE>){
@@ -465,7 +476,7 @@ sub create_dict_webpage {
 		print (FILE_FORMATTED "<TR><TD>$TIMES_USED</TD><TD>$WC</TD><TD>$SUM</TD><TD><a href=\"attacks/$file\">$file</a></TD><TD>$FIRST_SEEN</TD><TD>$LAST_SEEN</TD></TR>\n");
 	}
 	close (FILE);
-	open (FILE_FORMATTED, ">>$honey_dir/dictionaries.html") || die "Can not write to $honey_dir/dictionaries.html\n";
+	open (FILE_FORMATTED, ">>$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
 		
 
 	print (FILE_FORMATTED "</TABLE>\n");
@@ -479,6 +490,8 @@ sub create_dict_webpage {
 # Mainline of code
 #
 #
+$TMP=`date`;
+print "Started at $TMP\n";
 &init;
 &cleanup_old_files;
 &create_attack_logs;
@@ -486,3 +499,5 @@ sub create_dict_webpage {
 &show_lifetime_of_ips;
 &show_attacks_of_ips;
 &create_dict_webpage;
+$TMP=`date`;
+print "Done at $TMP\n";
