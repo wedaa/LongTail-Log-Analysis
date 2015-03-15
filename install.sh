@@ -22,10 +22,13 @@ cp LongTail_make_graph.php $SCRIPT_DIR
 cp translate_country_codes.sed $SCRIPT_DIR
 #cp translate_country_codes.sed.orig $SCRIPT_DIR
 cp whois.pl $SCRIPT_DIR
-cp index.html $HTML_DIR
-cp index-long.html $HTML_DIR
-cp index-historical.html $HTML_DIR
-cp graphics.html $HTML_DIR
+cp index.shtml $HTML_DIR
+cp index-long.shtml $HTML_DIR
+cp index-historical.shtml $HTML_DIR
+cp graphics.shtml $HTML_DIR
+cp header.html $HTML_DIR
+cp footer.html $HTML_DIR
+cp LongTail.css $HTML_DIR
 
 if [ ! -e $SCRIPT_DIR/LongTail-exclude-accounts.grep ] ; then
 	echo "LongTail-exclude-accounts.grep not in $SCRIPT_DIR"
@@ -62,14 +65,23 @@ chmod a+rx $SCRIPT_DIR/LongTail_make_graph.php
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed.orig
 chmod a+rx $SCRIPT_DIR/whois.pl
-chmod a+r $HTML_DIR/index.html 
-chown $OWNER $HTML_DIR/index.html 
-chmod a+r $HTML_DIR/index-long.html 
-chown $OWNER $HTML_DIR/index-long.html 
-chmod a+r $HTML_DIR/index-historical.html
-chown $OWNER $HTML_DIR/index-historical.html 
-chmod a+r $HTML_DIR/graphics.html
-chown $OWNER $HTML_DIR/graphics.html 
+chmod a+r $HTML_DIR/index.shtml 
+chown $OWNER $HTML_DIR/index.shtml 
+chmod a+r $HTML_DIR/index-long.shtml 
+chown $OWNER $HTML_DIR/index-long.shtml 
+chmod a+r $HTML_DIR/index-historical.shtml
+chown $OWNER $HTML_DIR/index-historical.shtml 
+chmod a+r $HTML_DIR/graphics.shtml
+chown $OWNER $HTML_DIR/graphics.shtml 
+chmod a+r $HTML_DIR/graphics.shtml
+chown $OWNER $HTML_DIR/graphics.shtml 
+
+chmod a+r $HTML_DIR/LongTail.css
+chown $OWNER $HTML_DIR/LongTail.css 
+chmod a+r $HTML_DIR/header.html
+chown $OWNER $HTML_DIR/header.html
+chmod a+r $HTML_DIR/footer.html
+chown $OWNER $HTML_DIR/footer.html
 
 touch $SCRIPT_DIR/Longtail-ssh-local-reports
 touch $SCRIPT_DIR/Longtail-httpd-local-reports
