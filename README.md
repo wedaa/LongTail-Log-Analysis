@@ -178,7 +178,13 @@ just once a day, I would advise running it at 11:59 PM, as there
 is code that only runs during the 11 PM time frame.
 
 MY crontab entry looks like this one:
-59 * * * * /usr/local/etc/LongTail >> /tmp/LongTail.out 2>> /tmp/LongTail.out
+59 * * * * /usr/local/etc/LongTail.sh >> /tmp/LongTail.out 2>> /tmp/LongTail.out
+
+HTTP Configuration 
+--------------
+You NEED to have Server Side Includes turned on.  This is so 
+that all the headers and footers are the same.  Go to 
+http://httpd.apache.org/docs/2.4/howto/ssi.html for help.
 
 WARNING about reports before you have enough data
 --------------
