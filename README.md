@@ -198,6 +198,10 @@ have a few days worth of data to do a trend report on.
 
 These issues will not be fixed anytime soon.
 
+MULTIPLE HOSTS
+--------------
+LongTail can handle multiple hosts reporting.  
+
 WARNING about jpgraph alignment issues
 --------------
 Two warnings about jpgraph alignment issues.
