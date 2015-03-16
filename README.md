@@ -316,7 +316,7 @@ running LongTail on that server also.
 some of the lines even though the rest of the line does not exist.  This
 is due to my not fully understanding how the grep -vf command works.
 
-26) Need to work on code for the "consolidation" server.
+26) DONE: Need to work on code for the "consolidation" server.
 
 27) KNOWN BUG in LongTail.sh on first run instances
 DEBUG this month statistics
