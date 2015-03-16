@@ -5,17 +5,17 @@
 
 <H1>LongTail Log Analysis/Historical Version</H1>
 <P>This page is updated hourly.
-Last updated on Sun Mar 15 11:00:46 EDT 2015
+Last updated on Mon Mar 16 17:01:02 EDT 2015
 <HR>
 <H2>SSH Brute Force Attempts</H2>
 <P>
-SSH Activity Today: 12024
+SSH Activity Today: 27548
 <BR>
-SSH Activity This Month: 153322
+SSH Activity This Month: 220968
 <BR>
-SSH Activity This Year: 734587
+SSH Activity This Year: 802233
 <BR>
-SSH Activity Since Logging Started: 734587
+SSH Activity Since Logging Started: 802233
 <BR>
 <BR>
 <BR>
@@ -44,7 +44,12 @@ SSH Activity Since Logging Started: 734587
 <BR>
 <a href ="graphics.shtml">Charts and Graphs</a>
 <BR>
-<a href ="statistics.shtml">Number of Attacks Statistics</a>
+<a href ="statistics.shtml">Attack Statistics</a>
+<BR>
+<a href ="/honey/statistics_all.shtml">Attack Statistics of ALL hosts</a>
+<BR>
+<BR>
+<a href ="attacks_by_day.shtml">Attacks By Day</a>
 <BR>
 <H3>Today's Activity</H3>
 <a href ="current-root-passwords.shtml">Root Passwords</a>
