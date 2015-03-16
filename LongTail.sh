@@ -40,7 +40,7 @@ function init_variables {
 	GRAPHS=1
 
 	# Do you want debug output?  Set this to 1
-	DEBUG=1
+	DEBUG=0
 	
 	# Do you want ssh analysis?  Set this to 1
 	DO_SSH=1
@@ -518,7 +518,7 @@ function ssh_attacks {
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml"
-	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.data
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.data
 
 
 	#-------------------------------------------------------------------------
@@ -535,7 +535,7 @@ function ssh_attacks {
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml | head -20  >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml"
-	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.data
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.data
 	
 	#-------------------------------------------------------------------------
 	# Not root or admin ACCOUNTS
@@ -549,7 +549,7 @@ function ssh_attacks {
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml"
-	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD>/ /'|sed 's/<.TD><.TR>//' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD>/ /'|sed 's/<.TD><.TR>//' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data
 	
 	#-------------------------------------------------------------------------
 	# This works but gives only IP addresses
@@ -1009,7 +1009,40 @@ function do_ssh {
 			fi
 		done        
 	fi    
+}
 
+function make_daily_attacks_chart {
+	cd $HTML_DIR
+	cd historical
+	
+	make_header "$HTML_DIR/attacks_by_day.shtml" "Attacks By Day"  "" "Year" "Month" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25" "26" "27" "28" "29" "30" "31"
+
+for year in * ; do
+#echo "$year" >> $HTML_DIR/attacks_by_day.shtml
+if [ -d $year ] ; then
+cd $year
+for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
+if [ -d "$month" ] ; then
+echo "<TR><TD>$year</TD><TD>$month</TD>" >> $HTML_DIR/attacks_by_day.shtml
+cd  $month
+for day in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31; do
+if [ -e $day/current-attack-count.data ] ; then
+count=`cat $day/current-attack-count.data`
+echo -n "<TD>$count</TD>" >> $HTML_DIR/attacks_by_day.shtml
+else
+echo -n "<TD>N/A</TD>" >> $HTML_DIR/attacks_by_day.shtml
+fi
+done
+echo "</TR>" >> $HTML_DIR/attacks_by_day.shtml
+cd ..
+fi
+done
+cd ..
+fi
+done
+
+
+	make_footer "$HTML_DIR/attacks_by_day.shtml"
 
 }
 
@@ -1070,10 +1103,12 @@ function create_historical_copies {
 	TMP_HTML_DIR=$1
 
 	if [ $HOUR -eq 0 ]; then
+echo "DEBUG in create_historical_copies now"
 		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
 		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
 		YESTERDAY_DAY=`date  +"%e" --date="1 day ago"`
 
+echo "DEBUG $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY"
 		cd  $TMP_HTML_DIR
 
 		mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
@@ -1109,6 +1144,7 @@ fi
 
 init_variables
 read_local_config_file
+
 if [ ! -d $HTML_DIR/$HOSTNAME ] ; then
 	echo "Can not find $HTML_DIR/$HOSTNAME making it  now"
 	mkdir $HTML_DIR/$HOSTNAME
@@ -1124,6 +1160,7 @@ fi
 HTML_DIR="$HTML_DIR$HOSTNAME"
 echo "HTML_DIR is $HTML_DIR"
 
+
 echo "DEBUG is set to:$DEBUG"
 
 change_date_date_in_index $HTML_DIR $YEAR
@@ -1136,6 +1173,8 @@ if [ $DO_SSH  == 1 ] ; then do_ssh ; fi
 
 set_permissions  $HTML_DIR 
 create_historical_copies  $HTML_DIR
+
+make_daily_attacks_chart
 
 # Calling a separate perl script to analyze the attack patterns
 # This really should be the last thing run, as gosh knows what
