@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+# /home/urew file
 # I need to make sure I am properly handling blank passwords
 # and passwords that have spaces properly
 #
@@ -205,7 +206,8 @@ sub analyze {
 		chomp;
 		($tmp,$count, $checksum)=split(/ +/,$_);
 		print (FILE_FORMATTED "<HR>\n");
-		print (FILE_FORMATTED "<P>Multiple usage account:password files from the following IP addresses:\n");
+		print (FILE_FORMATTED "<a name=\"$checksum\"></a>\n");
+		print (FILE_FORMATTED "<P>IP addresses:\n");
 		open (FILE2, "sum2.data");
 		while (<FILE2>){
 			if (/$checksum/){
@@ -213,7 +215,7 @@ sub analyze {
 				($trash,$filename)=split(/ +/,$_);
 				($first,$second,$third,$fourth,$host)=split(/\./, $filename);
 				$tmp="$first.$second.$third.$fourth";
-				print (FILE_FORMATTED "$tmp \n");
+				print (FILE_FORMATTED "<A HREF=\"/honey/attacks/ip_attacks.shtml#$tmp\">$tmp</A> \n");
 			}
 		}
 		$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
@@ -222,7 +224,7 @@ sub analyze {
 		if ( ! -e "dict-$checksum.txt" ){
 			#print "DEBUG Making dictionary dict-$checksum.txt\n";
 			$temp=`cp $filename dict-$checksum.txt`;
-			$temp=`cat $filename dict-$checksum.txt |wc -l > dict-$checksum.txt.wc`;
+			$temp=`cat dict-$checksum.txt |wc -l > dict-$checksum.txt.wc`;
 			#print "DEBUG output is $temp\n";
 		}
 		#else {print "dict-$checksum.txt apparently exists?\n";}
@@ -253,7 +255,7 @@ sub analyze {
 		chomp;
 		($tmp,$count, $checksum)=split(/ +/,$_);
 		print (FILE_FORMATTED "<HR>\n");
-		print (FILE_FORMATTED "<P>Single usage account:password files from the following IP addresses:\n");
+		print (FILE_FORMATTED "<P>IP addresses:\n");
 		open (FILE2, "sum2.data");
 		while (<FILE2>){
 			if (/$checksum/){
@@ -261,7 +263,7 @@ sub analyze {
 				($trash,$filename)=split(/ +/,$_);
 				($first,$second,$third,$fourth,$host)=split(/\./, $filename);
 				$tmp="$first.$second.$third.$fourth";
-				print (FILE_FORMATTED "$tmp \n");
+				print (FILE_FORMATTED "<A HREF=\"/honey/attacks/ip_attacks.shtml#$tmp\">$tmp</A> \n");
 			}
 		}
 		$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
@@ -305,9 +307,8 @@ sub show_lifetime_of_ips {
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Attackers Lifespan</H1>\n");
 	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
 	print (FILE_FORMATTED "<P>Last updated on $DATE\n");
-	print (FILE_FORMATTED "<P>Attack patterns recorded may be 0 due to a change in initial data recording on early release. \n");
 	print (FILE_FORMATTED "<TABLE border=1>\n");
-	print (FILE_FORMATTED "<TR><TH>Lifetime In Seconds</TH><TH>IP</TH><TH>Lifetime In Days</TH><TH>First Date Seen</TH><TH>Last Date Seen</TH><TH>Number of Attack Patterns Recorded</TH></TR>\n");
+	print (FILE_FORMATTED "<TR><TH>IP</TH><TH>Lifetime In Days</TH><TH>First Date Seen</TH><TH>Last Date Seen</TH><TH>Number of Attack<BR>Patterns Recorded</TH></TR>\n");
 
 	foreach $key (sort {$ip_age{$b} <=> $ip_age{$a}} keys %ip_age){
 		$days=$ip_age{$key}/60/60/24;
@@ -315,7 +316,7 @@ sub show_lifetime_of_ips {
 		$last_seen=scalar localtime($ip_latest_seen_time{$key});
 		$attacks_recorded = `ls $honey_dir/attacks/$key* |wc -l 2>/dev/null `;
 	  	printf(FILE_DATA "%d %s %.2f %s %s\n", $ip_age{$key}, $key, $days,$first_seen, $last_seen, $attacks_recorded);
-	  	printf(FILE_FORMATTED "<TR><TD>%d<TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD>%d</TD></TR>\n", $ip_age{$key}, $key, $days,$first_seen, $last_seen, $attacks_recorded);
+	  	printf(FILE_FORMATTED "<TR><TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"/honey/attacks/ip_attacks.shtml#%s\">%d</A></TD></TR>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
 	}
 	print (FILE_FORMATTED "</TABLE>\n");
 	print (FILE_FORMATTED "</BODY>\n");
@@ -335,7 +336,7 @@ sub show_attacks_of_ips {
 	open (FILE_FORMATTED, ">$honey_dir/attacks/ip_attacks.shtml") || die "Can not write to $honey_dir/attacks/ip_attacks.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
-	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis IP Attacks</TITLE>\n");
+	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis IP Attackers</TITLE>\n");
 	print (FILE_FORMATTED "</HEAD>\n");
 	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
 	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
@@ -371,6 +372,8 @@ sub show_attacks_of_ips {
 	foreach (@sorted){
 		#print "$_\n";;
 		print (FILE_FORMATTED "<HR>\n");
+		print (FILE_FORMATTED "<a name=\"$_\"></a>\n");
+		print (FILE_FORMATTED "<B>$_</B>\n");
 		#$line= system ("grep $_ sum2.data");
 		open (GREP, "grep $_ sum2.data|");
 		while (<GREP>){
@@ -390,7 +393,8 @@ sub show_attacks_of_ips {
 				$lines=$_;
 			}
 			close (FILE2);
-			print (FILE_FORMATTED "<BR>$lines lines, <a href=\"dict-$checksum.txt\">$checksum.dict.txt</a> From: $ip_1.$ip_2.$ip_3.$ip_4 To: $host Attack #: $attack_number on $year/$month/$day $hour:$minute:$second\n");
+			#print (FILE_FORMATTED "<BR>$lines lines, <a href=\"dict-$checksum.txt\">dict-$checksum.txt</a> From: $ip_1.$ip_2.$ip_3.$ip_4 To: $host Attack #: $attack_number on $year/$month/$day $hour:$minute:$second\n");
+			print (FILE_FORMATTED "<BR>$lines lines, <a href=\"dict-$checksum.txt\">dict-$checksum.txt</a> <!-- From: $ip_1.$ip_2.$ip_3.$ip_4--> To: $host Attack #: $attack_number on $year/$month/$day $hour:$minute:$second\n");
 		}
 		close (GREP);
 	}
@@ -406,8 +410,8 @@ sub show_attacks_of_ips {
 #
 sub create_dict_webpage {
 	if ($DEBUG){print "DEBUG Making dict webpage now\n";}
-	open (FILE_FORMATTED, ">$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
 	open (FILE_FORMATTED_TEMP, ">/tmp/dictionaries.temp") || die "Can not write to $honey_dir/dictionaries.temp\n";
+	open (FILE_FORMATTED, ">$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
 	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Dictionaries</TITLE>\n");
@@ -425,6 +429,7 @@ sub create_dict_webpage {
 	open (PIPE, "/bin/ls dict-* |") || die "can not open pipe to cleanup files\n";
 	while (<PIPE>){
 		chomp;
+		if (/\.txt\.wc/){next;}
 		$dictionary_file=$_;
 
 		$WC=`/usr/bin/wc -l $_ `;
@@ -473,7 +478,12 @@ sub create_dict_webpage {
 	while (<FILE>){
 		chomp;
 		($TIMES_USED,$WC,$SUM,$file,$FIRST_SEEN,$LAST_SEEN)=split(/\|/,$_);
-		print (FILE_FORMATTED "<TR><TD>$TIMES_USED</TD><TD>$WC</TD><TD>$SUM</TD><TD><a href=\"attacks/$file\">$file</a></TD><TD>$FIRST_SEEN</TD><TD>$LAST_SEEN</TD></TR>\n");
+		if ($TIMES_USED > 1){
+			print (FILE_FORMATTED "<TR><TD><A href=\"/honey/attack_patterns.shtml#$SUM\"> $TIMES_USED </A></TD><TD> $WC </TD><TD>$SUM</TD><TD><a href=\"attacks/$file\">$file</a></TD><TD>$FIRST_SEEN</TD><TD>$LAST_SEEN</TD></TR>\n");
+		}
+		else {
+			print (FILE_FORMATTED "<TR><TD><A href=\"/honey/attack_patterns_single.shtml#$SUM\"> $TIMES_USED </A></TD><TD> $WC </TD><TD>$SUM</TD><TD><a href=\"attacks/$file\">$file</a></TD><TD>$FIRST_SEEN</TD><TD>$LAST_SEEN</TD></TR>\n");
+		}
 	}
 	close (FILE);
 	open (FILE_FORMATTED, ">>$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
@@ -483,6 +493,33 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
 	close (FILE_FORMATTED);
+
+	#
+	# Now we sort by size of dictionary
+	#
+	open (FILE_FORMATTED, ">$honey_dir/dictionaries-k5.shtml") || die "Can not write to $honey_dir/dictionaries-k5.shtml\n";
+	print (FILE_FORMATTED "<HTML>\n");
+	print (FILE_FORMATTED "<HEAD>\n");
+	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Dictionaries</TITLE>\n");
+	print (FILE_FORMATTED "</HEAD>\n");
+	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
+	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
+	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
+	print (FILE_FORMATTED "<H1>LongTail Log Analysis Dictionaries</H1>\n");
+	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
+	print (FILE_FORMATTED "Last updated on $DATE\n");
+	print (FILE_FORMATTED "<TABLE border=1>\n");
+	print (FILE_FORMATTED "<TR><TH>Number Of<BR>Times Used</TH><TH>Number of <BR>Entries</TH><TH>Checksum</TH><TH>Dictionary</TH><TH>First Seen</TH><TH>Last Seen</TH></TR>\n");
+	close (FILE_FORMATTED);
+
+	system ("grep '<TR>' $honey_dir/dictionaries.shtml   |sort -nrk5  >> $honey_dir/dictionaries-k5.shtml");
+
+	open (FILE_FORMATTED, ">>$honey_dir/dictionaries-k5.shtml") || die "Can not write to $honey_dir/dictionaries-k5.shtml\n";
+	print (FILE_FORMATTED "</TABLE>\n");
+	print (FILE_FORMATTED "</BODY>\n");
+	print (FILE_FORMATTED "</HTML>\n");
+	close (FILE_FORMATTED);
+
 }
 
 #############################################################################3
