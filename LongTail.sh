@@ -262,12 +262,8 @@ function count_ssh_attacks {
 	TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY"
 	if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
 	#
-	# This screws up the averages, highs and low counts for the year
+	# Why did I add this line?
 	#
-	#if [ ! -e $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data ] ; then
-	#	echo "0" > $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data
-	#	chmod a+r $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data
-	#fi
 	if [ ! -e $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz ] ; then
 		echo "" |gzip -c > $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
 		chmod a+r $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
@@ -428,6 +424,24 @@ function count_ssh_attacks {
 	sed -i "s/SSH Activity This Year.*$/SSH Activity This Year: $THIS_YEAR/" $1/index-long.shtml
 	sed -i "s/SSH Activity Since Logging Started.*$/SSH Activity Since Logging Started: $TOTAL/" $1/index-long.shtml
 
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		cd $HTML_DIR
+		grep HEADERLINE statistics.shtml |egrep -v footer.html\|'</BODY'\|'</HTML'\|'</TABLE'\|'</TR' > statistics_all.shtml
+		
+		grep '<TR>' /var/www/html/honey/statistics.shtml |grep -v HEADERLINE |sed 's/<TD>/<TD>ALL Hosts /' >> statistics_all.shtml
+		
+		for FILE in */statistics.shtml  ; do
+			NAME=`dirname $FILE`
+			echo "<TR><TH colspan=8  >$NAME</TH></TR>" >> statistics_all.shtml
+			grep '<TR>' $FILE |sed "s/<TD>/<TD>$NAME /" >> statistics_all.shtml
+		done
+		
+		echo "</TABLE>" >> statistics_all.shtml
+		echo "<!--#include virtual=/honey/footer.html --> <!--HEADERLINE --> " >> statistics_all.shtml
+		echo "</BODY><!--HEADERLINE -->" >> statistics_all.shtml
+		echo "</HTML><!--HEADERLINE -->" >> statistics_all.shtml
+	fi
+
 	cd $ORIGINAL_DIRECTORY
 }
 	
@@ -533,7 +547,6 @@ function ssh_attacks {
 	sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml
 # NEED tac HERE
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml
-	#tail -20 $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml"
 	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD>/ /'|sed 's/<.TD><.TR>//' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data
@@ -541,11 +554,11 @@ function ssh_attacks {
 	#-------------------------------------------------------------------------
 	# This works but gives only IP addresses
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 5 " ; date ; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml" "IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted"
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml" "Top 20 IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml" "IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted" "Attack Patterns"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml" "Top 20 IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted" "Attack Patterns"
 	# I need to make a temp file for this
-	#cat /tmp/LongTail-messages.$$  | grep IP: |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TR>\n",$1,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
-	cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TR>\n",$1,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
+	cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/honey/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
+
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml |head -20 |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml"
@@ -556,7 +569,6 @@ function ssh_attacks {
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml" "Attacks by Country" " " "Count" "Country"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml" "Top 20 Countries" " " "Count" "Country"
 	# I need to make a temp file for this
-	#for IP in `cat /tmp/LongTail-messages.$$  |grep IP: |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq |grep -v \:\:1`; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 	for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq |grep -v \:\:1`; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 	sed -i -f $SCRIPT_DIR/translate_country_codes.sed  $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml
@@ -881,7 +893,7 @@ function do_ssh {
 #	ssh_attacks $HTML_DIR/historical/2015/02/24 $YEAR $PATH_TO_VAR_LOG "2015-02-24"      "messages*" "current"
 #	ssh_attacks $HTML_DIR/historical/2015/02/25 $YEAR $PATH_TO_VAR_LOG "2015-02-25"      "messages*" "current"
 #	ssh_attacks $HTML_DIR/historical/2015/02/26 $YEAR $PATH_TO_VAR_LOG "2015-02-26"      "messages*" "current"
-#	ssh_attacks $HTML_DIR/historical/2015/03/01 $YEAR $PATH_TO_VAR_LOG "2015-03-01"      "messages*" "current"
+#	ssh_attacks $HTML_DIR/historical/2015/03/15 $YEAR $PATH_TO_VAR_LOG "2015-03-15"      "messages*" "current"
 	
 	
 	#-----------------------------------------------------------------
@@ -1052,21 +1064,29 @@ function set_permissions {
 ############################################################################
 # Create historical copies of the data
 #
-#
+# This creates yesterdays data, once "yesterday" is over
 #
 function create_historical_copies {
 	TMP_HTML_DIR=$1
-	if [ $HOUR -eq 1 ]; then
+
+	if [ $HOUR -eq 0 ]; then
+		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
+		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
+		YESTERDAY_DAY=`date  +"%e" --date="1 day ago"`
+
 		cd  $TMP_HTML_DIR
-		mkdir -p $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME
-		cp $TMP_HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/index.shtml
+
+		mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
+		cp $TMP_HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/index.shtml
 		# I do individual chmods so I don't do chmod's of thousands of files...
 		chmod a+rx $TMP_HTML_DIR/historical
-		chmod a+rx $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME
-		chmod a+rx $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME
-		chmod a+rx $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME
-		chmod a+r  $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/*
-		ssh_attacks $HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME  $YEAR_AT_START_OF_RUNTIME $PATH_TO_VAR_LOG "$YEAR_AT_START_OF_RUNTIME-$MONTH_AT_START_OF_RUNTIME-$DAY_AT_START_OF_RUNTIME"      "messages*" "current"
+		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR
+		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH
+		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
+		chmod a+r  $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/*
+
+
+		ssh_attacks $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY _$YESTERDAY_YEAR $PATH_TO_VAR_LOG "$YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY"      "messages*" "current"
 	fi
 }
 
@@ -1127,7 +1147,7 @@ date
 echo "Starting analysis now"
 if [ "x$HOSTNAME" == "x/" ] ;then
 	echo "hostname is not set, running analyze now"
-	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
+#	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
 fi
 
 exit
