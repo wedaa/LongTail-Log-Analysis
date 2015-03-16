@@ -1147,7 +1147,7 @@ date
 echo "Starting analysis now"
 if [ "x$HOSTNAME" == "x/" ] ;then
 	echo "hostname is not set, running analyze now"
-#	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
+	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
 fi
 
 exit
