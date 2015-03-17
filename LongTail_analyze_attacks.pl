@@ -394,7 +394,7 @@ sub show_attacks_of_ips {
 			}
 			close (FILE2);
 			#print (FILE_FORMATTED "<BR>$lines lines, <a href=\"dict-$checksum.txt\">dict-$checksum.txt</a> From: $ip_1.$ip_2.$ip_3.$ip_4 To: $host Attack #: $attack_number on $year/$month/$day $hour:$minute:$second\n");
-			print (FILE_FORMATTED "<BR>$lines lines, <a href=\"dict-$checksum.txt\">dict-$checksum.txt</a> <!-- From: $ip_1.$ip_2.$ip_3.$ip_4--> To: $host Attack #: $attack_number on $year/$month/$day $hour:$minute:$second\n");
+			print (FILE_FORMATTED "<BR>$lines lines, <a href=\"dict-$checksum.txt\">dict-$checksum.txt</a> <!-- From: $ip_1.$ip_2.$ip_3.$ip_4--> To: $host Attack #: $attack_number started on $year/$month/$day $hour:$minute:$second\n");
 		}
 		close (GREP);
 	}
