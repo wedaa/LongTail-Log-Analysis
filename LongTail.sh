@@ -280,8 +280,6 @@ function count_ssh_attacks {
 		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
 	fi
 	echo $TODAY > $TMP_HTML_DIR/current-attack-count.data
-#echo "DEBUG TODAY = $TODAY"
-#exit;
 
 	#
 	# THIS MONTH
@@ -622,11 +620,30 @@ function ssh_attacks {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 8, gathering data for raw-data.gz " ; date; fi
 	if [ $FILE_PREFIX == "current" ] ;
 	then
+		# Lets make sure we have one for today and this month and this year
+		# I added this code on 2015-03-17, Lets see if it breaks anything...
+		TMP_YEAR=`date +%Y`
+		TMP_MONTH=`date +%m`
+		TMP_DAY=`date +%d`
+
+		TMP_DIR="$TMP_HTML_DIR"
+		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+		TMP_DIR="$TMP_HTML_DIR/historical"
+		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+		TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR"
+		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+		TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH"
+		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+		TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY"
+		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+
 		if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
 			cat /tmp/LongTail-messages.$$  |sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 		else
 			cat /tmp/LongTail-messages.$$ |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 		fi
+		cp $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
+		chmod a+r $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
 	fi
 
 
@@ -842,7 +859,7 @@ function do_ssh {
 	#----------------------------------------------------------------
 	# Lets check the ssh logs for the last 30 days
 	LAST_MONTH=""
-	for i in 1 2 3 4 5 6 7 ; do
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
 		TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
 		if [ "$LAST_MONTH" == "" ] ; then
 			LAST_MONTH="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
@@ -1103,12 +1120,10 @@ function create_historical_copies {
 	TMP_HTML_DIR=$1
 
 	if [ $HOUR -eq 0 ]; then
-echo "DEBUG in create_historical_copies now"
 		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
 		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
 		YESTERDAY_DAY=`date  +"%e" --date="1 day ago"`
 
-echo "DEBUG $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY"
 		cd  $TMP_HTML_DIR
 
 		mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
