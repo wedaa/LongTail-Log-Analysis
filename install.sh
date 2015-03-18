@@ -20,6 +20,7 @@ cp ip-to-country $SCRIPT_DIR
 cp LongTail.sh $SCRIPT_DIR
 cp LongTail_make_graph.php $SCRIPT_DIR
 cp translate_country_codes.sed $SCRIPT_DIR
+cp LongTail_make_daily_attacks_chart.pl $SCRIPT_DIR
 #cp translate_country_codes.sed.orig $SCRIPT_DIR
 cp whois.pl $SCRIPT_DIR
 cp index.shtml $HTML_DIR
@@ -61,6 +62,7 @@ chmod a+r $SCRIPT_DIR/LongTail-exclude-webpages.grep
 chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep
 chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep
 chmod a+rx $SCRIPT_DIR/LongTail.sh
+chmod a+rx $SCRIPT_DIR/LongTail_make_daily_attacks_chart.pl
 chmod a+rx $SCRIPT_DIR/LongTail_make_graph.php
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed.orig
