@@ -430,7 +430,7 @@ function count_ssh_attacks {
 		
 		for FILE in */statistics.shtml  ; do
 			NAME=`dirname $FILE`
-			echo "<TR><TH colspan=8  >$NAME</TH></TR>" >> statistics_all.shtml
+			echo "<TR><TH colspan=8  ><A href=\"/honey/$NAME/\">$NAME</A></TH></TR>" >> statistics_all.shtml
 			grep '<TR>' $FILE |sed "s/<TD>/<TD>$NAME /" >> statistics_all.shtml
 		done
 		
@@ -894,6 +894,7 @@ function do_ssh {
 #		ssh_attacks $HTML_DIR/historical/2015/02/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-02-$LOOP"      "messages*" "current"
 #	done
 #	for LOOP in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28; do
+#	for LOOP in 25 26 27 28; do
 #		mkdir -p $HTML_DIR/historical/2015/02/$LOOP
 #		ssh_attacks $HTML_DIR/historical/2015/02/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-02-$LOOP"      "messages*" "current"
 #	done
@@ -918,8 +919,9 @@ function do_ssh {
 	# top 20 non-root-passwords and top 20 root passwords
 	#-----------------------------------------------------------------
 	cd $HTML_DIR/historical 
-	make_header "$HTML_DIR/trends-in-non-root-passwords.shtml" "Trends in Non Root Passwords From Most Common to 20th"  "Format is Number of Tries :  Password tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	make_header "$HTML_DIR/trends-in-non-root-passwords.shtml" "Trends In Non Root Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
 	
+	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-non-root-passwords" ; fi
 	for FILE in `find . -name 'current-top-20-non-root-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
 		echo -n "$FILE $FILE"  |\
@@ -928,10 +930,37 @@ function do_ssh {
 		sed 's/^/<A HREF=\"historical\//' |\
 		sed 's/\/ /\/\">/' |\
 		sed 's/$/ <\/a>/' ; \
-		echo -n "</TD>"; grep TR $FILE |\
+		echo "</TD>"; grep TR $FILE |\
 		grep -v HEADERLINE | \
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $HTML_DIR/trends-in-non-root-passwords.shtml
-	
+		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
+
+	#
+	# code to color code NEW entries
+	#
+	tac $TMPFILE  |\
+	perl -e ' while (<>){
+	if (/<A HREF="historical/){print; next;}
+	if (/^<TD/){
+		$line=$_;
+		$tmp_line=$_;
+		$tmp_line =~ s/^..*">//;
+		$tmp_line =~ s/<\/a>.*$//;
+		
+		if (defined $password{"$tmp_line"}){
+			print $line;
+		}
+		else {
+			$line =~ s/<TD/<TD bgcolor=#FF0000/;
+			$password{"$tmp_line"}=1;
+			print $line;
+		}
+	}
+	else {
+		print;
+	}
+	}' |tac >> $HTML_DIR/trends-in-non-root-passwords.shtml
+	rm $TMPFILE
+
 	make_footer "$HTML_DIR/trends-in-non-root-passwords.shtml"
 	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-non-root-passwords.shtml
 	
@@ -939,8 +968,9 @@ function do_ssh {
 	#-----------------------------------------------------------------
 	cd $HTML_DIR/historical 
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-root-passwords" ; fi
-	make_header "$HTML_DIR/trends-in-root-passwords.shtml" "Trends in Root Passwords From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	make_header "$HTML_DIR/trends-in-root-passwords.shtml" "Trends In Root Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
 
+	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
 	for FILE in `find . -name 'current-top-20-root-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
 		echo -n "$FILE $FILE" |\
 		sed 's/current-top-20-root-passwords.shtml//g'|\
@@ -948,9 +978,36 @@ function do_ssh {
 		sed 's/^/<A HREF=\"historical\//' |\
 		sed 's/\/ /\/\">/' |\
 		sed 's/$/ <\/a>/' ; \
-		echo -n "</TD>"; grep TR $FILE |\
+		echo "</TD>"; grep TR $FILE |\
 		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $HTML_DIR/trends-in-root-passwords.shtml
+		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
+
+	#
+	# code to color code NEW entries
+	#
+	tac $TMPFILE  |\
+	perl -e ' while (<>){
+	if (/<A HREF="historical/){print; next;}
+	if (/^<TD/){
+		$line=$_;
+		$tmp_line=$_;
+		$tmp_line =~ s/^..*">//;
+		$tmp_line =~ s/<\/a>.*$//;
+		
+		if (defined $password{"$tmp_line"}){
+			print $line;
+		}
+		else {
+			$line =~ s/<TD/<TD bgcolor=#FF0000/;
+			$password{"$tmp_line"}=1;
+			print $line;
+		}
+	}
+	else {
+		print;
+	}
+	}' |tac >> $HTML_DIR/trends-in-root-passwords.shtml
+	rm $TMPFILE
 	
 	make_footer "$HTML_DIR/trends-in-root-passwords.shtml"
 	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-root-passwords.shtml
@@ -960,8 +1017,9 @@ function do_ssh {
 	cd $HTML_DIR/historical 
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-admin-passwords" ; fi
 
-	make_header "$HTML_DIR/trends-in-admin-passwords.shtml" "Trends in Admin Passwords From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	make_header "$HTML_DIR/trends-in-admin-passwords.shtml" "Trends In Admin Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
 	
+	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
 	for FILE in `find . -name 'current-top-20-admin-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
 		echo -n "$FILE $FILE" |\
 		sed 's/current-top-20-admin-passwords.shtml//g'|\
@@ -969,9 +1027,36 @@ function do_ssh {
 		sed 's/^/<A HREF=\"historical\//' |\
 		sed 's/\/ /\/\">/' |\
 		sed 's/$/ <\/a>/' ; \
-		echo -n "</TD>"; grep TR $FILE |\
+		echo "</TD>"; grep TR $FILE |\
 		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $HTML_DIR/trends-in-admin-passwords.shtml
+		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $TMPFILE
+
+	#
+	# code to color code NEW entries
+	#
+	tac $TMPFILE  |\
+	perl -e ' while (<>){
+	if (/<A HREF="historical/){print; next;}
+	if (/^<TD/){
+		$line=$_;
+		$tmp_line=$_;
+		$tmp_line =~ s/^..*">//;
+		$tmp_line =~ s/<\/a>.*$//;
+		
+		if (defined $password{"$tmp_line"}){
+			print $line;
+		}
+		else {
+			$line =~ s/<TD/<TD bgcolor=#FF0000/;
+			$password{"$tmp_line"}=1;
+			print $line;
+		}
+	}
+	else {
+		print;
+	}
+	}' |tac >> $HTML_DIR/trends-in-admin-passwords.shtml
+	rm $TMPFILE
 	
 	make_footer "$HTML_DIR/trends-in-admin-passwords.shtml"
 	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-admin-passwords.shtml
@@ -981,8 +1066,9 @@ function do_ssh {
 	cd $HTML_DIR/historical 
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-Accounts" ; fi
 
-	make_header "$HTML_DIR/trends-in-accounts.shtml" "Trends in Accounts Tried From Most Common to 20th"  "Format is Number of Tries : Password Tried." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	make_header "$HTML_DIR/trends-in-accounts.shtml" "Trends In Accounts Tried From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
 	
+	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
 	for FILE in `find . -name 'current-top-20-non-root-accounts.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
 		echo -n "$FILE $FILE" |\
 		sed 's/current-top-20-non-root-accounts.shtml//g'|\
@@ -990,9 +1076,39 @@ function do_ssh {
 		sed 's/^/<A HREF=\"historical\//' |\
 		sed 's/\/ /\/\">/' |\
 		sed 's/$/ <\/a>/' ; \
-		echo -n "</TD>"; grep TR $FILE |\
+		echo "</TD>"; grep TR $FILE |\
 		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $HTML_DIR/trends-in-accounts.shtml
+		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $TMPFILE
+
+	#
+	# code to color code NEW entries
+	#
+	tac $TMPFILE  |\
+	perl -e ' while (<>){
+	if (/<A HREF="historical/){print; next;}
+	if (/^<TD/){
+		$line=$_;
+		$tmp_line=$_;
+		$tmp_line =~ s/^..*">//;
+		$tmp_line =~ s/<\/a>.*$//;
+		$tmp_line=~ s/^.*://;
+		$tmp_line=~ s/<.*$//;
+
+		
+		if (defined $password{"$tmp_line"}){
+			print $line;
+		}
+		else {
+			$line =~ s/<TD/<TD bgcolor=#FF0000/;
+			$password{"$tmp_line"}=1;
+			print $line;
+		}
+	}
+	else {
+		print;
+	}
+	}' |tac >> $HTML_DIR/trends-in-accounts.shtml
+	rm $TMPFILE
 	
 	make_footer "$HTML_DIR/trends-in-accounts.shtml"
 	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-accounts.shtml
@@ -1005,7 +1121,7 @@ function do_ssh {
 		for FILE in *.data ; do 
 			if [ ! "$FILE" == "current-attack-count.data" ] ; then
 				GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
-				TITLE=`echo $FILE | sed 's/-/ /g' |sed 's/.data//'`
+				TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/-/ /g' |sed 's/.data//'`
 				if [ -s "$FILE" ] ; then
 					if [[ $FILE == *"accounts"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries"> $GRAPHIC_FILE
@@ -1032,32 +1148,32 @@ function make_daily_attacks_chart {
 	cd $HTML_DIR
 	cd historical
 	
-	make_header "$HTML_DIR/attacks_by_day.shtml" "Attacks By Day"  "" "Year" "Month" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20" "21" "22" "23" "24" "25" "26" "27" "28" "29" "30" "31"
+	make_header "$HTML_DIR/attacks_by_day.shtml" "Attacks By Day"  "" 
 
-for year in * ; do
-#echo "$year" >> $HTML_DIR/attacks_by_day.shtml
-if [ -d $year ] ; then
-cd $year
-for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
-if [ -d "$month" ] ; then
-echo "<TR><TD>$year</TD><TD>$month</TD>" >> $HTML_DIR/attacks_by_day.shtml
-cd  $month
-for day in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31; do
-if [ -e $day/current-attack-count.data ] ; then
-count=`cat $day/current-attack-count.data`
-echo -n "<TD>$count</TD>" >> $HTML_DIR/attacks_by_day.shtml
-else
-echo -n "<TD>N/A</TD>" >> $HTML_DIR/attacks_by_day.shtml
-fi
-done
-echo "</TR>" >> $HTML_DIR/attacks_by_day.shtml
-cd ..
-fi
-done
-cd ..
-fi
-done
-
+#for year in * ; do
+##echo "$year" >> $HTML_DIR/attacks_by_day.shtml
+#if [ -d $year ] ; then
+#cd $year
+#for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
+#if [ -d "$month" ] ; then
+#echo "<TR><TD>$year</TD><TD>$month</TD>" >> $HTML_DIR/attacks_by_day.shtml
+#cd  $month
+#for day in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31; do
+#if [ -e $day/current-attack-count.data ] ; then
+#count=`cat $day/current-attack-count.data`
+#echo -n "<TD>$count</TD>" >> $HTML_DIR/attacks_by_day.shtml
+#else
+#echo -n "<TD>N/A</TD>" >> $HTML_DIR/attacks_by_day.shtml
+#fi
+#done
+#echo "</TR>" >> $HTML_DIR/attacks_by_day.shtml
+#cd ..
+#fi
+#done
+#cd ..
+#fi
+#done
+	$SCRIPT_DIR/LongTail_make_daily_attacks_chart.pl "$HTML_DIR/historical" >> $HTML_DIR/attacks_by_day.shtml 
 
 	make_footer "$HTML_DIR/attacks_by_day.shtml"
 
@@ -1174,7 +1290,6 @@ fi
 
 HTML_DIR="$HTML_DIR$HOSTNAME"
 echo "HTML_DIR is $HTML_DIR"
-
 
 echo "DEBUG is set to:$DEBUG"
 
