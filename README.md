@@ -223,6 +223,7 @@ syslog-ng.
 2) If you are also logging to a remote host, and you are using 
 a port OTHER than 514, AND you are running selinux, make sure
 you remember to run this command on BOTH hosts
+
 	semanage port -a -t syslogd_port_t -p tcp NewPortNumber
 
 3) This is the line I use on my honeypot to report to my consolidation
@@ -254,7 +255,7 @@ blank/empty passwords at all
 
 5) I need to add a chart of password lengths
 
-6) It would be nice in the "Trends" tables if the first time an entry 
+6) DONE: 2015-03-18.  It would be nice in the "Trends" tables if the first time an entry 
 is used that it showed up in a different color.
 
 7) I should make a line chart of attacks per day.
@@ -271,7 +272,7 @@ a password for an account per day.
 level analysis of brute force attacks, which is the real reason I wrote
 LongTail.
 
-11) Can I "googlefy" my account/password pairs?
+11) NOT GOING TO HAPPEN.  Can I "googlefy" my account/password pairs?
 
 12) DONE. I need to fix the graph on non-root accounts to filter out the
 root attempts...
@@ -308,13 +309,13 @@ running LongTail on that server also.
 
 20) Does not handle spaces in password for account:password pairs
 
-21) Make a pretty graph of countries attacking.
+21) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of countries attacking.
 
-22) Make a pretty graph of attacks per day over the last 30 days.
+22) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of attacks per day over the last 30 days.
 
-23) Make a pretty graph of unique IP addresses per day over the last 30 days.
+23) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of unique IP addresses per day over the last 30 days.
 
-24) Make a chart of IP addresses that attack more than one host.
+24) NICE TO HAVE BUT NOT A PRIORITY  Make a chart of IP addresses that attack more than one host.
 
 25) There's a "bug" in the .grep files where a "#" character matches
 some of the lines even though the rest of the line does not exist.  This
@@ -333,6 +334,7 @@ Illegal division by zero at -e line 1.
 
 28) Need to speed up whois.pl.
 
-29) I need to cleanup all the temp files so that they are deleted, AND they
-are unique.  Unique is important so multiple copies of LongTail can be run
+29) DONE 2015-03-18.  I need to cleanup all the temp files so that they are deleted, 
+
+30) They are unique.  Unique is important so multiple copies of LongTail can be run
 at the same time.
