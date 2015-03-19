@@ -343,6 +343,7 @@ sub show_attacks_of_ips {
 	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis IP Attacks</H1>\n");
 	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
+	print (FILE_FORMATTED "<P>Results are sorted by IP, and then by dictionary used.\n");
 	print (FILE_FORMATTED "<P>Last updated on $DATE\n");
 
 	# Data format
@@ -446,7 +447,6 @@ sub create_dict_webpage {
 		$COUNT=0;
 		open (SUM_FILE, "sum2.data") || die "Can not open sum2.data, this is bad\n";
 		while (<SUM_FILE>){
-#print "DEBUG-SUM_FILE line is $_";
 			chomp;
 			if (/dict-/){next;}
 			if (/$SUM/){
@@ -455,7 +455,6 @@ sub create_dict_webpage {
 				#$year=2015;
 				#2.16.16.38.53
 			($year,$month,$day,$hour,$minute,$second)=split(/\./,$date_string);
-#print "DEBUG-SUM_FILE $year,$month,$day,$hour,$minute,$second\n";
 
 			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
 			if ($first_seen_epoch == 0){$first_seen_epoch=$epoch};
@@ -472,7 +471,6 @@ sub create_dict_webpage {
 	close (PIPE);
 	close (FILE_FORMATTED_TEMP);
 
-	#system ("sort -nr /tmp/dictionaries.temp >> $honey_dir/dictionaries.shtml");
 	system ("sort -nr /tmp/dictionaries.temp > /tmp/dictionaries.temp.sorted");
 	open (FILE, "/tmp/dictionaries.temp.sorted");
 	while (<FILE>){
@@ -538,3 +536,9 @@ print "Started at $TMP\n";
 &create_dict_webpage;
 $TMP=`date`;
 print "Done at $TMP\n";
+#
+# Get rid of temp files
+unlink ("/tmp/dictionaries.temp.sorted");
+unlink ("/tmp/dictionaries.temp");
+unlink ("/tmp/tmp.data");
+
