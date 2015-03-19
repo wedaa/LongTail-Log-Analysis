@@ -181,7 +181,8 @@ just once a day, I would advise running it at 11:59 PM, as there
 is code that only runs during the 11 PM time frame.
 
 MY crontab entry looks like this one:
-59 * * * * /usr/local/etc/LongTail.sh >> /tmp/LongTail.out 2>> /tmp/LongTail.out
+
+	59 * * * * /usr/local/etc/LongTail.sh >> /tmp/LongTail.out 2>> /tmp/LongTail.out
 
 HTTP Configuration 
 --------------
@@ -203,7 +204,13 @@ These issues will not be fixed anytime soon.
 
 MULTIPLE HOSTS
 --------------
-LongTail can handle multiple hosts reporting.  
+LongTail can handle multiple hosts reporting.  To create reports for
+just one server, use the following command:
+
+	/usr/local/etc/LongTail.sh <hostname>
+
+where <hostname> is the name of the host as reported in the syslog 
+file.
 
 WARNING about jpgraph alignment issues
 --------------
