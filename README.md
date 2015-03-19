@@ -260,8 +260,9 @@ is used that it showed up in a different color.
 
 7) I should make a line chart of attacks per day.
 
-8) I should make a line chart of number of attacks for an account 
-per day.  This might be a little ridiculous though...
+8) NOT GOING TO HAPPEN.  I should make a line chart of 
+number of attacks for an account per day.  This might be a
+little ridiculous though...
 
 9) NOT GOING TO HAPPEN, There are too many passwords and I'd have to 
 make this dynamic, and I'd rather not suck up CPU OR make a bazillion
@@ -336,5 +337,5 @@ Illegal division by zero at -e line 1.
 
 29) DONE 2015-03-18.  I need to cleanup all the temp files so that they are deleted, 
 
-30) They are unique.  Unique is important so multiple copies of LongTail can be run
-at the same time.
+30) NEEDS TO BE DONE: I need to make sure temp files are unique.  Unique is important so multiple 
+copies of LongTail can be run at the same time.
