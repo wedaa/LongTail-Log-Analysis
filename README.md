@@ -120,6 +120,7 @@ you want your reports to go to.
 
 Edit Longtail.sh for the following variables (which are explained
 in the script): 
+
 	GRAPHS
 	DEBUG
 	DO_SSH
@@ -166,7 +167,9 @@ add your own special reports.  Those reports should be included
 in two special files that will NOT be overwritten by install.sh
 
 These scripts are:
+
 	$SCRIPT_DIR/Longtail-ssh-local-reports
+
 	$SCRIPT_DIR/Longtail-httpd-local-reports
 
 
@@ -228,7 +231,9 @@ you remember to run this command on BOTH hosts
 
 3) This is the line I use on my honeypot to report to my consolidation
 master:
+
 	auth.* @@#.#.#.#:####
+
 where #.#.#.# is the IP address of the receiving host and #### is the
 TCP Port where rsyslog is listening on the receiving host.  This way
 we are only sending SSH messages to the remote host, instead of
@@ -236,7 +241,18 @@ filling it's logs with ALL the messages from the honeypot.
 
 4) You must use the following line in your honeypot's (and if you are
 using a consolidation server's ) rsyslog.conf file.
+
   $ActionFileDefaultTemplate RSYSLOG_FileFormat
+
+5) Make sure you are using the lines in the rsyslog.conf file to 
+enable Reliable syslog reporting.
+
+  $WorkDirectory /var/lib/rsyslog # where to place spool files
+  $ActionQueueFileName fwdRule1 # unique name prefix for spool files
+  $ActionQueueMaxDiskSpace 1g   # 1gb space limit (use as much as possible)
+  $ActionQueueSaveOnShutdown on # save messages to disk on shutdown
+  $ActionQueueType LinkedList   # run asynchronously
+  $ActionResumeRetryCount -1    # infinite retries if host is down
 
 
 KNOWN ISSUES
@@ -308,7 +324,7 @@ data from several servers?  I'm leaning towards a secondary reporter
 server using syslog to consolidate data from several servers and 
 running LongTail on that server also.
 
-20) Does not handle spaces in password for account:password pairs
+20) Does not properly handle spaces in password for account:password pairs
 
 21) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of countries attacking.
 
@@ -339,3 +355,6 @@ Illegal division by zero at -e line 1.
 
 30) NEEDS TO BE DONE: I need to make sure temp files are unique.  Unique is important so multiple 
 copies of LongTail can be run at the same time.
+
+31) DONE Added calendar view of attacks per day with links to
+the individual day's attacks.
