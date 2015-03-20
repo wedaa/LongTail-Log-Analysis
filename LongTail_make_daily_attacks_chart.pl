@@ -43,7 +43,13 @@ while (<YEAR>){
 			close (FILE);
 			chomp $value;
 			$day =~ s/^0//;
-			$string =~ s/ $day / $day\/$value /g;
+			#$string =~ s/ $day / $day\/$value /g;
+			if ($day < 10){
+				$string =~ s/ $day /<TD><AXhref=\"historical\/$year\/$month\/0$day\">$day\/$value<\/A><\/TD> /g;
+			}
+			else {
+				$string =~ s/ $day /<TD><AXhref=\"historical\/$year\/$month\/$day\">$day\/$value<\/A><\/TD> /g;
+			}
 		}
 		chdir ("..");
 		$string =~ s/\n /\n/g;
@@ -67,6 +73,7 @@ while (<YEAR>){
 		$string =~ s/<TD>&nbsp<\/TD><\/TD><\/TR>/<\/TD><\/TR>/g;
 
 		$string =~ s/^<TR><TD>/<TR><TH>/;
+		# What a hack.  I'll fix this in 2019 :-)
 		$string =~ s/<TD>2015/<TH>2015/;
 		$string =~ s/<TD>2016/<TH>2016/;
 		$string =~ s/<TD>2017/<TH>2017/;
@@ -82,6 +89,12 @@ while (<YEAR>){
 			if ($line_count > 7 ){$line_count++; next;}
 			$_ =~ s/<\/TD>//g;
 			$_ =~ s/<\/TR>//g;
+# Next two lines are a hack
+#print "\nDEBUG-1 line is $_\n";
+			$_ =~ s/<AXhref=\"historical\/....\/..\/..\">//g;
+			$_ =~ s/<TD><TD>/<TD>/g;
+			$_ =~ s/<\/A>//g;
+#print "\nDEBUG-2 line is $_\n";
 			@array=split(/<TD>/,$_);
 			$day_of_week_loop=1;
 			while ($day_of_week_loop < 8){
@@ -103,6 +116,8 @@ while (<YEAR>){
 			$line_count++;
 		}
 		$string =~ s/<TR>/<TR><TD>&nbsp<\/TD>/g;
+		$string =~ s/AXhref/A href/g;
+		$string =~ s/<TD><TD>/<TD>/g;
 		print $string;
 	}
 	chdir ("..");
