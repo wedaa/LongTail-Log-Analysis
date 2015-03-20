@@ -378,3 +378,10 @@ hostnames, particularly in the statistics sections.
 
 36)  I need a --rebuild function that uses the existing .gz files
 in the daily folders.
+
+37) I need to analyze "sshd Disconnect" messages that come from hosts
+that have not actively tried to login.
+
+38) I need to make sure I disable ssh_keys as logins.
+
+39) I need to analyze ssh_keys as logins.
