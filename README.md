@@ -55,6 +55,25 @@ for more details.
 
 New SSHD Installation
 --------------
+Make sure you have zlib-devel and openssl-devel installed on your
+system (plus make, gcc, etc)
+
+	yum install zlib-devel # For the openssh honeypot
+	yum install openssl-devel # For the openssh honeypot
+
+The EASY way: Run install_openssh.sh from the repository.  It
+will download openssh, modifiy the appropriate source files,
+make and install it into /usr/local/{sbin,etc}, and add startup
+lines in /etc/rc.local.
+
+You should run a "real" sshd on some very high 
+number port so that you can ssh into your server and not have 
+your account and password show up in the log files.  You can 
+use your default /etc/ssh/sshd_config file to reset your port 
+number.
+
+The HARDER way
+--------------
 Download a copy of openssh from http://www.openssh.com/portable.html#ftp
 
 Untar the file and modify auth-passwd.c to add the 
@@ -74,7 +93,7 @@ of the word PassLog.  This is because the search string LongTail
 uses in "PassLog"  Making the string "Pass2222Log" makes it 
 possible to search for ssh attempts to the different ports.
 
-And of course, you should run a "real" sshd on some very high 
+You should run a "real" sshd on some very high 
 number port so that you can ssh into your server and not have 
 your account and password show up in the log files.  You can 
 use your default /etc/ssh/sshd_config file to reset your port 
@@ -82,9 +101,6 @@ number.
 
 LongTail Prerequisites
 --------------
-yum install zlib-devel # For the openssh honeypot
-
-yum install openssl-devel # For the openssh honeypot
 
 yum install jwhois
 
