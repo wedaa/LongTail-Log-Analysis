@@ -19,9 +19,50 @@ sub init {
   	jul 7  aug 8  sep 9  oct 10 nov 11 dec 12
 	);
 	$|=1;
+	$GRAPHS=1;
 	$DEBUG=0;
-	$honey_dir="/var/www/html/honey/";
-	$attacks_dir="/var/www/html/honey/attacks/";
+	$DO_SSH=1;
+	$DO_HTTPD=0;
+	$OBFUSCATE_IP_ADDRESSES=0;
+	$OBFUSCATE_URLS=0;
+	$PASSLOG="PassLog";
+	$PASSLOG2222="Pass2222Log";
+	$SCRIPT_DIR="/usr/local/etc/";
+	$HTML_DIR="/var/www/html/honey/";
+	$PATH_TO_VAR_LOG="/var/log/";
+	$PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/";
+
+	if ( -e "/usr/local/etc/LongTail.config"){
+		open (FILE, ">/tmp/LongTail.$$") || die "Can not open /tmp/LongTail.$$, exiting now\n";
+		open (CONFIG, "/usr/local/etc/LongTail.config");
+		while (<CONFIG>){
+			chomp;
+			$_ =~ s/#.*//;
+			if (/[A-Z]/){
+				$_ =~ s/=/\t=> /;
+				print (FILE "$_,\n");
+			}
+		}
+		close (CONFIG);
+		close (FILE);
+
+		my %config = do "/tmp/LongTail.$$";
+		$GRAPHS=$config{GRAPHS};
+		$DEBUG=$config{DEBUG};
+		$DO_SSH=$config{DO_SSH};
+		$DO_HTTPD=$config{DO_HTTPD};
+		$OBFUSCATE_IP_ADDRESSES=$config{OBFUSCATE_IP_ADDRESSES};
+		$OBFUSCATE_URLS=$config{OBFUSCATE_URLS};
+		$PASSLOG=$config{PASSLOG};
+		$PASSLOG2222=$config{PASSLOG2222};
+		$SCRIPT_DIR=$config{SCRIPT_DIR};
+		$HTML_DIR=$config{HTML_DIR};
+		$PATH_TO_VAR_LOG=$config{PATH_TO_VAR_LOG};
+		$PATH_TO_VAR_LOG_HTTPD=$config{PATH_TO_VAR_LOG_HTTPD};
+		unlink ("/tmp/LongTail.$$");
+	}
+	$honey_dir=$HTML_DIR;
+	$attacks_dir="$HTML_DIR/attacks/";
 	$DATE=`date`;
 }
 
