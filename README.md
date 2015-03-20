@@ -365,3 +365,16 @@ copies of LongTail can be run at the same time.
 
 31) DONE Added calendar view of attacks per day with links to
 the individual day's attacks.
+
+32) I need to start analyzing attacks that come in on port 2222.
+
+33) Can I do telnet honeypots too?
+
+34) I might have a bug in the code for "Median" statistics in the
+main line of code.
+
+35) I need to be able to add comments/explanations next to the 
+hostnames, particularly in the statistics sections.
+
+36)  I need a --rebuild function that uses the existing .gz files
+in the daily folders.
