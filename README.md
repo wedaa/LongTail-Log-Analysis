@@ -53,7 +53,7 @@ are many "Hits" at the left, and tapering down to a "Long Tail"
 towards the right.  See http://en.wikipedia.org/wiki/Long_tail
 for more details.
 
-New SSHD Installation
+New SSHD Installation, The Easy Way
 --------------
 Make sure you have zlib-devel and openssl-devel installed on your
 system (plus make, gcc, etc)
@@ -72,7 +72,7 @@ your account and password show up in the log files.  You can
 use your default /etc/ssh/sshd_config file to reset your port 
 number.
 
-The HARDER way
+New SSHD Installation, The HARDER way
 --------------
 Download a copy of openssh from http://www.openssh.com/portable.html#ftp
 
