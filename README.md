@@ -60,6 +60,7 @@ system (plus make, gcc, etc)
 
 	yum install zlib-devel # For the openssh honeypot
 	yum install openssl-devel # For the openssh honeypot
+	yum install policycoreutils-python # This gives you semanage
 
 The EASY way: Run install_openssh.sh from the repository.  It
 will download openssh, modifiy the appropriate source files,
@@ -71,6 +72,13 @@ number port so that you can ssh into your server and not have
 your account and password show up in the log files.  You can 
 use your default /etc/ssh/sshd_config file to reset your port 
 number.
+
+You also need to run the following selinux commands if you have
+selinux installed
+
+	semanage port -a -t ssh_port_t -p tcp 2222
+	semanage port -a -t ssh_port_t -p tcp <Whatever your big port # is>
+	semanage port -l | grep ssh # Shows ssh ports
 
 New SSHD Installation, The HARDER way
 --------------
@@ -98,6 +106,13 @@ number port so that you can ssh into your server and not have
 your account and password show up in the log files.  You can 
 use your default /etc/ssh/sshd_config file to reset your port 
 number.
+
+You also need to run the following selinux commands if you have
+selinux installed
+
+	semanage port -a -t ssh_port_t -p tcp 2222
+	semanage port -a -t ssh_port_t -p tcp <Whatever your big port # is>
+	semanage port -l | grep ssh # Shows ssh ports
 
 LongTail Prerequisites
 --------------
