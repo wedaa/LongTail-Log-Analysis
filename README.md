@@ -117,22 +117,19 @@ selinux installed
 LongTail Prerequisites
 --------------
 
-yum install jwhois
+LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core commands follow:
 
-yum install php php-common php-cli php-xml php-pear php-pdo php-gd
-
-yum install httpd
+	yum install jwhois
+	yum install php php-common php-cli php-xml php-pear php-pdo php-gd
+	yum install httpd
 
 Look up the properl EPEL repo at  https://fedoraproject.org/wiki/EPEL/FAQ
 
-rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-
-yum install rpm-build ttmkfdir
-yum install http://sourceforge.net/projects/mscorefonts2/files/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
-
-cd /usr/share/fonts
-
-ln -s msttcore truetype 
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+	yum install rpm-build ttmkfdir
+	yum install http://sourceforge.net/projects/mscorefonts2/files/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
+	cd /usr/share/fonts
+	ln -s msttcore truetype 
 
 jpgraph from http://jpgraph.net/download/ installed into /usr/local/php/jpgraph.  
 
