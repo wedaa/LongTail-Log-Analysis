@@ -289,6 +289,13 @@ enable Reliable syslog reporting.
 	$ActionQueueType LinkedList   # run asynchronously
 	$ActionResumeRetryCount -1    # infinite retries if host is down
 
+WARNING About System Hostnames
+--------------
+
+System hostnames (as reported by the hostname command) should NOT be
+fully qualified, and MUST NOT include "-" (dash) characters.  I create
+files with hostnames in them and use the "." and "-" characters as
+delimeters.
 
 KNOWN ISSUES
 --------------
@@ -413,3 +420,11 @@ that have not actively tried to login.
 38) I need to make sure I disable ssh_keys as logins.
 
 39) I need to analyze ssh_keys as logins.
+
+40) DONE: Added "normalization" of data so I also report full stats
+that are from FULL days (24 hours) only.  This way I do not include
+totals from partial days or from hosts down a portion of the day
+or from systems that are "protected" by IDS or firewalls.
+
+41) I need to automate adding the "protected" data file into the 
+servers daily directories (erhp erhp2).
