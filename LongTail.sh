@@ -401,6 +401,38 @@ function count_ssh_attacks {
 	rm $TMPFILE
 	EVERYTHING_AVERAGE=`printf '%.2f' $EVERYTHING_AVERAGE`
 	EVERYTHING_STD=`printf '%.2f' $EVERYTHING_STD`
+
+	#
+	# Normalized data
+	#
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		# I have no idea where this breaks, but it's a big-ass number of files
+		cd $HTML_DIR
+		# OK, this may not be 100% secure, but it's close enough for now
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG ALL  statistics" ; fi
+		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+#for FILE in  `find */historical -name current-attack-count.data ` ; do if [ ! -e $FILE.notfullday ] ; then echo $FILE; cat $FILE ; fi ; done >/tmp/ericw
+#exit
+		for FILE in  `find */historical -name current-attack-count.data ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
+		. $TMPFILE
+cat $TMPFILE
+		rm $TMPFILE
+		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
+		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
+	else
+		# I have no idea where this breaks, but it's a big-ass number of files
+		cd $HTML_DIR
+		# OK, this may not be 100% secure, but it's close enough for now
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG ALL  statistics" ; fi
+		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+		for FILE in  `find ./historical -name current-attack-count.data ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
+		. $TMPFILE
+cat $TMPFILE
+		rm $TMPFILE
+		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
+		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
+
+	fi
 	
 	sed -i "s/SSH Activity Today.*$/SSH Activity Today: $TODAY/" $1/index.shtml
 	sed -i "s/SSH Activity This Month.*$/SSH Activity This Month: $THIS_MONTH/" $1/index.shtml
@@ -415,6 +447,12 @@ function count_ssh_attacks {
 	echo "<TR><TD>Last Month</TD><TD> $LAST_MONTH_COUNT</TD><TD> $LAST_MONTH_SUM</TD><TD> $LAST_MONTH_AVERAGE</TD><TD> $LAST_MONTH_STD</TD><TD> $LAST_MONTH_MEDIAN</TD><TD> $LAST_MONTH_MAX</TD><TD> $LAST_MONTH_MIN" >>$1/statistics.shtml
 	echo "<TR><TD>This Year</TD><TD> $YEAR_COUNT</TD><TD> $YEAR_SUM</TD><TD> $YEAR_AVERAGE</TD><TD> $YEAR_STD</TD><TD> $YEAR_MEDIAN</TD><TD> $YEAR_MAX</TD><TD> $YEAR_MIN" >>$1/statistics.shtml
 	echo "<TR><TD>Since Logging Started</TD><TD> $EVERYTHING_COUNT</TD><TD> $EVERYTHING_SUM</TD><TD> $EVERYTHING_AVERAGE</TD><TD> $EVERYTHING_STD</TD><TD> $EVERYTHING_MEDIAN</TD><TD> $EVERYTHING_MAX</TD><TD> $EVERYTHING_MIN" >>$1/statistics.shtml
+	echo "<TR><TD>Normalized Since Logging Started</TD><TD> $NORMALIZED_COUNT</TD><TD> $NORMALIZED_SUM</TD><TD> $NORMALIZED_AVERAGE</TD><TD> $NORMALIZED_STD</TD><TD> $NORMALIZED_MEDIAN</TD><TD> $NORMALIZED_MAX</TD><TD> $NORMALIZED_MIN" >>$1/statistics.shtml
+	echo "" >> $$1/statistics.shtml
+	echo "</TABLE><!--HEADERLINE -->" >> $$1/statistics.shtml
+	echo "<P>Normalized data is data that consists of only full days of attacks,<!--HEADERLINE --> " >> $1/statistics.shtml
+	echo "AND to servers that are NOT protected by firewalls or other kinds of <!--HEADERLINE -->" >> $1/statistics.shtml
+	echo "intrusion protection systems.<!--HEADERLINE -->"  >> $1/statistics.shtml
 	make_footer "$1/statistics.shtml"
 
 	sed -i "s/SSH Activity Today.*$/SSH Activity Today: $TODAY/" $1/index-long.shtml
@@ -435,6 +473,11 @@ function count_ssh_attacks {
 		done
 		
 		echo "</TABLE>" >> statistics_all.shtml
+		echo "" >> $$1/statistics.shtml
+		echo "</TABLE><!--HEADERLINE -->" >> $$1/statistics.shtml
+		echo "<P>Normalized data is data that consists of only full days of attacks,<!--HEADERLINE --> " >> $1/statistics.shtml
+		echo "AND to servers that are NOT protected by firewalls or other kinds of <!--HEADERLINE -->" >> $1/statistics.shtml
+		echo "intrusion protection systems.<!--HEADERLINE -->"  >> $1/statistics.shtml
 		echo "<!--#include virtual=/honey/footer.html --> <!--HEADERLINE --> " >> statistics_all.shtml
 		echo "</BODY><!--HEADERLINE -->" >> statistics_all.shtml
 		echo "</HTML><!--HEADERLINE -->" >> statistics_all.shtml
@@ -911,7 +954,7 @@ function do_ssh {
 #	ssh_attacks $HTML_DIR/historical/2015/02/24 $YEAR $PATH_TO_VAR_LOG "2015-02-24"      "messages*" "current"
 #	ssh_attacks $HTML_DIR/historical/2015/02/25 $YEAR $PATH_TO_VAR_LOG "2015-02-25"      "messages*" "current"
 #	ssh_attacks $HTML_DIR/historical/2015/02/26 $YEAR $PATH_TO_VAR_LOG "2015-02-26"      "messages*" "current"
-#	ssh_attacks $HTML_DIR/historical/2015/03/15 $YEAR $PATH_TO_VAR_LOG "2015-03-15"      "messages*" "current"
+#	ssh_attacks $HTML_DIR/historical/2015/03/14 $YEAR $PATH_TO_VAR_LOG "2015-03-14"      "messages*" "current"
 	
 	
 	#-----------------------------------------------------------------
