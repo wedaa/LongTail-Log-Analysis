@@ -78,6 +78,9 @@ function init_variables {
 		echo "Can not find HTML_DIR: $HTML_DIR, exiting now"
 		exit
 	fi
+	# What's the top level directory?
+	HTML_TOP_DIR="/honey/"
+	HTML_TOP_DIR_BARE="honey"  # NO slashes please
 	
 	#Where is the messages file?
 	PATH_TO_VAR_LOG="/var/log/"
@@ -110,15 +113,37 @@ function is_directory_good {
 		exit
 	fi
 	if [ ! -w $1  ] ; then
-        	echo "I can't write to /tmp", exiting now
+        	echo "I can't write to $1", exiting now
 		exit
 	fi
 }
+
+############################################################################
+# Lets make sure we can write to the directory
+#
+function is_file_good {
+	if [ ! -e $1  ] ; then
+		echo "DANGER DANGER DANGER"
+        	echo "$1 does not exist, exiting now "
+		exit
+	fi
+	if [ ! -w $1  ] ; then
+		echo "DANGER DANGER DANGER"
+        	echo "I can't write to $1", exiting now
+		exit
+	fi
+}
+
+
 ############################################################################
 # Change the date in index.shtml
 #
 function change_date_date_in_index {
-	DATE=`date`
+	local DATE=`date`
+
+	is_file_good $1/index.shtml
+	is_file_good $1/index-long.shtml
+	is_file_good $1/graphics.shtml
 	sed -i "s/updated on..*$/updated on $DATE/" $1/index.shtml
 	sed -i "s/updated on..*$/updated on $DATE/" $1/index-long.shtml
 	sed -i "s/updated on..*$/updated on $DATE/" $1/graphics.shtml
@@ -167,7 +192,7 @@ function make_header {
 
 	echo "</HEAD><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<BODY BGCOLOR=#00f0FF><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
-	echo "<!--#include virtual="/honey/header.html" --> <!--HEADERLINE --> " >> $MAKE_HEADER_FILENAME
+	echo "<!--#include virtual="/$HTML_TOP_DIR/header.html" --> <!--HEADERLINE --> " >> $MAKE_HEADER_FILENAME
 	echo "<H1>LongTail Log Analysis</H1><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<H3>$TITLE</H3><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<P>$DESCRIPTION <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
@@ -205,7 +230,7 @@ function make_footer {
 	fi
 	echo "" >> $MAKE_FOOTER_FILENAME
 	echo "</TABLE><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
-	echo "<!--#include virtual="/honey/footer.html" --> <!--HEADERLINE --> " >> $MAKE_FOOTER_FILENAME
+	echo "<!--#include virtual="/$HTML_TOP_DIR/footer.html" --> <!--HEADERLINE --> " >> $MAKE_FOOTER_FILENAME
 	echo "</BODY><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
 	echo "</HTML><!--HEADERLINE -->" >> $MAKE_FOOTER_FILENAME
 	if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
@@ -317,6 +342,7 @@ function count_ssh_attacks {
 		#MONTH_AVERAGE=`printf '%.2f' 0`
 		MONTH_STD=`printf '%.2f' 0`
 	fi
+	rm $TMPFILE
 
 
 	#
@@ -362,6 +388,7 @@ function count_ssh_attacks {
 		LAST_MONTH_MIN="N/A"
 		LAST_MONTH_STD="N/A"
 	fi
+	rm $TMPFILE
 
 	#
 	# THIS YEAR
@@ -415,7 +442,6 @@ function count_ssh_attacks {
 #exit
 		for FILE in  `find */historical -name current-attack-count.data ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
 		. $TMPFILE
-cat $TMPFILE
 		rm $TMPFILE
 		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
 		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
@@ -464,21 +490,20 @@ cat $TMPFILE
 		cd $HTML_DIR
 		grep HEADERLINE statistics.shtml |egrep -v footer.html\|'</BODY'\|'</HTML'\|'</TABLE'\|'</TR' > statistics_all.shtml
 		
-		grep '<TR>' /var/www/html/honey/statistics.shtml |grep -v HEADERLINE |sed 's/<TD>/<TD>ALL Hosts /' >> statistics_all.shtml
+		grep '<TR>' $HTML_DIR/statistics.shtml |grep -v HEADERLINE |sed 's/<TD>/<TD>ALL Hosts /' >> statistics_all.shtml
 		
 		for FILE in */statistics.shtml  ; do
 			NAME=`dirname $FILE`
-			echo "<TR><TH colspan=8  ><A href=\"/honey/$NAME/\">$NAME</A></TH></TR>" >> statistics_all.shtml
+			echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$NAME/\">$NAME</A></TH></TR>" >> statistics_all.shtml
 			grep '<TR>' $FILE |sed "s/<TD>/<TD>$NAME /" >> statistics_all.shtml
 		done
 		
 		echo "</TABLE>" >> statistics_all.shtml
-		echo "" >> $$1/statistics.shtml
-		echo "</TABLE><!--HEADERLINE -->" >> $$1/statistics.shtml
-		echo "<P>Normalized data is data that consists of only full days of attacks,<!--HEADERLINE --> " >> $1/statistics.shtml
-		echo "AND to servers that are NOT protected by firewalls or other kinds of <!--HEADERLINE -->" >> $1/statistics.shtml
-		echo "intrusion protection systems.<!--HEADERLINE -->"  >> $1/statistics.shtml
-		echo "<!--#include virtual=/honey/footer.html --> <!--HEADERLINE --> " >> statistics_all.shtml
+		#echo "</TABLE><!--HEADERLINE -->" >> $$1/statistics.shtml
+		#echo "<P>Normalized data is data that consists of only full days of attacks,<!--HEADERLINE --> " >> $1/statistics.shtml
+		#echo "AND to servers that are NOT protected by firewalls or other kinds of <!--HEADERLINE -->" >> $1/statistics.shtml
+		#echo "intrusion protection systems.<!--HEADERLINE -->"  >> $1/statistics.shtml
+		echo "<!--#include virtual=/$HTML_TOP_DIR/footer.html --> <!--HEADERLINE --> " >> statistics_all.shtml
 		echo "</BODY><!--HEADERLINE -->" >> statistics_all.shtml
 		echo "</HTML><!--HEADERLINE -->" >> statistics_all.shtml
 	fi
@@ -598,12 +623,13 @@ function ssh_attacks {
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml" "IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted" "Attack Patterns"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml" "Top 20 IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted" "Attack Patterns"
 	# I need to make a temp file for this
-	cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/honey/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
+	cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
+	sed -i s/HONEY/$HTML_TOP_DIR_BARE/g $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml |head -20 |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml"
-	
+
 	#-------------------------------------------------------------------------
 	# This translates IPs to countries
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 6, doing whois.pl lookups " ; date; fi
@@ -855,7 +881,7 @@ function http_attacks {
 
 
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-shellshock-by-time-of-day" "shellshock-by-time-of-day"   "" "Count" "Time"
-	$SCRIPT_DIR/catall.sh $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep  |grep -v \/honey\/ | grep \:\; |awk -F: '{print $2}' |sort|uniq -c |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-shellshock-by-time-of-day
+	$SCRIPT_DIR/catall.sh $ACCESS_LOG |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep  |grep -v \/$HTML_TOP_DIR\/ | grep \:\; |awk -F: '{print $2}' |sort|uniq -c |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-shellshock-by-time-of-day
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-shellshock-by-time-of-day"
 
 	#
@@ -1192,32 +1218,7 @@ function make_daily_attacks_chart {
 	cd historical
 	
 	make_header "$HTML_DIR/attacks_by_day.shtml" "Attacks By Day"  "" 
-
-#for year in * ; do
-##echo "$year" >> $HTML_DIR/attacks_by_day.shtml
-#if [ -d $year ] ; then
-#cd $year
-#for month in 01 02 03 04 05 06 07 08 09 10 11 12 ; do
-#if [ -d "$month" ] ; then
-#echo "<TR><TD>$year</TD><TD>$month</TD>" >> $HTML_DIR/attacks_by_day.shtml
-#cd  $month
-#for day in 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31; do
-#if [ -e $day/current-attack-count.data ] ; then
-#count=`cat $day/current-attack-count.data`
-#echo -n "<TD>$count</TD>" >> $HTML_DIR/attacks_by_day.shtml
-#else
-#echo -n "<TD>N/A</TD>" >> $HTML_DIR/attacks_by_day.shtml
-#fi
-#done
-#echo "</TR>" >> $HTML_DIR/attacks_by_day.shtml
-#cd ..
-#fi
-#done
-#cd ..
-#fi
-#done
 	$SCRIPT_DIR/LongTail_make_daily_attacks_chart.pl "$HTML_DIR/historical" >> $HTML_DIR/attacks_by_day.shtml 
-
 	make_footer "$HTML_DIR/attacks_by_day.shtml"
 
 }
