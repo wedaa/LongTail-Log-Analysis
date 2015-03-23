@@ -426,5 +426,8 @@ that are from FULL days (24 hours) only.  This way I do not include
 totals from partial days or from hosts down a portion of the day
 or from systems that are "protected" by IDS or firewalls.
 
-41) I need to automate adding the "protected" data file into the 
+41) I need to automate adding the "protected" data file (The file 
+that shows they are protected by a firewall/IDS) into the 
 servers daily directories (erhp erhp2).
+
+42) I need to fix the calendar report so the links go someplace real
