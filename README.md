@@ -464,3 +464,6 @@ servers daily directories (erhp erhp2).
 
 42) DONE: (Bug fix only) I need to fix the calendar report so the 
 links go someplace real
+
+43) I need to analyze telnet probes, now that I have that data being 
+logged
