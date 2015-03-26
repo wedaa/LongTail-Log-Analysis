@@ -366,7 +366,8 @@ data from several servers?  I'm leaning towards a secondary reporter
 server using syslog to consolidate data from several servers and 
 running LongTail on that server also.
 
-20) Does not properly handle spaces in password for account:password pairs
+20) DONE: (Also fixed everywhere) Does not properly handle spaces in 
+password for account:password pairs
 
 21) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of countries attacking.
 
