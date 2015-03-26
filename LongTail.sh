@@ -206,7 +206,7 @@ function make_header {
 	echo "<H1>LongTail Log Analysis</H1><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<H3>$TITLE</H3><!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<P>$DESCRIPTION <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
-	echo "<P><font color="red">SPACECHAR</font> Indicates a space in the incoming data <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
+#	echo "<P><font color="red">SPACECHAR</font> Indicates a space in the incoming data <!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	echo "<P>Created on $MAKE_HEADER_DATE<!--HEADERLINE -->" >> $MAKE_HEADER_FILENAME
 	
 	if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
@@ -569,10 +569,10 @@ function ssh_attacks {
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml" "Root Passwords" " " "Count" "Password"
 
 	cat /tmp/LongTail-messages.$$ |grep Username\:\ root |\
-	sed 's/^..*Password: //' |sed 's/ /SPACECHAR/g' |\
+	sed 's/^..*Password: //' | sed 's/ /\&nbsp;/g'|\
 	sort |uniq -c|sort -nr |\
-	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}' |\
-	sed 's/SPACECHAR/<font color="red">SPACECHAR<\/font>/g' >> $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml
+	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}' \
+	>> $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml
 
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml" "Top 20 Root Passwords" "" "Count" "Password"
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml
@@ -587,10 +587,10 @@ function ssh_attacks {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 2 "  ;date; fi
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml" "Admin Passwords" " " "Count" "Password"
 	cat /tmp/LongTail-messages.$$ |grep Username\:\ admin |\
-	sed 's/^..*Password: //' |sed 's/ /SPACECHAR/g' |\
+	sed 's/^..*Password: //' |sed 's/ /\&nbsp;/g'|\
 	sort |uniq -c|sort -nr |\
-	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}'|\
-	sed 's/SPACECHAR/<font color="red">SPACECHAR<\/font>/g' >> $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml
+	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}'\
+	>> $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml
 
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml" "Top 20 Admin Passwords" " " "Count" "Password"
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml
@@ -603,11 +603,21 @@ function ssh_attacks {
 	# Not root or admin PASSWORDS
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 3 "  ; date; fi
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml" "Non Root Passwords" " " "Count" "Password"
+
+#	cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
+	#sed 's/^..*Password: //' |sed 's/ /SPACECHAR/g' |\
+	#sort |uniq -c|sort -nr |\
+	#awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}'|\
+	#sed 's/SPACECHAR/<font color="red">SPACECHAR<\/font>/g'  >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml
+
+	#cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
+	#sed 's/^..*Password: //'  | sed 's/ /\&nbsp;/g'
+
 	cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
-	sed 's/^..*Password: //' |sed 's/ /SPACECHAR/g' |\
+	sed 's/^..*Password: //'  | sed 's/ /\&nbsp;/g'|\
 	sort |uniq -c|sort -nr |\
-	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}'|\
-	sed 's/SPACECHAR/<font color="red">SPACECHAR<\/font>/g'  >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml
+	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}'\
+	>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml
 
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml" "Top 20 Non Root Passwords" " " "Count" "Password"
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml | head -20  >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml
@@ -651,12 +661,10 @@ function ssh_attacks {
 	# I need to make a temp file for this
 
 
-	#for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq |grep -v \:\:1`; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
+#WHOIS.PL
+#	THIS WORKS for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -u `; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 
-	for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -u `; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
-#	for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -u `; do   if [ "x${IP_ADDRESS[$IP]}" == "x" ] ; then $SCRIPT_DIR/whois.pl $IP ; else echo "Country: ${IP_ADDRESS[$IP]}"  |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
-
-#if [ "x${IP_ADDRESS[$IP]}" == "x" ] ; then $SCRIPT_DIR/whois.pl $IP ; else echo "Country: ${IP_ADDRESS[$IP]}"
+	for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -u `; do   if [ "x${IP_ADDRESS[$IP]}" == "x" ] ; then $SCRIPT_DIR/whois.pl $IP ; else echo "Country: ${IP_ADDRESS[$IP]}"; fi  |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 
 	sed -i -f $SCRIPT_DIR/translate_country_codes.sed  $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml
@@ -669,10 +677,6 @@ function ssh_attacks {
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml" "Non Root Pairs" " " "Count" "Account:Password"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml" "Top 20 Non Root Pairs" " " "Count" "Account:Password"
 
-		cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
-		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/'|sed 's/ /SPACECHAR/g'|\
-		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' |sed 's/SPACECHAR/<font color="red">SPACECHAR<\/font>/g'>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
-
 	if [ $FILE_PREFIX == "current" ] ;
 	then
 		if [ $DEBUG  == 1 ] ; then 
@@ -680,9 +684,9 @@ function ssh_attacks {
 			echo "DATE is $DATE"
 		fi
 		cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
-		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/' |sed 's/ /SPACECHAR/g' |\
-		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' |\
-		sed 's/SPACECHAR/<font color="red">SPACECHAR<\/font>/g' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
+		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/' |sed 's/ /\&nbsp;/g'|\
+		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' \
+		>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
 
 		cat /tmp/LongTail-messages.$$ |\
 		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/' |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-account-password-pairs.data.gz
@@ -692,11 +696,11 @@ function ssh_attacks {
 			echo "DATE is $DATE"
 		fi
 		cat /tmp/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
-		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/'|sed 's/ /SPACECHAR/g' |\
-		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' |\
-		sed 's/SPACECHAR/<font color="red">SPACECHAR<\/font>/g' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
+		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/'|sed 's/ /\&nbsp;/g'|\
+		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' \
+		>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
 	fi
-
+exit
 	cat  $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml |grep -v HEADERLINE |head -20 >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml
 
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml"
@@ -775,7 +779,7 @@ function do_ssh {
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh now" ; fi
 	#-----------------------------------------------------------------
 	# Lets count the ssh attacks
-#	count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
+	count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
 	
 	#----------------------------------------------------------------
 	# Lets check the ssh logs
