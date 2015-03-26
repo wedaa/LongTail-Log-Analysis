@@ -114,6 +114,33 @@ selinux installed
 	semanage port -a -t ssh_port_t -p tcp <Whatever your big port # is>
 	semanage port -l | grep ssh # Shows ssh ports
 
+Telnet
+--------------
+
+Telnet-honeypot is a telnet honeypot which logs attempts to a file AND to syslog. Unfortunately in order to be able to log messages to syslog I had to disable the "chroot" function in the code. Also, in order to make it more portable, I had to disable the "seccomp" library in order to make it a bit more portable.
+
+	wget https://github.com/wedaa/LongTail-honeypot-telnet/archive/master.zip
+	unzip LongTail-honeypot-telnet-master.zip
+	cd LongTail-honeypot-telnet-master/
+	make
+	make install
+	/etc/init.d/honeypot-telnet.rc  start
+
+It is your responsibility to put a link into the appropriate /etc/rc3.d directory
+(or where ever else is appropriate.
+ 
+It can also be started with the following commandline.
+
+/usr/local/etc/honeypot-telnet --daemonize --pid-file=/var/tmp/honeypot-telnet.pid --honey-log=/var/log/honey.log --debug-log=/var/log/honeypot.log
+
+There is a "honeypot-telnet.rc" which supports "start", "stop", and "restart". This file which is copied to /etc/init.d during a "make install". It is your responsibility to do make sure it winds up in the proper rc.# directories. (Or reference it properly in /etc/rc.local if you use that.)
+
+It is based almost entirely on
+
+https://github.com/zx2c4/telnet-password-honeypot
+
+which is Copyright (C) 2012 Jason A. Donenfeld
+
 LongTail Prerequisites
 --------------
 
@@ -392,7 +419,8 @@ Illegal division by zero at -e line 1.
 DEBUG ALL  statistics
 Illegal division by zero at -e line 1.
 
-28) Need to speed up whois.pl.
+28) DONE: (I preload the first 5000 entries into the script) Need 
+to speed up whois.pl.
 
 29) DONE 2015-03-18.  I need to cleanup all the temp files so that they are deleted, 
 
@@ -402,9 +430,10 @@ copies of LongTail can be run at the same time.
 31) DONE Added calendar view of attacks per day with links to
 the individual day's attacks.
 
-32) I need to start analyzing attacks that come in on port 2222.
+32) IN PROGRESS I need to start analyzing attacks that come in on port 2222.
 
-33) Can I do telnet honeypots too?
+33) DONE: Yes, use same codes as for port 2222 attacks. Can I do 
+telnet honeypots too?
 
 34) I might have a bug in the code for "Median" statistics in the
 main line of code.
@@ -412,13 +441,15 @@ main line of code.
 35) I need to be able to add comments/explanations next to the 
 hostnames, particularly in the statistics sections.
 
-36)  I need a --rebuild function that uses the existing .gz files
-in the daily folders.
+36) DONE: I need a --rebuild function that uses the existing .gz files
+in the daily folders.  LongTail.sh needs to be enable this feature
+as I am not going to make a -rebuild flag since I do not want this
+to be easy to be done.  It's still dangerous.
 
 37) I need to analyze "sshd Disconnect" messages that come from hosts
 that have not actively tried to login.
 
-38) I need to make sure I disable ssh_keys as logins.
+38) DONE In sshd_config files. I need to make sure I disable ssh_keys as logins.
 
 39) I need to analyze ssh_keys as logins.
 
@@ -431,4 +462,5 @@ or from systems that are "protected" by IDS or firewalls.
 that shows they are protected by a firewall/IDS) into the 
 servers daily directories (erhp erhp2).
 
-42) I need to fix the calendar report so the links go someplace real
+42) DONE: (Bug fix only) I need to fix the calendar report so the 
+links go someplace real
