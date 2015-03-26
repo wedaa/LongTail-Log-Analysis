@@ -98,11 +98,13 @@ while (<YEAR>){
 			@array=split(/<TD>/,$_);
 			$day_of_week_loop=1;
 			while ($day_of_week_loop < 8){
+#print "\nDAY_OF_WEEK_LOOP = $day_of_week_loop\n";
 				($tmp,$tmp1)=split(/\//,$array[$day_of_week_loop] );
 				if ($tmp1 > 0){
 					#$totals[$day_of_week_loop]+=$tmp1;
 					#$count[$day_of_week_loop]++;
 					# @a_1() etc is declared at top of program
+#print "\nday_of_week_loop = $day_of_week_loop, tmp1 is $tmp1\n";
 					if ( $day_of_week_loop == 1) {$sqsum_1+=$tmp1*$tmp1; push(@a_1,$tmp1)}
 					if ( $day_of_week_loop == 2) {$sqsum_2+=$tmp1*$tmp1; push(@a_2,$tmp1)}
 					if ( $day_of_week_loop == 3) {$sqsum_3+=$tmp1*$tmp1; push(@a_3,$tmp1)}
@@ -131,6 +133,7 @@ while ($day_of_week_loop < 8){
 }
 #print "\n</TABLE>\n";
 
+if (@a_1 > 0){
 $n_1=@a_1;
 $s_1=sum(@a_1);
 $a_1=$s_1/@a_1;
@@ -140,7 +143,9 @@ $std_1=sqrt($sqsum_1/$n_1-($s_1/$n_1)*($s_1/$n_1));
 $mid_1=int @a_1/2;
 @srtd=sort { $a <=> $b } @a_1;
 if(@a_1%2){$med_1=$srtd[$mid_1];}else{$med_1=($srtd[$mid_1-1]+$srtd[$mid_1])/2;}; 
+}
 
+if (@a_2 > 0){
 $n_2=@a_2;
 $s_2=sum(@a_2);
 $a_2=$s_2/@a_2;
@@ -150,7 +155,9 @@ $std_2=sqrt($sqsum_2/$n_2-($s_2/$n_2)*($s_2/$n_2));
 $mid_2=int @a_2/2;
 @srtd=sort { $a <=> $b } @a_2;
 if(@a_2%2){$med_2=$srtd[$mid_2];}else{$med_2=($srtd[$mid_2-1]+$srtd[$mid_2])/2;}; 
+}
 
+if (@a_3 > 0){
 $n_3=@a_3;
 $s_3=sum(@a_3);
 $a_3=$s_3/@a_3;
@@ -160,7 +167,9 @@ $std_3=sqrt($sqsum_3/$n_3-($s_3/$n_3)*($s_3/$n_3));
 $mid_3=int @a_3/2;
 @srtd=sort { $a <=> $b } @a_3;
 if(@a_3%2){$med_3=$srtd[$mid_3];}else{$med_3=($srtd[$mid_3-1]+$srtd[$mid_3])/2;}; 
+}
 
+if (@a_4 > 0){
 $n_4=@a_4;
 $s_4=sum(@a_4);
 $a_4=$s_4/@a_4;
@@ -170,7 +179,9 @@ $std_4=sqrt($sqsum_4/$n_4-($s_4/$n_4)*($s_4/$n_4));
 $mid_4=int @a_4/2;
 @srtd=sort { $a <=> $b } @a_4;
 if(@a_4%2){$med_4=$srtd[$mid_4];}else{$med_4=($srtd[$mid_4-1]+$srtd[$mid_4])/2;}; 
+}
 
+if (@a_5 > 0){
 $n_5=@a_5;
 $s_5=sum(@a_5);
 $a_5=$s_5/@a_5;
@@ -180,7 +191,9 @@ $std_5=sqrt($sqsum_5/$n_5-($s_5/$n_5)*($s_5/$n_5));
 $mid_5=int @a_5/2;
 @srtd=sort { $a <=> $b } @a_5;
 if(@a_5%2){$med_5=$srtd[$mid_5];}else{$med_5=($srtd[$mid_5-1]+$srtd[$mid_5])/2;}; 
+}
 
+if (@a_6 > 0){
 $n_6=@a_6;
 $s_6=sum(@a_6);
 $a_6=$s_6/@a_6;
@@ -190,7 +203,9 @@ $std_6=sqrt($sqsum_6/$n_6-($s_6/$n_6)*($s_6/$n_6));
 $mid_6=int @a_6/2;
 @srtd=sort { $a <=> $b } @a_6;
 if(@a_6%2){$med_6=$srtd[$mid_6];}else{$med_6=($srtd[$mid_6-1]+$srtd[$mid_6])/2;}; 
+}
 
+if (@a_7 > 0){
 $n_7=@a_7;
 $s_7=sum(@a_7);
 $a_7=$s_7/@a_7;
@@ -200,6 +215,7 @@ $std_7=sqrt($sqsum_7/$n_7-($s_7/$n_7)*($s_7/$n_7));
 $mid_7=int @a_7/2;
 @srtd=sort { $a <=> $b } @a_7;
 if(@a_7%2){$med_7=$srtd[$mid_7];}else{$med_7=($srtd[$mid_7-1]+$srtd[$mid_7])/2;}; 
+}
 
 $std_1=sprintf("%.2f",$std_1);
 $std_2=sprintf("%.2f",$std_2);
