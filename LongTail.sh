@@ -338,7 +338,6 @@ function count_ssh_attacks {
 		cat $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;}; $n; print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
-		rm $TMPFILE
 		# Now we "clean up" the average and STD deviation
 		MONTH_AVERAGE=`printf '%.2f' $MONTH_AVERAGE`
 		MONTH_STD=`printf '%.2f' $MONTH_STD`
@@ -385,7 +384,6 @@ function count_ssh_attacks {
 		cat $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/*/current-attack-count.data|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "LAST_MONTH_COUNT=$n\nLAST_MONTH_SUM=$s\nLAST_MONTH_AVERAGE=$a\nLAST_MONTH_STD=$std\nLAST_MONTH_MEDIAN=$med\nLAST_MONTH_MAX=$m\nLAST_MONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
-		rm $TMPFILE
 		# Now we "clean up" the average and STD deviation
 		LAST_MONTH_AVERAGE=`printf '%.2f' $LAST_MONTH_AVERAGE`
 		LAST_MONTH_STD=`printf '%.2f' $LAST_MONTH_STD`
@@ -519,6 +517,7 @@ function count_ssh_attacks {
 	fi
 
 	cd $ORIGINAL_DIRECTORY
+
 }
 	
 ############################################################################
@@ -700,7 +699,7 @@ function ssh_attacks {
 		sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' \
 		>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
 	fi
-exit
+
 	cat  $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml |grep -v HEADERLINE |head -20 >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml
 
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml"
@@ -721,30 +720,36 @@ exit
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 8, gathering data for raw-data.gz " ; date; fi
 	if [ $FILE_PREFIX == "current" ] ;
 	then
-		# Lets make sure we have one for today and this month and this year
-		# I added this code on 2015-03-17, Lets see if it breaks anything...
-		TMP_YEAR=`date +%Y`
-		TMP_MONTH=`date +%m`
-		TMP_DAY=`date +%d`
-
-		TMP_DIR="$TMP_HTML_DIR"
-		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
-		TMP_DIR="$TMP_HTML_DIR/historical"
-		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
-		TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR"
-		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
-		TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH"
-		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
-		TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY"
-		if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
-
-		if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
-			cat /tmp/LongTail-messages.$$  |sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
+		# Code do avoid doing this if REBUILD is set
+		if [ $REBUILD  != 1 ] ; then
+			echo "REBUILD NOT SET, copying .gz file now"
+			# Lets make sure we have one for today and this month and this year
+			# I added this code on 2015-03-17, Lets see if it breaks anything...
+			TMP_YEAR=`date +%Y`
+			TMP_MONTH=`date +%m`
+			TMP_DAY=`date +%d`
+	
+			TMP_DIR="$TMP_HTML_DIR"
+			if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+			TMP_DIR="$TMP_HTML_DIR/historical"
+			if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+			TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR"
+			if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+			TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH"
+			if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+			TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY"
+			if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+	
+			if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
+				cat /tmp/LongTail-messages.$$  |sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
+			else
+				cat /tmp/LongTail-messages.$$ |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
+			fi
+			cp $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
+			chmod a+r $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
 		else
-			cat /tmp/LongTail-messages.$$ |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
-		fi
-		cp $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
-		chmod a+r $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
+			echo "REBUILD SET, NOT copying .gz file now"
+		fi 
 	fi
 
 
@@ -769,6 +774,7 @@ exit
 	cd $ORIGINAL_DIRECTORY
 	rm /tmp/LongTail-messages.$$
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done with ssh_attack " ; date; fi
+
 }
 
 #
@@ -785,43 +791,43 @@ function do_ssh {
 	# Lets check the ssh logs
 	ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$DATE"  "messages" "current"
 	
-	if [ $HOUR -eq 0 ]; then
-	#----------------------------------------------------------------
-	# Lets check the ssh logs for the last 7 days
-	LAST_WEEK=""
-	for i in 1 2 3 4 5 6 7 ; do
-		TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
-		if [ "$LAST_WEEK" == "" ] ; then
-			LAST_WEEK="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
-		else
-			LAST_WEEK="$LAST_WEEK $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
-		fi
-	done
-	TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG
-	ssh_attacks $HTML_DIR $YEAR "/" "."      "$LAST_WEEK" "last-7-days"
-	PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG
-
-	#----------------------------------------------------------------
-	# Lets check the ssh logs for the last 30 days
-	LAST_MONTH=""
-	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
-		TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
-		if [ "$LAST_MONTH" == "" ] ; then
-			LAST_MONTH="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
-		else
-			LAST_MONTH="$LAST_MONTH $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
-		fi
-	done
-	TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG
-	ssh_attacks $HTML_DIR $YEAR "/" "."      "$LAST_MONTH" "last-30-days"
-	PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG
-
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing historical now" ; fi
-	TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG
-	ssh_attacks $HTML_DIR $YEAR "/$HTML_DIR/historical/" "."      "*/*/*/current-raw-data.gz" "historical"
-	PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG
-	fi
+	if [ $HOUR -eq 17 ]; then
+		#----------------------------------------------------------------
+		# Lets check the ssh logs for the last 7 days
+		LAST_WEEK=""
+		for i in 1 2 3 4 5 6 7 ; do
+			TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
+			if [ "$LAST_WEEK" == "" ] ; then
+				LAST_WEEK="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
+			else
+				LAST_WEEK="$LAST_WEEK $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
+			fi
+		done
+		TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG
+		ssh_attacks $HTML_DIR $YEAR "/" "."      "$LAST_WEEK" "last-7-days"
+		PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG
 	
+		#----------------------------------------------------------------
+		# Lets check the ssh logs for the last 30 days
+		LAST_MONTH=""
+		for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+			TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
+			if [ "$LAST_MONTH" == "" ] ; then
+				LAST_MONTH="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
+			else
+				LAST_MONTH="$LAST_MONTH $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
+			fi
+		done
+		TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG
+		ssh_attacks $HTML_DIR $YEAR "/" "."      "$LAST_MONTH" "last-30-days"
+		PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG
+	
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing historical now" ; fi
+		TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG
+		ssh_attacks $HTML_DIR $YEAR "/$HTML_DIR/historical/" "."      "*/*/*/current-raw-data.gz" "historical"
+		PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG
+	fi
+echo "FFF"
 	# This is an example of how to call ssh_attacks for past dates and 
 	# put the reports in the $HTML_DIR/historical/Year/month/date directory
 	# Make sure you edit the date in BOTH places in the line.
@@ -1136,6 +1142,39 @@ function create_historical_copies {
 	fi
 }
 
+############################################################################
+# 
+# Normal users should never need this.  I wrote this because I keep changing
+# things around and have to rebuild the files when I change stuff
+#
+# Does not seem to change these files:
+#  -rw-r--r--. 1 root  root       5 Mar 14 12:27 current-attack-count.data
+#  -rw-r--r--. 1 root  root   34433 Mar 14 12:27 current-raw-data.gz
+# This does not work yet.... 2015-03-26
+
+function rebuild {
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In Rebuild now" ; fi
+	REBUILD=1
+  cd $HTML_DIR/historical/
+# ssh_attacks $HTML_DIR/historical/2015/02/24 $YEAR $PATH_TO_VAR_LOG "2015-02-24"      "messages*" "current"
+#	ssh_attacks $HTML_DIR/historical/2015/03/14 $YEAR $PATH_TO_VAR_LOG "2015-03-14"      "messages*" "current"
+# ssh_attacks /var/www/html/honey///historical/2015/01/04 2015 /var/www/html/honey///historical/2015/01/04 2015-01-04 current-raw-data.gz current
+
+  for FILE in */*/*/current-raw-data.gz ; do
+		echo $FILE
+		DIRNAME=`dirname $FILE`
+		echo "DIRNAME is $DIRNAME"
+		YEAR=`dirname $DIRNAME`
+		YEAR=`dirname $YEAR`
+		DATE=`echo $DIRNAME |sed 's/\//-/g';`
+		echo "DATE is $DATE"
+		echo "YEAR IS $YEAR"
+		echo ssh_attacks $HTML_DIR/historical/$DIRNAME $YEAR $HTML_DIR/historical/$DIRNAME "$DATE"      "current-raw-data.gz" "current"
+		ssh_attacks $HTML_DIR/historical/$DIRNAME $YEAR $HTML_DIR/historical/$DIRNAME "$DATE"      "current-raw-data.gz" "current"
+
+	done
+}
+
 
 ############################################################################
 # Main 
@@ -1181,6 +1220,12 @@ HTML_DIR="$HTML_DIR$HOSTNAME"
 echo "HTML_DIR is $HTML_DIR"
 
 echo "DEBUG is set to:$DEBUG"
+
+# Uncomment out the next two lines to rebuild all the data files
+# CREATE A BACKUP OF /var/www/html/honey FIRST, just in case.
+# cd /var/www/html/honeyl tar -cf /tmp/honey.tar  .
+#rebuild
+#exit
 
 change_date_date_in_index $HTML_DIR $YEAR
 
