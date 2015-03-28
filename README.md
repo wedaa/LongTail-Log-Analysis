@@ -116,7 +116,6 @@ selinux installed
 
 Telnet
 --------------
-
 Telnet-honeypot is a telnet honeypot which logs attempts to a file AND to syslog. Unfortunately in order to be able to log messages to syslog I had to disable the "chroot" function in the code. Also, in order to make it more portable, I had to disable the "seccomp" library in order to make it a bit more portable.
 
 	wget https://github.com/wedaa/LongTail-honeypot-telnet/archive/master.zip
@@ -143,7 +142,6 @@ which is Copyright (C) 2012 Jason A. Donenfeld
 
 LongTail Prerequisites
 --------------
-
 LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core commands follow:
 
 	yum install jwhois
@@ -226,7 +224,6 @@ These scripts are:
 	$SCRIPT_DIR/Longtail-ssh-local-reports
 
 	$SCRIPT_DIR/Longtail-httpd-local-reports
-
 
 CRON Entry
 --------------
@@ -323,6 +320,26 @@ System hostnames (as reported by the hostname command) should NOT be
 fully qualified, and MUST NOT include "-" (dash) characters.  I create
 files with hostnames in them and use the "." and "-" characters as
 delimeters.
+
+Files in the html directory that you should know about
+--------------
+current-attack-count.data.notfullday : Indicates to the system NOT
+to include the count from this day in the normalization statistics.
+This file should be in historical/year/month/date AND in
+systemname/historical/year/month/date when you are using a 
+consolidation server.
+
+header.html:
+
+footer.html:
+
+description.html:
+
+index.shtml:
+
+index-long.shtml:
+
+index-historical.shtml:
 
 KNOWN ISSUES
 --------------
@@ -467,3 +484,6 @@ links go someplace real
 
 43) I need to analyze telnet probes, now that I have that data being 
 logged
+
+44) I need to cleanup the Dictionary section.  It's still ugly-ish
+and needs to be cleaned up and described better
