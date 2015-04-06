@@ -1,11 +1,21 @@
 #!/bin/sh
-# This is an example script of how to deal with 
-# multiple hosts reporting.  We do it this way
-# for now until I can figure out how to do it 
-# properly in a config file AND account for hosts
-# no longer reporting.
-/usr/local/etc/LongTail.sh shepherd
-/usr/local/etc/LongTail.sh erhp
-/usr/local/etc/LongTail.sh erhp2
-/usr/local/etc/LongTail.sh syrtest
-/usr/local/etc/LongTail.sh 
+date; /usr/local/etc/LongTail.sh ssh shepherd
+date; /usr/local/etc/LongTail.sh ssh erhp
+date; /usr/local/etc/LongTail.sh ssh erhp2
+date; /usr/local/etc/LongTail.sh ssh syrtest
+date; /usr/local/etc/LongTail.sh ssh edub
+date; /usr/local/etc/LongTail.sh ssh edu_c
+date; /usr/local/etc/LongTail.sh 
+date; 
+date; /usr/local/etc/LongTail-2222.sh shepherd
+date; /usr/local/etc/LongTail-2222.sh erhp
+date; /usr/local/etc/LongTail-2222.sh erhp2
+date; /usr/local/etc/LongTail-2222.sh syrtest
+date; /usr/local/etc/LongTail-2222.sh edub
+date; /usr/local/etc/LongTail-2222.sh 
+#date; /usr/local/etc/LongTail_analyze_attacks-2222.pl
+
+date; /usr/local/etc/LongTail.sh telnet shepherd
+date; /usr/local/etc/LongTail.sh telnet erhp
+date; /usr/local/etc/LongTail.sh telnet erhp2
+date; /usr/local/etc/LongTail.sh telnet
