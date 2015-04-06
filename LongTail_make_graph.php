@@ -14,6 +14,7 @@ $file = $argv[1];
 $header = $argv[2];
 $x_axis_title =  $argv[3];
 $y_axis_title =  $argv[4];
+$size=$argv[5];
  
 // We need some data
 $counter=0;
@@ -55,7 +56,12 @@ if ($myfile) {
 
 
 // Setup the graph.
-$graph = new Graph(400,240);
+if ($size == "wide"){
+	$graph = new Graph(810,240);
+}
+else {
+	$graph = new Graph(400,240);
+}
 $graph->img->SetMargin(60,20,35,75);
 $graph->SetScale("textlin");
 $graph->SetMarginColor("lightblue:1.1");
