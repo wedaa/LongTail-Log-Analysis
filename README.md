@@ -355,12 +355,12 @@ the passwords properly.
 4) DONE: I think this works now, 2015-02-14.  I don't deal with 
 blank/empty passwords at all
 
-5) I need to add a chart of password lengths
+5) IN PROGRESS: I need to add a chart of password lengths
 
 6) DONE: 2015-03-18.  It would be nice in the "Trends" tables if the first time an entry 
 is used that it showed up in a different color.
 
-7) I should make a line chart of attacks per day.
+7) DONE: (Made it a bar chart) I should make a line chart of attacks per day.
 
 8) NOT GOING TO HAPPEN.  I should make a line chart of 
 number of attacks for an account per day.  This might be a
@@ -400,9 +400,9 @@ without IP address in the line.
 17) DONE: Need to do the mean, median, mode, range for number 
 of ssh attempts.
 
-18) Need to do the mean, median, mode, range for number of IP addresses
-with more than one attempt  (so I filter out the single attempts from
-distributed brute force bots).
+18) PROBABLY NOT GOING TO HAPPEN: Need to do the mean, median, mode, 
+range for number of IP addresses with more than one attempt  (so I 
+filter out the single attempts from distributed brute force bots).
 
 19) DONE: I'm going to setup a secondary "Consolidation" server to 
 consolidate data on.  Too much work otherwise. How do I consolidate 
@@ -413,13 +413,16 @@ running LongTail on that server also.
 20) DONE: (Also fixed everywhere) Does not properly handle spaces in 
 password for account:password pairs
 
-21) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of countries attacking.
+21) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of countries 
+attacking.
 
-22) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of attacks per day over the last 30 days.
+22) DONE: Make a pretty graph of attacks per day over the last 30 days.
 
-23) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of unique IP addresses per day over the last 30 days.
+23) DONE  Make a pretty graph of number of 
+unique IP addresses per day over the last 30 days.
 
-24) NICE TO HAVE BUT NOT A PRIORITY  Make a chart of IP addresses that attack more than one host.
+24) NICE TO HAVE BUT NOT A PRIORITY  Make a chart of IP addresses that 
+attack more than one host.
 
 25) There's a "bug" in the .grep files where a "#" character matches
 some of the lines even though the rest of the line does not exist.  This
@@ -455,7 +458,7 @@ telnet honeypots too?
 34) I might have a bug in the code for "Median" statistics in the
 main line of code.
 
-35) I need to be able to add comments/explanations next to the 
+35) DONE: I need to be able to add comments/explanations next to the 
 hostnames, particularly in the statistics sections.
 
 36) DONE: I need a --rebuild function that uses the existing .gz files
@@ -475,15 +478,38 @@ that are from FULL days (24 hours) only.  This way I do not include
 totals from partial days or from hosts down a portion of the day
 or from systems that are "protected" by IDS or firewalls.
 
-41) I need to automate adding the "protected" data file (The file 
+41) DONE: I need to automate adding the "protected" data file (The file 
 that shows they are protected by a firewall/IDS) into the 
 servers daily directories (erhp erhp2).
 
 42) DONE: (Bug fix only) I need to fix the calendar report so the 
 links go someplace real
 
-43) I need to analyze telnet probes, now that I have that data being 
+43) DONE: I need to analyze telnet probes, now that I have that data being 
 logged
 
 44) I need to cleanup the Dictionary section.  It's still ugly-ish
 and needs to be cleaned up and described better
+
+45) SOMEWHERE (In either the sshd server or rsyslog) there is a bug which if the password is empty, that the 
+line sent to syslog is "...Password:$", instead of "...Password: $"
+Please note the missing space at the end of the line is the bug
+and now I need to code around it everyplace :-(
+
+46) Make a chart of the first time a password was seen
+
+47) DONE: Show unique usernames, 
+
+48) Make a chart of the first time a username was seen.
+
+49) DONE: Show unique IP addresses, 
+
+50) DONE: (Part of ip_attacks.shtml) Make a chart of the first time a IP was seen.
+
+51) NOT GOING TO HAPPEN, I don't want to be "denyhosts".  Make IPs available in 
+text only format so people can import them into /etc/hosts.deny or whatever.  If
+they really want it they can read the source code to figure out where I hide it.
+
+52) DONE: Fixed "bug" where the first day a hostname is seen that
+the 7 day, 30 day, and historical graphs are not made until the next
+day.
