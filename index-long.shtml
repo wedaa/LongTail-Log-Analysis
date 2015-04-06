@@ -3,23 +3,11 @@
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" --> 
 
-<H1>LongTail Log Analysis/Historical Version</H1>
+<H3>LongTail Log Analysis/Historical Version<BR>All SSH Ports, <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Mon Mar 16 17:01:02 EDT 2015
+Last updated on Sun Apr  5 23:06:33 EDT 2015
 <HR>
 <H2>SSH Brute Force Attempts</H2>
-<P>
-SSH Activity Today: 27548
-<BR>
-SSH Activity This Month: 220968
-<BR>
-SSH Activity This Year: 802233
-<BR>
-SSH Activity Since Logging Started: 802233
-<BR>
-<BR>
-<BR>
-<BR>
 <TABLE BORDER=0>
 <TR><TH>Last 30 Days</TH><TH>All</TH>
 <TR><TD><img src="last-30-days-top-20-root-passwords.png"><BR><BR>
@@ -30,7 +18,53 @@ SSH Activity Since Logging Started: 802233
 <TD><img src="historical-top-20-non-root-accounts.png"><BR><BR>
 <TR><TD><img src="last-30-days-top-20-non-root-passwords.png"><BR><BR>
 <TD><img src="historical-top-20-non-root-passwords.png"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+<TR><TH Colspan=2><a href ="graphics.shtml">More Charts </a></TH></TR>
+<TR><TH Colspan=2><a href ="/honey/graphics_all.shtml">All Charts For ALL hosts </a></TH></TR>
 </TABLE>
+
+<P>
+Login Attempts Today: 37878
+<BR>
+Login Attempts This Month: 111374
+<BR>
+Login Attempts This Year: 2204390
+<BR>
+Login Attempts Since Logging Started: 2204390
+<BR>
+<BR>
+Unique Passwords Today: 24960
+<BR>
+New Passwords Today: 294
+<BR>
+Unique Passwords This Month: 36030
+<BR>
+Unique Passwords This Year: 391577
+<BR>
+Unique Passwords Since Logging Started: 391577
+<BR>
+<BR>
+Unique Usernames Today: 530
+<BR>
+New Usernames Today: 231
+<BR>
+Unique Usernames This Month: 417
+<BR>
+Unique Usernames This Year: 3698
+<BR>
+Unique Usernames Since Logging Started: 3698
+<BR>
+<BR>
+Unique IPs Today: 51
+<BR>
+New IPs Today: 8
+<BR>
+Unique IPs This Month: 185
+<BR>
+Unique IPs This Year: 2433
+<BR>
+Unique IPs Since Logging Started: 2433
+<BR>
 <BR>
 <H3>Historical Trends</H3>
 <a href ="trends-in-root-passwords.shtml">Trends in Top 20 Root Passwords</a>
@@ -44,14 +78,16 @@ SSH Activity Since Logging Started: 802233
 <BR>
 <a href ="graphics.shtml">Charts and Graphs</a>
 <BR>
-<a href ="statistics.shtml">Attack Statistics</a>
+<a href ="statistics.shtml">Attack Statistics <!--#include virtual="description.html" --></a>
 <BR>
 <a href ="/honey/statistics_all.shtml">Attack Statistics of ALL hosts</a>
 <BR>
 <BR>
-<a href ="attacks_by_day.shtml">Attacks By Day</a>
+<a href ="attacks_by_day.shtml">Attacks By Day, Calendar View</a>
 <BR>
 <H3>Today's Activity</H3>
+<a href ="todays-uniq-passwords.txt">Passwords FIRST seen today</a>
+<BR>
 <a href ="current-root-passwords.shtml">Root Passwords</a>
 <BR>
 <a href ="current-top-20-root-passwords.shtml">Top 20 Root Passwords</a>
@@ -67,6 +103,8 @@ SSH Activity Since Logging Started: 802233
 <a href ="current-top-20-non-root-passwords.shtml">Top 20 Non Root/Admin Passwords</a>
 <BR>
 <BR>
+<a href ="todays-uniq-username.shtml">Accounts FIRST seen today</a>
+<BR>
 <a href ="current-non-root-accounts.shtml">Accounts Tried</a>
 <BR>
 <a href ="current-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
@@ -77,14 +115,14 @@ SSH Activity Since Logging Started: 802233
 <a href ="current-top-20-non-root-pairs.shtml">Top 20 Non Root pairs</a>
 <BR>
 <BR>
+<a href ="todays-uniq-ips.shtml">IP Addresses FIRST seen today</a>
+<BR>
 <a href="current-ip-addresses.shtml">IP Addresses</a>
 <BR>
 <a href="current-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
 <BR>
 <a href="current-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
 <BR>
-<BR>
-<a href="current-raw-data.gz">Current Raw Data</a>
 <BR>
 <H3>Last 7 Days</H3>
 <a href ="last-7-days-root-passwords.shtml">Root Passwords</a>
@@ -119,9 +157,6 @@ SSH Activity Since Logging Started: 802233
 <a href="last-7-days-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
 <BR>
 <BR>
-<a href="last-7-days-raw-data.gz">Last 7 Days Raw Data</a>
-<BR>
-
 <H3>Last 30 Days</H3>
 <a href ="last-30-days-root-passwords.shtml">Root Passwords</a>
 <BR>
@@ -154,8 +189,6 @@ SSH Activity Since Logging Started: 802233
 <BR>
 <a href="last-30-days-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
 <BR>
-<BR>
-<a href="last-30-days-raw-data.gz">Last 30 Days Raw Data</a>
 <BR>
 <H3>
 Historical Data
@@ -204,153 +237,7 @@ Historical Data
 <a href="historical-ssh-attacks-by-time-of-day.shtml">Historical Attacks By Time of Day </a>
 <BR>
 <BR>
-<a href="historical-raw-data.gz">Historical Raw Data</a>
-<BR>
-<BR>
-<a href="historical/">Long Term Historical Reports</A>
+<a href="historical/">Long Term Historical Reports</A> This includes RAW input data more than 90 days old.
 
-<!--
-<HR>
-<BR>
-<H2>HTTP Attacks and Probes</H2>
-<H3>Access Logs</H3>
-<a href="current-access-log.shtml">Todays Apache access log</a>
-<BR>
-<a href="historical-access-log.shtml">Historical Apache Access Log</a>
-<BR>
-<BR>
-<H3>Today's Activity</H3>
-<P>Shellshock:What webpages are they looking for?
-<BR>
-<a href="current-shellshock-webpages.shtml">Shellshock Webpages<a/>
-<BR>
-<a href="current-top-20-shellshock-webpages.shtml">Top 20 Shellshock Webpages</a>
-<BR>
-<BR>
-<P>What are the actual attacks they are trying to run?
-<BR>
-<a href="current-attacks.shtml">Attacks</a>
-<BR>
-<a href="current-top-20-attacks.shtml">Top 20 Attacks</a>
-<BR>
-<BR>
-<P>Where are they getting their payloads from or trying to connect to with bash?
-<BR>
-<a href="current-payloads.shtml">Payloads</A>
-<BR>
-<a href="current-top-20-payloads.shtml">Top 20 Payloads</a>
-<BR>
-<P>What are they trying to rm?
-<BR>
-<a href="current-rm-attempts.shtml">`rm` attempts</a>
-<BR>
-<a href="current-top-20-rm-attempts.shtml">Top 20 `rm` attempts</a>
-<BR>
-<BR>
-<P>Shellshock attacks not explitly using perl
-<BR>
-<a href="current-shellshock-not-using-perl.shtml">Shellshock Attacks not explicitly using perl</A>
-<BR>
-<a href="current-top-20-shellshock-not-using-perl.shtml">Top 20 Shellshock Attacks not explicitly using perl</A>
-<BR>
-<BR>
-<P>Shellshock logs
-<BR>
-<a href="current-access-log-shell-shock.shtml">Todays Apache Shell Shock log</a>
-<BR>
-<a href="current-country-access-log-shell-shock.shtml">Todays Apache Shell Shock Country log</a>
-<BR>
-<a href="current-ip-access-log-shell-shock.shtml">Todays Apache Shell Shock IP log</a>
-<BR>
-<BR>
-<P> 404 Probes
-<BR>
-<a href="current-access-log-404.shtml">Today's 404 Probes Log</a>
-<BR>
-<BR>
-<a href="current-open-proxy-log-404.shtml">Today's Open Proxy Log</a>
-<BR>
-<a href="current-ip-open-proxy-404.shtml">Today's IP Open Proxy Log</a>
-<BR>
-<a href="current-country-open-proxy-log-404.shtml">Today's Country Open Proxy Log</a>
-<BR>
-<BR>
-<a href="current-ip-access-log-404.shtml">Today's 404 Probes IP Log</a>
-<BR>
-<a href="current-top-20-ip-access-log-404.shtml">Today's Top 20 404 Probes IP Log</a>
-<BR>
-<a href="current-country-access-log-404.shtml">Today's 404 Probes Country Log</a>
-<BR>
-<BR>
-<H3>
-Historical
-</H3>
-<P>Shellshock: What webpages are they looking for?
-<BR>
-<a href="historical-shellshock-webpages.shtml">Historical Shellshock Webpages<a/>
-<BR>
-<a href="historical-top-20-shellshock-webpages.shtml">Historical Top 20 Shellshock Webpages</a>
-<BR>
-<BR>
-<P>What are the actual attacks they are trying to run?
-<BR>
-<a href="historical-attacks.shtml">Historical Attacks</a>
-<BR>
-<a href="historical-top-20-attacks.shtml">Historical Top 20 Attacks</a>
-<BR>
-<BR>
-<P>Where are they getting their payloads from or trying to connect to with bash?
-<BR>
-<a href="historical-payloads.shtml">Historical Payloads</A>
-<BR>
-<a href="historical-top-20-payloads.shtml">Historical Top 20 Payloads</a>
-<BR>
-<BR>
-<P>What are they trying to rm?
-<BR>
-<a href="historical-rm-attempts.shtml">Historical `rm` attempts</a>
-<BR>
-<a href="historical-top-20-rm-attempts.shtml">Top 20 Historical `rm` attempts</a>
-<BR>
-<BR>
-<P>Shellshock attacks not explitly using perl
-<BR>
-<a href="historical-shellshock-not-using-perl.shtml">Historical Shellshock Attacks not explicitly using perl</A>
-<BR>
-<a href="historical-top-20-shellshock-not-using-perl.shtml">Top 20 Historical Shellshock Attacks not explicitly using perl</A>
-<BR>
-<BR>
-<P>Shellshock logs
-<BR>
-<a href="historical-access-log-shell-shock.shtml">Historical Apache Shell Shock log</a>
-<BR>
-<a href="historical-country-access-log-shell-shock.shtml">Historical Apache Shell Shock Country log</a>
-<BR>
-<a href="historical-ip-access-log-shell-shock.shtml">Historical Apache Shell Shock IP log</a>
-<BR>
-<a href="historical-shellshock-by-time-of-day.shtml">Historical Apache Shell Shock by Time of Day</a>
-<BR>
-<BR>
-<P> 404 Probes
-<BR>
-<a href="historical-access-log-404.shtml">Historical 404 Probes Log</a>
-<BR>
-<BR>
-<a href="historical-open-proxy-log-404.shtml">Historical Open Proxy Log</a>
-<BR>
-<a href="historical-ip-open-proxy-404.shtml">Historical IP Open Proxy Log</a>
-<BR>
-<a href="historical-country-open-proxy-log-404.shtml">Historical Country Open Proxy Log</a>
-<BR>
-<BR>
-<a href="historical-ip-access-log-404.shtml">Historical 404 Probes IP Log</a>
-<BR>
-<a href="historical-top-20-ip-access-log-404.shtml">Historical Top 20 404 Probes IP Log</a>
-<BR>
-<a href="historical-country-access-log-404.shtml">Historical 404 Probes Country Log</a>
-<BR>
-<BR>
-<a href="historical/">Long term historical data</A>
--->
 <!--#include virtual="/honey/footer.html" --> 
 

@@ -4,21 +4,10 @@
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" --> 
 
-<H1>LongTail Log Analysis/Concise Version</H1>
+<H3>LongTail Log Analysis/Concise Version<BR>All SSH Ports,  <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Mon Mar 16 17:01:02 EDT 2015
+Last updated on Sun Apr  5 23:06:33 EDT 2015
 <HR>
-<H2>SSH Brute Force Attempts</H2>
-<P>
-SSH Activity Today: 27548
-<BR>
-SSH Activity This Month: 220968
-<BR>
-SSH Activity This Year: 802233
-<BR>
-SSH Activity Since Logging Started: 802233
-<BR>
-<BR>
 <TABLE BORDER=0>
 <TR><TH>Today</TH><TH>Last 7 days</TH>
 <TR><TD><img src="current-top-20-root-passwords.png"><BR><BR>
@@ -29,8 +18,56 @@ SSH Activity Since Logging Started: 802233
 <TD><img src="last-7-days-top-20-non-root-accounts.png"><BR><BR>
 <TR><TD><img src="current-top-20-non-root-passwords.png"><BR><BR>
 <TD><img src="last-7-days-top-20-non-root-passwords.png"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+<TR><TH Colspan=2><a href ="graphics.shtml">More Charts </a></TH></TR>
+<TR><TH Colspan=2><a href ="/honey/graphics_all.shtml">All Charts For ALL Hosts</a></TH></TR>
 </TABLE>
 <BR>
+<BR>
+<H2>SSH Brute Force Attempts</H2>
+<P>
+Login Attempts Today: 37878
+<BR>
+Login Attempts This Month: 111374
+<BR>
+Login Attempts This Year: 2204390
+<BR>
+Login Attempts Since Logging Started: 2204390
+<BR>
+<BR>
+Unique Passwords Today: 24960
+<BR>
+New Passwords Today: 294
+<BR>
+Unique Passwords This Month: 36030
+<BR>
+Unique Passwords This Year: 391577
+<BR>
+Unique Passwords Since Logging Started: 391577
+<BR>
+<BR>
+Unique Usernames Today: 530
+<BR>
+New Usernames Today: 231
+<BR>
+Unique Usernames This Month: 417
+<BR>
+Unique Usernames This Year: 3698
+<BR>
+Unique Usernames Since Logging Started: 3698
+<BR>
+<BR>
+Unique IPs Today: 51
+<BR>
+New IPs Today: 8
+<BR>
+Unique IPs This Month: 185
+<BR>
+Unique IPs This Year: 2433
+<BR>
+Unique IPs Since Logging Started: 2433
+<BR>
+
 
 <H3>Historical Trends</H3>
 <a href ="trends-in-root-passwords.shtml">Trends in Top 20 Root Passwords</a>
@@ -42,17 +79,17 @@ SSH Activity Since Logging Started: 802233
 <a href ="trends-in-accounts.shtml">Trends in Top 20 Accounts</a>
 <BR>
 <BR>
-<a href ="graphics.shtml">Charts and Graphs</a>
-<BR>
-<BR>
-<a href ="statistics.shtml">Attack Statistics</a>
+<a href ="statistics.shtml">Attack Statistics <!--#include virtual="description.html" --> </a>
 <BR>
 <a href ="/honey/statistics_all.shtml">Attack Statistics of ALL hosts</a>
 <BR>
 <BR>
-<a href ="attacks_by_day.shtml">Attacks By Day</a>
+<a href ="attacks_by_day.shtml">Attacks By Day, Calendar view,  <!--#include virtual="description.html" --></a>
 <BR>
 <H3>Today's Activity</H3>
+<a href ="todays-uniq-passwords.shtml">Passwords FIRST seen today</a>
+<BR>
+<BR>
 <a href ="current-root-passwords.shtml">Root Passwords</a>
 <BR>
 <a href ="current-top-20-root-passwords.shtml">Top 20 Root Passwords</a>
@@ -68,6 +105,8 @@ SSH Activity Since Logging Started: 802233
 <a href ="current-top-20-non-root-passwords.shtml">Top 20 Non Root/Admin Passwords</a>
 <BR>
 <BR>
+<a href ="todays-uniq-username.shtml">Accounts FIRST seen today</a>
+<BR>
 <a href ="current-non-root-accounts.shtml">Accounts Tried</a>
 <BR>
 <a href ="current-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
@@ -78,14 +117,13 @@ SSH Activity Since Logging Started: 802233
 <a href ="current-top-20-non-root-pairs.shtml">Top 20 Non Root/Admin pairs</a>
 <BR>
 <BR>
+<a href ="todays-uniq-ips.shtml">IP Addresses FIRST seen today</a> 
+<BR>
 <a href="current-ip-addresses.shtml">IP Addresses</a>
 <BR>
 <a href="current-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
 <BR>
 <a href="current-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
-<BR>
-<BR>
-<a href="current-raw-data.gz">Current Raw Data</a>
 <BR>
 <!--
 <H2>HTTP Attacks and Probes</H2>

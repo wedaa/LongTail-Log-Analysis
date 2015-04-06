@@ -13,33 +13,35 @@
 <BODY BGCOLOR=#00f0FF><!--HEADERLINE -->
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" -->
-<H1>LongTail Log Analysis Data Graphs</H1><!--HEADERLINE -->
-Last updated on Sun Mar 15 11:00:46 EDT 2015
+<H3>LongTail Log Analysis Data Graphs<BR><!--#include virtual="description.html" --></H3><!--HEADERLINE -->
+Last updated on Sun Apr  5 23:06:33 EDT 2015
+<BR>
+<BR>
+<TABLE BORDER=0>
+<TR><TH Colspan=2>Last 30 days counts</TH>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-ips-count.png"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-password-count.png"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-username-count.png"><BR><BR>
+<TR><TH>Today</TH><TH>Last 7 days</TH>
+<TR><TD><img src="current-top-20-root-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-root-passwords.png"><BR><BR>
+<TR><TD><img src="current-top-20-admin-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-admin-passwords.png"><BR><BR>
+<TR><TD><img src="current-top-20-non-root-accounts.png"><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-accounts.png"><BR><BR>
+<TR><TD><img src="current-top-20-non-root-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-passwords.png"><BR><BR>
+<TR><TH>Last 30 Days</TH><TH>All</TH>
+<TR><TD><img src="last-30-days-top-20-root-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-root-passwords.png"><BR><BR>
+<TR><TD><img src="last-30-days-top-20-admin-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-admin-passwords.png"><BR><BR>
+<TR><TD><img src="last-30-days-top-20-non-root-accounts.png"><BR><BR>
+<TD><img src="historical-top-20-non-root-accounts.png"><BR><BR>
+<TR><TD><img src="last-30-days-top-20-non-root-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-non-root-passwords.png"><BR><BR>
+</TABLE>
 
-<H3>Today's Charts</H3>
-<img src="current-top-20-root-passwords.png"><BR><BR>
-<img src="current-top-20-admin-passwords.png"><BR><BR>
-<img src="current-top-20-non-root-accounts.png"><BR><BR>
-<img src="current-top-20-non-root-passwords.png"><BR><BR>
-<BR>
-<BR>
-<H3>Last 7 Day's Charts</H3>
-<img src="last-7-days-top-20-root-passwords.png"><BR><BR>
-<img src="last-7-days-top-20-admin-passwords.png"><BR><BR>
-<img src="last-7-days-top-20-non-root-accounts.png"><BR><BR>
-<img src="last-7-days-top-20-non-root-passwords.png"><BR><BR>
-<BR>
-<BR>
-<H3>Last 30 Day's Charts</H3>
-<img src="last-30-days-top-20-root-passwords.png"><BR><BR>
-<img src="last-30-days-top-20-admin-passwords.png"><BR><BR>
-<img src="last-30-days-top-20-non-root-accounts.png"><BR><BR>
-<img src="last-30-days-top-20-non-root-passwords.png"><BR><BR>
-<BR>
-<BR>
-<H3>All Historical Data Charts</H3>
-<img src="historical-top-20-root-passwords.png"><BR><BR>
-<img src="historical-top-20-admin-passwords.png"><BR><BR>
-<img src="historical-top-20-non-root-accounts.png"><BR><BR>
-<img src="historical-top-20-non-root-passwords.png"><BR><BR>
 
+<!--#include virtual="/honey/footer.html" -->
