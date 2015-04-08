@@ -3,13 +3,75 @@
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" --> 
 
-<H3>LongTail Log Analysis/Historical Version<BR>All SSH Ports, <!--#include virtual="description.html" --></H3>
+<H3>LongTail Log Analysis/Historical Data<BR>All SSH Ports, <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Sun Apr  5 23:06:33 EDT 2015
-<HR>
+Last updated on Wed Apr  8 19:06:19 EDT 2015
+<BR>
+<BR>
+
+<TABLE border=1>
+<TR><TH colspan=6>SSH Brute Force Attempts </TH></TR>
+<TR><TH>Description</TH><TH>Today</TH><TH>Never seen<BR>Before Today</TH><TH>This<BR>Month</TH><TH>This<BR>Year</TH><TH>Since Logging<BR>Started</TH>
+<TR><TH>Login Attempts
+</TD><TD>
+<!--Login Attempts Today:--> 34290
+</TD><TD> N/A
+</TD><TD>
+<!--Login Attempts This Month:--> 283630
+</TD><TD>
+<!--Login Attempts This Year:--> 2409707
+</TD><TD>
+<!--Login Attempts Since Logging Started:--> 2409707
+</TR>
+<TR><TH>Unique Passwords</TH>
+<TD>
+<!--Unique Passwords Today:--> 24104
+</TD><TD>
+<!--New Passwords Today:--> 2376
+</TD><TD>
+<!--Unique Passwords This Month:--> 75432
+</TD><TD>
+<!--Unique Passwords This Year:--> 392292
+</TD><TD>
+<!--Unique Passwords Since Logging Started:--> 392292
+</TD><TD>
+</TR>
+<TR><TH>Unique Usernames </TH>
+<TD>
+<!--Unique Usernames Today:--> 321
+</TD><TD>
+<!--New Usernames Today:--> 65
+</TD><TD>
+<!--Unique Usernames This Month:--> 943
+</TD><TD>
+<!--Unique Usernames This Year:--> 3963
+</TD><TD>
+<!--Unique Usernames Since Logging Started:--> 3963
+</TD><TD>
+</TR>
+<TR>
+<TH>Unique IPs </TH> 
+<TD>
+<!--Unique IPs Today:--> 79
+</TD><TD>
+<!--New IPs Today:--> 34
+</TD><TD>
+<!--Unique IPs This Month:--> 222
+</TD><TD>
+<!--Unique IPs This Year:--> 2459
+</TD><TD>
+<!--Unique IPs Since Logging Started:--> 2459
+</TD><TD>
+</TR>
+</TABLE>
+<BR>
+<BR>
+
 <H2>SSH Brute Force Attempts</H2>
 <TABLE BORDER=0>
-<TR><TH>Last 30 Days</TH><TH>All</TH>
+<TR><TH colspan=2>Count of Last 30 Days Of Attacks</TH>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+<TR><TH>Prior 30 Days</TH><TH>All</TH>
 <TR><TD><img src="last-30-days-top-20-root-passwords.png"><BR><BR>
 <TD><img src="historical-top-20-root-passwords.png"><BR><BR>
 <TR><TD><img src="last-30-days-top-20-admin-passwords.png"><BR><BR>
@@ -18,52 +80,9 @@ Last updated on Sun Apr  5 23:06:33 EDT 2015
 <TD><img src="historical-top-20-non-root-accounts.png"><BR><BR>
 <TR><TD><img src="last-30-days-top-20-non-root-passwords.png"><BR><BR>
 <TD><img src="historical-top-20-non-root-passwords.png"><BR><BR>
-<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
 <TR><TH Colspan=2><a href ="graphics.shtml">More Charts </a></TH></TR>
 <TR><TH Colspan=2><a href ="/honey/graphics_all.shtml">All Charts For ALL hosts </a></TH></TR>
 </TABLE>
-
-<P>
-Login Attempts Today: 37878
-<BR>
-Login Attempts This Month: 111374
-<BR>
-Login Attempts This Year: 2204390
-<BR>
-Login Attempts Since Logging Started: 2204390
-<BR>
-<BR>
-Unique Passwords Today: 24960
-<BR>
-New Passwords Today: 294
-<BR>
-Unique Passwords This Month: 36030
-<BR>
-Unique Passwords This Year: 391577
-<BR>
-Unique Passwords Since Logging Started: 391577
-<BR>
-<BR>
-Unique Usernames Today: 530
-<BR>
-New Usernames Today: 231
-<BR>
-Unique Usernames This Month: 417
-<BR>
-Unique Usernames This Year: 3698
-<BR>
-Unique Usernames Since Logging Started: 3698
-<BR>
-<BR>
-Unique IPs Today: 51
-<BR>
-New IPs Today: 8
-<BR>
-Unique IPs This Month: 185
-<BR>
-Unique IPs This Year: 2433
-<BR>
-Unique IPs Since Logging Started: 2433
 <BR>
 <BR>
 <H3>Historical Trends</H3>
@@ -157,7 +176,7 @@ Unique IPs Since Logging Started: 2433
 <a href="last-7-days-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
 <BR>
 <BR>
-<H3>Last 30 Days</H3>
+<H3>Prior 30 Days</H3>
 <a href ="last-30-days-root-passwords.shtml">Root Passwords</a>
 <BR>
 <a href ="last-30-days-top-20-root-passwords.shtml">Top 20 Root Passwords</a>
