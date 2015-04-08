@@ -31,6 +31,7 @@ cp index-historical.shtml $HTML_DIR
 cp graphics.shtml $HTML_DIR
 cp header.html $HTML_DIR
 cp footer.html $HTML_DIR
+cp notes.shtml $HTML_DIR
 cp LongTail.css $HTML_DIR
 
 if [ ! -e $SCRIPT_DIR/LongTail-exclude-accounts.grep ] ; then
