@@ -333,10 +333,10 @@ sub analyze {
 #
 # printing out by sorting on AGE of IP address (How long it was alive)
 sub show_lifetime_of_ips {
-#print "DEBUG In show_lifetime_of_ips\n";
+print "DEBUG In show_lifetime_of_ips\n";
 	#print "DEBUG ===================================================\n\n";
 	#print "DEBUG- Trying to sort by age of ip\n";
-	open (FILE_DATA, "> $honey_dir/current_attackers_lifespan.data")||die "Can not write to $honey_dir/current_attackers_lifespan.data\n";
+	#open (FILE_DATA, "> $honey_dir/current_attackers_lifespan.data")||die "Can not write to $honey_dir/current_attackers_lifespan.data\n";
 	open (FILE_FORMATTED, ">$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
@@ -356,13 +356,13 @@ sub show_lifetime_of_ips {
 		$first_seen=scalar localtime($ip_earliest_seen_time{$key});
 		$last_seen=scalar localtime($ip_latest_seen_time{$key});
 		$attacks_recorded = `ls $honey_dir/attacks/$key* |wc -l 2>/dev/null `;
-	  	printf(FILE_DATA "%d %s %.2f %s %s\n", $ip_age{$key}, $key, $days,$first_seen, $last_seen, $attacks_recorded);
+	  	#printf(FILE_DATA "%d %s %.2f %s %s\n", $ip_age{$key}, $key, $days,$first_seen, $last_seen, $attacks_recorded);
 	  	printf(FILE_FORMATTED "<TR><TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"/honey/attacks/ip_attacks.shtml#%s\">%d</A></TD></TR>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
 	}
 	print (FILE_FORMATTED "</TABLE>\n");
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
-	close(FILE_DATA);
+	#close(FILE_DATA);
 	close(FILE_FORMATTED);
 }
 
@@ -488,6 +488,7 @@ sub create_dict_webpage {
 		$COUNT=0;
 		open (SUM_FILE, "sum2.data") || die "Can not open sum2.data, this is bad\n";
 		while (<SUM_FILE>){
+			#print "DEBUG $_";
 			chomp;
 			if (/dict-/){next;}
 			if (/$SUM/){
@@ -567,19 +568,26 @@ sub create_dict_webpage {
 #
 #
 $TMP=`date`;
-print "Started at $TMP\n";
+print "LongTail_analyze_attacks.pl Started at $TMP\n";
 &init;
+$TMP=`date`;chomp $TMP; print "done with init at $TMP\n";
 &cleanup_old_files;
+$TMP=`date`;chomp $TMP; print "done with cleanup_old_files at $TMP\n";
 &create_attack_logs;
+$TMP=`date`;chomp $TMP; print "done with create_attack_logs at $TMP\n";
 &analyze;
+$TMP=`date`;chomp $TMP; print "done with analyze at $TMP\n";
 &show_lifetime_of_ips;
+$TMP=`date`;chomp $TMP; print "done with show_lifetime_of_ips at $TMP\n";
 &show_attacks_of_ips;
+$TMP=`date`;chomp $TMP; print "done with show_attacks_of_ips at $TMP\n";
 &create_dict_webpage;
-$TMP=`date`;
-print "Done at $TMP\n";
+$TMP=`date`;chomp $TMP; print "done with create_dict_webpage at $TMP\n";
 #
 # Get rid of temp files
 unlink ("/tmp/dictionaries.temp.sorted");
 unlink ("/tmp/dictionaries.temp");
 unlink ("/tmp/tmp.data");
 
+$TMP=`date`;
+print "LongTail_analyze_attacks.pl Done at $TMP\n";
