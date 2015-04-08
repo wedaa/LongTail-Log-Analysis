@@ -1,15 +1,76 @@
 <HTML>
 <!--<BODY bgcolor=#000fff> -->
-<BODY bgcolor=#00f0FF>
+<!-- <BODY bgcolor=#00f0FF> -->
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" --> 
 
-<H3>LongTail Log Analysis/Concise Version<BR>All SSH Ports,  <!--#include virtual="description.html" --></H3>
+<H3>LongTail Log Analysis/Today's Data<BR>All SSH Ports,  <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Sun Apr  5 23:06:33 EDT 2015
-<HR>
+Last updated on Wed Apr  8 19:06:19 EDT 2015
+<BR>
+<BR>
+<TABLE border=1>
+<TR><TH colspan=6>SSH Brute Force Attempts</TH></TR>
+<TR><TH>Description</TH><TH>Today</TH><TH>Never seen<BR>Before Today</TH><TH>This<BR>Month</TH><TH>This<BR>Year</TH><TH>Since Logging<BR>Started</TH>
+<TR><TH>Login Attempts
+<TD>
+<!--Login Attempts Today:--> 34290
+</TD><TD> N/A
+</TD><TD>
+<!--Login Attempts This Month:--> 283630
+</TD><TD>
+<!--Login Attempts This Year:--> 2409707
+</TD><TD>
+<!--Login Attempts Since Logging Started:--> 2409707
+</TR>
+<TR><TH>Unique Passwords</TH>
+<TD>
+<!--Unique Passwords Today:--> 24104
+</TD><TD>
+<!--New Passwords Today:--> 2376
+</TD><TD>
+<!--Unique Passwords This Month:--> 75432
+</TD><TD>
+<!--Unique Passwords This Year:--> 392292
+</TD><TD>
+<!--Unique Passwords Since Logging Started:--> 392292
+</TD><TD>
+</TR>
+<TR><TH>Unique Usernames </TH>
+<TD>
+<!--Unique Usernames Today:--> 321
+</TD><TD>
+<!--New Usernames Today:--> 65
+</TD><TD>
+<!--Unique Usernames This Month:--> 943
+</TD><TD>
+<!--Unique Usernames This Year:--> 3963
+</TD><TD>
+<!--Unique Usernames Since Logging Started:--> 3963
+</TD><TD>
+</TR>
+<TR>
+<TH>Unique IPs </TH>
+<TD>
+<!--Unique IPs Today:--> 79
+</TD><TD>
+<!--New IPs Today:--> 34
+</TD><TD>
+<!--Unique IPs This Month:--> 222
+</TD><TD>
+<!--Unique IPs This Year:--> 2459
+</TD><TD>
+<!--Unique IPs Since Logging Started:--> 2459
+</TD><TD>
+</TR>
+</TABLE>
+<BR>
+<BR>
+
 <TABLE BORDER=0>
-<TR><TH>Today</TH><TH>Last 7 days</TH>
+<TR><TH Colspan=2>Count of Last 30 Days Of Attacks</TH>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+<TR><TH>Today</TH><TH>Prior 7 Days</TH>
 <TR><TD><img src="current-top-20-root-passwords.png"><BR><BR>
 <TD><img src="last-7-days-top-20-root-passwords.png"><BR><BR>
 <TR><TD><img src="current-top-20-admin-passwords.png"><BR><BR>
@@ -18,57 +79,11 @@ Last updated on Sun Apr  5 23:06:33 EDT 2015
 <TD><img src="last-7-days-top-20-non-root-accounts.png"><BR><BR>
 <TR><TD><img src="current-top-20-non-root-passwords.png"><BR><BR>
 <TD><img src="last-7-days-top-20-non-root-passwords.png"><BR><BR>
-<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
 <TR><TH Colspan=2><a href ="graphics.shtml">More Charts </a></TH></TR>
 <TR><TH Colspan=2><a href ="/honey/graphics_all.shtml">All Charts For ALL Hosts</a></TH></TR>
 </TABLE>
 <BR>
 <BR>
-<H2>SSH Brute Force Attempts</H2>
-<P>
-Login Attempts Today: 37878
-<BR>
-Login Attempts This Month: 111374
-<BR>
-Login Attempts This Year: 2204390
-<BR>
-Login Attempts Since Logging Started: 2204390
-<BR>
-<BR>
-Unique Passwords Today: 24960
-<BR>
-New Passwords Today: 294
-<BR>
-Unique Passwords This Month: 36030
-<BR>
-Unique Passwords This Year: 391577
-<BR>
-Unique Passwords Since Logging Started: 391577
-<BR>
-<BR>
-Unique Usernames Today: 530
-<BR>
-New Usernames Today: 231
-<BR>
-Unique Usernames This Month: 417
-<BR>
-Unique Usernames This Year: 3698
-<BR>
-Unique Usernames Since Logging Started: 3698
-<BR>
-<BR>
-Unique IPs Today: 51
-<BR>
-New IPs Today: 8
-<BR>
-Unique IPs This Month: 185
-<BR>
-Unique IPs This Year: 2433
-<BR>
-Unique IPs Since Logging Started: 2433
-<BR>
-
-
 <H3>Historical Trends</H3>
 <a href ="trends-in-root-passwords.shtml">Trends in Top 20 Root Passwords</a>
 <BR>
@@ -125,72 +140,4 @@ Unique IPs Since Logging Started: 2433
 <BR>
 <a href="current-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
 <BR>
-<!--
-<H2>HTTP Attacks and Probes</H2>
-<H3>Today's Activity</H3>
-<P>Shellshock:What webpages are they looking for?
-<BR>
-<a href="current-shellshock-webpages.shtml">Shellshock Webpages<a/>
-<BR>
-<a href="current-top-20-shellshock-webpages.shtml">Top 20 Shellshock Webpages</a>
-<BR>
-<BR>
-<P>What are the actual attacks they are trying to run?
-<BR>
-<a href="current-attacks.shtml">Attacks</a>
-<BR>
-<a href="current-top-20-attacks.shtml">Top 20 Attacks</a>
-<BR>
-<BR>
-<P>Where are they getting their payloads from or trying to connect to with bash?
-<BR>
-<a href="current-payloads.shtml">Payloads</A>
-<BR>
-<a href="current-top-20-payloads.shtml">Top 20 Payloads</a>
-<BR>
-<P>What are they trying to rm?
-<BR>
-<a href="current-rm-attempts.shtml">`rm` attempts</a>
-<BR>
-<a href="current-top-20-rm-attempts.shtml">Top 20 `rm` attempts</a>
-<BR>
-<BR>
-<P>Shellshock attacks not explitly using perl
-<BR>
-<a href="current-shellshock-not-using-perl.shtml">Shellshock Attacks not explicitly using perl</A>
-<BR>
-<a href="current-top-20-shellshock-not-using-perl.shtml">Top 20 Shellshock Attacks not explicitly using perl</A>
-<BR>
-<BR>
-<P>Shellshock logs
-<BR>
-<a href="current-access-log-shell-shock.shtml">Todays Apache Shell Shock log</a>
-<BR>
-<a href="current-country-access-log-shell-shock.shtml">Todays Apache Shell Shock Country log</a>
-<BR>
-<a href="current-ip-access-log-shell-shock.shtml">Todays Apache Shell Shock IP log</a>
-<BR>
-<BR>
-<P> 404 Probes
-<BR>
-<a href="current-access-log-404.shtml">Today's 404 Probes Log</a>
-<BR>
-<BR>
-<a href="current-open-proxy-log-404.shtml">Today's Open Proxy Log</a>
-<BR>
-<a href="current-ip-open-proxy-404.shtml">Today's IP Open Proxy Log</a>
-<BR>
-<a href="current-country-open-proxy-log-404.shtml">Today's Country Open Proxy Log</a>
-<BR>
-<BR>
-<a href="current-ip-access-log-404.shtml">Today's 404 Probes IP Log</a>
-<BR>
-<a href="current-top-20-ip-access-log-404.shtml">Today's Top 20 404 Probes IP Log</a>
-<BR>
-<a href="current-country-access-log-404.shtml">Today's 404 Probes Country Log</a>
-<H3>Access Logs</H3>
-<a href="current-access-log.shtml">Todays Apache access log</a>
-<HR>
-<a href="historical/">Long Term Historical Reports For ssh and HTTP Attacks</A>
--->
 <!--#include virtual="/honey/footer.html" --> 
