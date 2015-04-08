@@ -1,21 +1,28 @@
 #!/bin/sh
-date; /usr/local/etc/LongTail.sh ssh shepherd
-date; /usr/local/etc/LongTail.sh ssh erhp
-date; /usr/local/etc/LongTail.sh ssh erhp2
-date; /usr/local/etc/LongTail.sh ssh syrtest
-date; /usr/local/etc/LongTail.sh ssh edub
-date; /usr/local/etc/LongTail.sh ssh edu_c
-date; /usr/local/etc/LongTail.sh 
-date; 
-date; /usr/local/etc/LongTail-2222.sh shepherd
-date; /usr/local/etc/LongTail-2222.sh erhp
-date; /usr/local/etc/LongTail-2222.sh erhp2
-date; /usr/local/etc/LongTail-2222.sh syrtest
-date; /usr/local/etc/LongTail-2222.sh edub
-date; /usr/local/etc/LongTail-2222.sh 
-#date; /usr/local/etc/LongTail_analyze_attacks-2222.pl
+function print_divider {
+	echo ""
+	echo "================================================================"
+	echo ""
+}
 
-date; /usr/local/etc/LongTail.sh telnet shepherd
-date; /usr/local/etc/LongTail.sh telnet erhp
-date; /usr/local/etc/LongTail.sh telnet erhp2
-date; /usr/local/etc/LongTail.sh telnet
+print_divider
+date; /usr/local/etc/LongTail.sh ssh shepherd ; print_divider
+date; /usr/local/etc/LongTail.sh ssh erhp ; print_divider
+date; /usr/local/etc/LongTail.sh ssh erhp2 ; print_divider
+date; /usr/local/etc/LongTail.sh ssh syrtest ; print_divider
+date; /usr/local/etc/LongTail.sh ssh edub ; print_divider
+date; /usr/local/etc/LongTail.sh ssh edu_c ; print_divider
+date; /usr/local/etc/LongTail.sh  ; print_divider
+
+date; /usr/local/etc/LongTail.sh 2222 shepherd ; print_divider
+date; /usr/local/etc/LongTail.sh 2222 erhp ; print_divider
+date; /usr/local/etc/LongTail.sh 2222 erhp2 ; print_divider
+date; /usr/local/etc/LongTail.sh 2222 syrtest ; print_divider
+date; /usr/local/etc/LongTail.sh 2222 edub ; print_divider
+date; /usr/local/etc/LongTail.sh 2222  ; print_divider
+#date; /usr/local/etc/LongTail_analyze_attacks-2222.pl ; print_divider
+
+date; /usr/local/etc/LongTail.sh telnet shepherd ; print_divider
+date; /usr/local/etc/LongTail.sh telnet erhp ; print_divider
+date; /usr/local/etc/LongTail.sh telnet erhp2 ; print_divider
+date; /usr/local/etc/LongTail.sh telnet ; print_divider
