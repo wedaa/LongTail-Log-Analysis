@@ -543,6 +543,11 @@ function count_ssh_attacks {
 		THISMONTHUNIQUEPASSWORDS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -u |wc -l `
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all passwords now"; date ; fi
 		ALLUNIQUEPASSWORDS=`cat all-password |wc -l`
+
+		THISMONTHUNIQUEPASSWORDS=`echo $THISMONTHUNIQUEPASSWORDS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		THISYEARUNIQUEPASSWORDS=`echo $THISYEARUNIQUEPASSWORDS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		ALLUNIQUEPASSWORDS=`echo $ALLUNIQUEPASSWORDS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
 		sed -i "s/Unique Passwords This Month.*$/Unique Passwords This Month:--> $THISMONTHUNIQUEPASSWORDS/" $1/index.shtml
 		sed -i "s/Unique Passwords This Year.*$/Unique Passwords This Year:--> $THISYEARUNIQUEPASSWORDS/" $1/index.shtml
 		sed -i "s/Unique Passwords Since Logging Started.*$/Unique Passwords Since Logging Started:--> $ALLUNIQUEPASSWORDS/" $1/index.shtml
@@ -583,6 +588,10 @@ function count_ssh_attacks {
 		THISMONTHUNIQUEUSERNAMES=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -u |wc -l `
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all username now"; date ; fi
 		ALLUNIQUEUSERNAMES=`cat all-username |wc -l`
+
+		THISMONTHUNIQUEUSERNAMES=`echo $THISMONTHUNIQUEUSERNAMES|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		THISYEARUNIQUEUSERNAMES=`echo $THISYEARUNIQUEUSERNAMES|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		ALLUNIQUEUSERNAMES=`echo $ALLUNIQUEUSERNAMES|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
 		sed -i "s/Unique Usernames This Month.*$/Unique Usernames This Month:--> $THISMONTHUNIQUEUSERNAMES/" $1/index.shtml
 		sed -i "s/Unique Usernames This Year.*$/Unique Usernames This Year:--> $THISYEARUNIQUEUSERNAMES/" $1/index.shtml
@@ -626,6 +635,10 @@ function count_ssh_attacks {
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all ips now"; date ; fi
 		ALLUNIQUEIPSS=`cat all-ips |wc -l`
 
+		THISMONTHUNIQUEIPSS=`echo $THISMONTHUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		THISYEARUNIQUEIPSS=`echo $THISYEARUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		ALLUNIQUEIPSS=`echo $ALLUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
 		sed -i "s/Unique IPs This Month.*$/Unique IPs This Month:--> $THISMONTHUNIQUEIPSS/" $1/index.shtml
 		sed -i "s/Unique IPs This Year.*$/Unique IPs This Year:--> $THISYEARUNIQUEIPSS/" $1/index.shtml
 		sed -i "s/Unique IPs Since Logging Started.*$/Unique IPs Since Logging Started:--> $ALLUNIQUEIPSS/" $1/index.shtml
@@ -652,6 +665,18 @@ function count_ssh_attacks {
 	sed -i s/HONEY/$HTML_TOP_DIR/g $1/todays-uniq-ips.shtml
 
 	
+	TODAY=`echo $TODAY|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_MONTH=`echo $THIS_MONTH|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_YEAR=`echo $THIS_YEAR|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	TOTAL=`echo $TOTAL|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
+	TODAYSUNIQUEPASSWORDS=`echo $TODAYSUNIQUEPASSWORDS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	PASSWORDSNEWTODAY=`echo $PASSWORDSNEWTODAY|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	TODAYSUNIQUEUSERNAMES=`echo $TODAYSUNIQUEUSERNAMES|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	USERNAMESNEWTODAY=`echo $USERNAMESNEWTODAY|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	TODAYSUNIQUEIPS=`echo $TODAYSUNIQUEIPS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	IPSNEWTODAY=`echo $IPSNEWTODAY|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
 	sed -i "s/Login Attempts Today.*$/Login Attempts Today:--> $TODAY/" $1/index.shtml
 	sed -i "s/Login Attempts This Month.*$/Login Attempts This Month:--> $THIS_MONTH/" $1/index.shtml
 	sed -i "s/Login Attempts This Year.*$/Login Attempts This Year:--> $THIS_YEAR/" $1/index.shtml
@@ -1424,6 +1449,7 @@ function do_ssh {
 				TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
 				TMP_TITLE=`for word in $TITLE; do printf '%s ' "${word^}"; done; echo`
 				TITLE=$TMP_TITLE
+				TITLE=`echo $TITLE | sed 's/Top 20 Admin Passwords/Top 20 Username \"admin\" Passwords/' `
 				if [ -s "$FILE" ] ; then
 					if [[ $FILE == *"accounts"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
