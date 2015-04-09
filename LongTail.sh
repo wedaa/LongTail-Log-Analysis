@@ -409,6 +409,14 @@ function count_ssh_attacks {
 	fi
 	rm $TMPFILE
 
+	MONTH_COUNT=`echo $MONTH_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_SUM=`echo $MONTH_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_AVERAGE=`echo $MONTH_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_STD=`echo $MONTH_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_MEDIAN=`echo $MONTH_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_MAX=`echo $MONTH_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_MIN=`echo $MONTH_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
 
 	#
 	# LAST MONTH
@@ -456,6 +464,14 @@ function count_ssh_attacks {
 	fi
 	rm $TMPFILE
 
+	LAST_MONTH_COUNT=`echo $LAST_MONTH_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_SUM=`echo $LAST_MONTH_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_AVERAGE=`echo $LAST_MONTH_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_STD=`echo $LAST_MONTH_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_MEDIAN=`echo $LAST_MONTH_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_MAX=`echo $LAST_MONTH_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_MIN=`echo $LAST_MONTH_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
 	#
 	# THIS YEAR
 	#
@@ -478,6 +494,15 @@ function count_ssh_attacks {
 	YEAR_STD=`printf '%.2f' $YEAR_STD`
 
 
+	YEAR_COUNT=`echo $YEAR_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_SUM=`echo $YEAR_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_AVERAGE=`echo $YEAR_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_STD=`echo $YEAR_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_MEDIAN=`echo $YEAR_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_MAX=`echo $YEAR_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_MIN=`echo $YEAR_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
+
 	#
 	# EVERYTHING
 	#
@@ -498,6 +523,15 @@ function count_ssh_attacks {
 	rm $TMPFILE
 	EVERYTHING_AVERAGE=`printf '%.2f' $EVERYTHING_AVERAGE`
 	EVERYTHING_STD=`printf '%.2f' $EVERYTHING_STD`
+
+	EVERYTHING_COUNT=`echo $EVERYTHING_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_SUM=`echo $EVERYTHING_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_AVERAGE=`echo $EVERYTHING_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_STD=`echo $EVERYTHING_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_MEDIAN=`echo $EVERYTHING_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_MAX=`echo $EVERYTHING_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_MIN=`echo $EVERYTHING_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
 
 	#
 	# Normalized data
@@ -525,6 +559,15 @@ function count_ssh_attacks {
 		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
 		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
 	fi
+
+	NORMALIZED_COUNT=`echo $NORMALIZED_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_SUM=`echo $NORMALIZED_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_AVERAGE=`echo $NORMALIZED_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_STD=`echo $NORMALIZED_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_MEDIAN=`echo $NORMALIZED_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_MAX=`echo $NORMALIZED_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_MIN=`echo $NORMALIZED_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
 
 	#
 	# This really needs to be sped up somehow
