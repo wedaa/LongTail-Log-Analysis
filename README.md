@@ -444,13 +444,14 @@ to speed up whois.pl.
 
 29) DONE 2015-03-18.  I need to cleanup all the temp files so that they are deleted, 
 
-30) NEEDS TO BE DONE: I need to make sure temp files are unique.  Unique is important so multiple 
-copies of LongTail can be run at the same time.
+30) NEEDS TO BE DONE: I need to make sure temp files are unique.  
+Unique is important so multiple copies of LongTail can be run 
+at the same time.
 
 31) DONE Added calendar view of attacks per day with links to
 the individual day's attacks.
 
-32) IN PROGRESS I need to start analyzing attacks that come in on port 2222.
+32) DONE: I need to start analyzing attacks that come in on port 2222.
 
 33) DONE: Yes, use same codes as for port 2222 attacks. Can I do 
 telnet honeypots too?
@@ -513,3 +514,5 @@ they really want it they can read the source code to figure out where I hide it.
 52) DONE: Fixed "bug" where the first day a hostname is seen that
 the 7 day, 30 day, and historical graphs are not made until the next
 day.
+
+53) DONE: Added a "dashboard"
