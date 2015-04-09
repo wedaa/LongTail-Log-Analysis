@@ -1,7 +1,10 @@
 <!--#include virtual="/honey/header.html" --> 
 <H3>Assorted notes</H3>
 <a name="1"></a>
-[1] 
+[1]  "All Hosts merged together" means every host from each participating site
+has had their numbers added together.  Individual pages for each host are
+available under the "SSH HOSTS ATTACKS ALL PORTS" drop down menu.  The same
+is similarly true for the other protocols being attacked
 <BR>
 <a name="2"></a>
 [2]
