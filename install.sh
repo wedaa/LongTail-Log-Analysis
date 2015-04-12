@@ -13,6 +13,14 @@ HTML_DIR="/var/www/html/honey" # Where do we put the HTML files?
 OWNER="wedaa"                  # What is the owner of the process running LongTail?
 
 mkdir -p $HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
+mkdir $HTML_DIR/dashboard
+
+OTHER_DIRS=" /var/www/html/honey-2222 /var/www/html/honey-22 /var/www/html/telnet /var/www/html/ftp /var/www/html/rlogin"
+for dir in $OTHER_DIRS ; do
+	mkdir $dir
+	chown $OWNER $dir
+	chmod a+rx $dir
+done
 
 cp LongTail_dashboard.pl $SCRIPT_DIR
 cp LongTail_password_analysis.pl $SCRIPT_DIR
@@ -21,18 +29,27 @@ cp catall.sh $SCRIPT_DIR
 cp ip-to-country $SCRIPT_DIR
 cp LongTail.sh $SCRIPT_DIR
 cp LongTail_make_graph.php $SCRIPT_DIR
+cp LongTail_make_dashboard_graph.php $SCRIPT_DIR
 cp translate_country_codes.sed $SCRIPT_DIR
 cp LongTail_make_daily_attacks_chart.pl $SCRIPT_DIR
 #cp translate_country_codes.sed.orig $SCRIPT_DIR
 cp whois.pl $SCRIPT_DIR
-cp index.shtml $HTML_DIR
-cp index-long.shtml $HTML_DIR
-cp index-historical.shtml $HTML_DIR
-cp graphics.shtml $HTML_DIR
-cp header.html $HTML_DIR
-cp footer.html $HTML_DIR
-cp notes.shtml $HTML_DIR
-cp LongTail.css $HTML_DIR
+
+for dir in $HTML_DIR $OTHER_DIRS ; do
+	cp index.shtml $dir
+	cp index-long.shtml $dir
+	cp index-historical.shtml $dir
+	cp graphics.shtml $dir
+	cp header.html $dir
+	cp footer.html $dir
+	cp notes.shtml $dir
+	cp LongTail.css $dir
+done
+
+cp dashboard-index.shtml $HTML_DIR/dashboard/index.shtml
+cp dashboard-1.shtml $HTML_DIR/dashboard/ 
+cp dashboard.shtml $HTML_DIR/
+echo "0" > $HTML_DIR/dashboard/count
 
 if [ ! -e $SCRIPT_DIR/LongTail-exclude-accounts.grep ] ; then
 	echo "LongTail-exclude-accounts.grep not in $SCRIPT_DIR"
@@ -69,6 +86,7 @@ chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep
 chmod a+rx $SCRIPT_DIR/LongTail.sh
 chmod a+rx $SCRIPT_DIR/LongTail_make_daily_attacks_chart.pl
 chmod a+rx $SCRIPT_DIR/LongTail_make_graph.php
+chmod a+rx $SCRIPT_DIR/LongTail_make_dashboard_graph.php
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed
 chmod a+rx $SCRIPT_DIR/translate_country_codes.sed.orig
 chmod a+rx $SCRIPT_DIR/whois.pl
@@ -104,7 +122,7 @@ DAY=`date +%d`
 
 mkdir -p $HTML_DIR/historical/$YEAR/$MONTH/$DAY
 echo "0" > $HTML_DIR/historical/$YEAR/$MONTH/$DAY/current-attack-count.data
-chown -r $OWNER $HTML_DIR/historical
+chown -R $OWNER $HTML_DIR/historical
 chmod a+rx $HTML_DIR $HTML_DIR/historical $HTML_DIR/historical/$YEAR $HTML_DIR/historical/$YEAR/$MONTH $HTML_DIR/historical/$YEAR/$MONTH/$DAY $HTML_DIR/historical/$YEAR/$MONTH/$DAY/current-attack-count.data 
 
 #
