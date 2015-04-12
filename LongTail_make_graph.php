@@ -8,7 +8,8 @@ require_once ('/usr/local/php/jpgraph-3.5.0b1/src/jpgraph_bar.php');
 // USAGE: php /usr/local/etc/LongTail_make_graph.php filename "header" "X-axis label" "Y-axis label"
 // Must pass full filename to read and "Quote delimited text header"
 // And redirect the output to a file
-// php LongTail_make_graph.php /var/www/html/honey/current-top-20-root-passwords.data "Current top 20 root passwords" "X Title" "Y Title">current-top-20-root-passwords.png 
+// php LongTail_make_graph.php /var/www/html/honey/current-top-20-root-passwords.data "Current top 20 root passwords" "X Title" "Y Title" "wide">current-top-20-root-passwords.png 
+// php LongTail_make_graph.php /var/www/html/honey/current-top-20-root-passwords.data "Current top 20 root passwords" "X Title" "Y Title" "">current-top-20-root-passwords.png 
 
 $file = $argv[1];
 $header = $argv[2];
