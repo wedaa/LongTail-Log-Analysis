@@ -1,0 +1,22 @@
+<HTML>
+<meta http-equiv="refresh" content="1 url=/honey/dashboard/dashboard-1.shtml">
+<link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
+<!--#include virtual="/honey/header.html" --> 
+
+<H3>LongTail Log Analysis Dashboard<BR>All SSH Ports</H3>
+<P>All hosts, all sites, combined.  This page is updated every 5 minutes.
+Minimum, Average, and Maximum are from last month.  Maximum is only shown
+when the current numbers are more than double the average.
+<BR>
+<BR>
+<img src="/honey/dashboard/dashboard_number_of_attacks-2015-04-08.png">
+<BR>
+<BR>
+<img src="/honey/dashboard/dashboard_ips-2015-04-08.png">
+<BR>
+<BR>
+<img src="/honey/dashboard/dashboard_passwords-2015-04-08.png">
+<BR>
+<BR>
+<img src="/honey/dashboard/dashboard_usernames-2015-04-08.png">
+<!--#include virtual="/honey/footer.html" --> 
