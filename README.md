@@ -516,3 +516,20 @@ the 7 day, 30 day, and historical graphs are not made until the next
 day.
 
 53) DONE: Added a "dashboard"
+
+54) Need to figure out how to add horizontal lines to a barchart so that
+I can show minimum, average, and maximum lines to my dashboard and to
+other charts
+
+54) Need to figure out how to add horizontal lines to a barchart so that
+I can show minimum, average, and maximum lines to my dashboard and to
+other charts
+( http://www.asial.co.jp/jpgraph/demo/src/Examples/show-example.php?target=plotlineex1.php )
+
+55) In statistics section I need to get stats on # of usernames, passwords
+and IP addresses.
+
+56) I need to somehow show slowscans and bot net attacks
+
+57) I need to break out attacks by hosts so I can see the attacks
+that get through the IPS more clearly.
