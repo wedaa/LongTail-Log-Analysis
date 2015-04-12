@@ -361,7 +361,7 @@ function count_ssh_attacks {
 	#
 	# TODAY
 	#
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/TODAY now" ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/TODAY now" ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
@@ -374,7 +374,7 @@ function count_ssh_attacks {
 	# THIS MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Month now" ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Month now" ;date;  fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
@@ -382,7 +382,7 @@ function count_ssh_attacks {
 	done
 	THIS_MONTH=`expr $TMP + $TODAY`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG this month statistics" ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics" ;date; fi
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -422,7 +422,7 @@ function count_ssh_attacks {
 	# LAST MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/Last Month now" ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/Last Month now" ; date ; fi
 #
 # Gotta fix this for the year boundary
 #
@@ -435,7 +435,7 @@ function count_ssh_attacks {
 	done
 	LAST_MONTH=$TMP
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG Last month statistics" ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG Last month statistics" ;date ;  fi
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -476,14 +476,14 @@ function count_ssh_attacks {
 	# THIS YEAR
 	#
 	# This was tested and works with 365 files :-)
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Year now" ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now" ; date; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/ -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	THIS_YEAR=`expr $TMP + $TODAY`
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG this year statistics" ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics" ; date; fi
 	# OK, this may not be 100% secure, but it's close enough for now
 	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Year now/statistics" ; fi
@@ -508,14 +508,14 @@ function count_ssh_attacks {
 	#
 	# I have no idea where this breaks, but it's a big-ass number of files
 	TMP=0
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/everything" ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/everything" ;  date;fi
 	for FILE in  `find . -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	TOTAL=`expr $TMP + $TODAY`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG ALL  statistics" ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date;  fi
 	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/everything/statistics" ; fi
 	for FILE in  `find . -name current-attack-count.data` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "EVERYTHING_COUNT=$n\nEVERYTHING_SUM=$s\nEVERYTHING_AVERAGE=$a\nEVERYTHING_STD=$std\nEVERYTHING_MEDIAN=$med\nEVERYTHING_MAX=$m\nEVERYTHING_MIN=$mm";'  > $TMPFILE
@@ -540,7 +540,7 @@ function count_ssh_attacks {
 		# I have no idea where this breaks, but it's a big-ass number of files
 		cd $HTML_DIR
 		# OK, this may not be 100% secure, but it's close enough for now
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG ALL Normalized statistics" ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL Normalized statistics" ; date ; fi
 		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
 		for FILE in  `find */historical -name current-attack-count.data ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
 		. $TMPFILE
@@ -604,6 +604,7 @@ function count_ssh_attacks {
 		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -u > todays_passwords
 	fi
 	TODAYSUNIQUEPASSWORDS=`cat todays_passwords |wc -l`
+	echo $TODAYSUNIQUEPASSWORDS  >todays_password.count
 	awk 'FNR==NR{a[$0]++;next}(!($0 in a))' all-password todays_passwords >todays-uniq-passwords.txt
 	PASSWORDSNEWTODAY=`cat todays-uniq-passwords.txt |wc -l`
 
@@ -650,6 +651,7 @@ function count_ssh_attacks {
 		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password.:$/ /' |sed 's/ Password:.*$/ /'|sort -u > todays_username
 	fi
 	TODAYSUNIQUEUSERNAMES=`cat todays_username |wc -l`
+	echo $TODAYSUNIQUEUSERNAMES  >todays_username.count
 	awk 'FNR==NR{a[$0]++;next}(!($0 in a))' all-username todays_username >todays-uniq-username.txt
 	USERNAMESNEWTODAY=`cat todays-uniq-username.txt |wc -l`
 
@@ -696,6 +698,7 @@ function count_ssh_attacks {
 		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -u > todays_ips
 	fi
 	TODAYSUNIQUEIPS=`cat todays_ips |wc -l`
+	echo $TODAYSUNIQUEIPS  >todays_ips.count
 	awk 'FNR==NR{a[$0]++;next}(!($0 in a))' all-ips todays_ips >todays-uniq-ips.txt
 	IPSNEWTODAY=`cat todays-uniq-ips.txt |wc -l`
 
@@ -748,8 +751,11 @@ function count_ssh_attacks {
 	sed -i "s/Unique IPs Today.*$/Unique IPs Today:--> $TODAYSUNIQUEIPS/" $1/index-long.shtml
 	sed -i "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/" $1/index-long.shtml
 	
+	########################################################################################
 	# Make statistics.shtml webpage here
+	#
 	make_header "$1/statistics.shtml" "Assorted Statistics" "Analysis does not include today's numbers. Numbers rounded to two decimal places" "Time<BR>Frame" "Number<BR>of Days" "Total<BR>SSH attempts" "Average" "Std. Dev." "Median" "Max" "Min"
+
 	echo "<TR><TD>So Far Today</TD><TD>1</TD><TD>$TODAY</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD></TR>" >>$1/statistics.shtml
 	echo "<TR><TD>This Month</TD><TD> $MONTH_COUNT</TD><TD> $MONTH_SUM</TD><TD> $MONTH_AVERAGE</TD><TD> $MONTH_STD</TD><TD> $MONTH_MEDIAN</TD><TD> $MONTH_MAX</TD><TD> $MONTH_MIN" >>$1/statistics.shtml
 	echo "<TR><TD>Last Month</TD><TD> $LAST_MONTH_COUNT</TD><TD> $LAST_MONTH_SUM</TD><TD> $LAST_MONTH_AVERAGE</TD><TD> $LAST_MONTH_STD</TD><TD> $LAST_MONTH_MEDIAN</TD><TD> $LAST_MONTH_MAX</TD><TD> $LAST_MONTH_MIN" >>$1/statistics.shtml
@@ -758,95 +764,369 @@ function count_ssh_attacks {
 	echo "<TR><TD>Normalized Since Logging Started</TD><TD> $NORMALIZED_COUNT</TD><TD> $NORMALIZED_SUM</TD><TD> $NORMALIZED_AVERAGE</TD><TD> $NORMALIZED_STD</TD><TD> $NORMALIZED_MEDIAN</TD><TD> $NORMALIZED_MAX</TD><TD> $NORMALIZED_MIN" >>$1/statistics.shtml
 	echo "" >> $1/statistics.shtml
 	echo "</TABLE><!--HEADERLINE -->" >> $1/statistics.shtml
+
+	cat $1/statistics.shtml > $1/more_statistics.shtml
+	todays_assorted_stats "todays_ips.count" $1/more_statistics.shtml
+	todays_assorted_stats "todays_password.count" $1/more_statistics.shtml
+	todays_assorted_stats "todays_username.count" $1/more_statistics.shtml
+
+	echo "<P>Normalized data is data that consists of only full days of attacks,<!--HEADERLINE --> " >> $1/more_statistics.shtml
+	echo "AND to servers that are NOT protected by firewalls or other kinds of <!--HEADERLINE -->" >> $1/more_statistics.shtml
+	echo "intrusion protection systems.<!--HEADERLINE -->"  >> $1/more_statistics.shtml
+
 	echo "<P>Normalized data is data that consists of only full days of attacks,<!--HEADERLINE --> " >> $1/statistics.shtml
 	echo "AND to servers that are NOT protected by firewalls or other kinds of <!--HEADERLINE -->" >> $1/statistics.shtml
 	echo "intrusion protection systems.<!--HEADERLINE -->"  >> $1/statistics.shtml
+
 	make_footer "$1/statistics.shtml"
+	make_footer "$1/more_statistics.shtml"
 
 
-	# Make statistics_all.shtml webpage here
+	# Make statistics_all.shtml and more_statistics_all.shtml webpage here
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		cd $HTML_DIR
 		grep HEADERLINE statistics.shtml |egrep -v footer.html\|'</BODY'\|'</HTML'\|'</TABLE'\|'</TR' > statistics_all.shtml
-		
+		echo "<TR><TH colspan=8>All Hosts Combined</TH></TR>" >> statistics_all.shtml
 		grep '<TR>' $HTML_DIR/statistics.shtml |grep -v HEADERLINE |sed 's/<TD>/<TD>ALL Hosts /' >> statistics_all.shtml
-		
-	#HOSTS_PROTECTED="erhp erhp2"
-	#RESIDENTIAL_SITES="shepherd"
-	#EDUCATIONAL_SITES="syrtest edub edu_c"
-	#CLOUD_SITES="cloud_v cloud_c"
-	#BUSINESS_SITES=""
 
+		grep HEADERLINE statistics.shtml |egrep -v footer.html\|'</BODY'\|'</HTML'\|'</TABLE'\|'</TR' > more_statistics_all.shtml
+		echo "<TR><TH colspan=8>All Hosts Combined</TH></TR>" >> more_statistics_all.shtml
+		egrep '<TR>'\|'<TH>' $HTML_DIR/more_statistics.shtml |sed 's/<TD>/<TD>ALL Hosts /' >> more_statistics_all.shtml
+		
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by an Intrusion Protection System</TH></TR>" >> statistics_all.shtml
+		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by an Intrusion Protection System</TH></TR>" >> more_statistics_all.shtml
 		for dir in $HOSTS_PROTECTED ; do
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
+				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
+				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
 			fi
 		done
 
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Educational Sites</TH></TR>" >> statistics_all.shtml
+		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Educational Sites</TH></TR>" >> more_statistics_all.shtml
 		for dir in $EDUCATIONAL_SITES ; do
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
+				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
+				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
 			fi
 		done
 
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Residential Sites</TH></TR>" >> statistics_all.shtml
+		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Residential Sites</TH></TR>" >> more_statistics_all.shtml
 		for dir in $RESIDENTIAL_SITES ; do
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
+				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
+				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
 			fi
 		done
 
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Cloud Provider Sites</TH></TR>" >> statistics_all.shtml
+		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Cloud Provider Sites</TH></TR>" >> more_statistics_all.shtml
 		for dir in $CLOUD_SITES ; do
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
+				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
+				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
 			fi
 		done
 
 		#echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Commercial Sites</TH></TR>" >> statistics_all.shtml
+		#echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Commercial Sites</TH></TR>" >> more_statistics_all.shtml
 		#for dir in $BUSINESS_SITES ; do
 			#if [ -e $dir/statistics.shtml ] ; then
 				#DESCRIPTION=`cat $dir/description.html`
 				#echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
 				#grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
+				#echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
+				#egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
 			#fi
 		#done
 
-#		for FILE in */statistics.shtml  ; do
-#			NAME=`dirname $FILE`
-#			DESCRIPTION=`cat $NAME/description.html`
-#			echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$NAME/\">$NAME $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
-#			grep '<TR>' $FILE |sed "s/<TD>/<TD>$NAME /" >> statistics_all.shtml
-#		done
-		
 		echo "</TABLE>" >> statistics_all.shtml
-		#echo "<P>Normalized data is data that consists of only full days of attacks,<!--HEADERLINE --> " >> $1/statistics_all.shtml
-		#echo "AND to servers that are NOT protected by firewalls or other kinds of <!--HEADERLINE -->" >> $1/statistics_all.shtml
-		#echo "intrusion protection systems.<!--HEADERLINE -->"  >> $1/statistics_all.shtml
+		echo "</TABLE>" >> more_statistics_all.shtml
+
 		echo "<P>Total SSH attempts for all hosts may be LARGER than the sum <!--HEADERLINE -->"  >> $1/statistics_all.shtml
 		echo "of SSH attempts of each host.  This is because each host's attacks <!--HEADERLINE -->"  >> $1/statistics_all.shtml
 		echo "are counted before totalling all the SSH attacks, and if attacks are<!--HEADERLINE -->"  >> $1/statistics_all.shtml
 		echo "ongoing, then more attacks will have come in between counting for a host<!--HEADERLINE -->"  >> $1/statistics_all.shtml
 		echo "and counting all the SSH attacks.<!--HEADERLINE -->"  >> $1/statistics_all.shtml
 
+
+		echo "<P>Total SSH attempts for all hosts may be LARGER than the sum <!--HEADERLINE -->"  >> $1/more_statistics_all.shtml
+		echo "of SSH attempts of each host.  This is because each host's attacks <!--HEADERLINE -->"  >> $1/more_statistics_all.shtml
+		echo "are counted before totalling all the SSH attacks, and if attacks are<!--HEADERLINE -->"  >> $1/more_statistics_all.shtml
+		echo "ongoing, then more attacks will have come in between counting for a host<!--HEADERLINE -->"  >> $1/more_statistics_all.shtml
+		echo "and counting all the SSH attacks.<!--HEADERLINE -->"  >> $1/more_statistics_all.shtml
+
 		echo "<!--#include virtual=/$HTML_TOP_DIR/footer.html --> <!--HEADERLINE --> " >> statistics_all.shtml
 		echo "</BODY><!--HEADERLINE -->" >> statistics_all.shtml
 		echo "</HTML><!--HEADERLINE -->" >> statistics_all.shtml
+
+		echo "<!--#include virtual=/$HTML_TOP_DIR/footer.html --> <!--HEADERLINE --> " >> more_statistics_all.shtml
+		echo "</BODY><!--HEADERLINE -->" >> more_statistics_all.shtml
+		echo "</HTML><!--HEADERLINE -->" >> more_statistics_all.shtml
 	fi
 
 	cd $ORIGINAL_DIRECTORY
 }
 	
+function todays_assorted_stats {
+	local file=$1
+	local outputfile=$2
+	if [ $DEBUG  == 1 ] ; then echo "============================================"; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in todays_assorted_stats/This Month now" ; date; fi
+
+	#
+	# TODAY
+	#
+	ls -l $TMP_HTML_DIR/$file
+	if [ -e $TMP_HTML_DIR/$file ] ; then
+		TODAY=`cat $TMP_HTML_DIR/$file`
+	else
+		echo "$TMP_HTML_DIR/$file does not exist yet"
+		TODAY=0
+	fi
+
+	#
+	# THIS MONTH
+	#
+	TMP_MONTH=`date "+%m"`
+	TMP_YEAR=`date "+%Y"`
+
+	cd $TMP_HTML_DIR/historical/
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Month now" ; fi
+	TMP=0
+	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name $file` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+
+	THIS_MONTH=`expr $TMP + $TODAY`
+	# OK, this may not be 100% secure, but it's close enough for now
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics" ;date; fi
+	#
+	# So there's a problem if it's the first day of the month and there's
+	# No real statistics yet.
+	#
+	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
+		if [ $DEBUG  == 1 ] ; then echo -n  "DEBUG-in count_ssh_attacks/This Month/Statistics now" ; date ;fi
+		cat $TMP_YEAR/$TMP_MONTH/*/$file|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;}; $n; print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
+		# Now we "source" the script to set environment varaibles we use later
+		. $TMPFILE
+		# Now we "clean up" the average and STD deviation
+		MONTH_AVERAGE=`printf '%.2f' $MONTH_AVERAGE`
+		MONTH_STD=`printf '%.2f' $MONTH_STD`
+	else
+		MONTH_COUNT=1
+		MONTH_SUM=$TODAY
+		MONTH_AVERAGE=$TODAY
+		MONTH_STD=0
+		MONTH_MEDIAN=$TODAY
+		MONTH_MAX=$TODAY
+		MONTH_MIN=$TODAY
+		#MONTH_AVERAGE=`printf '%.2f' 0`
+		MONTH_STD=`printf '%.2f' 0`
+	fi
+	rm $TMPFILE
+
+	MONTH_COUNT=`echo $MONTH_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_SUM=`echo $MONTH_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_AVERAGE=`echo $MONTH_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_STD=`echo $MONTH_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_MEDIAN=`echo $MONTH_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_MAX=`echo $MONTH_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	MONTH_MIN=`echo $MONTH_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
+
+	#
+	# LAST MONTH
+	#
+	cd $TMP_HTML_DIR/historical/
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/Last Month now" ; fi
+#
+# Gotta fix this for the year boundary
+#
+	TMP_LAST_MONTH=`date "+%m" --date="last month"`
+	TMP_LAST_MONTH_YEAR=`date "+%Y" --date="last month"`
+	TMP=0
+	for FILE in  `find $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH -name $file` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	LAST_MONTH=$TMP
+	# OK, this may not be 100% secure, but it's close enough for now
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG Last month statistics" ;date; fi
+	#
+	# So there's a problem if it's the first day of the month and there's
+	# No real statistics yet.
+	#
+	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+	#
+	# Gotta do the date calculation to figure out "When" is last month
+	#
+	if [ -d $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/ ] ; then 
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/Last Month/statistics now" ; date ;fi
+		cat $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/*/$file|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "LAST_MONTH_COUNT=$n\nLAST_MONTH_SUM=$s\nLAST_MONTH_AVERAGE=$a\nLAST_MONTH_STD=$std\nLAST_MONTH_MEDIAN=$med\nLAST_MONTH_MAX=$m\nLAST_MONTH_MIN=$mm";'  > $TMPFILE
+		# Now we "source" the script to set environment varaibles we use later
+		. $TMPFILE
+		# Now we "clean up" the average and STD deviation
+		LAST_MONTH_AVERAGE=`printf '%.2f' $LAST_MONTH_AVERAGE`
+		LAST_MONTH_STD=`printf '%.2f' $LAST_MONTH_STD`
+	else
+		LAST_MONTH_COUNT="N/A"
+		LAST_MONTH_SUM="N/A"
+		LAST_MONTH_AVERAGE="N/A"
+		LAST_MONTH_STD="N/A"
+		LAST_MONTH_MEDIAN="N/A"
+		LAST_MONTH_MAX="N/A"
+		LAST_MONTH_MIN="N/A"
+		LAST_MONTH_STD="N/A"
+	fi
+	rm $TMPFILE
+
+	LAST_MONTH_COUNT=`echo $LAST_MONTH_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_SUM=`echo $LAST_MONTH_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_AVERAGE=`echo $LAST_MONTH_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_STD=`echo $LAST_MONTH_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_MEDIAN=`echo $LAST_MONTH_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_MAX=`echo $LAST_MONTH_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	LAST_MONTH_MIN=`echo $LAST_MONTH_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
+	#
+	# THIS YEAR
+	#
+	# This was tested and works with 365 files :-)
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now" ; date; fi
+	TMP=0
+	for FILE in  `find $TMP_YEAR/ -name $file` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	THIS_YEAR=`expr $TMP + $TODAY`
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics" ; date ; fi
+	# OK, this may not be 100% secure, but it's close enough for now
+	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now/statistics" ; date ; fi
+	for FILE in  `find $TMP_YEAR/ -name $file` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "YEAR_COUNT=$n\nYEAR_SUM=$s\nYEAR_AVERAGE=$a\nYEAR_STD=$std\nYEAR_MEDIAN=$med\nYEAR_MAX=$m\nYEAR_MIN=$mm";'  > $TMPFILE
+	. $TMPFILE
+	rm $TMPFILE
+	YEAR_AVERAGE=`printf '%.2f' $YEAR_AVERAGE`
+	YEAR_STD=`printf '%.2f' $YEAR_STD`
+
+
+	YEAR_COUNT=`echo $YEAR_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_SUM=`echo $YEAR_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_AVERAGE=`echo $YEAR_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_STD=`echo $YEAR_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_MEDIAN=`echo $YEAR_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_MAX=`echo $YEAR_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	YEAR_MIN=`echo $YEAR_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
+
+	#
+	# EVERYTHING
+	#
+	# I have no idea where this breaks, but it's a big-ass number of files
+	TMP=0
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/everything" ; date ; fi
+	for FILE in  `find . -name $file` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	TOTAL=`expr $TMP + $TODAY`
+	# OK, this may not be 100% secure, but it's close enough for now
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date; fi
+	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/everything/statistics" ; fi
+	for FILE in  `find . -name $file` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "EVERYTHING_COUNT=$n\nEVERYTHING_SUM=$s\nEVERYTHING_AVERAGE=$a\nEVERYTHING_STD=$std\nEVERYTHING_MEDIAN=$med\nEVERYTHING_MAX=$m\nEVERYTHING_MIN=$mm";'  > $TMPFILE
+	. $TMPFILE
+	rm $TMPFILE
+	EVERYTHING_AVERAGE=`printf '%.2f' $EVERYTHING_AVERAGE`
+	EVERYTHING_STD=`printf '%.2f' $EVERYTHING_STD`
+
+	EVERYTHING_COUNT=`echo $EVERYTHING_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_SUM=`echo $EVERYTHING_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_AVERAGE=`echo $EVERYTHING_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_STD=`echo $EVERYTHING_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_MEDIAN=`echo $EVERYTHING_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_MAX=`echo $EVERYTHING_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	EVERYTHING_MIN=`echo $EVERYTHING_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
+
+	#
+	# Normalized data
+	#
+	if [ "x$HOSTNAME" == "x" ] ;then
+		echo -n  "IN Normalized data, no hostname set" ; date
+		# I have no idea where this breaks, but it's a big-ass number of files
+		cd $HTML_DIR
+		# OK, this may not be 100% secure, but it's close enough for now
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG ALL Normalized statistics" ; fi
+		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+		for FILE in  `find historical -name $file ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
+		. $TMPFILE
+		rm $TMPFILE
+		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
+		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
+	else
+		echo -n "IN Normalized data, hostname was set" ; date
+		# I have no idea where this breaks, but it's a big-ass number of files
+		cd $HTML_DIR
+		# OK, this may not be 100% secure, but it's close enough for now
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG Hostname only ALL  statistics" ; fi
+		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+		for FILE in  `find ./historical -name $file ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
+		. $TMPFILE
+		rm $TMPFILE
+		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
+		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
+	fi
+	echo -n "Down with normalized data"; date
+
+	NORMALIZED_COUNT=`echo $NORMALIZED_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_SUM=`echo $NORMALIZED_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_AVERAGE=`echo $NORMALIZED_AVERAGE | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_STD=`echo $NORMALIZED_STD | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_MEDIAN=`echo $NORMALIZED_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_MAX=`echo $NORMALIZED_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	NORMALIZED_MIN=`echo $NORMALIZED_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
+	DESCRIPTION=`echo $file |sed 's/_/ /g' |sed 's/\./ /g' |sed 's/todays//' |sed -r 's/\b(.)/\U\1/g' |sed 's/ Ips / IP Address /'`
+	echo "<TABLE border=1><!--HEADERLINE --> " >> $outputfile
+	echo "<TR><TH colspan=8>$DESCRIPTION</TH></TR><!--HEADERLINE --> "  >> $outputfile
+	echo "<TR><TH>Time<BR>Frame</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "<TH>Number<BR>of Days</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "<TH>Count</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "<TH>Average</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "<TH>Std. Dev.</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "<TH>Median</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "<TH>Max</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "<TH>Min</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "</TR><!--HEADERLINE --> "  >> $outputfile
+
+	echo "<TR><TD>So Far Today</TD><TD>1</TD><TD>$TODAY</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD></TR>"  >> $outputfile
+	echo "<TR><TD>This Month</TD><TD> $MONTH_COUNT</TD><TD>N/A</TD><TD> $MONTH_AVERAGE</TD><TD> $MONTH_STD</TD><TD> $MONTH_MEDIAN</TD><TD> $MONTH_MAX</TD><TD> $MONTH_MIN"  >> $outputfile
+	echo "<TR><TD>Last Month</TD><TD> $LAST_MONTH_COUNT</TD><TD>N/A</TD><TD> $LAST_MONTH_AVERAGE</TD><TD> $LAST_MONTH_STD</TD><TD> $LAST_MONTH_MEDIAN</TD><TD> $LAST_MONTH_MAX</TD><TD> $LAST_MONTH_MIN"  >> $outputfile
+	echo "<TR><TD>This Year</TD><TD> $YEAR_COUNT</TD><TD>N/A</TD><TD> $YEAR_AVERAGE</TD><TD> $YEAR_STD</TD><TD> $YEAR_MEDIAN</TD><TD> $YEAR_MAX</TD><TD> $YEAR_MIN"  >> $outputfile
+	echo "<TR><TD>Since Logging Started</TD><TD> $EVERYTHING_COUNT</TD><TD>N/A</TD><TD> $EVERYTHING_AVERAGE</TD><TD> $EVERYTHING_STD</TD><TD> $EVERYTHING_MEDIAN</TD><TD> $EVERYTHING_MAX</TD><TD> $EVERYTHING_MIN"  >> $outputfile
+	echo "<TR><TD>Normalized Since Logging Started</TD><TD> $NORMALIZED_COUNT</TD><TD>N/A</TD><TD> $NORMALIZED_AVERAGE</TD><TD> $NORMALIZED_STD</TD><TD> $NORMALIZED_MEDIAN</TD><TD> $NORMALIZED_MAX</TD><TD> $NORMALIZED_MIN"  >> $outputfile
+	echo ""  >> $outputfile
+	echo "</TABLE><!--HEADERLINE -->"  >> $outputfile
+}
+
+
 ############################################################################
 # Current ssh attacks
 #
@@ -891,6 +1171,12 @@ function ssh_attacks {
 
 	#-------------------------------------------------------------------------
 	# Root
+	#
+	# This takes longer to run than "admin" passwords because there are so 
+	# many more root passwords to look at.
+	#
+	# This will get sped up when I convert this whole thing to perl in
+	# Version 2.0
 	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-ssh_attack 1 " ; date; fi
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml" "Root Passwords" " " "Count" "Password"
 
@@ -972,6 +1258,24 @@ function ssh_attacks {
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml" "IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted" "Attack Patterns"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml" "Top 20 IP Addresses" " " "Count" "IP Address" "WhoIS" "Blacklisted" "Attack Patterns"
 	# I need to make a temp file for this
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		echo "# http://longtail.it.marist.edu "> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# This is a sorted list of IP addresses that have tried to login" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# to a server related to LongTail." >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# LEGAL DISCLAIMER" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# This list is provided for research only.  We do not recommend or" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# suggest importing this list into fail2ban, denyhosts, or any" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# other tool that might block access." >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# The format of the data is number of times seen, followed by the IP address" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		RIGHT_NOW=`date`
+		echo "# This list was created on: $RIGHT_NOW" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+	fi
+
 	cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 	sed -i s/HONEY/$HTML_TOP_DIR/g $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 
@@ -1105,6 +1409,210 @@ function ssh_attacks {
 
 }
 
+function make_trends {	
+	if [ $HOUR -eq 0 ]; then
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends" ; fi
+		#-----------------------------------------------------------------
+		# Now lets do some long term ssh reports....  Lets do a comparison of 
+		# top 20 non-root-passwords and top 20 root passwords
+		#-----------------------------------------------------------------
+		cd $HTML_DIR/historical 
+		make_header "$HTML_DIR/trends-in-non-root-passwords.shtml" "Trends In Non Root Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+		
+		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-non-root-passwords" ; fi
+		for FILE in `find . -name 'current-top-20-non-root-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+			echo -n "$FILE $FILE"  |\
+			sed 's/current-top-20-non-root-passwords.shtml//g' |\
+			sed 's/\.\///g' |\
+			sed 's/^/<A HREF=\"historical\//' |\
+			sed 's/\/ /\/\">/' |\
+			sed 's/$/ <\/a>/' ; \
+			echo "</TD>"; grep TR $FILE |\
+			grep -v HEADERLINE | \
+			sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
+	
+		#
+		# code to color code NEW entries
+		#
+		tac $TMPFILE  |\
+		perl -e ' while (<>){
+		if (/<A HREF="historical/){print; next;}
+		if (/^<TD/){
+			$line=$_;
+			$tmp_line=$_;
+			$tmp_line =~ s/^..*">//;
+			$tmp_line =~ s/<\/a>.*$//;
+			
+			if (defined $password{"$tmp_line"}){
+				print $line;
+			}
+			else {
+				$line =~ s/<TD/<TD bgcolor=#FF0000/;
+				$password{"$tmp_line"}=1;
+				print $line;
+			}
+		}
+		else {
+			print;
+		}
+		}' |tac >> $HTML_DIR/trends-in-non-root-passwords.shtml
+		rm $TMPFILE
+	
+		make_footer "$HTML_DIR/trends-in-non-root-passwords.shtml"
+		sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-non-root-passwords.shtml
+		
+	
+		#-----------------------------------------------------------------
+		cd $HTML_DIR/historical 
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-root-passwords" ; fi
+		make_header "$HTML_DIR/trends-in-root-passwords.shtml" "Trends In Root Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+	
+		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+		for FILE in `find . -name 'current-top-20-root-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+			echo -n "$FILE $FILE" |\
+			sed 's/current-top-20-root-passwords.shtml//g'|\
+			sed 's/\.\///g' |\
+			sed 's/^/<A HREF=\"historical\//' |\
+			sed 's/\/ /\/\">/' |\
+			sed 's/$/ <\/a>/' ; \
+			echo "</TD>"; grep TR $FILE |\
+			grep -v HEADERLINE   |\
+			sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
+	
+		#
+		# code to color code NEW entries
+		#
+		tac $TMPFILE  |\
+		perl -e ' while (<>){
+		if (/<A HREF="historical/){print; next;}
+		if (/^<TD/){
+			$line=$_;
+			$tmp_line=$_;
+			$tmp_line =~ s/^..*">//;
+			$tmp_line =~ s/<\/a>.*$//;
+			
+			if (defined $password{"$tmp_line"}){
+				print $line;
+			}
+			else {
+				$line =~ s/<TD/<TD bgcolor=#FF0000/;
+				$password{"$tmp_line"}=1;
+				print $line;
+			}
+		}
+		else {
+			print;
+		}
+		}' |tac >> $HTML_DIR/trends-in-root-passwords.shtml
+		rm $TMPFILE
+		
+		make_footer "$HTML_DIR/trends-in-root-passwords.shtml"
+		sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-root-passwords.shtml
+		cd $HTML_DIR/historical 
+		
+		#-----------------------------------------------------------------
+		cd $HTML_DIR/historical 
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-admin-passwords" ; fi
+	
+		make_header "$HTML_DIR/trends-in-admin-passwords.shtml" "Trends In Admin Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+		
+		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+		for FILE in `find . -name 'current-top-20-admin-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+			echo -n "$FILE $FILE" |\
+			sed 's/current-top-20-admin-passwords.shtml//g'|\
+			sed 's/\.\///g' |\
+			sed 's/^/<A HREF=\"historical\//' |\
+			sed 's/\/ /\/\">/' |\
+			sed 's/$/ <\/a>/' ; \
+			echo "</TD>"; grep TR $FILE |\
+			grep -v HEADERLINE   |\
+			sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $TMPFILE
+	
+		#
+		# code to color code NEW entries
+		#
+		tac $TMPFILE  |\
+		perl -e ' while (<>){
+		if (/<A HREF="historical/){print; next;}
+		if (/^<TD/){
+			$line=$_;
+			$tmp_line=$_;
+			$tmp_line =~ s/^..*">//;
+			$tmp_line =~ s/<\/a>.*$//;
+			
+			if (defined $password{"$tmp_line"}){
+				print $line;
+			}
+			else {
+				$line =~ s/<TD/<TD bgcolor=#FF0000/;
+				$password{"$tmp_line"}=1;
+				print $line;
+			}
+		}
+		else {
+			print;
+		}
+		}' |tac >> $HTML_DIR/trends-in-admin-passwords.shtml
+		rm $TMPFILE
+		
+		make_footer "$HTML_DIR/trends-in-admin-passwords.shtml"
+		sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-admin-passwords.shtml
+		cd $HTML_DIR/historical 
+	
+		#-----------------------------------------------------------------
+		cd $HTML_DIR/historical 
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-Accounts" ; fi
+	
+		make_header "$HTML_DIR/trends-in-accounts.shtml" "Trends In Accounts Tried From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+		
+		TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
+		for FILE in `find . -name 'current-top-20-non-root-accounts.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+			echo -n "$FILE $FILE" |\
+			sed 's/current-top-20-non-root-accounts.shtml//g'|\
+			sed 's/\.\///g' |\
+			sed 's/^/<A HREF=\"historical\//' |\
+			sed 's/\/ /\/\">/' |\
+			sed 's/$/ <\/a>/' ; \
+			echo "</TD>"; grep TR $FILE |\
+			grep -v HEADERLINE   |\
+			sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $TMPFILE
+	
+		#
+		# code to color code NEW entries
+		#
+		tac $TMPFILE  |\
+		perl -e ' while (<>){
+		if (/<A HREF="historical/){print; next;}
+		if (/^<TD/){
+			$line=$_;
+			$tmp_line=$_;
+			$tmp_line =~ s/^..*">//;
+			$tmp_line =~ s/<\/a>.*$//;
+			$tmp_line=~ s/^.*://;
+			$tmp_line=~ s/<.*$//;
+	
+			
+			if (defined $password{"$tmp_line"}){
+				print $line;
+			}
+			else {
+				$line =~ s/<TD/<TD bgcolor=#FF0000/;
+				$password{"$tmp_line"}=1;
+				print $line;
+			}
+		}
+		else {
+			print;
+		}
+		}' |tac >> $HTML_DIR/trends-in-accounts.shtml
+		rm $TMPFILE
+		
+		make_footer "$HTML_DIR/trends-in-accounts.shtml"
+		sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-accounts.shtml
+		cd $HTML_DIR/historical 
+	fi
+}
 #
 ############################################################################
 #
@@ -1257,206 +1765,6 @@ function do_ssh {
 	
 	
 	#-----------------------------------------------------------------
-	# Now lets do some long term ssh reports....  Lets do a comparison of 
-	# top 20 non-root-passwords and top 20 root passwords
-	#-----------------------------------------------------------------
-	cd $HTML_DIR/historical 
-	make_header "$HTML_DIR/trends-in-non-root-passwords.shtml" "Trends In Non Root Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
-	
-	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-non-root-passwords" ; fi
-	for FILE in `find . -name 'current-top-20-non-root-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
-		echo -n "$FILE $FILE"  |\
-		sed 's/current-top-20-non-root-passwords.shtml//g' |\
-		sed 's/\.\///g' |\
-		sed 's/^/<A HREF=\"historical\//' |\
-		sed 's/\/ /\/\">/' |\
-		sed 's/$/ <\/a>/' ; \
-		echo "</TD>"; grep TR $FILE |\
-		grep -v HEADERLINE | \
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
-
-	#
-	# code to color code NEW entries
-	#
-	tac $TMPFILE  |\
-	perl -e ' while (<>){
-	if (/<A HREF="historical/){print; next;}
-	if (/^<TD/){
-		$line=$_;
-		$tmp_line=$_;
-		$tmp_line =~ s/^..*">//;
-		$tmp_line =~ s/<\/a>.*$//;
-		
-		if (defined $password{"$tmp_line"}){
-			print $line;
-		}
-		else {
-			$line =~ s/<TD/<TD bgcolor=#FF0000/;
-			$password{"$tmp_line"}=1;
-			print $line;
-		}
-	}
-	else {
-		print;
-	}
-	}' |tac >> $HTML_DIR/trends-in-non-root-passwords.shtml
-	rm $TMPFILE
-
-	make_footer "$HTML_DIR/trends-in-non-root-passwords.shtml"
-	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-non-root-passwords.shtml
-	
-
-	#-----------------------------------------------------------------
-	cd $HTML_DIR/historical 
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-root-passwords" ; fi
-	make_header "$HTML_DIR/trends-in-root-passwords.shtml" "Trends In Root Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
-
-	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
-	for FILE in `find . -name 'current-top-20-root-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
-		echo -n "$FILE $FILE" |\
-		sed 's/current-top-20-root-passwords.shtml//g'|\
-		sed 's/\.\///g' |\
-		sed 's/^/<A HREF=\"historical\//' |\
-		sed 's/\/ /\/\">/' |\
-		sed 's/$/ <\/a>/' ; \
-		echo "</TD>"; grep TR $FILE |\
-		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
-
-	#
-	# code to color code NEW entries
-	#
-	tac $TMPFILE  |\
-	perl -e ' while (<>){
-	if (/<A HREF="historical/){print; next;}
-	if (/^<TD/){
-		$line=$_;
-		$tmp_line=$_;
-		$tmp_line =~ s/^..*">//;
-		$tmp_line =~ s/<\/a>.*$//;
-		
-		if (defined $password{"$tmp_line"}){
-			print $line;
-		}
-		else {
-			$line =~ s/<TD/<TD bgcolor=#FF0000/;
-			$password{"$tmp_line"}=1;
-			print $line;
-		}
-	}
-	else {
-		print;
-	}
-	}' |tac >> $HTML_DIR/trends-in-root-passwords.shtml
-	rm $TMPFILE
-	
-	make_footer "$HTML_DIR/trends-in-root-passwords.shtml"
-	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-root-passwords.shtml
-	cd $HTML_DIR/historical 
-	
-	#-----------------------------------------------------------------
-	cd $HTML_DIR/historical 
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-admin-passwords" ; fi
-
-	make_header "$HTML_DIR/trends-in-admin-passwords.shtml" "Trends In Admin Passwords From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
-	
-	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
-	for FILE in `find . -name 'current-top-20-admin-passwords.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
-		echo -n "$FILE $FILE" |\
-		sed 's/current-top-20-admin-passwords.shtml//g'|\
-		sed 's/\.\///g' |\
-		sed 's/^/<A HREF=\"historical\//' |\
-		sed 's/\/ /\/\">/' |\
-		sed 's/$/ <\/a>/' ; \
-		echo "</TD>"; grep TR $FILE |\
-		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $TMPFILE
-
-	#
-	# code to color code NEW entries
-	#
-	tac $TMPFILE  |\
-	perl -e ' while (<>){
-	if (/<A HREF="historical/){print; next;}
-	if (/^<TD/){
-		$line=$_;
-		$tmp_line=$_;
-		$tmp_line =~ s/^..*">//;
-		$tmp_line =~ s/<\/a>.*$//;
-		
-		if (defined $password{"$tmp_line"}){
-			print $line;
-		}
-		else {
-			$line =~ s/<TD/<TD bgcolor=#FF0000/;
-			$password{"$tmp_line"}=1;
-			print $line;
-		}
-	}
-	else {
-		print;
-	}
-	}' |tac >> $HTML_DIR/trends-in-admin-passwords.shtml
-	rm $TMPFILE
-	
-	make_footer "$HTML_DIR/trends-in-admin-passwords.shtml"
-	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-admin-passwords.shtml
-	cd $HTML_DIR/historical 
-
-	#-----------------------------------------------------------------
-	cd $HTML_DIR/historical 
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-in-Accounts" ; fi
-
-	make_header "$HTML_DIR/trends-in-accounts.shtml" "Trends In Accounts Tried From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
-	
-	TMPFILE=$(mktemp /tmp/output.XXXXXXXXXX)
-	for FILE in `find . -name 'current-top-20-non-root-accounts.shtml'|sort -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
-		echo -n "$FILE $FILE" |\
-		sed 's/current-top-20-non-root-accounts.shtml//g'|\
-		sed 's/\.\///g' |\
-		sed 's/^/<A HREF=\"historical\//' |\
-		sed 's/\/ /\/\">/' |\
-		sed 's/$/ <\/a>/' ; \
-		echo "</TD>"; grep TR $FILE |\
-		grep -v HEADERLINE   |\
-		sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done  >> $TMPFILE
-
-	#
-	# code to color code NEW entries
-	#
-	tac $TMPFILE  |\
-	perl -e ' while (<>){
-	if (/<A HREF="historical/){print; next;}
-	if (/^<TD/){
-		$line=$_;
-		$tmp_line=$_;
-		$tmp_line =~ s/^..*">//;
-		$tmp_line =~ s/<\/a>.*$//;
-		$tmp_line=~ s/^.*://;
-		$tmp_line=~ s/<.*$//;
-
-		
-		if (defined $password{"$tmp_line"}){
-			print $line;
-		}
-		else {
-			$line =~ s/<TD/<TD bgcolor=#FF0000/;
-			$password{"$tmp_line"}=1;
-			print $line;
-		}
-	}
-	else {
-		print;
-	}
-	}' |tac >> $HTML_DIR/trends-in-accounts.shtml
-	rm $TMPFILE
-	
-	make_footer "$HTML_DIR/trends-in-accounts.shtml"
-	sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-accounts.shtml
-	cd $HTML_DIR/historical 
-
-	#-----------------------------------------------------------------
 	cd $HTML_DIR/
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Making Graphics now" ; date; fi
 	if [ $GRAPHS == 1 ] ; then
@@ -1486,7 +1794,7 @@ function do_ssh {
 		touch last-30-days-ips-count.data
 	fi
 
-		for FILE in *.data ; do 
+		for FILE in current*.data ; do 
 			if [ ! "$FILE" == "current-attack-count.data" ] ; then
 				GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
 				TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
@@ -1494,23 +1802,12 @@ function do_ssh {
 				TITLE=$TMP_TITLE
 				TITLE=`echo $TITLE | sed 's/Top 20 Admin Passwords/Top 20 Username \"admin\" Passwords/' `
 				if [ -s "$FILE" ] ; then
+echo "DEBUG Make graph for $FILE"
 					if [[ $FILE == *"accounts"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
 					fi
 					if [[ $FILE == *"password"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
-					fi
-					if [[ $FILE == *"last-30-days-username-count.data"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Usernames" "" "" "wide"> $GRAPHIC_FILE
-					fi
-					if [[ $FILE == *"last-30-days-password-count.data"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
-					fi
-					if [[ $FILE == *"last-30-days-ips-count.data"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE
-					fi
-					if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "" "" "wide"> $GRAPHIC_FILE
 					fi
 				else #We have an empty file, deal with it here
 					echo "0 0" >/tmp/LongTail.data.$$
@@ -1520,22 +1817,65 @@ function do_ssh {
 					if [[ $FILE == *"password"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
 					fi
-					if [[ $FILE == *"last-30-days-username-count.data"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique Usernames" "" "" "wide"> $GRAPHIC_FILE
-					fi
-					if [[ $FILE == *"last-30-days-password-count.data"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
-					fi
-					if [[ $FILE == *"last-30-days-ips-count.data"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE
-					fi
-					if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "$TITLE" "" "" "wide"> $GRAPHIC_FILE
-					fi
 					rm /tmp/LongTail.data.$$
 				fi
 			fi
 		done        
+
+		
+		if [ $HOUR -eq 0 ]; then
+			for FILE in historical*.data last-*.data ; do 
+				if [ ! "$FILE" == "current-attack-count.data" ] ; then
+					GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
+					TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
+					TMP_TITLE=`for word in $TITLE; do printf '%s ' "${word^}"; done; echo`
+					TITLE=$TMP_TITLE
+					TITLE=`echo $TITLE | sed 's/Top 20 Admin Passwords/Top 20 Username \"admin\" Passwords/' `
+					if [ -s "$FILE" ] ; then
+	echo "DEBUG Make graph for $FILE"
+						if [[ $FILE == *"accounts"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"password"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"last-30-days-username-count.data"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Usernames" "" "" "wide"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"last-30-days-password-count.data"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"last-30-days-ips-count.data"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "" "" "wide"> $GRAPHIC_FILE
+						fi
+					else #We have an empty file, deal with it here
+						echo "0 0" >/tmp/LongTail.data.$$
+						if [[ $FILE == *"accounts"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"password"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"last-30-days-username-count.data"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique Usernames" "" "" "wide"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"last-30-days-password-count.data"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"last-30-days-ips-count.data"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE
+						fi
+						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
+							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "$TITLE" "" "" "wide"> $GRAPHIC_FILE
+						fi
+						rm /tmp/LongTail.data.$$
+					fi
+				fi
+			done        
+		fi
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Done Making Graphics now" ; date; fi
 	fi    
 } # End of do_ssh
@@ -1821,18 +2161,21 @@ if [ $SEARCH_FOR == "sshd" ] ; then
 	echo "Searching for ssh attacks"
 	PROTOCOL=$SEARCH_FOR
 	create_historical_copies  $HTML_DIR
+	make_trends
 	do_ssh
 fi
 if [ $SEARCH_FOR == "sshd-2222" ] ; then
 	echo "Searching for ssh 2222 attacks"
 	PROTOCOL=$SEARCH_FOR
 	create_historical_copies  $HTML_DIR
+	make_trends
 	do_ssh
 fi
 if [ $SEARCH_FOR == "telnet-honeypot" ] ; then
 	echo "Searching for telnet attacks"
 	PROTOCOL=$SEARCH_FOR
 	create_historical_copies  $HTML_DIR
+	make_trends
 	do_ssh
 fi
 
@@ -1850,6 +2193,31 @@ make_daily_attacks_chart
 echo -n "Done with LongTail.sh at:"
 date
 if [ "x$HOSTNAME" == "x/" ] ;then
+	if [ $SEARCH_FOR == "sshd" ] ; then
+echo "Doing blacklist efficiency tests now"
+		make_header "$HTML_DIR/blacklist_efficiency.shtml" "Blacklist Efficiency"  "" 
+		/usr/local/etc/LongTail_compare_IP_addresses.pl >> $HTML_DIR/blacklist_efficiency.shtml
+		make_footer "$HTML_DIR/blacklist_efficiency.shtml"
+	
+		make_header "$HTML_DIR/password_analysis_todays_passwords.shtml" "Password Analysis of Today's Passwords"  "" 
+		$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/todays_passwords >> $HTML_DIR/password_analysis_todays_passwords.shtml
+		make_footer "$HTML_DIR/password_analysis_todays_passwords.shtml"
+	
+		if [ $HOUR -eq 0 ]; then
+			make_header "$HTML_DIR/password_analysis_all_passwords.shtml" "Password Analysis of All Passwords"  "" 
+			$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/all-password >> $HTML_DIR/password_analysis_all_passwords.shtml
+			make_footer "$HTML_DIR/password_analysis_all_passwords.shtml"
+	
+			make_header "$HTML_DIR/password_list_analysis_all_passwords.shtml" "Password vs Wordlist Analysis"  "" 
+	
+			echo "<P>This is a comparison of passwords used vs several publicly available" >> $HTML_DIR/password_list_analysis_all_passwords.shtml
+			echo "lists of passwords." >> $HTML_DIR/password_list_analysis_all_passwords.shtml
+			echo "<BR><BR>" >> $HTML_DIR/password_list_analysis_all_passwords.shtml
+			$SCRIPT_DIR/LongTail_password_analysis_part_2.pl $HTML_DIR/all-password >> $HTML_DIR/password_list_analysis_all_passwords.shtml
+			make_footer "$HTML_DIR/password_list_analysis_all_passwords.shtml"
+		fi
+	fi
+
 	echo -n "hostname is not set, running analyze now: "
 	date
 #	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
