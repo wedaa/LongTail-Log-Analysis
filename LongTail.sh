@@ -703,10 +703,17 @@ function count_ssh_attacks {
 	IPSNEWTODAY=`cat todays-uniq-ips.txt |wc -l`
 
 	make_header "$1/todays-uniq-ips.shtml" "IP Addresses Never Seen Before Today"
-	echo "</TABLE>" >> $1/todays-uniq-ips.shtml
-	echo "<HR>" >> $1/todays-uniq-ips.shtml
-	cat todays-uniq-ips.txt |\
-	awk '{printf("<BR><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">%s</A></TD></TR>\n",$1,$1)}' >> $1/todays-uniq-ips.shtml
+	make_header "$1/todays-uniq-ips.shtml" "IP Addresses Never Seen Before Today" " " "Count" "IP Address" "WhoIS" "Blacklisted" "Attack Patterns"
+#	echo "</TABLE>" >> $1/todays-uniq-ips.shtml
+	#echo "<HR>" >> $1/todays-uniq-ips.shtml
+	#cat todays-uniq-ips.txt |\
+	#awk '{printf("<BR><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">%s</A></TD></TR>\n",$1,$1)}' >> $1/todays-uniq-ips.shtml
+
+	#echo "<HR><HR>">> $1/todays-uniq-ips.shtml
+	#cat  todays-uniq-ips.txt   | awk '{printf("<TR><TD>Not Yet</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$1,$1,$1)}' >>  $1/todays-uniq-ips.shtml
+	#sed -i s/HONEY/$HTML_TOP_DIR/g  $1/todays-uniq-ips.shtml
+	for IP in `cat todays-uniq-ips.txt` ; do grep $IP current-ip-addresses.shtml >> $1/todays-uniq-ips.shtml; done
+
 	make_footer "$1/todays-uniq-ips.shtml"
 	sed -i s/HONEY/$HTML_TOP_DIR/g $1/todays-uniq-ips.shtml
 
