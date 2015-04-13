@@ -1,0 +1,32 @@
+<HTML><!--HEADERLINE -->
+<HEAD><!--HEADERLINE -->
+<META http-equiv="pragma" content="no-cache"><!--HEADERLINE -->
+<TITLE>LongTail Log Analysis Data Graphs</TITLE> <!--HEADERLINE -->
+<style> /* HEADERLINE */ 
+.td-some-name /* HEADERLINE */ 
+{ /* HEADERLINE */ 
+  white-space:nowrap; /* HEADERLINE */ 
+  vertical-align:top; /* HEADERLINE */ 
+} /* HEADERLINE */ 
+</style> <!--HEADERLINE --> 
+</HEAD><!--HEADERLINE -->
+<BODY BGCOLOR=#00f0FF><!--HEADERLINE -->
+<link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
+<!--#include virtual="/honey/header.html" -->
+<H3>LongTail Log Analysis Data Graphs<BR><!--#include virtual="description.html" --></H3><!--HEADERLINE -->
+<BR>
+<P>LEGAL DISCLAIMER:
+<P>This list is provided for research only.  We do not recommend or 
+suggest importing this list into fail2ban, denyhosts, or any
+other tool that might block access. 
+<P>The format of the data is number of times seen, followed by the IP address
+<BR>
+<BR><A href="current-ip-addresses.txt">IP Addresses so far today</a>
+
+<BR><A href="last-7-days-ip-addresses.txt">IP Addresses seen in the prior 7 days</a>
+<BR><A href="last-30-days-ip-addresses.txt">IP Addresses seen in the prior 30 days </a>
+<BR><A href="historical-ip-addresses.txt">IP Addresses seen since logging began</a>
+
+
+
+<!--#include virtual="/honey/footer.html" -->
