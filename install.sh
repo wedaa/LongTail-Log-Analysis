@@ -36,6 +36,7 @@ cp LongTail_make_daily_attacks_chart.pl $SCRIPT_DIR
 cp whois.pl $SCRIPT_DIR
 
 for dir in $HTML_DIR $OTHER_DIRS ; do
+	cp ip_addresses.shtml $dir
 	cp index.shtml $dir
 	cp index-long.shtml $dir
 	cp index-historical.shtml $dir
