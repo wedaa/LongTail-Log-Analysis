@@ -313,6 +313,11 @@ enable Reliable syslog reporting.
 	$ActionQueueType LinkedList   # run asynchronously
 	$ActionResumeRetryCount -1    # infinite retries if host is down
 
+6) Sometimes data gets lost in transmission between clients and the
+consolidation server.  I have no idea why.  I have to figure out a
+better way of consolidating messages files between hosts and then
+re-running reports against the "Better" data.
+
 WARNING About System Hostnames
 --------------
 
@@ -341,13 +346,48 @@ index-long.shtml:
 
 index-historical.shtml:
 
-KNOWN ISSUES
+KNOWN ISSUES THAT HAVE YET TO BE DONE
 --------------
-1) DONE.  I need to go through each and every webpage and make sure it 
-looks "good".
 
 2) I need to fix the X and Y axis labels so they are not buried
 with the "tick" information.
+
+21) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of countries 
+attacking.
+
+24) NICE TO HAVE BUT NOT A PRIORITY  Make a chart of IP addresses that 
+attack more than one host.
+
+25) There's a "bug" in the .grep files where a "#" character matches
+some of the lines even though the rest of the line does not exist.  This
+is due to my not fully understanding how the grep -vf command works.
+
+37) I need to analyze "sshd Disconnect" messages that come from hosts
+that have not actively tried to login.
+
+39) I need to analyze ssh_keys as logins.
+
+44) I need to cleanup the Dictionary section.  It's still ugly-ish
+and needs to be cleaned up and described better
+
+46) Make a chart of the first time a password was seen
+
+48) Make a chart of the first time a username was seen.
+
+55) In statistics section I need to get stats on # of usernames, passwords
+and IP addresses.
+
+56) I need to somehow show slowscans and bot net attacks
+
+57) I need to break out attacks by hosts so I can see the attacks
+that get through the IPS more clearly.
+
+58) I need to "googlefy" usernames.
+
+KNOWN ISSUES THAT ARE DONE
+--------------
+1) DONE.  I need to go through each and every webpage and make sure it 
+looks "good".
 
 3) DONE (See #20)  Does NOT handle spaces at the start or end of 
 the passwords properly.
@@ -355,7 +395,7 @@ the passwords properly.
 4) DONE: I think this works now, 2015-02-14.  I don't deal with 
 blank/empty passwords at all
 
-5) IN PROGRESS: I need to add a chart of password lengths
+5) DONE: I need to add a chart of password lengths
 
 6) DONE: 2015-03-18.  It would be nice in the "Trends" tables if the first time an entry 
 is used that it showed up in a different color.
@@ -413,20 +453,10 @@ running LongTail on that server also.
 20) DONE: (Also fixed everywhere) Does not properly handle spaces in 
 password for account:password pairs
 
-21) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of countries 
-attacking.
-
 22) DONE: Make a pretty graph of attacks per day over the last 30 days.
 
 23) DONE  Make a pretty graph of number of 
 unique IP addresses per day over the last 30 days.
-
-24) NICE TO HAVE BUT NOT A PRIORITY  Make a chart of IP addresses that 
-attack more than one host.
-
-25) There's a "bug" in the .grep files where a "#" character matches
-some of the lines even though the rest of the line does not exist.  This
-is due to my not fully understanding how the grep -vf command works.
 
 26) DONE: Need to work on code for the "consolidation" server.
 
@@ -456,7 +486,7 @@ the individual day's attacks.
 33) DONE: Yes, use same codes as for port 2222 attacks. Can I do 
 telnet honeypots too?
 
-34) I might have a bug in the code for "Median" statistics in the
+34) DONE: I might have a bug in the code for "Median" statistics in the
 main line of code.
 
 35) DONE: I need to be able to add comments/explanations next to the 
@@ -467,12 +497,7 @@ in the daily folders.  LongTail.sh needs to be enable this feature
 as I am not going to make a -rebuild flag since I do not want this
 to be easy to be done.  It's still dangerous.
 
-37) I need to analyze "sshd Disconnect" messages that come from hosts
-that have not actively tried to login.
-
 38) DONE In sshd_config files. I need to make sure I disable ssh_keys as logins.
-
-39) I need to analyze ssh_keys as logins.
 
 40) DONE: Added "normalization" of data so I also report full stats
 that are from FULL days (24 hours) only.  This way I do not include
@@ -489,19 +514,12 @@ links go someplace real
 43) DONE: I need to analyze telnet probes, now that I have that data being 
 logged
 
-44) I need to cleanup the Dictionary section.  It's still ugly-ish
-and needs to be cleaned up and described better
-
 45) SOMEWHERE (In either the sshd server or rsyslog) there is a bug which if the password is empty, that the 
 line sent to syslog is "...Password:$", instead of "...Password: $"
 Please note the missing space at the end of the line is the bug
 and now I need to code around it everyplace :-(
 
-46) Make a chart of the first time a password was seen
-
 47) DONE: Show unique usernames, 
-
-48) Make a chart of the first time a username was seen.
 
 49) DONE: Show unique IP addresses, 
 
@@ -517,19 +535,7 @@ day.
 
 53) DONE: Added a "dashboard"
 
-54) Need to figure out how to add horizontal lines to a barchart so that
-I can show minimum, average, and maximum lines to my dashboard and to
-other charts
-
-54) Need to figure out how to add horizontal lines to a barchart so that
+54) DONE: Need to figure out how to add horizontal lines to a barchart so that
 I can show minimum, average, and maximum lines to my dashboard and to
 other charts
 ( http://www.asial.co.jp/jpgraph/demo/src/Examples/show-example.php?target=plotlineex1.php )
-
-55) In statistics section I need to get stats on # of usernames, passwords
-and IP addresses.
-
-56) I need to somehow show slowscans and bot net attacks
-
-57) I need to break out attacks by hosts so I can see the attacks
-that get through the IPS more clearly.
