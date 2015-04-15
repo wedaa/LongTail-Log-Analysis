@@ -370,13 +370,6 @@ that have not actively tried to login.
 44) I need to cleanup the Dictionary section.  It's still ugly-ish
 and needs to be cleaned up and described better
 
-46) Make a chart of the first time a password was seen
-
-48) Make a chart of the first time a username was seen.
-
-55) In statistics section I need to get stats on # of usernames, passwords
-and IP addresses.
-
 56) I need to somehow show slowscans and bot net attacks
 
 57) I need to break out attacks by hosts so I can see the attacks
@@ -519,7 +512,11 @@ line sent to syslog is "...Password:$", instead of "...Password: $"
 Please note the missing space at the end of the line is the bug
 and now I need to code around it everyplace :-(
 
+46) DONE: Make a chart of the first time a password was seen
+
 47) DONE: Show unique usernames, 
+
+48) DONE: Make a chart of the first time a username was seen.
 
 49) DONE: Show unique IP addresses, 
 
@@ -539,3 +536,6 @@ day.
 I can show minimum, average, and maximum lines to my dashboard and to
 other charts
 ( http://www.asial.co.jp/jpgraph/demo/src/Examples/show-example.php?target=plotlineex1.php )
+
+55) DONE In statistics section I need to get stats on # of usernames, passwords
+and IP addresses.
