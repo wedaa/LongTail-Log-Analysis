@@ -91,6 +91,7 @@ sub make_index_file {
 
 $dir="/var/www/html/honey/dashboard/";
 $counter=0;
+chdir ("$dir");
 
 open (LS, "ls dashboard_number_of_attacks-*|");
 while (<LS>){
