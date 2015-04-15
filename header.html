@@ -13,24 +13,45 @@
 <!--  This is the start of my webpage with all the menu stuff -->
 <div id='cssmenu'>
 	<ul>
-		<li class='has-sub '><a href='/honey/index.shtml'>Home</a>
+		<li class='has-sub '><a href='#'>Home</a>
 			<ul>
         <li><a href='/honey/index.shtml'>Today's Activity on ALL SSH Ports</a></li>
         <li><a href='/honey/index-long.shtml'>7, 30, and Historical Activity on ALL SSH Ports</a></li>
         <li><a href='/honey-2222/index.shtml'>Today's Activity, Port 2222</a></li>
         <li><a href='/honey-2222/index-long.shtml'>7, 30, and Historical Activity, Port 2222</a></li>
+<!--
 				<li><a href='/telnet/index.shtml'>Today's Activity for Telnet</a></li>
 				<li><a href='/telnet/index-long.shtml'>7, 30, and Historical Activity for Telnet</a></li>
+-->
 			</ul>
 		</li>
-		<li class='has-sub '><a href='/honey/dictionary.shtml'>Attack Analysis!</a>
+		<li class='has-sub '><a href='#'>Attack Analysis!</a>
 			<ul>
-				<li><a href ="/honey/current_attackers_lifespan.shtml">Lifetimes of Attackers</a></li>
-				<li><a href ="/honey/attacks/ip_attacks.shtml">Attack Patterns By IP Address</a></li>
-				<li><a href ="/honey/attack_patterns.shtml">Attack Patterns Used Multiple Times</a></li>
-				<li><a href ="/honey/attack_patterns_single.shtml">Attack Patterns Used Only Once</a></li>
-				<li><a href ="/honey/dictionaries.shtml">Attack Patterns By Number Of Times Used </a></li>
-				<li><a href ="/honey/dictionaries-k5.shtml">Attack Patterns By Size Of Dictionary</a></li>
+				<li class='has-sub '><a href='#'>Attack Pattern Analysis</a>
+				<ul>
+					<li><a href ="/honey/current_attackers_lifespan.shtml">Lifetimes of Attackers</a></li>
+					<li><a href ="/honey/attacks/ip_attacks.shtml">Attack Patterns By IP Address</a></li>
+					<li><a href ="/honey/attack_patterns.shtml">Attack Patterns Used Multiple Times</a></li>
+					<li><a href ="/honey/attack_patterns_single.shtml">Attack Patterns Used Only Once</a></li>
+					<li><a href ="/honey/dictionaries.shtml">Attack Patterns By Number Of Times Used </a></li>
+					<li><a href ="/honey/dictionaries-k5.shtml">Attack Patterns By Size Of Dictionary</a></li>
+				</ul>
+				<li class='has-sub '><a href='#'>Passwords Tried Analysis</a>
+				<ul>
+					<li><a href ="/honey/password_analysis_todays_passwords.shtml">Password Analysis For Todays Passwords for SSH attacks</a></li>
+					<li><a href ="/honey/password_analysis_all_passwords.shtml">Password Analysis For All Passwords for SSH attacks</a></li>
+					<li><a href ="/honey/password_list_analysis_all_passwords.shtml">Password List Analysis For All Passwords for SSH attacks</a></li>
+				</ul>
+				<li class='has-sub '><a href='#'>First Seen Lists</a>
+				<ul>
+					<li><a href ="/honey/todays-uniq-passwords.shtml">Passwords First Seen Today</a></li>
+					<li><a href ="/honey/todays-uniq-username.shtml">Usernames First Seen Today</a></li>
+					<li><a href ="/honey/todays-uniq-ips.shtml">IP Addresses First Seen Today</a></li>
+					<li><a href ="/honey/first_seen_passwords.shtml.gz">When Was A Password First Seen(gzip format)</a></li>
+					<li><a href ="/honey/first_seen_usernames.shtml">When Was A Username First Seen</a></li>
+					<li><a href ="/honey/first_seen_ips.shtml">When Was A IP Address First Seen</a></li>
+				</ul>
+				<li><a href ="/honey/blacklist_efficiency.shtml">Blacklist Efficiency for SSH attacks</a></li>
 			</ul>
 		</li>
 		<li class='has-sub '><a href='#'>SSH HOST Attacks ALL Ports</a>
@@ -102,6 +123,9 @@
 		</li>
 		<li>
 			<a href='https://github.com/wedaa/LongTail-Log-Analysis'>Download the code</a>
+		</li>
+		<li>
+			<a href='/honey/ip_addresses.shtml'>Download IP Addresses</a>
 		</li>
 		</ul>
 		</li>
