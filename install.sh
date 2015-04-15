@@ -22,18 +22,37 @@ for dir in $OTHER_DIRS ; do
 	chmod a+rx $dir
 done
 
-cp LongTail_dashboard.pl $SCRIPT_DIR
-cp LongTail_password_analysis.pl $SCRIPT_DIR
-cp LongTail_analyze_attacks.pl $SCRIPT_DIR
-cp catall.sh $SCRIPT_DIR
-cp ip-to-country $SCRIPT_DIR
-cp LongTail.sh $SCRIPT_DIR
-cp LongTail_make_graph.php $SCRIPT_DIR
-cp LongTail_make_dashboard_graph.php $SCRIPT_DIR
-cp translate_country_codes.sed $SCRIPT_DIR
-cp LongTail_make_daily_attacks_chart.pl $SCRIPT_DIR
-#cp translate_country_codes.sed.orig $SCRIPT_DIR
-cp whois.pl $SCRIPT_DIR
+ETC_FILES="ip-to-country \
+translate_country_codes.sed \
+LongTail-exclude-accounts.grep \
+LongTail-exclude-webpages.grep  \
+LongTail-exclude-IPs-httpd.grep \
+LongTail-exclude-IPs-ssh.grep "
+
+for file in $ETC_FILES ; do
+	echo $file
+	cp $file $SCRIPT_DIR
+	chmod a+r $SCRIPT_DIR/$file
+done
+
+PROGRAMS=" LongTail_rebuild_dashboard_index.pl \
+LongTail_password_analysis_part_1.pl \
+LongTail_password_analysis_part_2.pl \
+LongTail_dashboard.pl \
+LongTail_password_analysis.pl \
+LongTail_analyze_attacks.pl \
+catall.sh \
+LongTail.sh \
+LongTail_make_graph.php \
+LongTail_make_dashboard_graph.php \
+LongTail_make_daily_attacks_chart.pl \
+whois.pl "
+
+for file in $PROGRAMS ; do
+	echo $file
+	cp $file $SCRIPT_DIR
+	chmod a+rx $SCRIPT_DIR/$file
+done
 
 for dir in $HTML_DIR $OTHER_DIRS ; do
 	cp ip_addresses.shtml $dir
@@ -50,6 +69,7 @@ done
 cp dashboard-index.shtml $HTML_DIR/dashboard/index.shtml
 cp dashboard-1.shtml $HTML_DIR/dashboard/ 
 cp dashboard.shtml $HTML_DIR/
+
 echo "0" > $HTML_DIR/dashboard/count
 
 if [ ! -e $SCRIPT_DIR/LongTail-exclude-accounts.grep ] ; then
@@ -72,25 +92,7 @@ if [ ! -e $SCRIPT_DIR/LongTail-exclude-webpages.grep ] ; then
 	cp LongTail-exclude-webpages.grep $SCRIPT_DIR
 fi
 
-chmod a+rx $SCRIPT_DIR/LongTail_dashboard.pl
-chmod a+rx $SCRIPT_DIR/LongTail_password_analysis.pl 
 
-chmod a+rx catall.sh $SCRIPT_DIR/catall.sh
-chmod a+r ip-to-country $SCRIPT_DIR/ip-to-country
-chown $OWNER $SCRIPT_DIR/ip-to-country
-
-chmod a+rx $SCRIPT_DIR/LongTail_analyze_attacks.pl
-chmod a+r $SCRIPT_DIR/LongTail-exclude-accounts.grep
-chmod a+r $SCRIPT_DIR/LongTail-exclude-webpages.grep 
-chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs-httpd.grep
-chmod a+r $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep
-chmod a+rx $SCRIPT_DIR/LongTail.sh
-chmod a+rx $SCRIPT_DIR/LongTail_make_daily_attacks_chart.pl
-chmod a+rx $SCRIPT_DIR/LongTail_make_graph.php
-chmod a+rx $SCRIPT_DIR/LongTail_make_dashboard_graph.php
-chmod a+rx $SCRIPT_DIR/translate_country_codes.sed
-chmod a+rx $SCRIPT_DIR/translate_country_codes.sed.orig
-chmod a+rx $SCRIPT_DIR/whois.pl
 chmod a+r $HTML_DIR/index.shtml 
 chown $OWNER $HTML_DIR/index.shtml 
 chmod a+r $HTML_DIR/index-long.shtml 
