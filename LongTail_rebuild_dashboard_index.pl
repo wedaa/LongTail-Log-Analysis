@@ -10,7 +10,7 @@ sub make_index_file {
 	my $first_date=$_[4];
 	my $last_date=$_[5];
 
-	print "IN make_index_file, writing to $dir/$filename\n";
+	#print "IN make_index_file, writing to $dir/$filename\n";
 	open (FILE, ">$dir/$filename");
 
 	print (FILE "<HTML>\n");
@@ -30,7 +30,12 @@ sub make_index_file {
 	print (FILE "Minimum, Average, and Maximum are from the month shown.  \n");
 	print (FILE "<BR>\n");
 	print (FILE "<BR>\n");
-	print (FILE "<A href=\"/honey/dashboard/manual-index-$file_date.shtml\">STOP Slideshow</A><a href=\"/honey/notes.shtml#2\">[2]</a> \n");
+	if ($next_file_date eq "LAST"){
+		print (FILE "<A href=\"/honey/dashboard/index2.shtml\">RESTART Slideshow</A><a href=\"/honey/notes.shtml#2\">[2]</a> \n");
+	}
+	else {
+		print (FILE "<A href=\"/honey/dashboard/manual-index-$file_date.shtml\">STOP Slideshow</A><a href=\"/honey/notes.shtml#2\">[2]</a> \n");
+	}
 	print (FILE "<BR>\n");
 	print (FILE "<BR>\n");
 	print (FILE "<A href=\"/honey/historical/$date_dir/index.shtml\">\n");
@@ -117,7 +122,7 @@ $last_date=$date_array[$counter-1];
 $new_counter=0;
 $first=1;
 while ($new_counter < $counter){
-	print "Date is $date_array[$new_counter]\n";
+	#print "Date is $date_array[$new_counter]\n";
 	if ($first ==1){
 		$prior_date="FIRST";
 		$next_date=$date_array[$new_counter+1];
