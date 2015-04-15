@@ -708,8 +708,8 @@ function count_ssh_attacks {
 	awk 'FNR==NR{a[$0]++;next}(!($0 in a))' all-ips todays_ips >todays-uniq-ips.txt
 	IPSNEWTODAY=`cat todays-uniq-ips.txt |wc -l`
 
-	make_header "$1/todays-uniq-ips.shtml" "IP Addresses Never Seen Before Today"
-	make_header "$1/todays-uniq-ips.shtml" "IP Addresses Never Seen Before Today" " " "Count" "IP Address" "WhoIS" "Blacklisted" "Attack Patterns"
+	#make_header "$1/todays-uniq-ips.shtml" "IP Addresses Never Seen Before Today"
+	make_header "$1/todays-uniq-ips.shtml" "IP Addresses Never Seen Before Today" " " "Count" "IP Address" "Country" "WhoIS" "Blacklisted" "Attack Patterns"
 #	echo "</TABLE>" >> $1/todays-uniq-ips.shtml
 	#echo "<HR>" >> $1/todays-uniq-ips.shtml
 	#cat todays-uniq-ips.txt |\
@@ -2239,6 +2239,28 @@ echo "Doing blacklist efficiency tests now"
 			echo "<BR><BR>" >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			$SCRIPT_DIR/LongTail_password_analysis_part_2.pl $HTML_DIR/all-password >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_list_analysis_all_passwords.shtml"
+
+			make_header "$HTML_DIR/first_seen_ips.shtml" "First Occurence of an IP Address"  "" 
+			echo "</TABLE>" >> $HTML_DIR/first_seen_ips.shtml
+			echo "<PRE>" >> $HTML_DIR/first_seen_ips.shtml
+			$SCRIPT_DIR/LongTail_find_first_password_use.pl ips >> $HTML_DIR/first_seen_ips.shtml
+			echo "</PRE>" >> $HTML_DIR/first_seen_ips.shtml
+			make_footer "$HTML_DIR/first_seen_ips.shtml"
+
+			make_header "$HTML_DIR/first_seen_usernames.shtml" "First Occurence of an Username"  "" 
+			echo "</TABLE>" >> $HTML_DIR/first_seen_usernames.shtml
+			echo "<PRE>" >> $HTML_DIR/first_seen_usernames.shtml
+			$SCRIPT_DIR/LongTail_find_first_password_use.pl usernames >> $HTML_DIR/first_seen_usernames.shtml
+			echo "</PRE>" >> $HTML_DIR/first_seen_usernames.shtml
+			make_footer "$HTML_DIR/first_seen_usernames.shtml"
+
+			make_header "$HTML_DIR/first_seen_passwords.shtml" "First Occurence of a Password"  "" 
+			echo "</TABLE>" >> $HTML_DIR/first_seen_passwords.shtml
+			echo "<PRE>" >> $HTML_DIR/first_seen_passwords.shtml
+			$SCRIPT_DIR/LongTail_find_first_password_use.pl passwords >> $HTML_DIR/first_seen_passwords.shtml
+			echo "</PRE>" >> $HTML_DIR/first_seen_passwords.shtml
+			make_footer "$HTML_DIR/first_seen_passwords.shtml"
+			gzip $HTML_DIR/first_seen_passwords.shtml
 		fi
 	fi
 
