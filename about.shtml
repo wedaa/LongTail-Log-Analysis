@@ -1,0 +1,36 @@
+<!--#include virtual="/honey/header.html" --> 
+<P>LongTail is a program that analyzes ssh brute force attacks
+and statistically quantifies them based on IP addresses used,
+Accounts, passwords, AND account/password pairs, and (what 
+nobody else is doing at the moment) analyzing attack patterns
+for commonality and number of times used.
+
+<P>LongTail was written by Eric Wedaa and has been released under GPL V2
+
+<P>Raw input data from longtail.it.marist.edu  will be made available 90 days after it was
+collected OR 90 days after the official "opening" of LongTail.it.marist.edu
+in order to allow Marist time to analyze the data and report on 
+the data first.
+
+<P>Data  from longtail.it.marist.edu may be used by third parties as long as attribution is
+made to Eric Wedaa, LongTail Log Analysis, and Marist College.
+Please include a link back to http://longtail.it.marist.edu
+
+<P>Reports made by LongTail  from longtail.it.marist.edu may be used by third parties as 
+long as attribution is made to Eric Wedaa, LongTail Log 
+Analysis, and Marist College.  Please include a link back to http://longtail.it.marist.edu
+
+<P>I can write code, or I can write documentation.  Right now 
+I'm busy writing code.  Some documentation is in the README
+and in my Blog as show in the menu bar above.
+
+<P>A big thanks to Simon Bell of <A href="http://securehoney.net/">
+http://securehoney.net/</a> for 
+pointing me towards jpgraph.  That one tool made all my graphs
+possible.
+
+<P>Please feel free to discuss LongTail in the Google Group that I 
+setup for discussion.  :-)
+
+<!--#include virtual="/honey/footer.html" --> 
+
