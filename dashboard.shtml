@@ -3,12 +3,16 @@
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" --> 
 
-<H3>LongTail Log Analysis Dashboard<BR>All SSH Ports</H3>
-<P>All hosts, all sites, combined.  This page is updated every 5 minutes.
+<H3>LongTail Log Analysis Dashboard<BR>All SSH Ports, 
+All hosts, all sites, combined.  </H3>
+<P>This page is updated every 5 minutes.
 Minimum, Average, and Maximum are from last month.  Maximum is only shown
 when the current numbers are more than double the average.
-<BR>
-<BR>
+
+<ul class="comicNav">
+<li><a href="/honey/dashboard/index2.shtml">Start Slideshow</a></li>
+</ul>
+
 <img src="/honey/dashboard_number_of_attacks.png">
 <BR>
 <BR>
@@ -19,7 +23,4 @@ when the current numbers are more than double the average.
 <BR>
 <BR>
 <img src="/honey/dashboard_usernames.png">
-<BR>
-<BR>
-<a href="/honey/dashboard/index.shtml">Historical Slideshow</A>
 <!--#include virtual="/honey/footer.html" --> 
