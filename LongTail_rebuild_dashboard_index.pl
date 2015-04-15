@@ -28,16 +28,31 @@ sub make_index_file {
 	print (FILE "<H3>LongTail Log Analysis Dashboard<BR>All SSH Ports</H3>\n");
 	print (FILE "<P>All hosts, all sites, combined.  \n");
 	print (FILE "Minimum, Average, and Maximum are from the month shown.  \n");
-	print (FILE "<BR>\n");
-	print (FILE "<BR>\n");
+#	print (FILE "<BR>\n");
+#	print (FILE "<BR>\n");
 	if ($next_file_date eq "LAST"){
-		print (FILE "<A href=\"/honey/dashboard/index2.shtml\">RESTART Slideshow</A><a href=\"/honey/notes.shtml#2\">[2]</a> \n");
+#		print (FILE "<A href=\"/honey/dashboard/index2.shtml\">RESTART Slideshow</A><a href=\"/honey/notes.shtml#2\">[2]</a> \n");
+print (FILE "<ul class=\"comicNav\">\n");
+print (FILE "<li><a href=\"/honey/dashboard/manual-index-$first_date.shtml\">|&lt;</a></li>\n");
+print (FILE "<li><a rel=\"prev\" href=\"/honey/dashboard/manual-index-$prior_file_date.shtml\" accesskey=\"p\">&lt; Prev</a></li>\n");
+print (FILE "<li><a href=\"/honey/dashboard/index2.shtml\">RESTART</a></li>\n");
+print (FILE "<li><a rel=\"next\" href=\"/honey/dashboard/manual-index-$next_file_date.shtml\" accesskey=\"n\">Next &gt;</a></li>\n");
+print (FILE "<li><a href=\"/honey/dashboard/manual-index-$last_date.shtml\">&gt;|</a></li>\n");
+print (FILE "</ul>\n");
 	}
 	else {
-		print (FILE "<A href=\"/honey/dashboard/manual-index-$file_date.shtml\">STOP Slideshow</A><a href=\"/honey/notes.shtml#2\">[2]</a> \n");
+print (FILE "<ul class=\"comicNav\">\n");
+print (FILE "<li><a href=\"/honey/dashboard/manual-index-$first_date.shtml\">|&lt;</a></li>\n");
+print (FILE "<li><a rel=\"prev\" href=\"/honey/dashboard/manual-index-$prior_file_date.shtml\" accesskey=\"p\">&lt; Prev</a></li>\n");
+print (FILE "<li><a href=\"/honey/dashboard/manual-index-$file_date.shtml\">STOP</a></li>\n");
+print (FILE "<li><a rel=\"next\" href=\"/honey/dashboard/manual-index-$next_file_date.shtml\" accesskey=\"n\">Next &gt;</a></li>\n");
+print (FILE "<li><a href=\"/honey/dashboard/manual-index-$last_date.shtml\">&gt;|</a></li>\n");
+print (FILE "</ul>\n");
 	}
-	print (FILE "<BR>\n");
-	print (FILE "<BR>\n");
+
+
+	#print (FILE "<BR>\n");
+	#print (FILE "<BR>\n");
 	print (FILE "<A href=\"/honey/historical/$date_dir/index.shtml\">\n");
 	print (FILE "<img src=\"/honey/dashboard/dashboard_number_of_attacks-$file_date.png\">\n");
 	print (FILE "<BR>\n");
@@ -64,25 +79,24 @@ sub make_index_file {
 	print (FILE "<H3>LongTail Log Analysis Dashboard<BR>All SSH Ports</H3>\n");
 	print (FILE "<P>All hosts, all sites, combined.  \n");
 	print (FILE "Minimum, Average, and Maximum are from the month shown.  \n");
-	print (FILE "<BR>\n");
-	print (FILE "<BR>\n");
-	print (FILE "<A href=\"/honey/dashboard/manual-index-$first_date.shtml\">FIRST Slide</A>\n");
-	if ( $prior_file_date eq "FIRST"){
-		print (FILE "NO PRIOR Slide\n");
-	}
-	else {
-		print (FILE "<A href=\"/honey/dashboard/manual-index-$prior_file_date.shtml\">PRIOR Slide</A>\n");
-	}
-	print (FILE "<A href=\"/honey/dashboard/index-$file_date.shtml\">RESUME Slideshow</A>\n");
-	if ($next_file_date eq "LAST"){
-		print (FILE "NO NEXT Slide\n");
-	}
-	else {
-		print (FILE "<A href=\"/honey/dashboard/manual-index-$next_file_date.shtml\">NEXT Slide</A>\n");
-	}
-	print (FILE "<A href=\"/honey/dashboard/manual-index-$last_date.shtml\">LAST Slide</A>\n");
-	print (FILE "<BR>\n");
-	print (FILE "<BR>\n");
+#	print (FILE "<BR>\n");
+#	print (FILE "<BR>\n");
+
+
+#
+# Slideshow control buttons
+#
+
+print (FILE "<ul class=\"comicNav\">\n");
+print (FILE "<li><a href=\"/honey/dashboard/manual-index-$first_date.shtml\">|&lt;</a></li>\n");
+print (FILE "<li><a rel=\"prev\" href=\"/honey/dashboard/manual-index-$prior_file_date.shtml\" accesskey=\"p\">&lt; Prev</a></li>\n");
+print (FILE "<li><a href=\"/honey/dashboard/index-$file_date.shtml\">Resume</a></li>\n");
+print (FILE "<li><a rel=\"next\" href=\"/honey/dashboard/manual-index-$next_file_date.shtml\" accesskey=\"n\">Next &gt;</a></li>\n");
+print (FILE "<li><a href=\"/honey/dashboard/manual-index-$last_date.shtml\">&gt;|</a></li>\n");
+print (FILE "</ul>\n");
+
+#	print (FILE "<BR>\n");
+#	print (FILE "<BR>\n");
 	print (FILE "<A href=\"/honey/historical/$date_dir/index.shtml\">\n");
 	print (FILE "<img src=\"/honey/dashboard/dashboard_number_of_attacks-$file_date.png\">\n");
 	print (FILE "<BR>\n");
