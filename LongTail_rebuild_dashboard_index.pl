@@ -7,13 +7,17 @@ sub make_index_file {
 	$date_dir =~ s/-/\//g;
 	my $next_file_date= $_[2];
 	my $prior_file_date= $_[3];
+	my $first_date=$_[4];
+	my $last_date=$_[5];
 
 	print "IN make_index_file, writing to $dir/$filename\n";
 	open (FILE, ">$dir/$filename");
 
 	print (FILE "<HTML>\n");
 	if ($next_file_date eq "LAST"){
-		print (FILE "<meta http-equiv=\"refresh\" content=\"1 url=/honey/dashboard/index2.shtml\">\n");
+		# I don't want this to run forever sucking up bandwidth
+		# print (FILE "<meta http-equiv=\"refresh\" content=\"1 url=/honey/dashboard/index2.shtml\">\n");
+		print (FILE "\n");
 	}
 	else {
 		print (FILE "<meta http-equiv=\"refresh\" content=\"1 url=/honey/dashboard/index-$next_file_date.shtml\">\n");
@@ -57,6 +61,7 @@ sub make_index_file {
 	print (FILE "Minimum, Average, and Maximum are from the month shown.  \n");
 	print (FILE "<BR>\n");
 	print (FILE "<BR>\n");
+	print (FILE "<A href=\"/honey/dashboard/manual-index-$first_date.shtml\">FIRST Slide</A>\n");
 	if ( $prior_file_date eq "FIRST"){
 		print (FILE "NO PRIOR Slide\n");
 	}
@@ -70,6 +75,7 @@ sub make_index_file {
 	else {
 		print (FILE "<A href=\"/honey/dashboard/manual-index-$next_file_date.shtml\">NEXT Slide</A>\n");
 	}
+	print (FILE "<A href=\"/honey/dashboard/manual-index-$last_date.shtml\">LAST Slide</A>\n");
 	print (FILE "<BR>\n");
 	print (FILE "<BR>\n");
 	print (FILE "<A href=\"/honey/historical/$date_dir/index.shtml\">\n");
@@ -105,6 +111,8 @@ while (<LS>){
 }
 close (LS);
 $date_array[$counter]="LAST";
+$first_date=$date_array[0];
+$last_date=$date_array[$counter-1];
 
 $new_counter=0;
 $first=1;
@@ -115,17 +123,17 @@ while ($new_counter < $counter){
 		$next_date=$date_array[$new_counter+1];
 		$this_date=$date_array[$new_counter];
 		$index_filename="index2.shtml";
-		&make_index_file ($index_filename,$this_date,$next_date,$prior_date);
+		&make_index_file ($index_filename,$this_date,$next_date,$prior_date,$first_date,$last_date);
 		$first = 0;
 		$index_filename="index-$this_date.shtml";
-		&make_index_file ($index_filename,$this_date,$next_date,$prior_date);
+		&make_index_file ($index_filename,$this_date,$next_date,$prior_date,$first_date,$last_date);
 	}
 	else {
 		$prior_date=$date_array[$new_counter-1];
 		$next_date=$date_array[$new_counter+1];
 		$this_date=$date_array[$new_counter];
 		$index_filename="index-$this_date.shtml";
-		&make_index_file ($index_filename,$this_date,$next_date,$prior_date);
+		&make_index_file ($index_filename,$this_date,$next_date,$prior_date,$first_date,$last_date);
 	}
 	$new_counter++;
 }
