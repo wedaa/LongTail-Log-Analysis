@@ -5,12 +5,6 @@
 # Design note: I am PERFECTLY willing to trade using more disk space in 
 # order to speed things up.
 #
-# This is my crontab entry
-# 05 * * * * /usr/local/etc/LongTail.sh >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-#
-# You need to have /usr/local/etc/whois.pl installed also.  Sure, I could 
-# have a faster mysql backend, but I don't NEED it.
-#
 # I am assuming your /var/log/messages file is really called messages, or 
 # messages<something>.  .gz files are ok too.
 #
@@ -161,6 +155,7 @@ function init_variables {
 	MONTH_AT_START_OF_RUNTIME=`date +%m`
 	DAY_AT_START_OF_RUNTIME=`date +%d`
 	REBUILD=0
+	MIDNIGHT=0
 }
 
 ############################################################################
@@ -585,7 +580,7 @@ function count_ssh_attacks {
 	if [ ! -e all-password ] ; then
 		touch all-password
 	fi
-	if [ $HOUR -eq 0 ]; then
+	if [ $HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all passwords now"; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //' |sed 's/^..*Password:$/ /' |sort -u > all-password
 		THISYEARUNIQUEPASSWORDS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -u |wc -l `
@@ -631,7 +626,7 @@ function count_ssh_attacks {
 	if [ ! -e all-username ] ; then
 		touch all-username
 	fi
-	if [ $HOUR -eq 0 ]; then
+	if [ $HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Usernames now"; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /' |sort -u > all-username
 		THISYEARUNIQUEUSERNAMES=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -u |wc -l `
@@ -678,7 +673,7 @@ function count_ssh_attacks {
 	if [ ! -e all-ips ] ; then
 		touch all-ips
 	fi
-	if [ $HOUR -eq 0 ]; then
+	if [ $HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all IPs now"; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz                                       |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -u > all-ips
 		THISYEARUNIQUEIPSS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz           |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -u |wc -l `
@@ -1434,7 +1429,7 @@ function ssh_attacks {
 }
 
 function make_trends {	
-	if [ $HOUR -eq 0 ]; then
+	if [ $HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends" ; fi
 		#-----------------------------------------------------------------
 		# Now lets do some long term ssh reports....  Lets do a comparison of 
@@ -1656,7 +1651,7 @@ function do_ssh {
 	# Lets check the ssh logs
 	ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$DATE"  "messages" "current"
 	
-	if [ $HOUR -eq 0 ]; then
+	if [ $HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh/last7,30,historical  now" ; fi
 		#----------------------------------------------------------------
 		# Lets check the ssh logs for the last 7 days
@@ -1847,7 +1842,7 @@ echo "DEBUG Make graph for $FILE"
 		done        
 
 		
-		if [ $HOUR -eq 0 ]; then
+		if [ $HOUR -eq $MIDNIGHT ]; then
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
@@ -1929,7 +1924,7 @@ function protect_raw_data {
         local TMP_HTML_DIR=$1
 	local count
 	is_directory_good $TMP_HTML_DIR
-	if [ $HOUR -eq 0 ]; then
+	if [ $HOUR -eq $MIDNIGHT ]; then
 		if [ $PROTECT_RAW_DATA -eq 1 ]; then
 			cd  $TMP_HTML_DIR
 
@@ -1956,7 +1951,7 @@ function create_historical_copies {
 	REBUILD=1
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_copies" ; date; fi
 
-	if [ $HOUR -eq 0 ]; then
+	if [ $HOUR -eq $MIDNIGHT ]; then
 		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
 		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
 		YESTERDAY_DAY=`date  +"%d" --date="1 day ago"`
@@ -2227,7 +2222,8 @@ echo "Doing blacklist efficiency tests now"
 		$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/todays_passwords >> $HTML_DIR/password_analysis_todays_passwords.shtml
 		make_footer "$HTML_DIR/password_analysis_todays_passwords.shtml"
 	
-		if [ $HOUR -eq 0 ]; then
+		#if [ $HOUR -eq $MIDNIGHT ]; then
+		if [ $HOUR -eq 20 ]; then
 			make_header "$HTML_DIR/password_analysis_all_passwords.shtml" "Password Analysis of All Passwords"  "" 
 			$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/all-password >> $HTML_DIR/password_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_analysis_all_passwords.shtml"
@@ -2254,12 +2250,12 @@ echo "Doing blacklist efficiency tests now"
 			echo "</PRE>" >> $HTML_DIR/first_seen_usernames.shtml
 			make_footer "$HTML_DIR/first_seen_usernames.shtml"
 
-			make_header "$HTML_DIR/first_seen_passwords.shtml" "First Occurence of a Password"  "" 
-			echo "</TABLE>" >> $HTML_DIR/first_seen_passwords.shtml
+			#make_header "$HTML_DIR/first_seen_passwords.shtml" "First Occurence of a Password"  "" 
+			#echo "</TABLE>" >> $HTML_DIR/first_seen_passwords.shtml
 			echo "<PRE>" >> $HTML_DIR/first_seen_passwords.shtml
 			$SCRIPT_DIR/LongTail_find_first_password_use.pl passwords >> $HTML_DIR/first_seen_passwords.shtml
 			echo "</PRE>" >> $HTML_DIR/first_seen_passwords.shtml
-			make_footer "$HTML_DIR/first_seen_passwords.shtml"
+			#make_footer "$HTML_DIR/first_seen_passwords.shtml"
 			gzip $HTML_DIR/first_seen_passwords.shtml
 		fi
 	fi
