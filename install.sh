@@ -6,6 +6,7 @@ echo "You need to edit this file for SCRIPT_DIR, HTML_DIR, OWNER,"
 echo "OBFUSCATE_IP_ADDRESSES, OBFUSCATE_URLS."
 
 echo "And then comment out the exit statement"
+
 exit
 
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
