@@ -228,13 +228,17 @@ These scripts are:
 CRON Entry
 --------------
 You'll need to run this through cron every hour.  PLEASE NOTE
-that it starts at the 59 minute mark.  If you want to run this
-just once a day, I would advise running it at 11:59 PM, as there
-is code that only runs during the 11 PM time frame.
+that it starts at the 5 minute mark.  If you want to run this
+just once a day, I would advise running it at 12:05 AM, as there
+is code that only runs during the midnight time frame.
 
 MY crontab entry looks like this one:
 
-	59 * * * * /usr/local/etc/LongTail.sh >> /tmp/LongTail.out 2>> /tmp/LongTail.out
+5 * * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+45 0 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
+
 
 HTTP Configuration 
 --------------
@@ -376,6 +380,16 @@ and needs to be cleaned up and described better
 that get through the IPS more clearly.
 
 58) I need to "googlefy" usernames.
+
+59) There's a bug in the "normalization" code for some of the statistics
+webpages.
+
+60) I desperately need to optimize the LongTail_analyze_attacks.pl script
+since it takes so long to run
+
+61) I need to convert LongTail.sh to LongTail.pl so that it runs faster.
+Now that I know what I'm looking for, it's time to run it in perl so that
+it runs faster.
 
 KNOWN ISSUES THAT ARE DONE
 --------------
@@ -539,3 +553,5 @@ other charts
 
 55) DONE In statistics section I need to get stats on # of usernames, passwords
 and IP addresses.
+
+62) DONE: Cleanup formatting in first seen reports
