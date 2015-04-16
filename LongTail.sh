@@ -5,6 +5,12 @@
 # Design note: I am PERFECTLY willing to trade using more disk space in 
 # order to speed things up.
 #
+# This is my crontab entry
+# 05 * * * * /usr/local/etc/LongTail.sh >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+#
+# You need to have /usr/local/etc/whois.pl installed also.  Sure, I could 
+# have a faster mysql backend, but I don't NEED it.
+#
 # I am assuming your /var/log/messages file is really called messages, or 
 # messages<something>.  .gz files are ok too.
 #
@@ -2233,21 +2239,17 @@ echo "Doing blacklist efficiency tests now"
 			echo "<P>This is a comparison of passwords used vs several publicly available" >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			echo "lists of passwords." >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			echo "<BR><BR>" >> $HTML_DIR/password_list_analysis_all_passwords.shtml
-			$SCRIPT_DIR/LongTail_password_analysis_part_2.pl $HTML_DIR/all-password >> $HTML_DIR/password_list_analysis_all_passwords.shtml
+			# $SCRIPT_DIR/LongTail_password_analysis_part_2.pl $HTML_DIR/all-password >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_list_analysis_all_passwords.shtml"
 
 			make_header "$HTML_DIR/first_seen_ips.shtml" "First Occurence of an IP Address"  "" 
 			echo "</TABLE>" >> $HTML_DIR/first_seen_ips.shtml
-			echo "<PRE>" >> $HTML_DIR/first_seen_ips.shtml
 			$SCRIPT_DIR/LongTail_find_first_password_use.pl ips >> $HTML_DIR/first_seen_ips.shtml
-			echo "</PRE>" >> $HTML_DIR/first_seen_ips.shtml
 			make_footer "$HTML_DIR/first_seen_ips.shtml"
 
 			make_header "$HTML_DIR/first_seen_usernames.shtml" "First Occurence of an Username"  "" 
 			echo "</TABLE>" >> $HTML_DIR/first_seen_usernames.shtml
-			echo "<PRE>" >> $HTML_DIR/first_seen_usernames.shtml
 			$SCRIPT_DIR/LongTail_find_first_password_use.pl usernames >> $HTML_DIR/first_seen_usernames.shtml
-			echo "</PRE>" >> $HTML_DIR/first_seen_usernames.shtml
 			make_footer "$HTML_DIR/first_seen_usernames.shtml"
 
 			#make_header "$HTML_DIR/first_seen_passwords.shtml" "First Occurence of a Password"  "" 
@@ -2256,6 +2258,9 @@ echo "Doing blacklist efficiency tests now"
 			$SCRIPT_DIR/LongTail_find_first_password_use.pl passwords >> $HTML_DIR/first_seen_passwords.shtml
 			echo "</PRE>" >> $HTML_DIR/first_seen_passwords.shtml
 			#make_footer "$HTML_DIR/first_seen_passwords.shtml"
+			if [ -e  $HTML_DIR/first_seen_passwords.shtml.gz ] ; then
+				/bin/rm $HTML_DIR/first_seen_passwords.shtml
+			fi 
 			gzip $HTML_DIR/first_seen_passwords.shtml
 		fi
 	fi
