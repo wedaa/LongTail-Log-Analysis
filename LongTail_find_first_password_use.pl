@@ -53,14 +53,20 @@ chdir "..";
 }
 
 open (OUTPUT, ">$file.$$") || die "Can not open $dir/$file.$$, exiting now\n";;
-while (($password, $date) = each(%password_array))
-{
-	print (OUTPUT "$date $password_last_seen_array{$password} $password\n");
+while (($password, $date) = each(%password_array)){
+	if (($search_for eq "Usernames" ) || ($search_for eq "IP Addresses")){
+		print (OUTPUT "<TR><TD>$date</TD><TD>$password_last_seen_array{$password}</TD><TD>$password</TD></TR>\n");
+	}
+	else {
+		print (OUTPUT "$date $password_last_seen_array{$password} $password\n");
+	}
 }
-close (OUTPUT);
-print "$search_for count is $password_count\n";
-print "First Seen Last Seen  $search_for\n";
+close (OUTPUT); 
+print "<TABLE>\n";
+print "<TR><TH colspan=3>$search_for count is $password_count</TH></TR>\n";
+print "<TR><TH>First Seen</TH><TH>Last Seen</TH><TH>$search_for</TH></TR>\n";
 
 system ("sort $file.$$ ");
 unlink ("$file.$$");
 
+#print "</TABLE>\n";
