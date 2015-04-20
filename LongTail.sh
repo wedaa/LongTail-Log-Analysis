@@ -2221,7 +2221,7 @@ if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "sshd" ] ; then
 echo "Doing blacklist efficiency tests now"
 		make_header "$HTML_DIR/blacklist_efficiency.shtml" "Blacklist Efficiency"  "" 
-		/usr/local/etc/LongTail_compare_IP_addresses.pl >> $HTML_DIR/blacklist_efficiency.shtml
+		/usr/local/etc/LongTail_compare_to_blacklists.pl >> $HTML_DIR/blacklist_efficiency.shtml
 		make_footer "$HTML_DIR/blacklist_efficiency.shtml"
 	
 		make_header "$HTML_DIR/password_analysis_todays_passwords.shtml" "Password Analysis of Today's Passwords"  "" 
