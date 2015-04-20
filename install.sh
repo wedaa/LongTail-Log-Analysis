@@ -11,17 +11,32 @@ exit
 
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
 HTML_DIR="/var/www/html/honey" # Where do we put the HTML files?
+DICT_DIR="/usr/local/dict"
+
 OWNER="wedaa"                  # What is the owner of the process running LongTail?
 
 mkdir -p $HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
 mkdir $HTML_DIR/dashboard
 
 OTHER_DIRS=" /var/www/html/honey-2222 /var/www/html/honey-22 /var/www/html/telnet /var/www/html/ftp /var/www/html/rlogin"
-for dir in $OTHER_DIRS ; do
-	mkdir $dir
-	chown $OWNER $dir
-	chmod a+rx $dir
+
+for dir in $SCRIPT_DIR $HTML_DIR  $DICT_DIR $OTHER_DIRS ; do
+	if [ -e $dir ] ; then
+		if [ -d $dir ] ; then
+			echo "$dir allready exists, this is a good thing"
+		else
+			echo "$dir allready exists but is not a directory"
+			echo "This is a bad thing, exiting now!"
+			exit
+		fi
+	else
+		mkdir -p $dir
+		chown $OWNER $dir
+		chmod a+rx $dir
+	fi
 done
+
+DICT_FILES="wordsEn.txt"
 
 ETC_FILES="ip-to-country \
 translate_country_codes.sed \
@@ -44,6 +59,7 @@ LongTail_password_analysis.pl \
 LongTail_analyze_attacks.pl \
 catall.sh \
 LongTail.sh \
+LongTail_compare_IP_addresses.pl \
 LongTail_make_graph.php \
 LongTail_make_dashboard_graph.php \
 LongTail_make_daily_attacks_chart.pl \
@@ -53,6 +69,12 @@ for file in $PROGRAMS ; do
 	echo $file
 	cp $file $SCRIPT_DIR
 	chmod a+rx $SCRIPT_DIR/$file
+done
+
+for file in $DICT_FILES ; do
+	echo $file
+	cp $file $DICT_DIR
+	chmod a+r $DICT_DIR/$file
 done
 
 for dir in $HTML_DIR $OTHER_DIRS ; do
