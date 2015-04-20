@@ -114,31 +114,6 @@ selinux installed
 	semanage port -a -t ssh_port_t -p tcp <Whatever your big port # is>
 	semanage port -l | grep ssh # Shows ssh ports
 
-Telnet
---------------
-Telnet-honeypot is a telnet honeypot which logs attempts to a file AND to syslog. Unfortunately in order to be able to log messages to syslog I had to disable the "chroot" function in the code. Also, in order to make it more portable, I had to disable the "seccomp" library in order to make it a bit more portable.
-
-	wget https://github.com/wedaa/LongTail-honeypot-telnet/archive/master.zip
-	unzip LongTail-honeypot-telnet-master.zip
-	cd LongTail-honeypot-telnet-master/
-	make
-	make install
-	/etc/init.d/honeypot-telnet.rc  start
-
-It is your responsibility to put a link into the appropriate /etc/rc3.d directory
-(or where ever else is appropriate.
- 
-It can also be started with the following commandline.
-
-/usr/local/etc/honeypot-telnet --daemonize --pid-file=/var/tmp/honeypot-telnet.pid --honey-log=/var/log/honey.log --debug-log=/var/log/honeypot.log
-
-There is a "honeypot-telnet.rc" which supports "start", "stop", and "restart". This file which is copied to /etc/init.d during a "make install". It is your responsibility to do make sure it winds up in the proper rc.# directories. (Or reference it properly in /etc/rc.local if you use that.)
-
-It is based almost entirely on
-
-https://github.com/zx2c4/telnet-password-honeypot
-
-which is Copyright (C) 2012 Jason A. Donenfeld
 
 LongTail Prerequisites
 --------------
@@ -356,8 +331,8 @@ KNOWN ISSUES THAT HAVE YET TO BE DONE
 2) I need to fix the X and Y axis labels so they are not buried
 with the "tick" information.
 
-21) NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph of countries 
-attacking.
+21) RELEASE 2: NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph 
+of countries attacking.
 
 24) NICE TO HAVE BUT NOT A PRIORITY  Make a chart of IP addresses that 
 attack more than one host.
@@ -366,20 +341,20 @@ attack more than one host.
 some of the lines even though the rest of the line does not exist.  This
 is due to my not fully understanding how the grep -vf command works.
 
-37) I need to analyze "sshd Disconnect" messages that come from hosts
-that have not actively tried to login.
+37) RELEASE 2: I need to analyze "sshd Disconnect" messages that come 
+from hosts that have not actively tried to login.
 
-39) I need to analyze ssh_keys as logins.
+39) RELEASE 2: I need to analyze ssh_keys as logins.
 
 44) I need to cleanup the Dictionary section.  It's still ugly-ish
 and needs to be cleaned up and described better
 
-56) I need to somehow show slowscans and bot net attacks
+56) RELEASE 1.5: I need to somehow show slowscans and bot net attacks
 
 57) I need to break out attacks by hosts so I can see the attacks
 that get through the IPS more clearly.
 
-58) I need to "googlefy" usernames.
+58) RELEASE 2: I need to "googlefy" usernames.
 
 59) There's a bug in the "normalization" code for some of the statistics
 webpages.
@@ -387,9 +362,63 @@ webpages.
 60) I desperately need to optimize the LongTail_analyze_attacks.pl script
 since it takes so long to run
 
-61) I need to convert LongTail.sh to LongTail.pl so that it runs faster.
-Now that I know what I'm looking for, it's time to run it in perl so that
-it runs faster.
+61) RELEASE 2: I need to convert LongTail.sh to LongTail.pl so that it 
+runs faster.  Now that I know what I'm looking for, it's time to run it 
+in perl so that it runs faster.
+
+62) RELEASE 2: Can I run NMap against the attackers and analyze the results?
+(I'll need to edit out the traceroute results).
+
+63) RELEASE 1.5: Auto-report attacks to the various IP Abuse websites.
+
+64) Can I auto-add a date stamp and website address to my graphics?
+
+65) Finish my install.sh script
+
+66) Write documentation about LongTail
+
+67) Make a  5 minute "This is LongTail" slideshow explaining the different 
+features and reports in LongTail.
+
+68) Make the graphs on the front page "clickable" to go to a page 
+giving more details.
+
+69) Figure out how to "re-do" the last months dashboard graphics so that 
+the graphs all have the same average, minimum, and maximum.
+
+70) RELEASE 2: Make the minimum and maximum entries clickable in the 
+statistics tables.
+
+71) RELEASE 2: Get a telnet honeypot working
+
+72) RELEASE 2: Get a rlogin honeypot working
+
+73) RELEASE 2: Make 90 days graphs of ip addresses, # of attacks, etc.
+
+74) RELEASE 2: Is it worth making IP Addresses include a link to Google
+search results too?
+
+75) RELEASE 2: My link to "Blacklisted? (http://www.dnsbl-check.info)" 
+should probably go somewhere else, but I'm not sure where.
+
+76) Fix display bug in "Calendar View" of attacks where the first day of
+the week doesn't always show up in the right column.
+
+77) Attacks by Country needs to be reverse sorted.
+
+78) RELEASE 2: Attacks by Country should also show the number of attacks 
+by each country.
+
+79) RELEASE 2: Graphics should also be image maps so the user can click
+on a column and get more information about that date, account, or password.
+
+80) RELEASE 2: (Maybe) "All" graphs, can I color code the amounts by host?
+
+81) RELEASE 2: Add more IP Address blacklists to my blacklist comparison
+chart.
+
+82) Make a "What do I do to protect myself?" webpage.  Include links to
+other sites and documents.
 
 KNOWN ISSUES THAT ARE DONE
 --------------
