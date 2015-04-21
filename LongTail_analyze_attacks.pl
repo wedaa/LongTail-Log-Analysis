@@ -240,7 +240,7 @@ sub analyze {
 	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
 	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Multiple Use Of Same Dictionary Attacks</H1>\n");
-	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
+	print (FILE_FORMATTED "<P>This page is updated daily.\n");
 	print (FILE_FORMATTED "Last updated on $DATE\n");
 
 	while (<FILE>){
@@ -289,7 +289,7 @@ sub analyze {
 	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
 	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Single Use Dictionary Attacks</H1>\n");
-	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
+	print (FILE_FORMATTED "<P>This page is updated daily.\n");
 	print (FILE_FORMATTED "Last updated on $DATE\n");
 
 	while (<FILE>){
@@ -346,7 +346,7 @@ print "DEBUG In show_lifetime_of_ips\n";
 	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
 	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Attackers Lifespan</H1>\n");
-	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
+	print (FILE_FORMATTED "<P>This page is updated daily.\n");
 	print (FILE_FORMATTED "<P>Last updated on $DATE\n");
 	print (FILE_FORMATTED "<TABLE border=1>\n");
 	print (FILE_FORMATTED "<TR><TH>IP</TH><TH>Lifetime In Days</TH><TH>First Date Seen</TH><TH>Last Date Seen</TH><TH>Number of Attack<BR>Patterns Recorded</TH></TR>\n");
@@ -383,7 +383,7 @@ sub show_attacks_of_ips {
 	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
 	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis IP Attacks</H1>\n");
-	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
+	print (FILE_FORMATTED "<P>This page is updated daily.\n");
 	print (FILE_FORMATTED "<P>Results are sorted by IP, and then by dictionary used.\n");
 	print (FILE_FORMATTED "<P>Last updated on $DATE\n");
 
@@ -462,7 +462,7 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
 	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Dictionaries</H1>\n");
-	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
+	print (FILE_FORMATTED "<P>This page is updated daily.\n");
 	print (FILE_FORMATTED "Last updated on $DATE\n");
 	print (FILE_FORMATTED "<TABLE border=1>\n");
 	print (FILE_FORMATTED "<TR><TH>Number Of<BR>Times Used</TH><TH>Number of <BR>Entries</TH><TH>Checksum</TH><TH>Dictionary</TH><TH>First Seen</TH><TH>Last Seen</TH></TR>\n");
@@ -546,7 +546,7 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
 	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Dictionaries</H1>\n");
-	print (FILE_FORMATTED "<P>This page is updated hourly.\n");
+	print (FILE_FORMATTED "<P>This page is updated daily.\n");
 	print (FILE_FORMATTED "Last updated on $DATE\n");
 	print (FILE_FORMATTED "<TABLE border=1>\n");
 	print (FILE_FORMATTED "<TR><TH>Number Of<BR>Times Used</TH><TH>Number of <BR>Entries</TH><TH>Checksum</TH><TH>Dictionary</TH><TH>First Seen</TH><TH>Last Seen</TH></TR>\n");
