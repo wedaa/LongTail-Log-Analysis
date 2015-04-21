@@ -13,8 +13,8 @@ use List::Util qw(max min sum);
 @a_6=();
 @a_7=();
 
-#chdir ("/var/www/html/honey/historical") || die "can not chdir\n";;
-chdir ("$ARGV[0]") || die "can not chdir to $ARGV[0] \n";;
+chdir ("/var/www/html/honey/historical") || die "can not chdir\n";;
+# Commented out during development of new version chdir ("$ARGV[0]") || die "can not chdir to $ARGV[0] \n";;
 print "<HTML><BODY><TABLE>\n";
 
 open (YEAR, "/bin/ls  -d 2*|");
@@ -43,45 +43,47 @@ while (<YEAR>){
 			close (FILE);
 			chomp $value;
 			$day =~ s/^0//;
-			#$string =~ s/ $day / $day\/$value /g;
 			if ($day < 10){
-				$string =~ s/ $day /<TD><AXhref=\"historical\/$year\/$month\/0$day\">$day\/$value<\/A><\/TD> /g;
+				$string =~ s/ $day / <AXhref=\"historical\/$year\/$month\/0$day\">$day\/$value<\/A> /g;
 			}
 			else {
-				$string =~ s/ $day /<TD><AXhref=\"historical\/$year\/$month\/$day\">$day\/$value<\/A><\/TD> /g;
+				$string =~ s/ $day / <AXhref=\"historical\/$year\/$month\/$day\">$day\/$value<\/A> /g;
 			}
 		}
 		chdir ("..");
-		$string =~ s/\n /\n/g;
-		$string =~ s/\n /\n/g;
-		$string =~ s/  1/<TD>1<\/TD>/g;
-		$string =~ s/   /<TD>&nbsp<\/TD>/g;
-		$string =~ s/  / /g;
-		$string =~ s/<TD><\/TD>\n/\n/g;
-		$string =~ s/<TD><\/TD>\n/\n/g;
-		$string =~ s/<TD><\/TD>\n/\n/g;
-		$string =~ s/^/<TR><TD>/;
-		$string =~ s/\n/<\/TD><\/TR>\n<TR><TD>/g;
-		$string =~ s/ <\/TD>/<\/TD>/g;
+		$string =~ s/^/<TR>/;
+		$string =~ s/^<TR>/<TR><TH>/;
+		$string =~ s/ Su Mo Tu We Th Fr Sa/<TR><TD>Su<\/TD><TD>Mo<\/TD><TD>Tu<\/TD><TD>We<\/TD><TD>Th<\/TD><TD>Fr<\/TD><TD>Sa/;
+		$string =~ s/ $//;
+		$string =~ s/   /<TD><\/TD>/g; # This deals with the first week of the month.
+		$string =~ s/  / /g; # This deals with the dates < 10
+		$string =~ s/\n /\n/g; #Remove spaces at the start of a line
+		$string =~ s/\n<A/\n<TD><A/g;
 		$string =~ s/ /<\/TD><TD>/g;
-		$string =~ s/\n<TR><TD><TD>/\n<TR><TD>/g;
+		$string =~ s/\n<TD/\n<TR><TD/g; # Make each line a "row"
+		# Deal with the last empty weeks in a month
+		$string =~ s/\n1/\n<TR><TD>1/g; # start of row starts with a 1 (or 10, 11, etc)
+		$string =~ s/\n2/\n<TR><TD>2/g; # start of row starts with a 2 (or 20, 21, etc)
+		$string =~ s/\n3/\n<TR><TD>3/g; # start of row starts with a 3 (or 30, 31, etc)
+		$string =~ s/\n4/\n<TR><TD>4/g; # start of row starts with a 4
+		$string =~ s/\n5/\n<TR><TD>5/g; # start of row starts with a 5
+		$string =~ s/\n6/\n<TR><TD>6/g; # start of row starts with a 6
+		$string =~ s/\n7/\n<TR><TD>7/g; # start of row starts with a 7
+		$string =~ s/\n8/\n<TR><TD>8/g; # start of row starts with a 8
+		$string =~ s/\n9/\n<TR><TD>9/g; # start of row starts with a 9
 		$string =~ s/<\/TD><\/TD>/<\/TD>/g;
-		$string =~ s/<\/TD><\/TD>/<\/TD>/g;
-		$string =~ s/<TR><TD><\/TD><\/TR>//g;
-		$string =~ s/<TD>&nbsp<\/TD><\/TR>/<\/TD><\/TR>/g;
-		$string =~ s/<TD>&nbsp<\/TD><\/TR>/<\/TD><\/TR>/g;
-		$string =~ s/<TD>&nbsp<\/TD><\/TD><\/TR>/<\/TD><\/TR>/g;
 
-		$string =~ s/^<TR><TD>/<TR><TH>/;
-		# What a hack.  I'll fix this in 2019 :-)
+		# Shift all columns to the right so it lines up with stats
+		$string =~ s/^<TR>/<TR><TD><\/TD>/g;
+		$string =~ s/\n<TR>/\n<TR><TD><\/TD>/g;
+		
+
+#		# What a hack.  I'll fix this in 2019 :-)
 		$string =~ s/<TD>2015/<TH>2015/;
 		$string =~ s/<TD>2016/<TH>2016/;
 		$string =~ s/<TD>2017/<TH>2017/;
 		$string =~ s/<TD>2018/<TH>2018/;
 		$string =~ s/<TD>2019/<TH>2019/;
-		$string =~ s/<TR><TD>Su..*+/<TR><TH>Su<\/TH><TH>Mo<\/TH><TH>Tu<\/TH><TH>We<\/TH><TH>Th<\/TH><TH>Fr<\/TH><TH>Sa<\/TH><\/TR>/;
-		#$string =~ s/<TR>/<TR><TD>&nbsp<\/TD>/g;
-		#print $string;
 
 		$line_count=0;
 		for (split /^/, $string) {
@@ -92,10 +94,18 @@ while (<YEAR>){
 # Next two lines are a hack
 #print "\nDEBUG-1 line is $_\n";
 			$_ =~ s/<AXhref=\"historical\/....\/..\/..\">//g;
-			$_ =~ s/<TD><TD>/<TD>/g;
+			$_ =~ s/<TD><TD>/<TD>/;
 			$_ =~ s/<\/A>//g;
 #print "\nDEBUG-2 line is $_\n";
 			@array=split(/<TD>/,$_);
+#print "DEBUG 0 is $array[0]\n";
+#print "DEBUG 1 is $array[1]\n";
+#print "DEBUG 2 is $array[2]\n";
+#print "DEBUG 3 is $array[3]\n";
+#print "DEBUG 4 is $array[4]\n";
+#print "DEBUG 5 is $array[5]\n";
+#print "DEBUG 6 is $array[6]\n";
+#print "DEBUG 7 is $array[7]\n";
 			$day_of_week_loop=1;
 			while ($day_of_week_loop < 8){
 #print "\nDAY_OF_WEEK_LOOP = $day_of_week_loop\n";
@@ -117,9 +127,9 @@ while (<YEAR>){
 			}
 			$line_count++;
 		}
-		$string =~ s/<TR>/<TR><TD>&nbsp<\/TD>/g;
+		#$string =~ s/<TR>/<TR><TD>&nbsp<\/TD>/g;
 		$string =~ s/AXhref/A href/g;
-		$string =~ s/<TD><TD>/<TD>/g;
+		#$string =~ s/<TD><TD>/<TD>/g;
 		print $string;
 	}
 	chdir ("..");
@@ -234,14 +244,15 @@ $a_6=sprintf("%.2f",$a_6);
 $a_7=sprintf("%.2f",$a_7);
 
 #print "\n<TABLE>\n";
+print "<TR></TR>\n";
 print "<TR><TH></TH><TH>Su</TH><TH>Mo</TH><TH>Tu</TH><TH>We</TH><TH>Th</TH><TH>Fr</TH><TH>Sa</TH></TR>\n";
 print "<TR><TH>Count</TH><TD>$n_1</TD><TD>$n_2</TD><TD>$n_3</TD><TD>$n_4</TD><TD>$n_5</TD><TD>$n_6</TD><TD>$n_7</TD></TR>\n";
 print "<TR><TH>Sum</TH><TD>$s_1</TD><TD>$s_2</TD><TD>$s_3</TD><TD>$s_4</TD><TD>$s_5</TD><TD>$s_6</TD><TD>$s_7</TD></TR>\n";
 print "<TR><TH>Average</TH><TD>$a_1</TD><TD>$a_2</TD><TD>$a_3</TD><TD>$a_4</TD><TD>$a_5</TD><TD>$a_6</TD><TD>$a_7</TD></TR>\n";
 print "<TR><TH>Std Dev.</TH><TD>$std_1</TD><TD>$std_2</TD><TD>$std_3</TD><TD>$std_4</TD><TD>$std_5</TD><TD>$std_6</TD><TD>$std_7</TD></TR>\n";
 print "<TR><TH>Median</TH><TD>$med_1</TD><TD>$med_2</TD><TD>$med_3</TD><TD>$med_4</TD><TD>$med_5</TD><TD>$med_6</TD><TD>$med_7</TD></TR>\n";
-print "<TR><TH>Min</TH><TD>$m_1</TD><TD>$m_2</TD><TD>$m_3</TD><TD>$m_4</TD><TD>$m_5</TD><TD>$m_6</TD><TD>$m_7</TD></TR>\n";
-print "<TR><TH>Max</TH><TD>$mm_1</TD><TD>$mm_2</TD><TD>$mm_3</TD><TD>$mm_4</TD><TD>$mm_5</TD><TD>$mm_6</TD><TD>$mm_7</TD></TR>\n";
+print "<TR><TH>Max</TH><TD>$m_1</TD><TD>$m_2</TD><TD>$m_3</TD><TD>$m_4</TD><TD>$m_5</TD><TD>$m_6</TD><TD>$m_7</TD></TR>\n";
+print "<TR><TH>Min</TH><TD>$mm_1</TD><TD>$mm_2</TD><TD>$mm_3</TD><TD>$mm_4</TD><TD>$mm_5</TD><TD>$mm_6</TD><TD>$mm_7</TD></TR>\n";
 
 
 #print "Sunday Count=$n_1\nSUM=$s_1\nAVERAGE=$a_1\nSTD=$std_1\nMEDIAN=$med_1\nMAX=$m_1\nMIN=$mm_1";
