@@ -1298,8 +1298,8 @@ function ssh_attacks {
 
 	cat /tmp/Longtail.tmpIP.$$-2 | awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$3,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 
-	#rm /tmp/Longtail.tmpIP.$$
-	#rm /tmp/Longtail.tmpIP.$$-2
+	rm /tmp/Longtail.tmpIP.$$
+	rm /tmp/Longtail.tmpIP.$$-2
 
 	#cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 	#sed -i s/HONEY/$HTML_TOP_DIR/g $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
@@ -1319,7 +1319,7 @@ function ssh_attacks {
 #WHOIS.PL
 #	THIS WORKS for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -u `; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 
-	for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -u `; do   if [ "x${IP_ADDRESS[$IP]}" == "x" ] ; then $SCRIPT_DIR/whois.pl $IP ; else echo "Country: ${IP_ADDRESS[$IP]}"; fi  |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
+	for IP in `cat /tmp/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -u `; do   if [ "x${IP_ADDRESS[$IP]}" == "x" ] ; then $SCRIPT_DIR/whois.pl $IP ; else echo "Country: ${IP_ADDRESS[$IP]}"; fi  |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 
 	sed -i -f $SCRIPT_DIR/translate_country_codes.sed  $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml
@@ -2221,15 +2221,15 @@ if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "sshd" ] ; then
 echo "Doing blacklist efficiency tests now"
 		make_header "$HTML_DIR/blacklist_efficiency.shtml" "Blacklist Efficiency"  "" 
-		/usr/local/etc/LongTail_compare_to_blacklists.pl >> $HTML_DIR/blacklist_efficiency.shtml
+		/usr/local/etc/LongTail_compare_IP_addresses.pl >> $HTML_DIR/blacklist_efficiency.shtml
 		make_footer "$HTML_DIR/blacklist_efficiency.shtml"
 	
 		make_header "$HTML_DIR/password_analysis_todays_passwords.shtml" "Password Analysis of Today's Passwords"  "" 
 		$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/todays_passwords >> $HTML_DIR/password_analysis_todays_passwords.shtml
 		make_footer "$HTML_DIR/password_analysis_todays_passwords.shtml"
 	
-		#if [ $HOUR -eq $MIDNIGHT ]; then
-		if [ $HOUR -eq 20 ]; then
+		if [ $HOUR -eq $MIDNIGHT ]; then
+		#if [ $HOUR -eq 20 ]; then
 			make_header "$HTML_DIR/password_analysis_all_passwords.shtml" "Password Analysis of All Passwords"  "" 
 			$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/all-password >> $HTML_DIR/password_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_analysis_all_passwords.shtml"
@@ -2239,7 +2239,7 @@ echo "Doing blacklist efficiency tests now"
 			echo "<P>This is a comparison of passwords used vs several publicly available" >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			echo "lists of passwords." >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			echo "<BR><BR>" >> $HTML_DIR/password_list_analysis_all_passwords.shtml
-			# $SCRIPT_DIR/LongTail_password_analysis_part_2.pl $HTML_DIR/all-password >> $HTML_DIR/password_list_analysis_all_passwords.shtml
+			$SCRIPT_DIR/LongTail_password_analysis_part_2.pl $HTML_DIR/all-password >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_list_analysis_all_passwords.shtml"
 
 			make_header "$HTML_DIR/first_seen_ips.shtml" "First Occurence of an IP Address"  "" 
@@ -2269,6 +2269,10 @@ echo "Doing blacklist efficiency tests now"
 	date
 #	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
 	echo -n "Done with LongTail_analyze_attacks.pl at:"
+	make_header "$HTML_DIR/attacks/class_c_hall_of_shame.shtml" "Class C Hall Of Shame"  "Top 10 worst offending Class C subnets sorted by the number of attack patterns.  Class C subnets must have over 10,000 login attempts to make this list." "Class C Address" "Number Of Attacks" "Number Of Login Attempts"
+	`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl |head -10 >>/$HTML_DIR/attacks/class_c_hall_of_shame.shtml`;
+	make_footer "$HTML_DIR/attacks/class_c_hall_of_shame.shtml" 
+
 	date
 fi
 
