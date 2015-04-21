@@ -373,8 +373,6 @@ in perl so that it runs faster.
 
 64) Can I auto-add a date stamp and website address to my graphics?
 
-65) Finish my install.sh script
-
 66) Write documentation about LongTail
 
 67) Make a  5 minute "This is LongTail" slideshow explaining the different 
@@ -385,6 +383,7 @@ giving more details.
 
 69) Figure out how to "re-do" the last months dashboard graphics so that 
 the graphs all have the same average, minimum, and maximum.
+/usr/local/etc/LongTail_make_historical_dashboard_charts.pl /var/www/html/honey/historical/2015/04/10
 
 70) RELEASE 2: Make the minimum and maximum entries clickable in the 
 statistics tables.
@@ -400,11 +399,6 @@ search results too?
 
 75) RELEASE 2: My link to "Blacklisted? (http://www.dnsbl-check.info)" 
 should probably go somewhere else, but I'm not sure where.
-
-76) Fix display bug in "Calendar View" of attacks where the first day of
-the week doesn't always show up in the right column.
-
-77) Attacks by Country needs to be reverse sorted.
 
 78) RELEASE 2: Attacks by Country should also show the number of attacks 
 by each country.
@@ -584,3 +578,10 @@ other charts
 and IP addresses.
 
 62) DONE: Cleanup formatting in first seen reports
+
+65) DONE: Finish my install.sh script
+
+76) DONE: Fix display bug in "Calendar View" of attacks where the first day of
+the week doesn't always show up in the right column.
+
+77) DONE: Attacks by Country needs to be reverse sorted.
