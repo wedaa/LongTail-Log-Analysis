@@ -65,6 +65,7 @@ LongTail_make_dashboard_graph.php \
 LongTail_make_daily_attacks_chart.pl \
 LongTail_class_b_hall_of_shame.pl \
 LongTail_class_c_hall_of_shame.pl \
+LongTail_find_first_password_use.pl \
 whois.pl "
 
 for file in $PROGRAMS ; do
@@ -79,7 +80,7 @@ for file in $DICT_FILES ; do
 	chmod a+r $DICT_DIR/$file
 done
 
-HTML_FILES ="ip_addresses.shtml \
+HTML_FILES="ip_addresses.shtml \
 index.shtml \
 index-long.shtml \
 index-historical.shtml \
