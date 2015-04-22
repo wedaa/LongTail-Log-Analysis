@@ -3,7 +3,7 @@
 sub init {
 	$DATE=`date +%Y-%m-%d`;
 	chomp $DATE;
-	open (FILE, "/usr/local/etc/translate_country_codes");
+	open (FILE, "/usr/local/etc/translate_country_codes")||die "Can't open /usr/local/etc/translate_country_codes, this is bad\n";;
 	while (<FILE>){
 		chomp;
 		($code,$country)=split(/ /,$_,2);
@@ -19,7 +19,21 @@ sub get_blacklists{
 	chomp $HOUR;
 	$MINUTE=`date +%M`;
 	chomp $MINUTE;
-	if ( ($HOUR<1) &&($MINUTE<55)){
+	my $really_get_them=0;
+	my $DATE=`date +%Y-%m-%d`;
+
+	if ( ! -d "/var/www/html/honey/black_lists"){
+		system ("mkdir -p /var/www/html/honey/black_lists");
+	}
+	if ( ! -d "/var/www/html/honey/black_lists"){
+		print "This is bad, can't find or make /var/www/html/honey/black_lists\n";
+		exit;
+	}
+	if ( ($HOUR<1) &&($MINUTE<55)){ $really_get_them=1;}
+	if ( ! -e "/var/www/html/honey/black_lists/base_all_ssh-only.txt"){$really_get_them=1;}
+	if ( ! -e "/var/www/html/honey/black_lists/base_90days.txt"){$really_get_them=1;}
+	if ( ! -e "/var/www/html/honey/black_lists/ssh.txt.$DATE"){$really_get_them=1;}
+	if ($really_get_them > 0){
 		print "Getting blacklists now\n";
 		chdir ("/var/www/html/honey/black_lists");
 		`wget https://www.openbl.org/lists/base_all_ssh-only.txt.gz`;
@@ -37,7 +51,7 @@ sub load_local_ips{
 	$local_ips_count=0;
 	undef $ip_list;
 	chdir ("/var/www/html/honey");
-	open (FILE, "current-ip-addresses.txt");
+	open (FILE, "current-ip-addresses.txt") || die "Can't open current-ip-addresses.txt, exiting now\n";
 	while (<FILE>){
 		chomp;
 		if (/\#/){next;}
@@ -61,8 +75,6 @@ sub compare_lists {
 	}
 	close (FILE);
 	print "<TD>$list_count</TD>";
-	#print "<TD>$_[0] count is $list_count</TD>";
-#print "\n\nDEBUG list count is $list_count, local_ips_count is $local_ips_count\n\n";
 	$percentage=$match_list/$local_ips_count*100;
 	$percentage=sprintf("%.2f",$percentage);
 
@@ -91,6 +103,7 @@ sub compare_lists {
 &init;
 &get_blacklists;
 &load_local_ips;
+
 print "<HR>\n";
 print "<P>Current IP address count is $local_ips_count\n";
 print "<TABLE border=3>\n";
