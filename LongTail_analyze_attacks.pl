@@ -588,6 +588,11 @@ $TMP=`date`;chomp $TMP; print "done with create_dict_webpage at $TMP\n";
 unlink ("/tmp/dictionaries.temp.sorted");
 unlink ("/tmp/dictionaries.temp");
 unlink ("/tmp/tmp.data");
+if (-d "$attacks_dir" ){
+	chdir ("$attacks_dir");
+	$tmp=system("chmod go-rwx *");
+	$tmp=system("chmod a+r ip_attacks.shtml");
+}
 
 $TMP=`date`;
 print "LongTail_analyze_attacks.pl Done at $TMP\n";
