@@ -1302,7 +1302,7 @@ function ssh_attacks {
 	rm /tmp/Longtail.tmpIP.$$-2
 
 	#cat /tmp/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
-	#sed -i s/HONEY/$HTML_TOP_DIR/g $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
+	sed -i s/HONEY/$HTML_TOP_DIR/g $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml |head -20 |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml"
@@ -2262,6 +2262,13 @@ echo "Doing blacklist efficiency tests now"
 				/bin/rm $HTML_DIR/first_seen_passwords.shtml
 			fi 
 			gzip $HTML_DIR/first_seen_passwords.shtml
+			make_header "$HTML_DIR/class_c_hall_of_shame.shtml" "Class C Hall Of Shame"  "Top 10 worst offending Class C subnets sorted by the number of attack patterns.  Class C subnets must have over 10,000 login attempts to make this list." 
+			`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl >>/$HTML_DIR/class_c_hall_of_shame.shtml`;
+			make_footer "$HTML_DIR/class_c_hall_of_shame.shtml" 
+
+			make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
+			`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
+			make_footer "$HTML_DIR/class_c_list.shtml" 
 		fi
 	fi
 
@@ -2269,11 +2276,12 @@ echo "Doing blacklist efficiency tests now"
 	date
 #	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
 	echo -n "Done with LongTail_analyze_attacks.pl at:"
-	make_header "$HTML_DIR/attacks/class_c_hall_of_shame.shtml" "Class C Hall Of Shame"  "Top 10 worst offending Class C subnets sorted by the number of attack patterns.  Class C subnets must have over 10,000 login attempts to make this list." "Class C Address" "Number Of Attacks" "Number Of Login Attempts"
-	`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl |head -10 >>/$HTML_DIR/attacks/class_c_hall_of_shame.shtml`;
-	make_footer "$HTML_DIR/attacks/class_c_hall_of_shame.shtml" 
-
 	date
+make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
+`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
+make_footer "$HTML_DIR/class_c_list.shtml" 
+
+
 fi
 
 exit
