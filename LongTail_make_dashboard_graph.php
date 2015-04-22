@@ -72,6 +72,7 @@ if ($myfile) {
 $max_data_point=$maxvalue;
 
 
+$maxvalue=$average*1.1;
 if ($max_data_point >$max){
 	$maxvalue=$max*1.10;
 }
@@ -79,24 +80,33 @@ elseif ($max_data_point > $average*2){
 	$maxvalue=$max*1.1;
 }
 elseif ($max_data_point < $average*(1.5)){
-	$maxvalue=$average*1.5;
+	$maxvalue=$average*1.1;
 }
 elseif ($max_data_point < $average*2){
 	$maxvalue=$average*2;
 }
+
+if ($average*2 > $max){
+	$maxvalue=$max*1.05;
+}
+
 if (isset ($show_max_attack) ){
 	$maxvalue=$show_max_attack*1.05;
 }
 
 
-// Setup the graph.
+if ($max > $maxvalue){
+	$maxvalue=$max*1.05;
+}
+
+// setup the graph.
 if ($size == "wide"){
-	$graph = new Graph(810,300);
+	$graph = new graph(810,300);
 }
 else {
-	$graph = new Graph(400,240);
+	$graph = new graph(400,240);
 }
-$graph->img->SetMargin(60,20,35,75);
+$graph->img->setmargin(60,20,35,75);
 $graph->SetScale("textlin");
 $graph->SetMarginColor("lightblue:1.1");
 $graph->SetShadow();
