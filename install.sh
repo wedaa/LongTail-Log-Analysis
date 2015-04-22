@@ -63,6 +63,8 @@ LongTail_compare_IP_addresses.pl \
 LongTail_make_graph.php \
 LongTail_make_dashboard_graph.php \
 LongTail_make_daily_attacks_chart.pl \
+LongTail_class_b_hall_of_shame.pl \
+LongTail_class_c_hall_of_shame.pl \
 whois.pl "
 
 for file in $PROGRAMS ; do
@@ -77,16 +79,23 @@ for file in $DICT_FILES ; do
 	chmod a+r $DICT_DIR/$file
 done
 
+HTML_FILES ="ip_addresses.shtml \
+index.shtml \
+index-long.shtml \
+index-historical.shtml \
+graphics.shtml \
+header.html \
+footer.html \
+notes.shtml \
+LongTail.css \
+404.shtml \
+attacks_view_restricted.shtml"
+
 for dir in $HTML_DIR $OTHER_DIRS ; do
-	cp ip_addresses.shtml $dir
-	cp index.shtml $dir
-	cp index-long.shtml $dir
-	cp index-historical.shtml $dir
-	cp graphics.shtml $dir
-	cp header.html $dir
-	cp footer.html $dir
-	cp notes.shtml $dir
-	cp LongTail.css $dir
+	for file in $HTML_FILES ; do
+		cp $file $dir
+		chmod a+r $dir/$file	
+	done
 done
 
 cp dashboard-index.shtml $HTML_DIR/dashboard/index.shtml
