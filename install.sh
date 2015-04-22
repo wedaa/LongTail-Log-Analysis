@@ -41,6 +41,7 @@ DICT_FILES="wordsEn.txt"
 
 ETC_FILES="ip-to-country \
 translate_country_codes.sed \
+translate_country_codes \
 LongTail-exclude-accounts.grep \
 LongTail-exclude-webpages.grep  \
 LongTail-exclude-IPs-httpd.grep \
