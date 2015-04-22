@@ -2,8 +2,7 @@
 
 echo "You need to edit LongTail.sh.  Please see LongTail.sh for details"
 echo ""
-echo "You need to edit this file for SCRIPT_DIR, HTML_DIR, OWNER,"
-echo "OBFUSCATE_IP_ADDRESSES, OBFUSCATE_URLS."
+echo "You need to edit this file for SCRIPT_DIR, HTML_DIR, DICT_DIR, and OWNER."
 
 echo "And then comment out the exit statement"
 
@@ -16,7 +15,9 @@ DICT_DIR="/usr/local/dict"
 OWNER="wedaa"                  # What is the owner of the process running LongTail?
 
 mkdir -p $HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
-mkdir $HTML_DIR/dashboard
+if [ ! -d "$HTML_DIR/dashboard" ] ; then
+	mkdir $HTML_DIR/dashboard
+fi
 
 OTHER_DIRS=" /var/www/html/honey-2222 /var/www/html/honey-22 /var/www/html/telnet /var/www/html/ftp /var/www/html/rlogin"
 
