@@ -209,17 +209,24 @@ is code that only runs during the midnight time frame.
 
 MY crontab entry looks like this one:
 
-5 * * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-45 0 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
-
+	5 * * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	45 0 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
+	
 
 HTTP Configuration 
 --------------
 You NEED to have Server Side Includes turned on.  This is so 
 that all the headers and footers are the same.  Go to 
 http://httpd.apache.org/docs/2.4/howto/ssi.html for help.
+
+You should also probably use the HTTP error docs for errors 403 
+(Forbidden) and 404 (Not Found).
+
+	ErrorDocument 403 /honey/attacks_view_restricted.shtml
+	ErrorDocument 404 /honey/404.shtml
+
 
 WARNING about reports before you have enough data
 --------------
@@ -351,7 +358,7 @@ and needs to be cleaned up and described better
 
 56) RELEASE 1.5: I need to somehow show slowscans and bot net attacks
 
-57) I need to break out attacks by hosts so I can see the attacks
+57) RELEASE 1.5 I need to break out attacks by hosts so I can see the attacks
 that get through the IPS more clearly.
 
 58) RELEASE 2: I need to "googlefy" usernames.
@@ -359,8 +366,8 @@ that get through the IPS more clearly.
 59) There's a bug in the "normalization" code for some of the statistics
 webpages.
 
-60) I desperately need to optimize the LongTail_analyze_attacks.pl script
-since it takes so long to run
+60) RELEASE 1.5 I desperately need to optimize the LongTail_analyze_attacks.pl
+script since it takes so long to run
 
 61) RELEASE 2: I need to convert LongTail.sh to LongTail.pl so that it 
 runs faster.  Now that I know what I'm looking for, it's time to run it 
@@ -377,9 +384,6 @@ in perl so that it runs faster.
 
 67) Make a  5 minute "This is LongTail" slideshow explaining the different 
 features and reports in LongTail.
-
-68) Make the graphs on the front page "clickable" to go to a page 
-giving more details.
 
 69) Figure out how to "re-do" the last months dashboard graphics so that 
 the graphs all have the same average, minimum, and maximum.
@@ -580,6 +584,9 @@ and IP addresses.
 62) DONE: Cleanup formatting in first seen reports
 
 65) DONE: Finish my install.sh script
+
+68) WHERE WOULD THEY GO? Not going to happen...  Make the graphs on the 
+front page "clickable" to go to a page giving more details.
 
 76) DONE: Fix display bug in "Calendar View" of attacks where the first day of
 the week doesn't always show up in the right column.
