@@ -20,14 +20,37 @@ Please include a link back to http://longtail.it.marist.edu
 long as attribution is made to Eric Wedaa, LongTail Log 
 Analysis, and Marist College.  Please include a link back to http://longtail.it.marist.edu
 
-<P>I can write code, or I can write documentation.  Right now 
-I'm busy writing code.  Some documentation is in the README
-and in my Blog as show in the menu bar above.
+<P>Access to Attack Files is restricted.
+
+<P>Part of the reason behind LongTail's attack analysis is to
+try and find coordination between different IP Addresses.  The 
+only non-intrusive way is to compare attack patterns between 
+websites.
+<P>By publishing attack patterns, I run the risk of contaminating
+my data set.  If more than one site starts using the same attack
+pattern, is it because they are controlled by the same person,
+sharing information betweend attackers, OR, did they download the
+attack pattern from LongTail and start using the copied attack
+pattern.
+<P>The only way to prevent that from happening is to restrict 
+access to attack patterns.
+<P>Please contact me if you are a verifiable researcher and I can
+share historical data with you after the 90 day window of Marist 
+College only access has passed.
+
+
+<!--
+<P>A big thanks to my co-workers at Marist College, Jeff Kirby, Joseph Augulis, Johannes Sayre, and Martha McConaghy
+for their comments and advise (not to mention listening to me talk about it endlessly...)  As well as to Marist College
+for giving me a place to run my webserver!
+-->
 
 <P>A big thanks to Simon Bell of <A href="http://securehoney.net/">
 http://securehoney.net/</a> for 
 pointing me towards jpgraph.  That one tool made all my graphs
 possible.
+
+<P>I learned how to do my slideshow buttons CSS courtesy of <A href=http://www.xkcd.com/>http://www.xkcd.com/</a>
 
 <P>Please feel free to discuss LongTail in the Google Group that I 
 setup for discussion.  :-)
