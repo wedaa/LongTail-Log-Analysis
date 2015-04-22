@@ -1,0 +1,29 @@
+<HTML>
+<!--<BODY bgcolor=#000fff> -->
+<!-- <BODY bgcolor=#00f0FF> -->
+<link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
+<!--#include virtual="/honey/header.html" --> 
+
+<H3>Access to Attack Files is restricted.
+</H3>
+
+<P>Part of the reason behind LongTail's attack analysis is to
+try and find coordination between different IP Addresses.  The 
+only non-intrusive way is to compare attack patterns between 
+websites.
+<P>By publishing attack patterns, I run the risk of contaminating
+my data set.  If more than one site starts using the same attack
+pattern, is it because they are controlled by the same person,
+sharing information betweend attackers, OR, did they download the
+attack pattern from LongTail and start using the copied attack
+pattern.
+<P>The only way to prevent that from happening is to restrict 
+access to attack patterns.
+<P>Please contact me if you are a verifiable researcher and I can
+share historical data with you after the 90 day window of Marist 
+College only access has passed.
+<P><B>OR</B>
+<P>You can setup your own honeypot.  Instructions are in the "Download"
+tab above.
+
+<!--#include virtual="/honey/footer.html" --> 
