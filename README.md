@@ -3,13 +3,23 @@ README for LongTail Log Analysis.
 
 WARNING
 --------------
-If you manage to stumble across this at GitHub, this is
-not ready to be released.  I'M STILL WORKING ON IT.  OTOH,
-I'm close enough to actually be putting it up here so that
-I can test the install procedure on a different server 
-than the one I'm developing on.
+LongTail is in a constant state of development.  A stable release
+is available at http://longtail.it.marist.edu/download.  But it's
+more fun to download what's "live" at github to get the latest 
+features.  Reasonable system administration skills are required
+to run and install this software.
 
-If you're that interested, drop me an email to wedaa@wedaa.com
+Despite my best intentions, web pages have to live in /var/www/html
+and scripts have to live in /usr/local/etc.  I'll fix that after
+I fix the last bugs and write some proper documentation.
+
+I am not currently providing wordlists for comparison.  You can 
+download your own wordlists from 
+
+	http://packetstormsecurity.com/Crackers/wordlists/page1
+
+You do NOT need wordlists to run LongTail, but it is interesting.
+No major functionality depends on them.
 
 Licensing
 --------------
@@ -34,19 +44,22 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 What LongTail does
 --------------
 Longtail analyzes your /var/log/messages files to report on 
-the ssh attacks against your server.  LongTail pre-supposes 
-that you have compiled your own openssh daemon as described 
-below.
+the ssh attacks against your server.  LongTail helps point out
+new hosts doing brute force attacks, new passwords and accounts
+being tried, and helps point out "Groups" of attackers that are
+sharing the same attack patterns.
 
-LongTail also analyzes your /var/log/httpd/access_log files
-to analyze the attacks and probes that your webserver is
-subject to.
+LongTail generates 20 graphs per host being monitored to help
+boil down the statistics into a more usable form.  The 30 day
+graphs are also clickable so that you can investigate a 
+particular day's activities.
 
-LongTail is for small (1 server)  to medium size (50 servers)
-organizations.  If you have a large organization, then you'll 
-probably have too much data to be analyzed.  Of course if you
-run this on larger installations and it works, please let me
-know so I can increase this number.
+LongTail pre-supposes that you have compiled your own openssh daemon 
+as described below.
+
+LongTail is currently for a single server, and up to 5 servers.  
+With 5 active servers the main analysis report takes over 30 
+minutes to run at night. (This will be improved in release 2.0)
 
 LongTail ALSO refers to a statistical distribution where there
 are many "Hits" at the left, and tapering down to a "Long Tail"
@@ -146,21 +159,8 @@ Edit LongTail.sh for the location of your
 /honey directory (or whatever you call the directory
 you want your reports to go to.
 
-Edit Longtail.sh for the following variables (which are explained
-in the script): 
-
-	GRAPHS
-	DEBUG
-	DO_SSH
-	DO_HTTPD
-	OBFUSCATE_IP_ADDRESSES
-	OBFUSCATE_URLS
-	PASSLOG
-	PASSLOG2222
-	SCRIPT_DIR
-	HTML_DIR
-	PATH_TO_VAR_LOG
-	PATH_TO_VAR_LOG_HTTPD
+Edit Longtail.sh and LongTail.config for site-specific variables 
+(which are explained in the files).
 
 Edit LongTail-exclude-accounts.grep to add your valid local 
 accounts.  This will exclude these accounts from your reports.  
@@ -192,13 +192,11 @@ Site Specific Reports
 --------------
 After you have run LongTail for "a while", you may wish to 
 add your own special reports.  Those reports should be included 
-in two special files that will NOT be overwritten by install.sh
+in a special file that will NOT be overwritten by install.sh
 
-These scripts are:
+This scripts is:
 
 	$SCRIPT_DIR/Longtail-ssh-local-reports
-
-	$SCRIPT_DIR/Longtail-httpd-local-reports
 
 CRON Entry
 --------------
@@ -213,6 +211,8 @@ MY crontab entry looks like this one:
 	45 0 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
 	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
 	0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
+	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
+
 	
 
 HTTP Configuration 
@@ -263,7 +263,7 @@ PHP repos.  On a vanilla Fedora Core 20 system the labels show
 up properly under the appropriate bar.  I am looking into this 
 issue.
 
-WARNING about running rsyslog
+Running rsyslog
 --------------
 1) This has only been tested using rsyslog.  Not syslog, not
 syslog-ng.
@@ -336,38 +336,58 @@ KNOWN ISSUES THAT HAVE YET TO BE DONE
 --------------
 
 2) I need to fix the X and Y axis labels so they are not buried
-with the "tick" information.
-
-21) RELEASE 2: NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph 
-of countries attacking.
-
-24) NICE TO HAVE BUT NOT A PRIORITY  Make a chart of IP addresses that 
-attack more than one host.
-
-25) There's a "bug" in the .grep files where a "#" character matches
-some of the lines even though the rest of the line does not exist.  This
-is due to my not fully understanding how the grep -vf command works.
-
-37) RELEASE 2: I need to analyze "sshd Disconnect" messages that come 
-from hosts that have not actively tried to login.
-
-39) RELEASE 2: I need to analyze ssh_keys as logins.
+with the "tick" information. (This can wait till other more important
+things are done.)
 
 44) I need to cleanup the Dictionary section.  It's still ugly-ish
 and needs to be cleaned up and described better
+
+59) CRITICAL: There's a bug in the "normalization" code for some of the statistics
+webpages.
+
+66) Write documentation about LongTail.  This in constantly in progress.
+
+67) Make a  5 minute "This is LongTail" slideshow explaining the different 
+features and reports in LongTail.
+
+83)CRITICAL:  Make a "What do I do to protect myself?" webpage.  Include links to
+other sites and documents.
+
+84)CRITICAL:  There's a bug in the image mapping for Top 20 non root accounts where it
+doesn't show root, and then only shows 19 accounts.  Image mapping shows
+20 accounts including root.
+
+85)CRITICAL:  Make a "Top 5 LongTail webpages" with a note for new viewers to look at it.
+
+87) How do I breakout sshpsycho attacks by host attacked?
+
+KNOWN ISSUESAND IMPROVEMENTS FOR RELEASE 1.5
+--------------
 
 56) RELEASE 1.5: I need to somehow show slowscans and bot net attacks
 
 57) RELEASE 1.5 I need to break out attacks by hosts so I can see the attacks
 that get through the IPS more clearly.
 
-58) RELEASE 2: I need to "googlefy" usernames.
-
-59) There's a bug in the "normalization" code for some of the statistics
-webpages.
-
 60) RELEASE 1.5 I desperately need to optimize the LongTail_analyze_attacks.pl
 script since it takes so long to run
+
+63) RELEASE 1.5: Auto-report attacks to the various IP Abuse websites.
+
+KNOWN ISSUESAND IMPROVEMENTS FOR RELEASE 2.0
+--------------
+
+21) RELEASE 2: NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph 
+of countries attacking.
+
+24) RELEASE 2:  Make a chart of IP addresses that attack more than one host.
+
+37) RELEASE 2: I need to analyze "sshd Disconnect" messages that come 
+from hosts that have not actively tried to login.
+
+39) RELEASE 2: I need to analyze ssh_keys as logins.
+
+58) RELEASE 2: I need to "googlefy" usernames.
 
 61) RELEASE 2: I need to convert LongTail.sh to LongTail.pl so that it 
 runs faster.  Now that I know what I'm looking for, it's time to run it 
@@ -375,19 +395,6 @@ in perl so that it runs faster.
 
 62) RELEASE 2: Can I run NMap against the attackers and analyze the results?
 (I'll need to edit out the traceroute results).
-
-63) RELEASE 1.5: Auto-report attacks to the various IP Abuse websites.
-
-64) Can I auto-add a date stamp and website address to my graphics?
-
-66) Write documentation about LongTail
-
-67) Make a  5 minute "This is LongTail" slideshow explaining the different 
-features and reports in LongTail.
-
-69) Figure out how to "re-do" the last months dashboard graphics so that 
-the graphs all have the same average, minimum, and maximum.
-/usr/local/etc/LongTail_make_historical_dashboard_charts.pl /var/www/html/honey/historical/2015/04/10
 
 70) RELEASE 2: Make the minimum and maximum entries clickable in the 
 statistics tables.
@@ -407,16 +414,14 @@ should probably go somewhere else, but I'm not sure where.
 78) RELEASE 2: Attacks by Country should also show the number of attacks 
 by each country.
 
-79) RELEASE 2: Graphics should also be image maps so the user can click
-on a column and get more information about that date, account, or password.
+80) RELEASE 2: LongTail shoul also analyze /var/log/httpd/access_log files
+to analyze the attacks and probes that a webserver is
+subject to.
 
-80) RELEASE 2: (Maybe) "All" graphs, can I color code the amounts by host?
+81) RELEASE 2: (Maybe) "All" graphs, can I color code the amounts by host?
 
-81) RELEASE 2: Add more IP Address blacklists to my blacklist comparison
+82) RELEASE 2: Add more IP Address blacklists to my blacklist comparison
 chart.
-
-82) Make a "What do I do to protect myself?" webpage.  Include links to
-other sites and documents.
 
 KNOWN ISSUES THAT ARE DONE
 --------------
@@ -491,6 +496,11 @@ password for account:password pairs
 
 23) DONE  Make a pretty graph of number of 
 unique IP addresses per day over the last 30 days.
+
+25) DONE: (I took the comments out of the files.) There's a "bug" in 
+the .grep files where a "#" character matches some of the lines even 
+though the rest of the line does not exist.  This is due to my not 
+fully understanding how the grep -vf command works.
 
 26) DONE: Need to work on code for the "consolidation" server.
 
@@ -583,12 +593,25 @@ and IP addresses.
 
 62) DONE: Cleanup formatting in first seen reports
 
+64) DONE: Can I auto-add a date stamp and website address to my graphics?
+
 65) DONE: Finish my install.sh script
 
 68) WHERE WOULD THEY GO? Not going to happen...  Make the graphs on the 
 front page "clickable" to go to a page giving more details.
 
+69) DONE: Figure out how to "re-do" the last months dashboard 
+graphics so that the graphs all have the same average, minimum, and 
+maximum.
+
 76) DONE: Fix display bug in "Calendar View" of attacks where the first day of
 the week doesn't always show up in the right column.
 
 77) DONE: Attacks by Country needs to be reverse sorted.
+
+79) RELEASE 1.5: 30 day Graphics(DONE) should also be image maps so the 
+user can click on a column and get more information about that date,
+Account, or password.
+
+86)DONE: CRITICAL:  Add a date include file to the historical web pages so the user knows
+where/when they are.
