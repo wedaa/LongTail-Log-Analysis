@@ -1,0 +1,55 @@
+<HTML>
+<!--<BODY bgcolor=#000fff> -->
+<!-- <BODY bgcolor=#00f0FF> -->
+<link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
+<!--#include virtual="/honey/header.html" --> 
+<H3>How Can You Protect Yourself?</H3>
+<P><A href="https://en.wikipedia.org/wiki/WarGames">
+The only winning move is not to play.</a>
+
+
+<P>So...  What can you do to protect yourself?  There is no one
+single thing you can do other than turning off ssh to protect 
+yourself, so it's all about "<A href="https://en.wikipedia.org/wiki/Defense_in_depth_%28computing%29">Defense in Depth</A>.  This is a layering 
+approach of preventitive measures so that if one layer fails, then the 
+next layer stops them.
+
+
+<OL>
+<LI>Don't play the game!  If you don't have to ssh into a server, 
+(which probably means a Linux server running at home), then
+disable ssh.  If you're not running ssh, then they can't attack you.
+<LI>If you <B>have</B> to run ssh, and there are only a few
+people logging into it, then run ssh on a different port.  This 
+obviously won't work if you have more than 2 or 3 people logging 
+into the box as somebody will forget what port to use and will
+raise a ruckus.  As can be seen at <A href="http://longtail.it.marist.edu/honey-2222/index.shtml">Port 2222 ssh attack analysis</A>, the bad 
+guys rarely attack ports other than port 22.
+<LI><B>No matter what,</B> don't allow root to ssh into your server.  
+Make sure your 
+/etc/ssh/sshd_config has "PermitRootLogin no" set. </LI>
+<LI>ssh is "tcpwrappers" aware.  That means you can use the
+files /etc/hosts.allow and /etc/hosts.deny to tell ssh to accept
+only inbound ssh connections from certain hosts, and then deny
+all other inbound connections.
+<LI>If you can't use hosts.allow and hosts.deny, then you can
+install software on your server to actively block inbound ssh
+attempts that appear to be attacks.  Two of the most popular
+are <A href="http://denyhosts.sourceforge.net/">DenyHosts</a> and <A href="http://www.fail2ban.org/wiki/index.php/Main_Page">Fail2Ban</A>.
+<LI>If you have "enough" hosts, then you should probably purchase
+an <a href="https://en.wikipedia.org/wiki/Intrusion_prevention_system">Intrusion prevention systems</a>.
+<LI>Don't use stupid passwords.  Passwords like "password", 
+"admin", and "123456" and their assorted variations are the 
+top passwords that ssh brute force attacks try.</LI>
+<LI>Longer passwords are better than shorter passwords.  As can
+be seen on <a href="http://longtail.it.marist.edu/honey/password_analysis_todays_passwords.shtml">Password Analysis of Today's Passwords</A>, 91 percent
+of the passwords they tried were 12 characters or less.</LI>
+<LI>Don't keep the default passwords for any software you install.
+Looking at Google for the passwords tried shows that many of them
+are default passwords for one piece of software or another.</LI>
+<LI>Don't keep the default passwords for any hardware (including 
+routers).  They keep trying "admin" accounts with the password
+"admin" which was a default for older home routers.
+</OL>
+
+<!--#include virtual="/honey/footer.html" --> 
