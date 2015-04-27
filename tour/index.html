@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<script>
+function myFunction() {
+	var r = confirm("It looks like you haven't been here before.\nDo you want to take the LongTail Tour?");
+	if (r == true) {
+		newwindow=window.open("http://localhost:81/honey/tour/tour_page_1.html",'name','height=400,width=600');
+		if (window.focus) {newwindow.focus()}
+		return false;
+	} 
+}
+function setCookie(cname, cvalue, exdays) {
+    var d = new Date();
+		<!-- alert ("in setCookie now"); -->
+    d.setTime(d.getTime() + (exdays*24*60*60*1000));
+    var expires = "expires="+d.toUTCString();
+		cvalue="LongTail";
+    document.cookie = cname + "=" + cvalue + "; " + expires;
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1);
+        if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+    }
+    return "";
+}
+
+function checkCookie() {
+    var user = getCookie("LongTail");
+    if (user != "") {
+			;
+    } else {
+			alert ("Cookie was not set");
+			<!-- alert ("Attempting to set Cookie now"); -->
+			setCookie("LongTail", "Visited", 5000);
+			myFunction();
+    }
+}
+
+</script>
+
+<body onload="checkCookie()">
+</body>
+</html>
