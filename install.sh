@@ -84,6 +84,7 @@ done
 
 HTML_FILES="ip_addresses.shtml \
 index.shtml \
+how_to_protect_yourself.shtml \
 index-long.shtml \
 index-historical.shtml \
 graphics.shtml \
