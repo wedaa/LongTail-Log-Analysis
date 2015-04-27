@@ -165,6 +165,16 @@ chown -R $OWNER $HTML_DIR/historical
 chmod a+rx $HTML_DIR $HTML_DIR/historical $HTML_DIR/historical/$YEAR $HTML_DIR/historical/$YEAR/$MONTH $HTML_DIR/historical/$YEAR/$MONTH/$DAY $HTML_DIR/historical/$YEAR/$MONTH/$DAY/current-attack-count.data 
 
 #
+# Lets deal with the tour
+#
+mkdir -p $HTML_DIR/tour
+chmod a+rx $HTML_DIR/tour
+cd tour
+cp * $HTML_DIR/tour
+chmod a+r $HTML_DIR/tour/*
+cd ..
+
+#
 # Check for required software here
 #
 #Check for required software here
