@@ -4,10 +4,10 @@ README for LongTail Log Analysis.
 WARNING
 --------------
 LongTail is in a constant state of development.  A stable release
-is available at http://longtail.it.marist.edu/download.  But it's
-more fun to download what's "live" at github to get the latest 
-features.  Reasonable system administration skills are required
-to run and install this software.
+will be available (soon?) at http://www.wedaa.com/eric/software/index.html.  
+But it's more fun to download what's "live" at github to get the 
+latest features.  Reasonable system administration skills are 
+required to run and install this software.
 
 Despite my best intentions, web pages have to live in /var/www/html
 and scripts have to live in /usr/local/etc.  I'll fix that after
@@ -342,24 +342,11 @@ things are done.)
 44) I need to cleanup the Dictionary section.  It's still ugly-ish
 and needs to be cleaned up and described better
 
-59) CRITICAL: There's a bug in the "normalization" code for some of the statistics
-webpages.
+59) CRITICAL: There's a bug in the "normalization" code for some of the 
+statistics webpages.
 
-66) Write documentation about LongTail.  This in constantly in progress.
-
-67) Make a  5 minute "This is LongTail" slideshow explaining the different 
-features and reports in LongTail.
-
-83)CRITICAL:  Make a "What do I do to protect myself?" webpage.  Include links to
-other sites and documents.
-
-84)CRITICAL:  There's a bug in the image mapping for Top 20 non root accounts where it
-doesn't show root, and then only shows 19 accounts.  Image mapping shows
-20 accounts including root.
-
-85)CRITICAL:  Make a "Top 5 LongTail webpages" with a note for new viewers to look at it.
-
-87) How do I breakout sshpsycho attacks by host attacked?
+85) CRITICAL:  Make a "Top 5 LongTail webpages" with a note for new viewers 
+to look at it. (Tour)
 
 KNOWN ISSUESAND IMPROVEMENTS FOR RELEASE 1.5
 --------------
@@ -374,13 +361,19 @@ script since it takes so long to run
 
 63) RELEASE 1.5: Auto-report attacks to the various IP Abuse websites.
 
-KNOWN ISSUESAND IMPROVEMENTS FOR RELEASE 2.0
+67) RELEASE 1.5: Make a  5 minute "This is LongTail" slideshow explaining the 
+different features and reports in LongTail.
+
+87) RELEASE 1.5 How do I breakout sshpsycho attacks by host attacked?
+
+KNOWN ISSUES AND IMPROVEMENTS FOR RELEASE 2.0
 --------------
 
 21) RELEASE 2: NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph 
 of countries attacking.
 
-24) RELEASE 2:  Make a chart of IP addresses that attack more than one host.
+24) RELEASE 2:  Make a chart/Graph of IP addresses that attack more than 
+one host.
 
 37) RELEASE 2: I need to analyze "sshd Disconnect" messages that come 
 from hosts that have not actively tried to login.
@@ -597,6 +590,9 @@ and IP addresses.
 
 65) DONE: Finish my install.sh script
 
+66) DONE ENOUGH: Write documentation about LongTail.  This in constantly in 
+progress.  This will be covered in the README and the Tour.
+
 68) WHERE WOULD THEY GO? Not going to happen...  Make the graphs on the 
 front page "clickable" to go to a page giving more details.
 
@@ -613,5 +609,16 @@ the week doesn't always show up in the right column.
 user can click on a column and get more information about that date,
 Account, or password.
 
+83)DONE:  Make a "What do I do to protect myself?" webpage.  Include 
+links to other sites and documents.
+
+84) DONE:  There's a bug in the image mapping for Top 20 non root 
+accounts where it doesn't show root, and then only shows 19 accounts.  
+Image mapping shows 20 accounts including root.
+
 86)DONE: CRITICAL:  Add a date include file to the historical web pages so the user knows
 where/when they are.
+
+88) DONE: To be "really" added once the tour is done.  Add a cookie so that 
+brand new visitors have the option of going to the "Most Important 5 Pages" 
+webpage (Tour)
