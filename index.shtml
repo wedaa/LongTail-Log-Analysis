@@ -6,98 +6,151 @@
 
 <H3>LongTail Log Analysis/Today's Data<BR>All SSH Ports,  <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Wed Apr  8 20:33:50 EDT 2015
+Last updated on Mon Apr 27 21:08:50 EDT 2015
 <BR>
 <BR>
 <TABLE border=1>
 <TR><TH colspan=6>SSH Brute Force Attempts</TH></TR>
 <TR><TH>Description</TH><TH>Today</TH><TH>Never seen<BR>Before Today</TH><TH>This<BR>Month</TH><TH>This<BR>Year</TH><TH>Since Logging<BR>Started</TH>
+
 <TR><TH>Login Attempts
 <TD>
-<!--Login Attempts Today:--> 37,357
+<!--Login Attempts Today:--> 44,200
 </TD><TD> N/A
 </TD><TD>
-<!--Login Attempts This Month:--> 286,697
+<!--Login Attempts This Month:--> 2,009,816
 </TD><TD>
-<!--Login Attempts This Year:--> 2,412,774
+<!--Login Attempts This Year:--> 4,135,893
 </TD><TD>
-<!--Login Attempts Since Logging Started:--> 2,412,774
+<!--Login Attempts Since Logging Started:--> 4,135,893
 </TR>
+
+<TR><TH>SSHPsycho Login Attempts <a href="/honey/notes.shtml#3">[3]</a>
+<TD>
+<!--SSHPsycho Today:--> 23,999
+</TD><TD> N/A
+</TD><TD>
+<!--SSHPsycho This Month:--> 1,275,358
+</TD><TD>
+<!--SSHPsycho This Year:--> 2,658,594
+</TD><TD>
+<!--SSHPsycho Since Logging Started:--> 2,658,594
+</TR>
+
+<TR><TH>Friends of SSHPsycho Login Attempts <a href="/honey/notes.shtml#4">[4]</a>
+<TD>
+<!--SSHfriendsPsycho Today:--> 5,402
+</TD><TD> N/A
+</TD><TD>
+<!--SSHfriendsPsycho This Month:--> 233,842
+</TD><TD>
+<!--SSHfriendsPsycho This Year:--> 435,410
+</TD><TD>
+<!--SSHfriendsPsycho Since Logging Started:--> 435,410
+</TR>
+
 <TR><TH>Unique Passwords</TH>
 <TD>
-<!--Unique Passwords Today:--> 26,518
+<!--Unique Passwords Today:--> 31,766
 </TD><TD>
-<!--New Passwords Today:--> 2,387
+<!--New Passwords Today:--> 218
 </TD><TD>
-<!--Unique Passwords This Month:--> 75432
+<!--Unique Passwords This Month:--> 277,959
 </TD><TD>
-<!--Unique Passwords This Year:--> 392292
+<!--Unique Passwords This Year:--> 479,839
 </TD><TD>
-<!--Unique Passwords Since Logging Started:--> 392292
+<!--Unique Passwords Since Logging Started:--> 479,839
 </TD><TD>
 </TR>
 <TR><TH>Unique Usernames </TH>
 <TD>
-<!--Unique Usernames Today:--> 323
+<!--Unique Usernames Today:--> 813
 </TD><TD>
-<!--New Usernames Today:--> 66
+<!--New Usernames Today:--> 216
 </TD><TD>
-<!--Unique Usernames This Month:--> 943
+<!--Unique Usernames This Month:--> 2,121
 </TD><TD>
-<!--Unique Usernames This Year:--> 3963
+<!--Unique Usernames This Year:--> 4,563
 </TD><TD>
-<!--Unique Usernames Since Logging Started:--> 3963
+<!--Unique Usernames Since Logging Started:--> 4,563
 </TD><TD>
 </TR>
 <TR>
 <TH>Unique IPs </TH>
 <TD>
-<!--Unique IPs Today:--> 83
+<!--Unique IPs Today:--> 377
 </TD><TD>
-<!--New IPs Today:--> 36
+<!--New IPs Today:--> 265
 </TD><TD>
-<!--Unique IPs This Month:--> 222
+<!--Unique IPs This Month:--> 1,820
 </TD><TD>
-<!--Unique IPs This Year:--> 2459
+<!--Unique IPs This Year:--> 3,957
 </TD><TD>
-<!--Unique IPs Since Logging Started:--> 2459
+<!--Unique IPs Since Logging Started:--> 3,957
 </TD><TD>
 </TR>
 </TABLE>
 <BR>
 <BR>
-
 <TABLE BORDER=0>
-<TR><TH Colspan=2>Count of Last 30 Days Of Attacks</TH>
-<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+<TR><TH Colspan=2>Count of Last 30 Days Of Attacks (Bars are clickable)</TH>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"  alt="last-30-days-attack-count.png" usemap="#mapname"  ><BR><BR>
 <TR><TH>Today</TH><TH>Prior 7 Days</TH>
-<TR><TD><img src="current-top-20-root-passwords.png"><BR><BR>
-<TD><img src="last-7-days-top-20-root-passwords.png"><BR><BR>
-<TR><TD><img src="current-top-20-admin-passwords.png"><BR><BR>
-<TD><img src="last-7-days-top-20-admin-passwords.png"><BR><BR>
-<TR><TD><img src="current-top-20-non-root-accounts.png"><BR><BR>
-<TD><img src="last-7-days-top-20-non-root-accounts.png"><BR><BR>
-<TR><TD><img src="current-top-20-non-root-passwords.png"><BR><BR>
-<TD><img src="last-7-days-top-20-non-root-passwords.png"><BR><BR>
+<TR><TD><img src="current-top-20-root-passwords.png" alt="current-top-20-root-passwords" usemap=#current-top-20-root-passwords.map><BR><BR>
+<TD><img src="last-7-days-top-20-root-passwords.png" alt="last-7-days-top-20-root-passwords" usemap=#last-7-days-top-20-root-passwords.map><BR><BR>
+<TR><TD><img src="current-top-20-admin-passwords.png" alt="current-top-20-admin-passwords" usemap=#current-top-20-admin-passwords.map><BR><BR>
+<TD><img src="last-7-days-top-20-admin-passwords.png" alt="last-7-days-top-20-admin-passwords" usemap=#last-7-days-top-20-admin-passwords.map><BR><BR>
+<TR><TD><img src="current-top-20-non-root-accounts.png" alt="current-top-20-non-root-accounts" usemap=#current-top-20-non-root-accounts.map><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-accounts.png" alt="last-7-days-top-20-non-root-accounts" usemap=#last-7-days-top-20-non-root-accounts.map><BR><BR>
+<TR><TD><img src="current-top-20-non-root-passwords.png" alt="current-top-20-non-root-passwords" usemap=#current-top-20-non-root-passwords.map><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-passwords.png" alt="last-7-days-top-20-non-root-passwords" usemap=#last-7-days-top-20-non-root-passwords.map><BR><BR>
 <TR><TH Colspan=2><a href ="graphics.shtml">More Charts </a></TH></TR>
 <TR><TH Colspan=2><a href ="/honey/graphics_all.shtml">All Charts For ALL Hosts</a></TH></TR>
 </TABLE>
+<map name="mapname">
+<!--#include virtual="/honey/30_days_imagemap.html" --> 
+</map>
+<map name="current-top-20-root-passwords.map"> <!--#include virtual="current-top-20-root-passwords.map" --> </map>
+<map name="last-7-days-top-20-root-passwords.map"> <!--#include virtual="last-7-days-top-20-root-passwords.map" --> </map>
+<map name="current-top-20-admin-passwords.map"> <!--#include virtual="current-top-20-admin-passwords.map" --> </map>
+<map name="last-7-days-top-20-admin-passwords.map"> <!--#include virtual="last-7-days-top-20-admin-passwords.map" --> </map>
+<map name="current-top-20-non-root-accounts.map"> <!--#include virtual="current-top-20-non-root-accounts.map" --> </map>
+<map name="last-7-days-top-20-non-root-accounts.map"> <!--#include virtual="last-7-days-top-20-non-root-accounts.map" --> </map>
+<map name="current-top-20-non-root-passwords.map"> <!--#include virtual="current-top-20-non-root-passwords.map" --> </map>
+<map name="last-7-days-top-20-non-root-passwords.map"> <!--#include virtual="last-7-days-top-20-non-root-passwords.map" --> </map>
+
+
+
+<map name="last-30-days-top-20-root-passwords.map"> <!--#include virtual="last-30-days-top-20-root-passwords.map" --> </map>
+<map name="historical-top-20-root-passwords.map"> <!--#include virtual="historical-top-20-root-passwords.map" --> </map>
+<map name="last-30-days-top-20-admin-passwords.map"> <!--#include virtual="last-30-days-top-20-admin-passwords.map" --> </map>
+<map name="historical-top-20-admin-passwords.map"> <!--#include virtual="historical-top-20-admin-passwords.map" --> </map>
+<map name="last-30-days-top-20-non-root-accounts.map"> <!--#include virtual="last-30-days-top-20-non-root-accounts.map" --> </map>
+<map name="historical-top-20-non-root-accounts.map"> <!--#include virtual="historical-top-20-non-root-accounts.map" --> </map>
+<map name="last-30-days-top-20-non-root-passwords.map"> <!--#include virtual="last-30-days-top-20-non-root-passwords.map" --> </map>
+<map name="historical-top-20-non-root-passwords.map"> <!--#include virtual="historical-top-20-non-root-passwords.map" --> </map>
+
 <BR>
 <BR>
 <H3>Daily Trends</H3>
-<a href ="trends-in-root-passwords.shtml">Daily Trends in Top 20 Root Passwords</a>
+<a href ="trends-in-root-passwords.shtml">Top 20 Root Passwords</a>
 <BR>
-<a href ="trends-in-admin-passwords.shtml">Daily Trends in Top 20 Account "admin" Passwords</a>
+<a href ="trends-in-admin-passwords.shtml">Top 20 Account "admin" Passwords</a>
 <BR>
-<a href ="trends-in-non-root-passwords.shtml">Daily Trends in Top Non 20 Root/Account "admin" Passwords</a>
+<a href ="trends-in-non-root-passwords.shtml">Top Non 20 Root/Account "admin" Passwords</a>
 <BR>
-<a href ="trends-in-accounts.shtml">Daily Trends in Top 20 Accounts</a>
+<a href ="trends-in-accounts.shtml">Top 20 Accounts</a>
 <BR>
 <BR>
 <H3>Statistics</H3>
 <a href ="statistics.shtml">Attack Statistics <!--#include virtual="description.html" --> </a>
 <BR>
 <a href ="/honey/statistics_all.shtml">Attack Statistics Broken Down By Site</a>
+<BR><BR>
+<a href ="more_statistics.shtml">Attack, Password, IP Address, Account Name Statistics <!--#include virtual="description.html" --> </a>
+<BR>
+<a href ="/honey/more_statistics_all.shtml">Attack, Password, IP Address, Account Name Statistics Broken Down By Site</a>
+<BR>
 <BR>
 <a href ="attacks_by_day.shtml">Attacks By Day, Calendar view,  <!--#include virtual="description.html" --></a>
 <BR>
