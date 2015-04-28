@@ -5,6 +5,10 @@
 require_once ('/usr/local/php/jpgraph-3.5.0b1/src/jpgraph.php');
 require_once ('/usr/local/php/jpgraph-3.5.0b1/src/jpgraph_bar.php');
 
+$date=`date +"%Y-%m-%d %H:%M"`;
+$URL_LINE="http://longtail.it.marist.edu";
+
+
 // USAGE: php /usr/local/etc/LongTail_make_graph.php filename "header" "X-axis label" "Y-axis label"
 // Must pass full filename to read and "Quote delimited text header"
 // And redirect the output to a file
@@ -70,6 +74,9 @@ $graph->SetShadow();
  
 // Set up the title for the graph
 $graph->title->Set("$header");
+$graph->subtitle->Set("$URL_LINE $date");
+
+//$graph->title->Set("$header\n$URL_LINE $date");
 $graph->xaxis->title->Set("$x_axis_title","left");
 $graph->yaxis->title->Set("$y_axis_title","middle");
 
