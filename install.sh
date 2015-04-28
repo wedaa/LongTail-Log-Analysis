@@ -61,8 +61,14 @@ LongTail_password_analysis.pl \
 LongTail_analyze_attacks.pl \
 catall.sh \
 LongTail.sh \
+LongTail_make_graph_sshpsycho.php \
+LongTail_friends_of_sshPsycho_IP_addresses \
+LongTail_sshPsycho_IP_addresses \
+LongTail_rebuild_last_month_dashboard_charts.sh \
+LongTail_rebuild_month_dashboard_charts.sh \
 LongTail_compare_IP_addresses.pl \
 LongTail_make_graph.php \
+LongTail_make_historical_dashboard_charts.pl \
 LongTail_make_dashboard_graph.php \
 LongTail_make_daily_attacks_chart.pl \
 LongTail_class_b_hall_of_shame.pl \
@@ -86,6 +92,8 @@ HTML_FILES="ip_addresses.shtml \
 index.shtml \
 how_to_protect_yourself.shtml \
 index-long.shtml \
+how_to_protect_yourself.shtml \
+about.shtml \
 index-historical.shtml \
 graphics.shtml \
 header.html \
@@ -102,6 +110,7 @@ for dir in $HTML_DIR $OTHER_DIRS ; do
 	done
 done
 
+cp header-2222.html /var/www/html/honey-2222/header.html
 cp dashboard-index.shtml $HTML_DIR/dashboard/index.shtml
 cp dashboard-1.shtml $HTML_DIR/dashboard/ 
 cp dashboard.shtml $HTML_DIR/
