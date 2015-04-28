@@ -2041,7 +2041,17 @@ function create_historical_copies {
 		cd  $TMP_HTML_DIR
 
 		mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
-		cp $TMP_HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/index.shtml
+		if [ -e $TMP_HTML_DIR/index-historical.shtml ] ; then
+			cp $TMP_HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/index.shtml
+		else
+			if [ -e $HTML_DIR/index-historical.shtml ] ; then
+				cp $HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/index.shtml
+			else 
+				echo "WARNING! CAN NOT FIND $TMP_HTML_DIR/index-historical.shtml OR $HTML_DIR/index-historical.shtml"
+				echo "This is not a deal breaker but your historical directories"
+				echo "will not have an index.shtml file"
+			fi
+		fi
 		# I do individual chmods so I don't do chmod's of thousands of files...
 		chmod a+rx $TMP_HTML_DIR/historical
 		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR
