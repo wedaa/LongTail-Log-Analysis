@@ -1,14 +1,36 @@
 <!--#include virtual="/honey/header.html" --> 
 <H3>Assorted notes</H3>
 <a name="1"></a>
-[1]  "All Hosts merged together" means every host from each participating site
+[1] All Hosts merged together" means every host from each participating site
 has had their numbers added together.  Individual pages for each host are
 available under the "SSH HOSTS ATTACKS ALL PORTS" drop down menu.  The same
 is similarly true for the other protocols being attacked
 <BR>
-<a name="2"></a>
-[2]
 <BR>
+<a name="2"></a>
+[2] Slideshow may not present properly on some mobile devices.  If this 
+is the case, please click "STOP", and you can manually progress through 
+the slides.
+<BR>
+<BR>
+<a name="3"></a>
+[3]  These hosts are apparently associated with a group known as "SSHPsycho"
+which Cisco and Level 3 are trying to block them.  For more details, please 
+see
+<UL>
+<LI> <A href="http://www.lightreading.com/security/security-strategies/level-3-cisco-team-to-squash-major-botnet/d/d-id/715018">http://www.lightreading.com/security/security-strategies/level-3-cisco-team-to-squash-major-botnet/d/d-id/715018</A></LI>
+<LI> <A href="https://blogs.cisco.com/security/talos/sshpsychos">https://blogs.cisco.com/security/talos/sshpsychos</A></LI>
+</UL>
+<BR>
+<BR>
+<a name="4"></a>
+[4]  "Friends of SSHPsycho Login Attempts" are hosts that are using the same exact
+attack patterns as the hosts that Cisco has named "SSHPsycho".  I have boiled down
+the list at <A href="http://longtail.it.marist.edu/honey/SSHPsycho.shtml">
+http://longtail.it.marist.edu/honey/SSHPsycho.shtml</A> into a list of hosts 
+that have attacked more than once with the same attack pattern, or have used
+an attack pattern that is more than 100 attacks.  
+
 
 <!--#include virtual="/honey/footer.html" --> 
 
