@@ -1,10 +1,19 @@
 <!--#include virtual="/honey/header.html" --> 
+<H3>About LongTail</H3>
+
 <P>LongTail is a program that analyzes ssh brute force attacks
 and statistically quantifies them based on IP addresses used,
 Accounts, passwords, AND account/password pairs, and (what 
 nobody else is doing at the moment) analyzing attack patterns
 for commonality and number of times used.
 
+<P>The main reason behind writing LongTail was to analyze attacks
+and to
+try and find coordination between different IP Addresses.  The 
+only non-intrusive way is to compare attack patterns between 
+websites.
+
+<H3>LongTail Source Code, Reports, and Data are Shared!  </H3>
 <P>LongTail was written by Eric Wedaa and has been released under GPL V2
 
 <P>Raw input data from longtail.it.marist.edu  will be made available 90 days after it was
@@ -20,16 +29,14 @@ Please include a link back to http://longtail.it.marist.edu
 long as attribution is made to Eric Wedaa, LongTail Log 
 Analysis, and Marist College.  Please include a link back to http://longtail.it.marist.edu
 
+<H3>But We're Not Sharing Attack Patterns Directly</H3>
+
 <P>Access to Attack Files is restricted.
 
-<P>Part of the reason behind LongTail's attack analysis is to
-try and find coordination between different IP Addresses.  The 
-only non-intrusive way is to compare attack patterns between 
-websites.
 <P>By publishing attack patterns, I run the risk of contaminating
 my data set.  If more than one site starts using the same attack
 pattern, is it because they are controlled by the same person,
-sharing information betweend attackers, OR, did they download the
+sharing information between attackers, OR, did they download the
 attack pattern from LongTail and start using the copied attack
 pattern.
 <P>The only way to prevent that from happening is to restrict 
@@ -39,19 +46,20 @@ share historical data with you after the 90 day window of Marist
 College only access has passed.
 
 
-<!--
+<H3> Thanks To All These People</H3>
+
 <P>A big thanks to my co-workers at Marist College, Jeff Kirby, Joseph Augulis, Johannes Sayre, and Martha McConaghy
 for their comments and advise (not to mention listening to me talk about it endlessly...)  As well as to Marist College
 for giving me a place to run my webserver!
--->
 
-<P>A big thanks to Simon Bell of <A href="http://securehoney.net/">
+<P>Thanks to Simon Bell of <A href="http://securehoney.net/">
 http://securehoney.net/</a> for 
 pointing me towards jpgraph.  That one tool made all my graphs
 possible.
 
-<P>I learned how to do my slideshow buttons CSS courtesy of <A href=http://www.xkcd.com/>http://www.xkcd.com/</a>
+<P>I learned how to do my slideshow buttons with CSS courtesy of <A href=http://www.xkcd.com/>http://www.xkcd.com/</a>
 
+<H3>Where Can You Talk About LongTail?</H3>
 <P>Please feel free to discuss LongTail in the Google Group that I 
 setup for discussion.  :-)
 
