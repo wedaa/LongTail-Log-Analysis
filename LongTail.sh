@@ -157,11 +157,13 @@ function init_variables {
 	TODAY_AT_START_OF_RUNTIME=`date`
 	YEAR=`date +%Y`
 	HOUR=`date +%H` # This is used at the end of the program but we want to know it NOW
+	START_HOUR=`date +%H` # This is used at the end of the program but we want to know it NOW
 	YEAR_AT_START_OF_RUNTIME=`date +%Y`
 	MONTH_AT_START_OF_RUNTIME=`date +%m`
 	DAY_AT_START_OF_RUNTIME=`date +%d`
 	REBUILD=0
 	MIDNIGHT=0
+	ONE_AM=1
 }
 
 ############################################################################
@@ -586,7 +588,7 @@ function count_ssh_attacks {
 	if [ ! -e all-password ] ; then
 		touch all-password
 	fi
-	if [ $HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all passwords now"; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //' |sed 's/^..*Password:$/ /' |sort -u > all-password
 		THISYEARUNIQUEPASSWORDS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -u |wc -l `
@@ -632,7 +634,7 @@ function count_ssh_attacks {
 	if [ ! -e all-username ] ; then
 		touch all-username
 	fi
-	if [ $HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Usernames now"; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /' |sort -u > all-username
 		THISYEARUNIQUEUSERNAMES=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -u |wc -l `
@@ -679,7 +681,7 @@ function count_ssh_attacks {
 	if [ ! -e all-ips ] ; then
 		touch all-ips
 	fi
-	if [ $HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all IPs now"; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz                                       |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -u > all-ips
 		THISYEARUNIQUEIPSS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz           |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -u |wc -l `
@@ -1438,7 +1440,7 @@ function ssh_attacks {
 }
 
 function make_trends {	
-	if [ $HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends" ; fi
 		#-----------------------------------------------------------------
 		# Now lets do some long term ssh reports....  Lets do a comparison of 
@@ -1660,7 +1662,7 @@ function do_ssh {
 	# Lets check the ssh logs
 	ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$DATE"  "messages" "current"
 	
-	if [ $HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh/last7,30,historical  now" ; fi
 		#----------------------------------------------------------------
 		# Lets check the ssh logs for the last 7 days
@@ -1888,8 +1890,8 @@ echo "DEBUG map file is $MAP"
 		done        
 
 		
-		if [ $HOUR -eq $MIDNIGHT ]; then
-		#if [ $HOUR -eq 14 ]; then
+		if [ $START_HOUR -eq $MIDNIGHT ]; then
+		#if [ $START_HOUR -eq 8 ]; then
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
@@ -1930,14 +1932,13 @@ echo "DEBUG map file is $MAP"
 						fi
 						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
 							# This works but I want to show sshPsycho data now
-#echo "DEBUG HOSTNAME is $HOSTNAME"
 							if [ "x$HOSTNAME" == "x/" ] ;then
-#echo "DEBUG making combined sshPsycho Graph of last-30-days-attack-count.data"
-								php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
+								#php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
 							else
-echo "DEBUG making REGULAR Graph of last-30-days-attack-count.data"
-								php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "" "" "wide"> $GRAPHIC_FILE
-								php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
+								#php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "" "" "wide"> $GRAPHIC_FILE
+								#$php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
 							fi
 
 						fi
@@ -2002,7 +2003,7 @@ function protect_raw_data {
         local TMP_HTML_DIR=$1
 	local count
 	is_directory_good $TMP_HTML_DIR
-	if [ $HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $PROTECT_RAW_DATA -eq 1 ]; then
 			cd  $TMP_HTML_DIR
 
@@ -2029,7 +2030,7 @@ function create_historical_copies {
 	REBUILD=1
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_copies" ; date; fi
 
-	if [ $HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
 		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
 		YESTERDAY_DAY=`date  +"%d" --date="1 day ago"`
@@ -2308,10 +2309,11 @@ echo "Doing blacklist efficiency tests now"
 		$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/todays_passwords >> $HTML_DIR/password_analysis_todays_passwords.shtml
 		make_footer "$HTML_DIR/password_analysis_todays_passwords.shtml"
 	
-		if [ $HOUR -eq $MIDNIGHT ]; then
-		#if [ $HOUR -eq 20 ]; then
+		if [ $START_HOUR -eq $MIDNIGHT ]; then
 			/usr/local/etc/LongTail_make_30_days_imagemap.pl >/var/www/html/honey/30_days_imagemap.html
+		fi
 
+		if [ $START_HOUR -eq $ONE_AM ]; then
 			make_header "$HTML_DIR/password_analysis_all_passwords.shtml" "Password Analysis of All Passwords"  "" 
 			$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/all-password >> $HTML_DIR/password_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_analysis_all_passwords.shtml"
@@ -2359,7 +2361,7 @@ echo "Doing blacklist efficiency tests now"
 #	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
 	echo -n "Done with LongTail_analyze_attacks.pl at:"
 	date
-	if [ $HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
 		`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
 		make_footer "$HTML_DIR/class_c_list.shtml" 
