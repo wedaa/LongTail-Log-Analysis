@@ -1262,9 +1262,12 @@ function ssh_attacks {
 	sort |uniq -c|sort -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml
 
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -21 |grep -v '<TD>root<.TD>'  > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml"
+
 	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD>/ /'|sed 's/<.TD><.TR>//' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD>/ /'|sed 's/<.TD><.TR>//' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.data
 	
 	#-------------------------------------------------------------------------
 	# This works but gives only IP addresses
@@ -1696,6 +1699,8 @@ function do_ssh {
 		#----------------------------------------------------------------
 		# Lets make last-30-days-attack-count.data
 		echo -n "" > $HTML_DIR/last-30-days-attack-count.data
+		echo -n "" > $HTML_DIR/last-30-days-sshpsycho-attack-count.data
+		echo -n "" > $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
 		for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
 			TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
 			TMP_DATE2=`date "+%m/%d" --date="$i day ago"`
@@ -1705,10 +1710,33 @@ function do_ssh {
 			else
 				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-attack-count.data
 			fi
+			if [ -e /$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-attack-count.data ] ; then
+				tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-attack-count.data`
+				echo "$tmp_attack_count $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-attack-count.data
+			else
+				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-attack-count.data
+			fi
+			if [ -e /$HTML_DIR/historical/$TMP_DATE/current-friends_of_sshpsycho-attack-count.data ] ; then
+				tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-friends_of_sshpsycho-attack-count.data`
+				echo "$tmp_attack_count $TMP_DATE2" >> $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
+			else
+				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
+			fi
 		done
+		cp $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data.tmp
+		tac $HTML_DIR/last-30-days-sshpsycho-attack-count.data.tmp > $HTML_DIR/last-30-days-sshpsycho-attack-count.data
+		rm $HTML_DIR/last-30-days-sshpsycho-attack-count.data.tmp
+
+		cp $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp
+		tac $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp > $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
+		rm $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp
+
 		cp $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-attack-count.data.tmp
 		tac $HTML_DIR/last-30-days-attack-count.data.tmp > $HTML_DIR/last-30-days-attack-count.data
 		rm $HTML_DIR/last-30-days-attack-count.data.tmp
+
+
+
 		#----------------------------------------------------------------
 		# Lets make last-30-days-ips-count.data, last-30-days-password-count.data, last-30-days-username-count.data
 		echo -n "" > $HTML_DIR/last-30-days-ips-count.data
@@ -1821,26 +1849,38 @@ function do_ssh {
 
 		for FILE in current*.data ; do 
 			if [ ! "$FILE" == "current-attack-count.data" ] ; then
+				MAP=`echo $FILE |sed 's/.data/.map/'`
 				GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
 				TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
 				TMP_TITLE=`for word in $TITLE; do printf '%s ' "${word^}"; done; echo`
 				TITLE=$TMP_TITLE
 				TITLE=`echo $TITLE | sed 's/Top 20 Admin Passwords/Top 20 Username \"admin\" Passwords/' `
 				if [ -s "$FILE" ] ; then
+					# Hack to make sure we use the real "top 20 non root accounts"
+					if [ "$FILE" == "current-top-20-non-root-accounts.data" ] ;
+					then
+						FILE="current-top-20-non-root-accounts-real.data"
+					fi
+echo "DEBUG ======================================="
 echo "DEBUG Make graph for $FILE"
+echo "DEBUG map file is $MAP"
 					if [[ $FILE == *"accounts"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 					fi
 					if [[ $FILE == *"password"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 					fi
 				else #We have an empty file, deal with it here
 					echo "0 0" >/tmp/LongTail.data.$$
 					if [[ $FILE == *"accounts"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+							echo "" >$MAP
 					fi
 					if [[ $FILE == *"password"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+							echo "" >$MAP
 					fi
 					rm /tmp/LongTail.data.$$
 				fi
@@ -1849,52 +1889,84 @@ echo "DEBUG Make graph for $FILE"
 
 		
 		if [ $HOUR -eq $MIDNIGHT ]; then
+		#if [ $HOUR -eq 14 ]; then
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
+					MAP=`echo $FILE |sed 's/.data/.map/'`
 					GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
 					TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
 					TMP_TITLE=`for word in $TITLE; do printf '%s ' "${word^}"; done; echo`
 					TITLE=$TMP_TITLE
 					TITLE=`echo $TITLE | sed 's/Top 20 Admin Passwords/Top 20 Username \"admin\" Passwords/' `
+
 					if [ -s "$FILE" ] ; then
-	echo "DEBUG Make graph for $FILE"
+#						# Hack to make sure we use the real "top 20 non root accounts"
+						if [ "$FILE" == "current-top-20-non-root-accounts.data" ] ;
+						then
+							FILE="current-top-20-non-root-accounts-real.data"
+						fi
+echo "DEBUG ======================================="
+echo "DEBUG Make graph for $FILE"
+echo "DEBUG map file is $MAP"
 						if [[ $FILE == *"accounts"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 						fi
 						if [[ $FILE == *"password"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-username-count.data"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Usernames" "" "" "wide"> $GRAPHIC_FILE
+							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-password-count.data"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
+							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-ips-count.data"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE
+							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
-							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "" "" "wide"> $GRAPHIC_FILE
+							# This works but I want to show sshPsycho data now
+#echo "DEBUG HOSTNAME is $HOSTNAME"
+							if [ "x$HOSTNAME" == "x/" ] ;then
+#echo "DEBUG making combined sshPsycho Graph of last-30-days-attack-count.data"
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
+							else
+echo "DEBUG making REGULAR Graph of last-30-days-attack-count.data"
+								php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "" "" "wide"> $GRAPHIC_FILE
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
+							fi
+
 						fi
 					else #We have an empty file, deal with it here
 						echo "0 0" >/tmp/LongTail.data.$$
+						echo "" > $file.map
 						if [[ $FILE == *"accounts"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+							echo "" >$MAP
 						fi
 						if [[ $FILE == *"password"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+							echo "" >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-username-count.data"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique Usernames" "" "" "wide"> $GRAPHIC_FILE
+							echo "" >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-password-count.data"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
+							echo "" >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-ips-count.data"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "Not Enough Data Today for Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE
+							echo "" >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php /tmp/LongTail.data.$$ "$TITLE" "" "" "wide"> $GRAPHIC_FILE
+							echo "" >$MAP
 						fi
 						rm /tmp/LongTail.data.$$
 					fi
@@ -1972,6 +2044,7 @@ function create_historical_copies {
 		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH
 		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
 		chmod a+r  $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/*
+		echo "$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY" > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/date.html
 
 
 		ssh_attacks   $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY $YESTERDAY_YEAR $PATH_TO_VAR_LOG "$YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY"      "messages*" "current"
@@ -1989,6 +2062,13 @@ function create_historical_copies {
 		# Make todays_username.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP:|sed 's/^.*Username: //' |sed 's/ Password..*$//'|uniq |sort -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_username
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_username | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_username.count
+
+		# Make current-sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-attack-count.data
+
+		# Make current-friends_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-friends_of_sshpsycho-attack-count.data
+
 	fi
 }
 
@@ -2230,6 +2310,8 @@ echo "Doing blacklist efficiency tests now"
 	
 		if [ $HOUR -eq $MIDNIGHT ]; then
 		#if [ $HOUR -eq 20 ]; then
+			/usr/local/etc/LongTail_make_30_days_imagemap.pl >/var/www/html/honey/30_days_imagemap.html
+
 			make_header "$HTML_DIR/password_analysis_all_passwords.shtml" "Password Analysis of All Passwords"  "" 
 			$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/all-password >> $HTML_DIR/password_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_analysis_all_passwords.shtml"
@@ -2277,11 +2359,119 @@ echo "Doing blacklist efficiency tests now"
 #	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
 	echo -n "Done with LongTail_analyze_attacks.pl at:"
 	date
-make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
-`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
-make_footer "$HTML_DIR/class_c_list.shtml" 
+	if [ $HOUR -eq $MIDNIGHT ]; then
+		make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
+		`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
+		make_footer "$HTML_DIR/class_c_list.shtml" 
+	fi
 
 
 fi
+
+#echo "Making local reports"
+#cd /usr/local/etc/LongTail_local_reports/
+#for file in * ;do
+#	echo "trying to run $file now"
+#	filename=`echo $file |sed 's/.sh//' |sed 's/.pl//'`
+#echo "$filename"
+#	make_header "$HTML_DIR/$filename.shtml" "$filename"
+#	$file > /var/www/html/honey/$filename.shtml
+#	make_footer "$HTML_DIR/$filename.shtml" 
+#done
+
+echo "Starting SSHPycho analysis now :-)"
+if [ "x$HOSTNAME" == "x/" ] ; then
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Doing SSHPsycho report now" ; fi
+	make_header "$HTML_DIR/SSHPsycho.shtml" "SSHPsycho Attacks"
+	/usr/local/etc/LongTail_local_reports/SSHPsycho.pl >> $HTML_DIR/SSHPsycho.shtml
+	make_footer "$HTML_DIR/SSHPsycho.shtml"
+fi 
+
+	cd $HTML_DIR/historical
+	TMP_DATE=`date +"%Y-%m-%d"`
+
+if [ "x$HOSTNAME" == "x/" ] ; then
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
+else
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
+fi
+	# This month
+	TMP=0
+        for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        THIS_MONTH=`expr $TMP + $TODAY`
+	# This year
+	TMP=0
+        for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        THIS_YEAR=`expr $TMP + $TODAY`
+	# Since logging started 
+	TMP=0
+        for FILE in  `find . -name current-sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        TOTAL=`expr $TMP + $TODAY`
+
+	TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	#echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+	sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+
+if [ "x$HOSTNAME" == "x/" ] ; then
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
+else
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
+fi
+
+	# This month
+	TMP=0
+        for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-friends_of_sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        THIS_MONTH=`expr $TMP + $TODAY`
+	# This year
+	TMP=0
+        for FILE in  `find $TMP_YEAR/ -name current-friends_of_sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        THIS_YEAR=`expr $TMP + $TODAY`
+	# Since logging started
+	TMP=0
+        for FILE in  `find . -name current-friends_of_sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        TOTAL=`expr $TMP + $TODAY`
+
+	TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+	sed -i "s/SSHfriendsPsycho Today.*$/SSHfriendsPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
+	sed -i "s/SSHfriendsPsycho This Month.*$/SSHfriendsPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+	sed -i "s/SSHfriendsPsycho This Year.*$/SSHfriendsPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+	sed -i "s/SSHfriendsPsycho Since Logging Started.*$/SSHfriendsPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+	sed -i "s/SSHfriendsPsycho Today.*$/SSHfriendsPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHfriendsPsycho This Month.*$/SSHfriendsPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHfriendsPsycho This Year.*$/SSHfriendsPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHfriendsPsycho Since Logging Started.*$/SSHfriendsPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+
 
 exit
