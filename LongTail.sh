@@ -1706,6 +1706,7 @@ function do_ssh {
 		echo -n "" > $HTML_DIR/last-30-days-attack-count.data
 		echo -n "" > $HTML_DIR/last-30-days-sshpsycho-attack-count.data
 		echo -n "" > $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
+		echo -n "" > $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data
 		for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
 			TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
 			TMP_DATE2=`date "+%m/%d" --date="$i day ago"`
@@ -1727,6 +1728,12 @@ function do_ssh {
 			else
 				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
 			fi
+			if [ -e /$HTML_DIR/historical/$TMP_DATE/current-associates_of_sshpsycho-attack-count.data ] ; then
+				tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-associates_of_sshpsycho-attack-count.data`
+				echo "$tmp_attack_count $TMP_DATE2" >> $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data
+			else
+				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data
+			fi
 		done
 		cp $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data.tmp
 		tac $HTML_DIR/last-30-days-sshpsycho-attack-count.data.tmp > $HTML_DIR/last-30-days-sshpsycho-attack-count.data
@@ -1735,6 +1742,10 @@ function do_ssh {
 		cp $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp
 		tac $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp > $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
 		rm $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp
+
+		cp $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data.tmp
+		tac $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data.tmp > $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data
+		rm $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data.tmp
 
 		cp $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-attack-count.data.tmp
 		tac $HTML_DIR/last-30-days-attack-count.data.tmp > $HTML_DIR/last-30-days-attack-count.data
@@ -1894,7 +1905,7 @@ echo "DEBUG map file is $MAP"
 
 		
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
-		#if [ $START_HOUR -eq 8 ]; then
+		#if [ $START_HOUR -eq 18 ]; then
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
@@ -2082,6 +2093,9 @@ function create_historical_copies {
 
 		# Make current-friends_of_sshpsycho-attack-count.data
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-friends_of_sshpsycho-attack-count.data
+
+		# Make current-associates_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-associates_of_sshpsycho-attack-count.data
 
 	fi
 }
@@ -2323,7 +2337,10 @@ echo "Doing blacklist efficiency tests now"
 		make_footer "$HTML_DIR/password_analysis_todays_passwords.shtml"
 	
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
-			/usr/local/etc/LongTail_make_30_days_imagemap.pl >/var/www/html/honey/30_days_imagemap.html
+		#if [ $START_HOUR -eq 19 ]; then
+			#/usr/local/etc/LongTail_make_30_days_imagemap.pl >/var/www/html/honey/30_days_imagemap.html
+echo "DEBUG Running /usr/local/etc/LongTail_make_30_days_imagemap.pl >$HTML_DIR/30_days_imagemap.html"
+			/usr/local/etc/LongTail_make_30_days_imagemap.pl >$HTML_DIR/30_days_imagemap.html
 		fi
 
 		if [ $START_HOUR -eq $ONE_AM ]; then
@@ -2487,6 +2504,50 @@ fi
 	sed -i "s/SSHfriendsPsycho This Month.*$/SSHfriendsPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
 	sed -i "s/SSHfriendsPsycho This Year.*$/SSHfriendsPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
 	sed -i "s/SSHfriendsPsycho Since Logging Started.*$/SSHfriendsPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+
+
+if [ "x$HOSTNAME" == "x/" ] ; then
+        TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
+else
+        TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
+fi
+
+        # This month
+        TMP=0
+        for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-associates_of_sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        THIS_MONTH=`expr $TMP + $TODAY`
+        # This year
+        TMP=0
+        for FILE in  `find $TMP_YEAR/ -name current-associates_of_sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        THIS_YEAR=`expr $TMP + $TODAY`
+        # Since logging started
+        TMP=0
+        for FILE in  `find . -name current-associates_of_sshpsycho-attack-count.data ` ; do
+                COUNT=`cat $FILE`
+                (( TMP += $COUNT ))
+        done
+        TOTAL=`expr $TMP + $TODAY`
+
+        TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+        THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+        THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+        TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+        echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+        sed -i "s/SSHassociatesPsycho Today.*$/SSHassociatesPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
+        sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+        sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+        sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+        sed -i "s/SSHassociatesPsycho Today.*$/SSHassociatesPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+        sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+        sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+        sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+
 
 
 exit
