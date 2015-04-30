@@ -18,7 +18,10 @@ sharing information betweend attackers, OR, did they download the
 attack pattern from LongTail and start using the copied attack
 pattern.
 <P>The only way to prevent that from happening is to restrict 
-access to attack patterns.
+access to attack patterns larger than 128 characters.  This is 
+a fine line between giving enough access, and too much access,
+and I think people should at least be able to see the smaller
+attack patterns.
 <P>Please contact me if you are a verifiable researcher and I can
 share historical data with you after the 90 day window of Marist 
 College only access has passed.
