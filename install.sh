@@ -37,6 +37,17 @@ for dir in $SCRIPT_DIR $HTML_DIR  $DICT_DIR $OTHER_DIRS ; do
 	fi
 done
 
+if [ ! -d $SCRIPT_DIR/LongTail_local_reports ] ; then
+	if [ -e $SCRIPT_DIR/LongTail_local_reports ] ; then
+		echo "$SCRIPT_DIR/LongTail_local_reports exists, but is not a directory"
+		echo "Exiting now"
+		exit
+	else
+		mkdir $SCRIPT_DIR/LongTail_local_reports
+		chown $OWNER $SCRIPT_DIR/LongTail_local_reports
+	fi
+fi
+
 DICT_FILES="wordsEn.txt"
 
 ETC_FILES="ip-to-country \
@@ -182,6 +193,15 @@ cd tour
 cp * $HTML_DIR/tour
 chmod a+r $HTML_DIR/tour/*
 cd ..
+
+#
+# Lets deal with the LongTail_local_reports
+#
+cd LongTail_local_reports
+cp * $SCRIPT_DIR/LongTail_local_reports
+chmod a+rx $SCRIPT_DIR/LongTail_local_reports/*
+cd ..
+
 
 #
 # Check for required software here
