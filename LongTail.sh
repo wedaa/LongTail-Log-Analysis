@@ -1921,6 +1921,18 @@ echo "DEBUG map file is $MAP"
 						then
 							FILE="current-top-20-non-root-accounts-real.data"
 						fi
+						if [ "$FILE" == "last-7-days-top-20-non-root-accounts.data" ] ;
+						then
+							FILE="last-7-days-top-20-non-root-accounts-real.data"
+						fi
+						if [ "$FILE" == "last-30-days-top-20-non-root-accounts.data" ] ;
+						then
+							FILE="last-30-days-top-20-non-root-accounts-real.data"
+						fi
+						if [ "$FILE" == "historical-top-20-non-root-accounts.data" ] ;
+						then
+							FILE="historical-top-20-non-root-accounts-real.data"
+						fi
 echo "DEBUG ======================================="
 echo "DEBUG Make graph for $FILE"
 echo "DEBUG map file is $MAP"
