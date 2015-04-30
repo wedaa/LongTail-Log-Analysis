@@ -28,8 +28,20 @@ see
 attack patterns as the hosts that Cisco has named "SSHPsycho".  I have boiled down
 the list at <A href="http://longtail.it.marist.edu/honey/SSHPsycho.shtml">
 http://longtail.it.marist.edu/honey/SSHPsycho.shtml</A> into a list of hosts 
-that have attacked more than once with the same attack pattern, or have used
-an attack pattern that is more than 100 attacks.  
+that have attacked more than with the <B>exact</B>same attack pattern, and have used
+an attack pattern with more than 10 entries.
+<BR>
+<BR>
+<a name="5"></a>
+[5]  "Associates of SSHPsycho Login Attempts" are hosts that are using "Similar
+enough"
+attack patterns as the hosts that Cisco has named "SSHPsycho".  I have boiled down
+the list at <A href="http://longtail.it.marist.edu/honey/SSHPsycho.shtml">
+http://longtail.it.marist.edu/honey/SSHPsycho.shtml</A> into a list of hosts
+that have a "Similar enough" attack pattern with more than 10 entries.  IP 
+addresses with more than one matching attack pattern are added into the 
+"Associates of SSHPsycho Login Attempts" section on the main page.
+
 
 
 <!--#include virtual="/honey/footer.html" --> 
