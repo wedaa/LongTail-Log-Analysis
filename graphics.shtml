@@ -14,34 +14,54 @@
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" -->
 <H3>LongTail Log Analysis Data Graphs<BR><!--#include virtual="description.html" --></H3><!--HEADERLINE -->
-Last updated on Sun Apr  5 23:06:33 EDT 2015
+Last updated on Thu Apr 30 07:05:56 EDT 2015
 <BR>
 <BR>
 <TABLE BORDER=0>
-<TR><TH Colspan=2>Last 30 days counts</TH>
-<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
-<TR><TD Colspan=2><img src="last-30-days-ips-count.png"><BR><BR>
-<TR><TD Colspan=2><img src="last-30-days-password-count.png"><BR><BR>
-<TR><TD Colspan=2><img src="last-30-days-username-count.png"><BR><BR>
-<TR><TH>Today</TH><TH>Last 7 days</TH>
-<TR><TD><img src="current-top-20-root-passwords.png"><BR><BR>
-<TD><img src="last-7-days-top-20-root-passwords.png"><BR><BR>
-<TR><TD><img src="current-top-20-admin-passwords.png"><BR><BR>
-<TD><img src="last-7-days-top-20-admin-passwords.png"><BR><BR>
-<TR><TD><img src="current-top-20-non-root-accounts.png"><BR><BR>
-<TD><img src="last-7-days-top-20-non-root-accounts.png"><BR><BR>
-<TR><TD><img src="current-top-20-non-root-passwords.png"><BR><BR>
-<TD><img src="last-7-days-top-20-non-root-passwords.png"><BR><BR>
-<TR><TH>Last 30 Days</TH><TH>All</TH>
-<TR><TD><img src="last-30-days-top-20-root-passwords.png"><BR><BR>
-<TD><img src="historical-top-20-root-passwords.png"><BR><BR>
-<TR><TD><img src="last-30-days-top-20-admin-passwords.png"><BR><BR>
-<TD><img src="historical-top-20-admin-passwords.png"><BR><BR>
-<TR><TD><img src="last-30-days-top-20-non-root-accounts.png"><BR><BR>
-<TD><img src="historical-top-20-non-root-accounts.png"><BR><BR>
-<TR><TD><img src="last-30-days-top-20-non-root-passwords.png"><BR><BR>
-<TD><img src="historical-top-20-non-root-passwords.png"><BR><BR>
+<TR><TH Colspan=2>Prior 30 Days counts (Bars are clickable)</TH>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png" alt="last-30-days-attack-count.png" usemap="#mapname"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-ips-count.png" alt="last-30-days-ips-count.png" usemap="#mapname"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-password-count.png" alt="last-30-days-password-count.png" usemap="#mapname"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-username-count.png" alt="last-30-days-username-count.png" usemap="#mapname"><BR><BR>
+<TR><TH>Today</TH><TH>Prior 7 Days</TH>
+<TR><TD><img src="current-top-20-root-passwords.png" alt="current-top-20-root-passwords" usemap=#current-top-20-root-passwords.map><BR><BR>
+<TD><img src="last-7-days-top-20-root-passwords.png" alt="last-7-days-top-20-root-passwords" usemap=#last-7-days-top-20-root-passwords.map><BR><BR>
+<TR><TD><img src="current-top-20-admin-passwords.png" alt="current-top-20-admin-passwords" usemap=#current-top-20-admin-passwords.map><BR><BR>
+<TD><img src="last-7-days-top-20-admin-passwords.png" alt="last-7-days-top-20-admin-passwords" usemap=#last-7-days-top-20-admin-passwords.map><BR><BR>
+<TR><TD><img src="current-top-20-non-root-accounts.png" alt="current-top-20-non-root-accounts" usemap=#current-top-20-non-root-accounts.map><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-accounts.png" alt="last-7-days-top-20-non-root-accounts" usemap=#last-7-days-top-20-non-root-accounts.map><BR><BR>
+<TR><TD><img src="current-top-20-non-root-passwords.png" alt="current-top-20-non-root-passwords" usemap=#current-top-20-non-root-passwords.map><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-passwords.png" alt="last-7-days-top-20-non-root-passwords" usemap=#last-7-days-top-20-non-root-passwords.map><BR><BR>
+<TR><TH>Prior 30 Days</TH><TH>All</TH>
+<TR><TD><img src="last-30-days-top-20-root-passwords.png" alt="last-30-days-top-20-root-passwords" usemap=#last-30-days-top-20-root-passwords.map><BR><BR>
+<TD><img src="historical-top-20-root-passwords.png" alt="historical-top-20-root-passwords" usemap=#historical-top-20-root-passwords.map><BR><BR>
+<TR><TD><img src="last-30-days-top-20-admin-passwords.png" alt="last-30-days-top-20-admin-passwords" usemap=#last-30-days-top-20-admin-passwords.map><BR><BR>
+<TD><img src="historical-top-20-admin-passwords.png" alt="historical-top-20-admin-passwords" usemap=#historical-top-20-admin-passwords.map><BR><BR>
+<TR><TD><img src="last-30-days-top-20-non-root-accounts.png" alt="last-30-days-top-20-non-root-accounts" usemap=#last-30-days-top-20-non-root-accounts.map><BR><BR>
+<TD><img src="historical-top-20-non-root-accounts.png" alt="historical-top-20-non-root-accounts" usemap=#historical-top-20-non-root-accounts.map><BR><BR>
+<TR><TD><img src="last-30-days-top-20-non-root-passwords.png" alt="last-30-days-top-20-non-root-passwords" usemap=#last-30-days-top-20-non-root-passwords.map><BR><BR>
+<TD><img src="historical-top-20-non-root-passwords.png" alt="historical-top-20-non-root-passwords" usemap=#historical-top-20-non-root-passwords.map><BR><BR>
 </TABLE>
+<map name="mapname"> <!--#include virtual="/honey/30_days_imagemap.html" --> </map>
 
+<map name="current-top-20-root-passwords.map"> <!--#include virtual="current-top-20-root-passwords.map" --> </map>
+<map name="last-7-days-top-20-root-passwords.map"> <!--#include virtual="last-7-days-top-20-root-passwords.map" --> </map>
+<map name="current-top-20-admin-passwords.map"> <!--#include virtual="current-top-20-admin-passwords.map" --> </map>
+<map name="last-7-days-top-20-admin-passwords.map"> <!--#include virtual="last-7-days-top-20-admin-passwords.map" --> </map>
+<map name="current-top-20-non-root-accounts.map"> <!--#include virtual="current-top-20-non-root-accounts.map" --> </map>
+<map name="last-7-days-top-20-non-root-accounts.map"> <!--#include virtual="last-7-days-top-20-non-root-accounts.map" --> </map>
+<map name="current-top-20-non-root-passwords.map"> <!--#include virtual="current-top-20-non-root-passwords.map" --> </map>
+<map name="last-7-days-top-20-non-root-passwords.map"> <!--#include virtual="last-7-days-top-20-non-root-passwords.map" --> </map>
+
+
+
+<map name="last-30-days-top-20-root-passwords.map"> <!--#include virtual="last-30-days-top-20-root-passwords.map" --> </map>
+<map name="historical-top-20-root-passwords.map"> <!--#include virtual="historical-top-20-root-passwords.map" --> </map>
+<map name="last-30-days-top-20-admin-passwords.map"> <!--#include virtual="last-30-days-top-20-admin-passwords.map" --> </map>
+<map name="historical-top-20-admin-passwords.map"> <!--#include virtual="historical-top-20-admin-passwords.map" --> </map>
+<map name="last-30-days-top-20-non-root-accounts.map"> <!--#include virtual="last-30-days-top-20-non-root-accounts.map" --> </map>
+<map name="historical-top-20-non-root-accounts.map"> <!--#include virtual="historical-top-20-non-root-accounts.map" --> </map>
+<map name="last-30-days-top-20-non-root-passwords.map"> <!--#include virtual="last-30-days-top-20-non-root-passwords.map" --> </map>
+<map name="historical-top-20-non-root-passwords.map"> <!--#include virtual="historical-top-20-non-root-passwords.map" --> </map>
 
 <!--#include virtual="/honey/footer.html" -->
