@@ -73,7 +73,7 @@ sub cleanup_old_files {
 	if ($DEBUG){print "Deleting old analysis files.\n";}
 	if (-d "$attacks_dir" ){
 		chdir ("$attacks_dir");
-		open (PIPE, "find . -type f |") || die "can not open pipe to cleanup files\n";
+		open (PIPE, "find . -type f -o -type l  |") || die "can not open pipe to cleanup files\n";
 		while (<PIPE>){
 			chomp;
 			if (/dict-/){next;}
@@ -351,14 +351,19 @@ print "DEBUG In show_lifetime_of_ips\n";
 	print (FILE_FORMATTED "<TABLE border=1>\n");
 	print (FILE_FORMATTED "<TR><TH>IP</TH><TH>Lifetime In Days</TH><TH>First Date Seen</TH><TH>Last Date Seen</TH><TH>Number of Attack<BR>Patterns Recorded</TH></TR>\n");
 
+print "DEBUG In sorting by key now\n";
+print "DEBUG-I should do this with find . -name '$ip*' |sort -nk6 -t \. instead\n";
+# and then pipe those shorter results to sort, and then print them out.
+
 	foreach $key (sort {$ip_age{$b} <=> $ip_age{$a}} keys %ip_age){
-		$days=$ip_age{$key}/60/60/24;
+		#$days=$ip_age{$key}/60/60/24;
+		$days=$ip_age{$key}/86400;
 		$first_seen=scalar localtime($ip_earliest_seen_time{$key});
 		$last_seen=scalar localtime($ip_latest_seen_time{$key});
 		$attacks_recorded = `ls $honey_dir/attacks/$key* |wc -l 2>/dev/null `;
-	  	#printf(FILE_DATA "%d %s %.2f %s %s\n", $ip_age{$key}, $key, $days,$first_seen, $last_seen, $attacks_recorded);
 	  	printf(FILE_FORMATTED "<TR><TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"/honey/attacks/ip_attacks.shtml#%s\">%d</A></TD></TR>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
 	}
+print "DEBUG DONE sorting by key now\n";
 	print (FILE_FORMATTED "</TABLE>\n");
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
@@ -406,6 +411,7 @@ sub show_attacks_of_ips {
 	#
 	# Sort the IP array
 	#
+print "DEBUG This is slow....\n";
 	my @sorted = map  { $_->[0] }
              	sort { $a->[1] <=> $b->[1] }
              	map  { [$_, int sprintf("%03.f%03.f%03.f%03.f", split(/\.+/, $_))] }
@@ -468,7 +474,8 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "<TR><TH>Number Of<BR>Times Used</TH><TH>Number of <BR>Entries</TH><TH>Checksum</TH><TH>Dictionary</TH><TH>First Seen</TH><TH>Last Seen</TH></TR>\n");
 	chdir ("$honey_dir/attacks");
 	
-	open (PIPE, "/bin/ls dict-* |") || die "can not open pipe to cleanup files\n";
+	# This breaks with too many files #open (PIPE, "/bin/ls dict-* |") || die "can not open pipe to cleanup files\n";
+	open (PIPE, "/bin/find . -name 'dict-*' |") || die "can not open pipe to cleanup files\n";
 	while (<PIPE>){
 		chomp;
 		if (/\.txt\.wc/){next;}
@@ -570,19 +577,19 @@ sub create_dict_webpage {
 $TMP=`date`;
 print "LongTail_analyze_attacks.pl Started at $TMP\n";
 &init;
-$TMP=`date`;chomp $TMP; print "done with init at $TMP\n";
+$TMP=`date`;chomp $TMP; print "done with init at $TMP, calling cleanup_old_files\n";
 &cleanup_old_files;
-$TMP=`date`;chomp $TMP; print "done with cleanup_old_files at $TMP\n";
+$TMP=`date`;chomp $TMP; print "done with cleanup_old_files at $TMP, calling create_attack_logs\n";
 &create_attack_logs;
-$TMP=`date`;chomp $TMP; print "done with create_attack_logs at $TMP\n";
+$TMP=`date`;chomp $TMP; print "done with create_attack_logs at $TMP, calling analyze\n";
 &analyze;
-$TMP=`date`;chomp $TMP; print "done with analyze at $TMP\n";
+$TMP=`date`;chomp $TMP; print "done with analyze at $TMP, calling show_lifetime_of_ips\n";
 &show_lifetime_of_ips;
-$TMP=`date`;chomp $TMP; print "done with show_lifetime_of_ips at $TMP\n";
+$TMP=`date`;chomp $TMP; print "done with show_lifetime_of_ips at $TMP, calling show_attacks_of_ips\n";
 &show_attacks_of_ips;
-$TMP=`date`;chomp $TMP; print "done with show_attacks_of_ips at $TMP\n";
+$TMP=`date`;chomp $TMP; print "done with show_attacks_of_ips at $TMP, calling create_dict_webpage\n";
 &create_dict_webpage;
-$TMP=`date`;chomp $TMP; print "done with create_dict_webpage at $TMP\n";
+$TMP=`date`;chomp $TMP; print "done with create_dict_webpage at $TMP, getting rid of temp files now\n";
 #
 # Get rid of temp files
 unlink ("/tmp/dictionaries.temp.sorted");
@@ -590,8 +597,9 @@ unlink ("/tmp/dictionaries.temp");
 unlink ("/tmp/tmp.data");
 if (-d "$attacks_dir" ){
 	chdir ("$attacks_dir");
-	$tmp=system("chmod go-rwx *");
+	$tmp=system("find . -type f -size -128c | xargs chmod go-rwx ");
 	$tmp=system("chmod a+r ip_attacks.shtml");
+	$tmp=system("chmod a+rx .");
 }
 
 $TMP=`date`;
