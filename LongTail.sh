@@ -1931,8 +1931,8 @@ echo "DEBUG map file is $MAP"
 		done        
 
 		
-		if [ $START_HOUR -eq $MIDNIGHT ]; then
-		#if [ $START_HOUR -eq 8 ]; then
+		#if [ $START_HOUR -eq $MIDNIGHT ]; then
+		if [ $START_HOUR -eq 13 ]; then
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
@@ -1988,9 +1988,8 @@ echo "DEBUG map file is $MAP"
 							if [ "x$HOSTNAME" == "x/" ] ;then
 								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
 							else
-								#php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "" "" "wide"> $GRAPHIC_FILE
-								#$php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
-								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
+echo "DEBUG $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  "
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
 							fi
 
 						fi
