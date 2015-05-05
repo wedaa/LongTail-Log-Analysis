@@ -1,0 +1,292 @@
+<HTML>
+<BODY bgcolor=#00f0FF>
+<link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
+<!--#include virtual="/honey-2222/header.html" --> 
+
+<H1>LongTail Log Analysis/Historical Version<BR>SSH Port 2222, <!--#include virtual="description.html" --></H1>
+<P>This page is updated hourly.
+Last updated on Tue May  5 09:09:20 EDT 2015
+
+<TABLE border=1>
+<TR><TH colspan=6>SSH Brute Force Attempts</TH></TR>
+<TR><TH>Description</TH><TH>Today</TH><TH>Never seen<BR>Before Today</TH><TH>This<BR>Month</TH><TH>This<BR>Year</TH><TH>Since Logging<BR>Started</TH>
+<TR><TH>Login Attempts
+<TD>
+<!--Login Attempts Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--Login Attempts This Month:--> 55,377
+</TD><TD>
+<!--Login Attempts This Year:--> 74,547
+</TD><TD>
+<!--Login Attempts Since Logging Started:--> 74,547
+</TR>
+<TR><TH>SSHPsycho Login Attempts <a href="/honey/notes.shtml#3">[3]</a>
+<TD>
+<!--SSHPsycho Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--SSHPsycho This Month:--> 0
+</TD><TD>
+<!--SSHPsycho This Year:--> 0
+</TD><TD>
+<!--SSHPsycho Since Logging Started:--> 0
+</TR>
+
+<TR><TH>Friends of SSHPsycho Login Attempts <a href="/honey/notes.shtml#4">[4]</a>
+<TD>
+<!--SSHfriendsPsycho Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--SSHfriendsPsycho This Month:--> 0
+</TD><TD>
+<!--SSHfriendsPsycho This Year:--> 7
+</TD><TD>
+<!--SSHfriendsPsycho Since Logging Started:--> 7
+</TR>
+
+<TR><TH>Associates of SSHPsycho Login Attempts <a href="/honey/notes.shtml#5">[5]</a>
+<TD>
+<!--SSHassociatesPsycho Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--SSHassociatesPsycho This Month:--> 0
+</TD><TD>
+<!--SSHassociatesPsycho This Year:--> 0
+</TD><TD>
+<!--SSHassociatesPsycho Since Logging Started:--> 0
+</TR>
+
+<TR><TH>Unique Passwords</TH>
+<TD>
+<!--Unique Passwords Today:--> 0
+</TD><TD>
+<!--New Passwords Today:--> 0
+</TD><TD>
+<!--Unique Passwords This Month:--> 17,900
+</TD><TD>
+<!--Unique Passwords This Year:--> 20,924
+</TD><TD>
+<!--Unique Passwords Since Logging Started:--> 20,924
+</TD><TD>
+</TR>
+<TR><TH>Unique Usernames </TH>
+<TD>
+<!--Unique Usernames Today:--> 0
+</TD><TD>
+<!--New Usernames Today:--> 0
+</TD><TD>
+<!--Unique Usernames This Month:--> 2
+</TD><TD>
+<!--Unique Usernames This Year:--> 88
+</TD><TD>
+<!--Unique Usernames Since Logging Started:--> 88
+</TD><TD>
+</TR>
+<TR>
+<TH>Unique IPs </TH>
+<TD>
+<!--Unique IPs Today:--> 0
+</TD><TD>
+<!--New IPs Today:--> 0
+</TD><TD>
+<!--Unique IPs This Month:--> 5
+</TD><TD>
+<!--Unique IPs This Year:--> 19
+</TD><TD>
+<!--Unique IPs Since Logging Started:--> 19
+</TD><TD>
+</TR>
+</TABLE>
+<BR>
+<BR>
+<H2>SSH Brute Force Attempts</H2>
+<TABLE BORDER=0>
+<TR><TH>Prior 30 Days</TH><TH>All</TH>
+<TR><TD><img src="last-30-days-top-20-root-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-root-passwords.png"><BR><BR>
+<TR><TD><img src="last-30-days-top-20-admin-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-admin-passwords.png"><BR><BR>
+<TR><TD><img src="last-30-days-top-20-non-root-accounts.png"><BR><BR>
+<TD><img src="historical-top-20-non-root-accounts.png"><BR><BR>
+<TR><TD><img src="last-30-days-top-20-non-root-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-non-root-passwords.png"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+</TABLE>
+<BR>
+<BR>
+<H3>Historical Trends</H3>
+<a href ="trends-in-root-passwords.shtml">Trends in Top 20 Root Passwords</a>
+<BR>
+<a href ="trends-in-admin-passwords.shtml">Trends in Top 20 Admin Passwords</a>
+<BR>
+<a href ="trends-in-non-root-passwords.shtml">Trends in Top Non 20 Root/Admin Passwords</a>
+<BR>
+<a href ="trends-in-accounts.shtml">Trends in Top 20 Accounts</a>
+<BR>
+<BR>
+<a href ="graphics.shtml">Charts and Graphs</a>
+<BR>
+<a href ="statistics.shtml">Attack Statistics <!--#include virtual="description.html" --></a>
+<BR>
+<a href ="/honey-2222/statistics_all.shtml">Attack Statistics of ALL hosts</a>
+<BR>
+<BR>
+<a href ="attacks_by_day.shtml">Attacks By Day, Calendar View</a>
+<BR>
+<H3>Today's Activity</H3>
+<a href ="todays-uniq-passwords.txt">Passwords FIRST seen today</a>
+<BR>
+<a href ="current-root-passwords.shtml">Root Passwords</a>
+<BR>
+<a href ="current-top-20-root-passwords.shtml">Top 20 Root Passwords</a>
+<BR>
+<BR>
+<a href ="current-admin-passwords.shtml">Admin Passwords</a>
+<BR>
+<a href ="current-top-20-admin-passwords.shtml">Top 20 Admin Passwords</a>
+<BR>
+<BR>
+<a href ="current-non-root-passwords.shtml">Non Root/Admin Passwords</a>
+<BR>
+<a href ="current-top-20-non-root-passwords.shtml">Top 20 Non Root/Admin Passwords</a>
+<BR>
+<BR>
+<a href ="todays-uniq-username.shtml">Accounts FIRST seen today</a>
+<BR>
+<a href ="current-non-root-accounts.shtml">Accounts Tried</a>
+<BR>
+<a href ="current-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
+<BR>
+<BR>
+<a href ="current-non-root-pairs.shtml">Non Root/Admin pairs</a>
+<BR>
+<a href ="current-top-20-non-root-pairs.shtml">Top 20 Non Root pairs</a>
+<BR>
+<BR>
+<a href ="todays-uniq-ips.shtml">IP Addresses FIRST seen today</a>
+<BR>
+<a href="current-ip-addresses.shtml">IP Addresses</a>
+<BR>
+<a href="current-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<a href="current-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
+<BR>
+<BR>
+<H3>Last 7 Days</H3>
+<a href ="last-7-days-root-passwords.shtml">Root Passwords</a>
+<BR>
+<a href ="last-7-days-top-20-root-passwords.shtml">Top 20 Root Passwords</a>
+<BR>
+<BR>
+<a href ="last-7-days-admin-passwords.shtml">Admin Passwords</a>
+<BR>
+<a href ="last-7-days-top-20-admin-passwords.shtml">Top 20 Admin Passwords</a>
+<BR>
+<BR>
+<a href ="last-7-days-non-root-passwords.shtml">Non Root/Admin Passwords</a>
+<BR>
+<a href ="last-7-days-top-20-non-root-passwords.shtml">Top 20 Non Root/Admin Passwords</a>
+<BR>
+<BR>
+<a href ="last-7-days-non-root-accounts.shtml">Accounts Tried</a>
+<BR>
+<a href ="last-7-days-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
+<BR>
+<BR>
+<a href ="last-7-days-non-root-pairs.shtml">Non Root/Admin pairs</a>
+<BR>
+<a href ="last-7-days-top-20-non-root-pairs.shtml">Top 20 Non Root/Admin pairs</a>
+<BR>
+<BR>
+<a href="last-7-days-ip-addresses.shtml">IP Addresses</a>
+<BR>
+<a href="last-7-days-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<a href="last-7-days-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
+<BR>
+<BR>
+<H3>Prior 30 Days</H3>
+<a href ="last-30-days-root-passwords.shtml">Root Passwords</a>
+<BR>
+<a href ="last-30-days-top-20-root-passwords.shtml">Top 20 Root Passwords</a>
+<BR>
+<BR>
+<a href ="last-30-days-admin-passwords.shtml">Admin Passwords</a>
+<BR>
+<a href ="last-30-days-top-20-admin-passwords.shtml">Top 20 Admin Passwords</a>
+<BR>
+<BR>
+<a href ="last-30-days-non-root-passwords.shtml">Non Root/Admin Passwords</a>
+<BR>
+<a href ="last-30-days-top-20-non-root-passwords.shtml">Top 20 Non Root/Admin Passwords </a>
+<BR>
+<BR>
+<a href ="last-30-days-non-root-accounts.shtml">Accounts Tried</a>
+<BR>
+<a href ="last-30-days-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
+<BR>
+<BR>
+<a href ="last-30-days-non-root-pairs.shtml">Non Root/Admin pairs</a>
+<BR>
+<a href ="last-30-days-top-20-non-root-pairs.shtml">Top 20 Non Root/Admin pairs</a>
+<BR>
+<BR>
+<a href="last-30-days-ip-addresses.shtml">IP Addresses</a>
+<BR>
+<a href="last-30-days-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<a href="last-30-days-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
+<BR>
+<BR>
+<H3>
+Historical Data
+</H3>
+<a href ="historical-root-passwords.shtml">Historical Root Passwords</a>
+<BR>
+<a href ="historical-top-20-root-passwords.shtml">Historical Top 20 Root Passwords</a>
+<BR>
+<a href ="trends-in-root-passwords.shtml">Trends in Top 20 Root Passwords</a>
+<BR>
+<a href ="trends-in-accounts.shtml">Trends in Top 20 Accounts</a>
+<BR>
+<BR>
+<a href ="historical-admin-passwords.shtml">Historical Admin Passwords</a>
+<BR>
+<a href ="historical-top-20-admin-passwords.shtml">Historical Top 20 Admin Passwords</a>
+<BR>
+<a href ="trends-in-admin-passwords.shtml">Trends in Top 20 Admin Passwords</a>
+<BR>
+<BR>
+<a href ="historical-non-root-passwords.shtml">Historical Non Root/Admin Passwords</a>
+<BR>
+<a href ="historical-top-20-non-root-passwords.shtml">Historical Top 20 Non Root/Admin Passwords</a>
+<BR>
+<a href ="trends-in-non-root-passwords.shtml">Trends in Top Non 20 Root/Admin Passwords</a>
+<BR>
+<BR>
+<a href ="historical-non-root-accounts.shtml">Historical Accounts Tried</a>
+<BR>
+<a href ="historical-top-20-non-root-accounts.shtml">Historical Top 20 Accounts Tried</a>
+<BR>
+<a href ="trends-in-accounts.shtml">Trends in Top 20 Accounts</a>
+<BR>
+<BR>
+<a href ="historical-non-root-pairs.shtml">Historical Non Root/Admin pairs</a>
+<BR>
+<a href ="historical-top-20-non-root-pairs.shtml">Historical Top 20 Non Root/Admin pairs</a>
+<BR>
+<BR>
+<a href="historical-ip-addresses.shtml">Historical IP Addresses</a>
+<BR>
+<a href="historical-top-20-ip-addresses.shtml">Historical Top 20 IP Addresses</a>
+<BR>
+<a href="historical-attacks-by-country.shtml">Historical Attacks By Country, By IP Address </a>
+<BR>
+<a href="historical-ssh-attacks-by-time-of-day.shtml">Historical Attacks By Time of Day </a>
+<BR>
+<BR>
+<a href="historical/">Long Term Historical Reports</A> This includes RAW input data more than 90 days old.
+
+<!--#include virtual="/honey/footer.html" --> 
+

@@ -1,0 +1,244 @@
+<HTML>
+<!--<BODY bgcolor=#000fff> -->
+<BODY bgcolor=#00f0FF>
+<link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
+<!--#include virtual="/honey-2222/header.html" --> 
+
+<H1>LongTail Log Analysis/Concise Version<BR>SSH Port 2222,  <!--#include virtual="description.html" --></H1>
+<P>This page is updated hourly.
+Last updated on Tue May  5 09:09:20 EDT 2015
+<TABLE border=1>
+<TR><TH colspan=6>SSH Brute Force Attempts</TH></TR>
+<TR><TH>Description</TH><TH>Today</TH><TH>Never seen<BR>Before Today</TH><TH>This<BR>Month</TH><TH>This<BR>Year</TH><TH>Since Logging<BR>Started</TH>
+<TR><TH>Login Attempts
+<TD>
+<!--Login Attempts Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--Login Attempts This Month:--> 55,377
+</TD><TD>
+<!--Login Attempts This Year:--> 74,547
+</TD><TD>
+<!--Login Attempts Since Logging Started:--> 74,547
+</TR>
+<TR><TH>SSHPsycho Login Attempts <a href="/honey/notes.shtml#3">[3]</a>
+<TD>
+<!--SSHPsycho Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--SSHPsycho This Month:--> 0
+</TD><TD>
+<!--SSHPsycho This Year:--> 0
+</TD><TD>
+<!--SSHPsycho Since Logging Started:--> 0
+</TR>
+
+<TR><TH>Friends of SSHPsycho Login Attempts <a href="/honey/notes.shtml#4">[4]</a>
+<TD>
+<!--SSHfriendsPsycho Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--SSHfriendsPsycho This Month:--> 0
+</TD><TD>
+<!--SSHfriendsPsycho This Year:--> 7
+</TD><TD>
+<!--SSHfriendsPsycho Since Logging Started:--> 7
+</TR>
+
+<TR><TH>Associates of SSHPsycho Login Attempts <a href="/honey/notes.shtml#5">[5]</a>
+<TD>
+<!--SSHassociatesPsycho Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--SSHassociatesPsycho This Month:--> 0
+</TD><TD>
+<!--SSHassociatesPsycho This Year:--> 0
+</TD><TD>
+<!--SSHassociatesPsycho Since Logging Started:--> 0
+</TR>
+
+
+<TR><TH>Unique Passwords</TH>
+<TD>
+<!--Unique Passwords Today:--> 0
+</TD><TD>
+<!--New Passwords Today:--> 0
+</TD><TD>
+<!--Unique Passwords This Month:--> 17,900
+</TD><TD>
+<!--Unique Passwords This Year:--> 20,924
+</TD><TD>
+<!--Unique Passwords Since Logging Started:--> 20,924
+</TD><TD>
+</TR>
+<TR><TH>Unique Usernames </TH>
+<TD>
+<!--Unique Usernames Today:--> 0
+</TD><TD>
+<!--New Usernames Today:--> 0
+</TD><TD>
+<!--Unique Usernames This Month:--> 2
+</TD><TD>
+<!--Unique Usernames This Year:--> 88
+</TD><TD>
+<!--Unique Usernames Since Logging Started:--> 88
+</TD><TD>
+</TR>
+<TR>
+<TH>Unique IPs </TH>
+<TD>
+<!--Unique IPs Today:--> 0
+</TD><TD>
+<!--New IPs Today:--> 0
+</TD><TD>
+<!--Unique IPs This Month:--> 5
+</TD><TD>
+<!--Unique IPs This Year:--> 19
+</TD><TD>
+<!--Unique IPs Since Logging Started:--> 19
+</TD><TD>
+</TR>
+</TABLE>
+<BR>
+<BR>
+<TABLE BORDER=0>
+<TR><TH>Today</TH><TH>Prior 7 Days</TH>
+<TR><TD><img src="current-top-20-root-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-root-passwords.png"><BR><BR>
+<TR><TD><img src="current-top-20-admin-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-admin-passwords.png"><BR><BR>
+<TR><TD><img src="current-top-20-non-root-accounts.png"><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-accounts.png"><BR><BR>
+<TR><TD><img src="current-top-20-non-root-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-passwords.png"><BR><BR>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+</TABLE>
+<BR>
+<H3>Historical Trends</H3>
+<a href ="trends-in-root-passwords.shtml">Trends in Top 20 Root Passwords</a>
+<BR>
+<a href ="trends-in-admin-passwords.shtml">Trends in Top 20 Admin Passwords</a>
+<BR>
+<a href ="trends-in-non-root-passwords.shtml">Trends in Top Non 20 Root/Admin Passwords</a>
+<BR>
+<a href ="trends-in-accounts.shtml">Trends in Top 20 Accounts</a>
+<BR>
+<BR>
+<a href ="graphics.shtml">Charts and Graphs</a>
+<BR>
+<BR>
+<a href ="statistics.shtml">Attack Statistics <!--#include virtual="description.html" --> </a>
+<BR>
+<a href ="/honey-2222/statistics_all.shtml">Attack Statistics of ALL hosts</a>
+<BR>
+<BR>
+<a href ="attacks_by_day.shtml">Attacks By Day, Calendar view,  <!--#include virtual="description.html" --></a>
+<BR>
+<H3>Today's Activity</H3>
+<a href ="todays-uniq-passwords.shtml">Passwords FIRST seen today</a>
+<BR>
+<BR>
+<a href ="current-root-passwords.shtml">Root Passwords</a>
+<BR>
+<a href ="current-top-20-root-passwords.shtml">Top 20 Root Passwords</a>
+<BR>
+<BR>
+<a href ="current-admin-passwords.shtml">Admin Passwords</a>
+<BR>
+<a href ="current-top-20-admin-passwords.shtml">Top 20 Admin Passwords</a>
+<BR>
+<BR>
+<a href ="current-non-root-passwords.shtml">Non Root/Admin Passwords</a>
+<BR>
+<a href ="current-top-20-non-root-passwords.shtml">Top 20 Non Root/Admin Passwords</a>
+<BR>
+<BR>
+<a href ="todays-uniq-username.shtml">Accounts FIRST seen today</a>
+<BR>
+<a href ="current-non-root-accounts.shtml">Accounts Tried</a>
+<BR>
+<a href ="current-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
+<BR>
+<BR>
+<a href ="current-non-root-pairs.shtml">Non Root/Admin pairs</a>
+<BR>
+<a href ="current-top-20-non-root-pairs.shtml">Top 20 Non Root/Admin pairs</a>
+<BR>
+<BR>
+<a href ="todays-uniq-ips.shtml">IP Addresses FIRST seen today</a>
+<BR>
+<a href="current-ip-addresses.shtml">IP Addresses</a>
+<BR>
+<a href="current-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<a href="current-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
+<BR>
+<!--
+<H2>HTTP Attacks and Probes</H2>
+<H3>Today's Activity</H3>
+<P>Shellshock:What webpages are they looking for?
+<BR>
+<a href="current-shellshock-webpages.shtml">Shellshock Webpages<a/>
+<BR>
+<a href="current-top-20-shellshock-webpages.shtml">Top 20 Shellshock Webpages</a>
+<BR>
+<BR>
+<P>What are the actual attacks they are trying to run?
+<BR>
+<a href="current-attacks.shtml">Attacks</a>
+<BR>
+<a href="current-top-20-attacks.shtml">Top 20 Attacks</a>
+<BR>
+<BR>
+<P>Where are they getting their payloads from or trying to connect to with bash?
+<BR>
+<a href="current-payloads.shtml">Payloads</A>
+<BR>
+<a href="current-top-20-payloads.shtml">Top 20 Payloads</a>
+<BR>
+<P>What are they trying to rm?
+<BR>
+<a href="current-rm-attempts.shtml">`rm` attempts</a>
+<BR>
+<a href="current-top-20-rm-attempts.shtml">Top 20 `rm` attempts</a>
+<BR>
+<BR>
+<P>Shellshock attacks not explitly using perl
+<BR>
+<a href="current-shellshock-not-using-perl.shtml">Shellshock Attacks not explicitly using perl</A>
+<BR>
+<a href="current-top-20-shellshock-not-using-perl.shtml">Top 20 Shellshock Attacks not explicitly using perl</A>
+<BR>
+<BR>
+<P>Shellshock logs
+<BR>
+<a href="current-access-log-shell-shock.shtml">Todays Apache Shell Shock log</a>
+<BR>
+<a href="current-country-access-log-shell-shock.shtml">Todays Apache Shell Shock Country log</a>
+<BR>
+<a href="current-ip-access-log-shell-shock.shtml">Todays Apache Shell Shock IP log</a>
+<BR>
+<BR>
+<P> 404 Probes
+<BR>
+<a href="current-access-log-404.shtml">Today's 404 Probes Log</a>
+<BR>
+<BR>
+<a href="current-open-proxy-log-404.shtml">Today's Open Proxy Log</a>
+<BR>
+<a href="current-ip-open-proxy-404.shtml">Today's IP Open Proxy Log</a>
+<BR>
+<a href="current-country-open-proxy-log-404.shtml">Today's Country Open Proxy Log</a>
+<BR>
+<BR>
+<a href="current-ip-access-log-404.shtml">Today's 404 Probes IP Log</a>
+<BR>
+<a href="current-top-20-ip-access-log-404.shtml">Today's Top 20 404 Probes IP Log</a>
+<BR>
+<a href="current-country-access-log-404.shtml">Today's 404 Probes Country Log</a>
+<H3>Access Logs</H3>
+<a href="current-access-log.shtml">Todays Apache access log</a>
+<HR>
+<a href="historical/">Long Term Historical Reports For ssh and HTTP Attacks</A>
+-->
+<!--#include virtual="/honey/footer.html" --> 
