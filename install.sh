@@ -121,7 +121,9 @@ for dir in $HTML_DIR $OTHER_DIRS ; do
 	done
 done
 
-cp header-2222.html /var/www/html/honey-2222/header.html
+cp honey-2222/* /var/www/html/honey-2222/
+chmod a+r /var/www/html/honey-2222/*
+
 cp dashboard-index.shtml $HTML_DIR/dashboard/index.shtml
 cp dashboard-1.shtml $HTML_DIR/dashboard/ 
 cp dashboard.shtml $HTML_DIR/
