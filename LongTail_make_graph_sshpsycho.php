@@ -17,10 +17,11 @@ $URL_LINE="http://longtail.it.marist.edu";
 $file1 = $argv[1];
 $file2 = $argv[2];
 $file3 = $argv[3];
-$header = $argv[4];
-$x_axis_title =  $argv[5];
-$y_axis_title =  $argv[6];
-$size=$argv[7];
+$file4 = $argv[4];
+$header = $argv[5];
+$x_axis_title =  $argv[6];
+$y_axis_title =  $argv[7];
+$size=$argv[8];
  
 // We need some data
 $counter=0;
@@ -28,6 +29,7 @@ $counter=0;
 $datay[$counter]=0;
 $datay2[$counter]=0;
 $datay3[$counter]=0;
+$datay4[$counter]=0;
 $datax[$counter]="NO DATA";
  
 $myfile = fopen($file1, "r") 
@@ -76,7 +78,6 @@ if ($myfile) {
 		$datay3[$counter]=$count;
 		$datay[$counter]=$datay[$counter]-$count;
 		$datax[$counter]=$account;
-// print "counter is $counter, account is $account, count is $count\n";
 		$counter++;
 	}
     if (!feof($myfile)) {
@@ -84,7 +85,24 @@ if ($myfile) {
     }
     fclose($myfile);
 }
-// exit;
+ 
+$counter=0;
+$myfile = fopen($file4, "r") 
+	or die("Unable to open file!");
+if ($myfile) {
+	while (($buffer = fgets($myfile, 4096)) !== false) {
+		list($count,$account) = explode(" ",$buffer);
+		$account = chop($account);
+		$datay4[$counter]=$count;
+		$datay[$counter]=$datay[$counter]-$count;
+		$datax[$counter]=$account;
+		$counter++;
+	}
+    if (!feof($myfile)) {
+        echo "Error: unexpected fgets() fail\n";
+    }
+    fclose($myfile);
+}
 
 // Setup the graph.
 if ($size == "wide"){
@@ -121,6 +139,7 @@ $graph->xaxis->SetLabelAngle(45);
 $bplot = new BarPlot($datay);
 $bplot2 = new BarPlot($datay2);
 $bplot3 = new BarPlot($datay3);
+$bplot4 = new BarPlot($datay4);
 
 $bplot->SetWidth(0.7);
 
@@ -128,12 +147,13 @@ $bplot->SetWidth(0.7);
 $bplot->SetFillGradient("blue:0.9","blue:1.85",GRAD_LEFT_REFLECTION);
 $bplot2->SetFillGradient("red:0.9","red:1.85",GRAD_LEFT_REFLECTION);
 $bplot3->SetFillGradient("yellow:0.9","yellow:1.85",GRAD_LEFT_REFLECTION);
+$bplot4->SetFillGradient("green:0.9","yellow:1.85",GRAD_LEFT_REFLECTION);
 
 // Set color for the frame of each bar
 $bplot->SetColor("white");
 
 // Create the grouped bar plot
-$gbplot = new AccBarPlot(array($bplot,$bplot2,$bplot3));
+$gbplot = new AccBarPlot(array($bplot,$bplot2,$bplot3,$bplot4));
 
 $graph->Add($gbplot);
 
