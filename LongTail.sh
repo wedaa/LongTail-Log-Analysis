@@ -1931,8 +1931,8 @@ echo "DEBUG map file is $MAP"
 		done        
 
 		
-		#if [ $START_HOUR -eq $MIDNIGHT ]; then
-		if [ $START_HOUR -eq 13 ]; then
+		if [ $START_HOUR -eq $MIDNIGHT ]; then
+		#if [ $START_HOUR -eq 13 ]; then
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
