@@ -135,7 +135,7 @@ sub create_attack_logs {
 		$good_line=0;
 		$username="";
 		$password="";
-		if ((/ IP: /o) && (/ PassLog: /o)){
+		if ((/ IP: /o) && ((/ PassLog: /o)   || (/ Pass2222Log: /o)  ) ){
 			#if ($DEBUG){print "P";}
 			($timestamp,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
 			($date,$time)=split(/T/,$timestamp);
