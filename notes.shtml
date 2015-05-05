@@ -15,6 +15,7 @@ the slides.
 <BR>
 <a name="3"></a>
 [3]  These hosts are apparently associated with a group known as "SSHPsycho"
+(Also known as the "Hee Thai campaign" or  "Group 93") 
 which Cisco and Level 3 are trying to block them.  For more details, please 
 see
 <UL>
@@ -28,20 +29,15 @@ see
 attack patterns as the hosts that Cisco has named "SSHPsycho".  I have boiled down
 the list at <A href="http://longtail.it.marist.edu/honey/SSHPsycho.shtml">
 http://longtail.it.marist.edu/honey/SSHPsycho.shtml</A> into a list of hosts 
-that have attacked more than with the <B>exact</B>same attack pattern, and have used
-an attack pattern with more than 10 entries.
+that have attacked more than once with the same attack pattern.
 <BR>
 <BR>
 <a name="5"></a>
-[5]  "Associates of SSHPsycho Login Attempts" are hosts that are using "Similar
-enough"
-attack patterns as the hosts that Cisco has named "SSHPsycho".  I have boiled down
-the list at <A href="http://longtail.it.marist.edu/honey/SSHPsycho.shtml">
-http://longtail.it.marist.edu/honey/SSHPsycho.shtml</A> into a list of hosts
-that have a "Similar enough" attack pattern with more than 10 entries.  IP 
-addresses with more than one matching attack pattern are added into the 
-"Associates of SSHPsycho Login Attempts" section on the main page.
-
+[5]  "Associates of SSHPsycho Login Attempts" are hosts that are using certain 
+passwords so far only seen from SSHPsycho, and have several large (and similar) attack patterns.
+While these sites have not yet used the exact same pattern as an SSHPsycho 
+site, there are enough strong similarities that make them worth watching for
+future developments.
 
 
 <!--#include virtual="/honey/footer.html" --> 
