@@ -61,6 +61,33 @@ function read_local_config_file {
 	fi
 }
 
+function lock_down_files {
+#	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	if [ "x$HOSTNAME" == "x/" ] ;then
+if [ -d /var/www/html ] ; then 
+cd /var/www/html
+
+find . -name last-7-days-root-passwords.shtml |xargs chmod go-r 
+find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
+find . -name last-30-days-root-passwords.shtml |xargs chmod go-r 
+find . -name last-30-days-non-root-pairs.shtml |xargs chmod go-r 
+find . -name historical-root-passwords.shtml |xargs chmod go-r 
+find . -name historical-non-root-pairs.shtml |xargs chmod go-r 
+
+find */* -name todays_password |xargs chmod go-r
+find */* -name current-root-passwords.shtml |xargs chmod go-r
+find */* -name current-non-root-passwords.shtml |xargs chmod go-r
+find */* -name current-account-password-pairs.data.gz |xargs chmod go-r
+find */* -name current-admin-passwords.shtml |xargs chmod go-r
+find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
+
+
+fi
+fi
+#fi
+
+}
+
 ############################################################################
 # Assorted Variables, you should probably edit /usr/local/etc/LongTail.config
 # though...  Otherwise when you install a new version you'll lose your
@@ -1905,7 +1932,7 @@ echo "DEBUG map file is $MAP"
 
 		
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
-		#if [ $START_HOUR -eq 18 ]; then
+		#if [ $START_HOUR -eq 8 ]; then
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
@@ -1959,8 +1986,7 @@ echo "DEBUG map file is $MAP"
 						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
 							# This works but I want to show sshPsycho data now
 							if [ "x$HOSTNAME" == "x/" ] ;then
-								#php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
-								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
 							else
 								#php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "" "" "wide"> $GRAPHIC_FILE
 								#$php /usr/local/etc/LongTail_make_graph_sshpsycho.php /var/www/html/honey/last-30-days-attack-count.data /var/www/html/honey/last-30-days-sshpsycho-attack-count.data /var/www/html/honey/last-30-days-friends-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=all others)" "" "" "wide" > $GRAPHIC_FILE
@@ -2159,6 +2185,26 @@ function set_hosts_protected_flag {
 			done
 		done
 	fi
+}
+
+function recount_last_30_days_sshpsycho_attacks {
+
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-In recount_last_30_days_sshpsycho_attacks" ; date; fi
+	LAST_MONTH=""
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+		YESTERDAY_YEAR=`date "+%Y" --date="$i day ago"`
+		YESTERDAY_MONTH=`date "+%m" --date="$i day ago"`
+		YESTERDAY_DAY=`date "+%d" --date="$i day ago"`
+		# Make current-sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-attack-count.data
+
+		# Make current-friends_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-friends_of_sshpsycho-attack-count.data
+
+		# Make current-associates_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-associates_of_sshpsycho-attack-count.data
+
+	done
 }
 
 ############################################################################
@@ -2560,6 +2606,10 @@ fi
         sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
         sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
 
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
+		recount_last_30_days_sshpsycho_attacks 
+	fi
 
+lock_down_files 
 
 exit
