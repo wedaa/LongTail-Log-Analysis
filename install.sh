@@ -71,6 +71,7 @@ LongTail_dashboard.pl \
 LongTail_password_analysis.pl \
 LongTail_analyze_attacks.pl \
 catall.sh \
+LongTail_add_country_to_ip.pl \
 LongTail.sh \
 LongTail_make_graph_sshpsycho.php \
 LongTail_friends_of_sshPsycho_IP_addresses \
