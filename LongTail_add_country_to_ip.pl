@@ -30,8 +30,14 @@ sub init {
 while (<>){
 	chomp;
 	($trash,$count,$ip)=split (/\s+/,$_,3);
-	#print "IP is -->$ip<--\n";
-	#print $ip_to_country{$ip} ;
+	#print "DEBUG trash is $trash\n";
+	#print "DEBUG count is $count\n";
+	#print "DEBUG IP is -->$ip<--\n";
+	#print "DEBUG ". $ip_to_country{$ip} ;
+	if ( ($count eq "") && ($ip eq "") ) {
+		#print "DEBUG Only one field, must be ip\n";
+		$ip = $trash;
+	}
 	$tmp_country_code=$ip_to_country{$ip};
 	$tmp_country_code=~ tr/A-Z/a-z/;
 	#print "tmp_country_code is -->$tmp_country_code<--\n";
