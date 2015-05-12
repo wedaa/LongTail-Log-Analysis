@@ -116,7 +116,7 @@ sub create_attack_logs {
 	#
 	unlink ("/tmp/tmp.data");
 	chdir ("$honey_dir/historical/");
-	open (LS, "/bin/ls */*/*/current-raw-data.gz |") || 
+	open (LS, "/bin/ls */*/*/current-raw-data.gz /var/www/html/honey/current-raw-data.gz |") || 
 		die "Can not run /bin/ls command on $honey_dir/historical/\n";
 	while (<LS>){
 		chomp;
@@ -209,6 +209,7 @@ sub analyze {
 	#
 	# What I am doing is sorting the attack files to make them more the same.
 	#
+	#$DEBUG=1;
 	if ($DEBUG){print "DEBUG Sorting attack files now\n";}
 	open (PIPE, "find . -type f |") || die "can not open pipe to cleanup files\n";
 	while (<PIPE>){
@@ -227,6 +228,18 @@ sub analyze {
 	if ($DEBUG){print "Trying md5sum all files  now\n";}
 	system ("md5sum *.*.*.*-* |sort -n  > sum2.data");
 	if ($DEBUG){print "Done making  md5sum all files  now\n";}
+
+	print "DEBUG making dictionaries now\n";
+	open (FILE, "sum2.data");
+	while (<FILE>){
+		chomp;
+		($checksum,$file)=split(/  /,$_);
+		if ( ! -e "dict-$checksum.txt"){
+			`cp $file dict-$checksum.txt`;
+			`cat $file |wc -l > dict-$checksum.txt.wc`;
+		}
+	}
+	close (FILE);
 	
 	# Keep the interesting stuff near the top of the report
 	if ($DEBUG){print "DEBUG Doing multiple attack data now\n";}
@@ -256,20 +269,13 @@ sub analyze {
 				($trash,$filename)=split(/ +/,$_);
 				($first,$second,$third,$fourth,$host)=split(/\./, $filename);
 				$tmp="$first.$second.$third.$fourth";
-				print (FILE_FORMATTED "<A HREF=\"/honey/attacks/ip_attacks.shtml#$tmp\">$tmp</A> \n");
+				print (FILE_FORMATTED "<A HREF=\"/honey/ip_attacks.shtml#$tmp\">$tmp</A> \n");
 			}
 		}
+		close (FILE2);
+
 		$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
 		print (FILE_FORMATTED "<BR><A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n");
-#		if ($DEBUG){print "DEBUG Looking for file dict-$checksum.txt\n";}
-		if ( ! -e "dict-$checksum.txt" ){
-			#print "DEBUG Making dictionary dict-$checksum.txt\n";
-			$temp=`cp $filename dict-$checksum.txt`;
-			$temp=`cat dict-$checksum.txt |wc -l > dict-$checksum.txt.wc`;
-			#print "DEBUG output is $temp\n";
-		}
-		#else {print "dict-$checksum.txt apparently exists?\n";}
-		close (FILE2);
 		
 	}
 	close (FILE);
@@ -304,19 +310,11 @@ sub analyze {
 				($trash,$filename)=split(/ +/,$_);
 				($first,$second,$third,$fourth,$host)=split(/\./, $filename);
 				$tmp="$first.$second.$third.$fourth";
-				print (FILE_FORMATTED "<A HREF=\"/honey/attacks/ip_attacks.shtml#$tmp\">$tmp</A> \n");
+				print (FILE_FORMATTED "<A HREF=\"/honey/ip_attacks.shtml#$tmp\">$tmp</A> \n");
 			}
 		}
 		$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
 		print (FILE_FORMATTED "<BR><A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n");
-		if ($DEBUG){print "DEBUG Looking for file dict-$checksum.txt\n";}
-		if ( ! -e "dict-$checksum.txt" ){
-			#print "DEBUG Making dictionary dict-$checksum.txt\n";
-			$temp=`cp $filename dict-$checksum.txt`;
-			#DEBUG
-			$temp=`/usr/bin/wc -l dict-$checksum.txt |awk '{print \$1}' > dict-$checksum.txt.wc`;
-			#print "DEBUG output is $temp\n";
-		}
 		close (FILE2);
 		
 	}
@@ -338,6 +336,7 @@ print "DEBUG In show_lifetime_of_ips\n";
 	#print "DEBUG- Trying to sort by age of ip\n";
 	#open (FILE_DATA, "> $honey_dir/current_attackers_lifespan.data")||die "Can not write to $honey_dir/current_attackers_lifespan.data\n";
 	open (FILE_FORMATTED, ">$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
+	open (FILE_UNFORMATTED, ">$honey_dir/current_attackers_lifespan.tmp") || die "Can not write to $honey_dir/current_attackers_lifespan.tmp\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
 	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Attackers Lifespan</TITLE>\n");
@@ -355,15 +354,32 @@ print "DEBUG In sorting by key now\n";
 print "DEBUG-I should do this with find . -name '$ip*' |sort -nk6 -t \. instead\n";
 # and then pipe those shorter results to sort, and then print them out.
 
-	foreach $key (sort {$ip_age{$b} <=> $ip_age{$a}} keys %ip_age){
-		#$days=$ip_age{$key}/60/60/24;
+#
+# This code works but is mad slow
+#	foreach $key (sort {$ip_age{$b} <=> $ip_age{$a}} keys %ip_age){
+#		$days=$ip_age{$key}/86400;
+#		$first_seen=scalar localtime($ip_earliest_seen_time{$key});
+#		$last_seen=scalar localtime($ip_latest_seen_time{$key});
+#		$attacks_recorded = `ls $honey_dir/attacks/$key* |wc -l 2>/dev/null `;
+#	  	printf(FILE_FORMATTED "<TR><TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"/honey/ip_attacks.shtml#%s\">%d</A></TD></TR>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
+#	}
+	foreach $key (keys %ip_age){
 		$days=$ip_age{$key}/86400;
 		$first_seen=scalar localtime($ip_earliest_seen_time{$key});
 		$last_seen=scalar localtime($ip_latest_seen_time{$key});
-		$attacks_recorded = `ls $honey_dir/attacks/$key* |wc -l 2>/dev/null `;
-	  	printf(FILE_FORMATTED "<TR><TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"/honey/attacks/ip_attacks.shtml#%s\">%d</A></TD></TR>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
+		$attacks_recorded = `grep $key sum2.data |wc -l 2>/dev/null `;
+	  	printf(FILE_UNFORMATTED "%s|%.2f|%s|%s|<a href=\"/honey/ip_attacks.shtml#%s\">%d</A>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
+	  	#printf(FILE_FORMATTED "<TR><TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"/honey/ip_attacks.shtml#%s\">%d</A></TD></TR>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
 	}
-print "DEBUG DONE sorting by key now\n";
+	close (FILE_FORMATTED);
+#print "DEBUG trying sort -nk2 now\n";
+	`sort -rnk2 -t\\| $honey_dir/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
+print "DEBUG trying cat now\n";
+	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/</TD><TD>/'|sed 's/\$/<\/TD><\/TR>/' >> $honey_dir/current_attackers_lifespan.shtml`;
+	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
+	
+	print "DEBUG DONE sorting by key now\n";
+
 	print (FILE_FORMATTED "</TABLE>\n");
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
@@ -379,7 +395,7 @@ sub show_attacks_of_ips {
 
 	chdir ("$honey_dir/attacks");
 
-	open (FILE_FORMATTED, ">$honey_dir/attacks/ip_attacks.shtml") || die "Can not write to $honey_dir/attacks/ip_attacks.shtml\n";
+	open (FILE_FORMATTED, ">$honey_dir/ip_attacks.shtml") || die "Can not write to $honey_dir/ip_attacks.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
 	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis IP Attackers</TITLE>\n");
@@ -418,11 +434,9 @@ print "DEBUG This is slow....\n";
              	@ip_array;
 	
 	foreach (@sorted){
-		#print "$_\n";;
 		print (FILE_FORMATTED "<HR>\n");
 		print (FILE_FORMATTED "<a name=\"$_\"></a>\n");
 		print (FILE_FORMATTED "<B>$_</B>\n");
-		#$line= system ("grep $_ sum2.data");
 		open (GREP, "grep $_ sum2.data|");
 		while (<GREP>){
 			($checksum, $file)=split (/ +/,$_,2);
@@ -441,8 +455,7 @@ print "DEBUG This is slow....\n";
 				$lines=$_;
 			}
 			close (FILE2);
-			#print (FILE_FORMATTED "<BR>$lines lines, <a href=\"dict-$checksum.txt\">dict-$checksum.txt</a> From: $ip_1.$ip_2.$ip_3.$ip_4 To: $host Attack #: $attack_number on $year/$month/$day $hour:$minute:$second\n");
-			print (FILE_FORMATTED "<BR>$lines lines, <a href=\"dict-$checksum.txt\">dict-$checksum.txt</a> <!-- From: $ip_1.$ip_2.$ip_3.$ip_4--> To: $host Attack #: $attack_number started on $year/$month/$day $hour:$minute:$second\n");
+			print (FILE_FORMATTED "<BR>$lines lines, <a href=\"attacks/dict-$checksum.txt\">dict-$checksum.txt</a> <!-- From: $ip_1.$ip_2.$ip_3.$ip_4--> To: $host Attack #: $attack_number started on $year/$month/$day $hour:$minute:$second\n");
 		}
 		close (GREP);
 	}
@@ -458,6 +471,7 @@ print "DEBUG This is slow....\n";
 #
 sub create_dict_webpage {
 	if ($DEBUG){print "DEBUG Making dict webpage now\n";}
+	print "DEBUG Making dict webpage now\n";
 	open (FILE_FORMATTED_TEMP, ">/tmp/dictionaries.temp") || die "Can not write to $honey_dir/dictionaries.temp\n";
 	open (FILE_FORMATTED, ">$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
@@ -480,19 +494,26 @@ sub create_dict_webpage {
 		chomp;
 		if (/\.txt\.wc/){next;}
 		$dictionary_file=$_;
-
+#print "dictionary_file is $dictionary_file\n";
 		$WC=`/usr/bin/wc -l $_ `;
 		($WC,$tmp)=split(/ /,$WC);
-		$SUM=`md5sum $_ `;
-		($SUM,$tmp)=split(/ /,$SUM);
-		$WC = $WC;
+		chomp $WC;
+		#$SUM=`md5sum $_ `;
+		#($SUM,$tmp)=split(/ /,$SUM);
+		$SUM=$dictionary_file;
+		$SUM =~ s/.txt//;
+		$SUM =~ s/dict-//;
+		$SUM =~ s/\.\///;
+#print "checksum is $SUM\n";
+#print "wc is $WC\n";
+		#$WC = $WC;
 		$TIMES_USED=`grep $SUM sum2.data|grep -v dict- |wc -l |awk '{print \$1}'`;
 		chomp $TIMES_USED;
-		chomp $WC;
-
+#print "TIMES_USED is $TIMES_USED\n";
 		$first_seen_epoch=0;
 		$last_seen_epoch=0;
 		$COUNT=0;
+#print "Trying to figure out first and last used times.\n";
 		open (SUM_FILE, "sum2.data") || die "Can not open sum2.data, this is bad\n";
 		while (<SUM_FILE>){
 			#print "DEBUG $_";
@@ -515,7 +536,9 @@ sub create_dict_webpage {
 		$FIRST_SEEN=scalar localtime($first_seen_epoch);
 		$LAST_SEEN=scalar localtime($last_seen_epoch);
 
+		#print "DEBUG $TIMES_USED|$WC|$SUM|$dictionary_file|$FIRST_SEEN|$LAST_SEEN\n";
 		print (FILE_FORMATTED_TEMP "$TIMES_USED|$WC|$SUM|$dictionary_file|$FIRST_SEEN|$LAST_SEEN\n");
+
 	}
 	close (PIPE);
 	close (FILE_FORMATTED_TEMP);
@@ -541,9 +564,11 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "</HTML>\n");
 	close (FILE_FORMATTED);
 
+	print "DEBUG Done Making dict webpage now\n";
 	#
 	# Now we sort by size of dictionary
 	#
+	print "DEBUG Making dictionaries-k5.shtml  now\n";
 	open (FILE_FORMATTED, ">$honey_dir/dictionaries-k5.shtml") || die "Can not write to $honey_dir/dictionaries-k5.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
@@ -566,6 +591,7 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
 	close (FILE_FORMATTED);
+	print "DEBUG Done Making dictionaries-k5.shtml  now\n";
 
 }
 
@@ -595,12 +621,13 @@ $TMP=`date`;chomp $TMP; print "done with create_dict_webpage at $TMP, getting ri
 unlink ("/tmp/dictionaries.temp.sorted");
 unlink ("/tmp/dictionaries.temp");
 unlink ("/tmp/tmp.data");
-if (-d "$attacks_dir" ){
-	chdir ("$attacks_dir");
-	$tmp=system("find . -type f -size -128c | xargs chmod go-rwx ");
-	$tmp=system("chmod a+r ip_attacks.shtml");
-	$tmp=system("chmod a+rx .");
-}
+# I am using httpd.conf to protect this directory now
+#if (-d "$attacks_dir" ){
+#	chdir ("$attacks_dir");
+#	$tmp=system("find . -type f -size -128c | xargs chmod go-rwx ");
+#	$tmp=system("chmod a+r ip_attacks.shtml");
+#	$tmp=system("chmod a+rx .");
+#}
 
 $TMP=`date`;
 print "LongTail_analyze_attacks.pl Done at $TMP\n";
