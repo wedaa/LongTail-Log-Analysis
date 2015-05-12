@@ -110,6 +110,7 @@ index-historical.shtml \
 graphics.shtml \
 header.html \
 footer.html \
+institution.html \
 notes.shtml \
 LongTail.css \
 404.shtml \
