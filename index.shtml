@@ -4,9 +4,10 @@
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" --> 
 
-<H3>LongTail Log Analysis/Today's Data<BR>All SSH Ports,  <!--#include virtual="description.html" --></H3>
+<H3>LongTail Log Analysis @ <!--#include virtual="/honey/institution.html" -->
+/ Today's Data<BR>All SSH Ports,  <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Mon Apr 27 21:08:50 EDT 2015
+Last updated on Tue May 12 08:07:08 EDT 2015
 <BR>
 <BR>
 <TABLE border=1>
@@ -15,78 +16,91 @@ Last updated on Mon Apr 27 21:08:50 EDT 2015
 
 <TR><TH>Login Attempts
 <TD>
-<!--Login Attempts Today:--> 44,200
+<!--Login Attempts Today:--> 48,640
 </TD><TD> N/A
 </TD><TD>
-<!--Login Attempts This Month:--> 2,009,816
+<!--Login Attempts This Month:--> 964,393
 </TD><TD>
-<!--Login Attempts This Year:--> 4,135,893
+<!--Login Attempts This Year:--> 5,311,845
 </TD><TD>
-<!--Login Attempts Since Logging Started:--> 4,135,893
+<!--Login Attempts Since Logging Started:--> 5,311,845
 </TR>
 
 <TR><TH>SSHPsycho Login Attempts <a href="/honey/notes.shtml#3">[3]</a>
 <TD>
-<!--SSHPsycho Today:--> 23,999
+<!--SSHPsycho Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--SSHPsycho This Month:--> 1,275,358
+<!--SSHPsycho This Month:--> 201,745
 </TD><TD>
-<!--SSHPsycho This Year:--> 2,658,594
+<!--SSHPsycho This Year:--> 2,970,152
 </TD><TD>
-<!--SSHPsycho Since Logging Started:--> 2,658,594
+<!--SSHPsycho Since Logging Started:--> 2,970,152
 </TR>
 
 <TR><TH>Friends of SSHPsycho Login Attempts <a href="/honey/notes.shtml#4">[4]</a>
 <TD>
-<!--SSHfriendsPsycho Today:--> 5,402
+<!--SSHfriendsPsycho Today:--> 25,805
 </TD><TD> N/A
 </TD><TD>
-<!--SSHfriendsPsycho This Month:--> 233,842
+<!--SSHfriendsPsycho This Month:--> 200,948
 </TD><TD>
-<!--SSHfriendsPsycho This Year:--> 435,410
+<!--SSHfriendsPsycho This Year:--> 661,508
 </TD><TD>
-<!--SSHfriendsPsycho Since Logging Started:--> 435,410
+<!--SSHfriendsPsycho Since Logging Started:--> 661,508
 </TR>
+
+<TR><TH>Associates of SSHPsycho Login Attempts <a href="/honey/notes.shtml#5">[5]</a>
+<TD>
+<!--SSHassociatesPsycho Today:--> 20,908
+</TD><TD> N/A
+</TD><TD>
+<!--SSHassociatesPsycho This Month:--> 328,588
+</TD><TD>
+<!--SSHassociatesPsycho This Year:--> 765,123
+</TD><TD>
+<!--SSHassociatesPsycho Since Logging Started:--> 765,123
+</TR>
+
 
 <TR><TH>Unique Passwords</TH>
 <TD>
-<!--Unique Passwords Today:--> 31,766
+<!--Unique Passwords Today:--> 24,176
 </TD><TD>
-<!--New Passwords Today:--> 218
+<!--New Passwords Today:--> 112
 </TD><TD>
-<!--Unique Passwords This Month:--> 277,959
+<!--Unique Passwords This Month:--> 109,231
 </TD><TD>
-<!--Unique Passwords This Year:--> 479,839
+<!--Unique Passwords This Year:--> 495,788
 </TD><TD>
-<!--Unique Passwords Since Logging Started:--> 479,839
+<!--Unique Passwords Since Logging Started:--> 495,788
 </TD><TD>
 </TR>
 <TR><TH>Unique Usernames </TH>
 <TD>
-<!--Unique Usernames Today:--> 813
+<!--Unique Usernames Today:--> 61
 </TD><TD>
-<!--New Usernames Today:--> 216
+<!--New Usernames Today:--> 9
 </TD><TD>
-<!--Unique Usernames This Month:--> 2,121
+<!--Unique Usernames This Month:--> 1,655
 </TD><TD>
-<!--Unique Usernames This Year:--> 4,563
+<!--Unique Usernames This Year:--> 5,268
 </TD><TD>
-<!--Unique Usernames Since Logging Started:--> 4,563
+<!--Unique Usernames Since Logging Started:--> 5,268
 </TD><TD>
 </TR>
 <TR>
 <TH>Unique IPs </TH>
 <TD>
-<!--Unique IPs Today:--> 377
+<!--Unique IPs Today:--> 73
 </TD><TD>
-<!--New IPs Today:--> 265
+<!--New IPs Today:--> 17
 </TD><TD>
-<!--Unique IPs This Month:--> 1,820
+<!--Unique IPs This Month:--> 863
 </TD><TD>
-<!--Unique IPs This Year:--> 3,957
+<!--Unique IPs This Year:--> 4,897
 </TD><TD>
-<!--Unique IPs Since Logging Started:--> 3,957
+<!--Unique IPs Since Logging Started:--> 4,897
 </TD><TD>
 </TR>
 </TABLE>
@@ -158,17 +172,17 @@ Last updated on Mon Apr 27 21:08:50 EDT 2015
 <a href ="todays-uniq-passwords.shtml">Passwords FIRST seen today</a>
 <BR>
 <BR>
-<a href ="current-root-passwords.shtml">"root" Passwords</a>
+<a href ="current-root-passwords.shtml">"root" Passwords</a> (Restricted Access)
 <BR>
 <a href ="current-top-20-root-passwords.shtml">Top 20 "root" Passwords</a>
 <BR>
 <BR>
-<a href ="current-admin-passwords.shtml">Account "admin" Passwords</a>
+<a href ="current-admin-passwords.shtml">Account "admin" Passwords</a> (Restricted Access)
 <BR>
 <a href ="current-top-20-admin-passwords.shtml">Top 20 Account "admin" Passwords</a>
 <BR>
 <BR>
-<a href ="current-non-root-passwords.shtml">Non "root"/"admin" Passwords</a>
+<a href ="current-non-root-passwords.shtml">Non "root"/"admin" Passwords</a> (Restricted Access)
 <BR>
 <a href ="current-top-20-non-root-passwords.shtml">Top 20 Non "root"/"admin" Passwords</a>
 <BR>
@@ -182,7 +196,7 @@ Last updated on Mon Apr 27 21:08:50 EDT 2015
 <a href ="current-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
 <BR>
 <BR>
-<a href ="current-non-root-pairs.shtml">Non "root"/"admin" pairs</a>
+<a href ="current-non-root-pairs.shtml">Non "root"/"admin" pairs</a> (Restricted Access)
 <BR>
 <a href ="current-top-20-non-root-pairs.shtml">Top 20 Non "root"/"admin" pairs</a>
 <BR>
