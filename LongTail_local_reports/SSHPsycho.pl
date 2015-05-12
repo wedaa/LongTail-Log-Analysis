@@ -12,6 +12,11 @@ sub commify {
   return $sign . $commified . $frac;
 }
 
+sub init {
+	$MIDNIGHT=0;
+	$HOUR=`date +%h`;
+	chomp $HOUR;
+}
 
 sub pass_1 { 	
 	if ( -e "/var/www/html/honey/current-ip-addresses.txt" ){
@@ -77,6 +82,7 @@ sub pass_2 {
 	close (FILE);
 	close (OUTPUT_FILE);
 	`sort -u /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses.tmp > /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses`;
+	`echo 43.229.52 >> /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses`;
 	print "</TABLE>\n";
 	
 	unlink ("/tmp/sshpsycho.$$");
@@ -88,10 +94,13 @@ sub pass_3{
 	# Third level analysis, look for attacks not already in sshPsycho or sssPsychoFriends
 	# but that have a commanality (in this case, use wubao or jiamima in their attack string
 	chdir ("/var/www/html/honey/attacks");
+	#`egrep -l wubao\\|jiamima *.*.*.*.* |egrep -vf /usr/local/etc/LongTail_sshPsycho_IP_addresses |egrep -vf /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr > /tmp/sshpsycho.$$`;
 	`egrep -l wubao\\|jiamima *.*.*.*.* |egrep -vf /usr/local/etc/LongTail_sshPsycho_IP_addresses |egrep -vf /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr > /tmp/sshpsycho.$$`;
+	`ls 222.186.21.*  |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr >> /tmp/sshpsycho.$$`;
+	`ls 222.186.134.*  |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr >> /tmp/sshpsycho.$$`;
 	
 	$total=0;
-	print "<H3>Attacks with a significant level of commanality with sshPsycho attacks</H3>\n";
+	print "<H3>Attacks with a significant level of commonality with sshPsycho attacks</H3>\n";
 	print "<TABLE><TH>IP ADDRESS</TH><TH>Country</TH><TH>Number of Attack Patterns<BR>With Significant \"Match\"</TH><TH>Number Of<BR>Attacks</TH></TR>\n";
 	open (FILE, "/tmp/sshpsycho.$$");
 	open (OUTPUT_FILE, "> /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses.tmp");
@@ -113,12 +122,21 @@ sub pass_3{
 		$total += $wc;
 	}
 	close (FILE);
-	`sort -u /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses.tmp > /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses`;
+	`sort -u /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses.tmp |grep -v 222.186.21 |grep -v 222.186.134 > /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses`;
+	`echo 222.186.21 >> /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses`;
+	`echo 222.186.134 >> /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses`;
 	print "</TABLE>\n";
 	print "<P>Total number of attacks from hosts with attacks similar to sshPsycho: $total\n";
 	unlink ("/tmp/sshpsycho.$$");
 }
 
+sub pass_4{
+	if ( $HOUR == $MIDNIGHT){
+		`cat 103.41.124* 103.41.125* 43.255.190* 43.255.191* |sort |uniq -c |sort -n > /var/www/html/honey/attacks/sshpsycho_attacks.txt`
+	}
+}
+
 &pass_1;
 &pass_2;
 &pass_3;
+&pass_4;
