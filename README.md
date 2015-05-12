@@ -144,11 +144,22 @@ Look up the properl EPEL repo at  https://fedoraproject.org/wiki/EPEL/FAQ
 	cd /usr/share/fonts
 	ln -s msttcore truetype 
 
+
+Jpgraph Notes
+--------------
 jpgraph from http://jpgraph.net/download/ installed into /usr/local/php/jpgraph.  
 
 Edit the include line in /etc/php.ini to reference /usr/local/php.
 
 Fix the timezone line in /etc/php.ini to reference your timezone. (I use America/New_York ).
+
+You will need to install the truetype fonts.  (The following instructions
+are what I think I used, but are untested as of this writing.)
+  wget http://corefonts.sourceforge.net/msttcorefonts-2.0-1.spec
+  yum install rpm-build cabextract
+  rpmbuild -ba msttcorefonts-2.0-1.spec
+  yum localinstall --nogpgcheck <PATH_TO_RPM>/msttcorefonts-2.0-1.noarch.rpm
+	ln -s /usr/share/fonts/msttcore /usr/share/fonts/truetype
 
 LongTail Installation
 --------------
