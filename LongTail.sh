@@ -1323,6 +1323,9 @@ function ssh_attacks {
 		echo "# This list was created on: $RIGHT_NOW" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		mv $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
+		$SCRIPT_DIR/LongTail_add_country_to_ip.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp > $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		rm $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
 	fi
 
 	#
@@ -1331,7 +1334,7 @@ function ssh_attacks {
 
 	cat $TMP_DIRECTORY/Longtail.tmpIP.$$ | /usr/local/etc/LongTail_add_country_to_ip.pl > $TMP_DIRECTORY/Longtail.tmpIP.$$-2 # Delete this line once the code works
 
-	cat $TMP_DIRECTORY/Longtail.tmpIP.$$-2 | awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$3,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
+	cat $TMP_DIRECTORY/Longtail.tmpIP.$$-2 | awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$3,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 
 	rm $TMP_DIRECTORY/Longtail.tmpIP.$$
 	rm $TMP_DIRECTORY/Longtail.tmpIP.$$-2
@@ -2267,7 +2270,7 @@ fi
 
 declare -A IP_ADDRESS
 grep -v UNKNOWN $SCRIPT_DIR/ip-to-country |\
-tail -5000 |\
+tail -9000 |\
 sed 's/^/IP_ADDRESS[/' |sed 's/ /]="/' |\
 sed 's/$/"/' >$TMP_DIRECTORY/LongTail.$$.ip.sh
 . $TMP_DIRECTORY/LongTail.$$.ip.sh
@@ -2342,6 +2345,12 @@ PROTOCOL=$SEARCH_FOR
 #exit
 #create_historical_copies  $HTML_DIR
 #exit
+
+# Recounting needs to be done here so that the numbers
+# show up in this day's graphs made at midnight
+if [ $START_HOUR -eq $MIDNIGHT ]; then
+	recount_last_30_days_sshpsycho_attacks 
+fi
 
 # NOTE: I have to make historical copies (if appropriate) BEFORE
 # I call do_ssh so that the reports properly create the
@@ -2604,10 +2613,6 @@ fi
         sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
         sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
         sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
-
-	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		recount_last_30_days_sshpsycho_attacks 
-	fi
 
 lock_down_files 
 
