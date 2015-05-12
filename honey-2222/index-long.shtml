@@ -5,7 +5,7 @@
 
 <H1>LongTail Log Analysis/Historical Version<BR>SSH Port 2222, <!--#include virtual="description.html" --></H1>
 <P>This page is updated hourly.
-Last updated on Tue May  5 09:09:20 EDT 2015
+Last updated on Tue May 12 08:08:51 EDT 2015
 
 <TABLE border=1>
 <TR><TH colspan=6>SSH Brute Force Attempts</TH></TR>
@@ -15,11 +15,11 @@ Last updated on Tue May  5 09:09:20 EDT 2015
 <!--Login Attempts Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--Login Attempts This Month:--> 55,377
+<!--Login Attempts This Month:--> 63,891
 </TD><TD>
-<!--Login Attempts This Year:--> 74,547
+<!--Login Attempts This Year:--> 83,061
 </TD><TD>
-<!--Login Attempts Since Logging Started:--> 74,547
+<!--Login Attempts Since Logging Started:--> 83,061
 </TR>
 <TR><TH>SSHPsycho Login Attempts <a href="/honey/notes.shtml#3">[3]</a>
 <TD>
@@ -40,9 +40,9 @@ Last updated on Tue May  5 09:09:20 EDT 2015
 </TD><TD>
 <!--SSHfriendsPsycho This Month:--> 0
 </TD><TD>
-<!--SSHfriendsPsycho This Year:--> 7
+<!--SSHfriendsPsycho This Year:--> 0
 </TD><TD>
-<!--SSHfriendsPsycho Since Logging Started:--> 7
+<!--SSHfriendsPsycho Since Logging Started:--> 0
 </TR>
 
 <TR><TH>Associates of SSHPsycho Login Attempts <a href="/honey/notes.shtml#5">[5]</a>
@@ -50,11 +50,11 @@ Last updated on Tue May  5 09:09:20 EDT 2015
 <!--SSHassociatesPsycho Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--SSHassociatesPsycho This Month:--> 0
+<!--SSHassociatesPsycho This Month:--> 2,592
 </TD><TD>
-<!--SSHassociatesPsycho This Year:--> 0
+<!--SSHassociatesPsycho This Year:--> 2,634
 </TD><TD>
-<!--SSHassociatesPsycho Since Logging Started:--> 0
+<!--SSHassociatesPsycho Since Logging Started:--> 2,634
 </TR>
 
 <TR><TH>Unique Passwords</TH>
@@ -63,11 +63,11 @@ Last updated on Tue May  5 09:09:20 EDT 2015
 </TD><TD>
 <!--New Passwords Today:--> 0
 </TD><TD>
-<!--Unique Passwords This Month:--> 17,900
+<!--Unique Passwords This Month:--> 18,627
 </TD><TD>
-<!--Unique Passwords This Year:--> 20,924
+<!--Unique Passwords This Year:--> 21,453
 </TD><TD>
-<!--Unique Passwords Since Logging Started:--> 20,924
+<!--Unique Passwords Since Logging Started:--> 21,453
 </TD><TD>
 </TR>
 <TR><TH>Unique Usernames </TH>
@@ -76,7 +76,7 @@ Last updated on Tue May  5 09:09:20 EDT 2015
 </TD><TD>
 <!--New Usernames Today:--> 0
 </TD><TD>
-<!--Unique Usernames This Month:--> 2
+<!--Unique Usernames This Month:--> 3
 </TD><TD>
 <!--Unique Usernames This Year:--> 88
 </TD><TD>
@@ -90,11 +90,11 @@ Last updated on Tue May  5 09:09:20 EDT 2015
 </TD><TD>
 <!--New IPs Today:--> 0
 </TD><TD>
-<!--Unique IPs This Month:--> 5
+<!--Unique IPs This Month:--> 13
 </TD><TD>
-<!--Unique IPs This Year:--> 19
+<!--Unique IPs This Year:--> 26
 </TD><TD>
-<!--Unique IPs Since Logging Started:--> 19
+<!--Unique IPs Since Logging Started:--> 26
 </TD><TD>
 </TR>
 </TABLE>
