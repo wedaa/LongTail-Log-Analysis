@@ -2238,7 +2238,7 @@ date
 
 init_variables
 #read_local_config_file
-DEBUG=1
+#DEBUG=1
 
 SEARCH_FOR="sshd"
 
