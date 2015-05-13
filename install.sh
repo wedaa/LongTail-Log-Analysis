@@ -69,6 +69,7 @@ for file in $ETC_FILES ; do
 done
 
 PROGRAMS=" LongTail_rebuild_dashboard_index.pl \
+LongTail_make_30_days_imagemap.pl \
 LongTail_make_top_20_imagemap.pl \
 LongTail_password_analysis_part_1.pl \
 LongTail_password_analysis_part_2.pl \
