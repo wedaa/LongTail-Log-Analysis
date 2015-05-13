@@ -13,14 +13,7 @@ sub init {
 	close (FILE);
 }
 
-
-sub get_blacklists{
-	$HOUR=`date +%H`;
-	chomp $HOUR;
-	$MINUTE=`date +%M`;
-	chomp $MINUTE;
-	if ( ($HOUR<1) &&($MINUTE<55)){
-		print "Getting blacklists now\n";
+sub really_get_blacklists{
 		chdir ("/var/www/html/honey/black_lists");
 		`wget https://www.openbl.org/lists/base_all_ssh-only.txt.gz`;
 		`wget https://www.openbl.org/lists/base_90days.txt.gz`;
@@ -30,7 +23,26 @@ sub get_blacklists{
 		`wget http://lists.blocklist.de/lists/ssh.txt`;
 		`cp ssh.txt ssh.txt.$DATE`;
 		`rm *gz`;
+}
+
+sub get_blacklists{
+	$HOUR=`date +%H`;
+	chomp $HOUR;
+	$MINUTE=`date +%M`;
+	chomp $MINUTE;
+	if ( ($HOUR<1) &&($MINUTE<55)){
+		print "Getting blacklists now\n";
+		if ( ! -d "/var/www/html/honey/black_lists"){
+			print "\n\nCan not find /var/www/html/honey/black_lists directory, exiting now\n";
+			print "\n\nYou need to manually run mkdir /var/www/html/honey/black_lists to create it.\n";
+			print "\n\n\n\n\n\n";
+			exit;
+		}
+		&really_get_blacklists;
 	}
+	if ( ! -e "/var/www/html/honey/black_lists/ssh.txt.$DATE"){&really_get_blacklists;}
+	if ( ! -e "/var/www/html/honey/black_lists/base_90days.txt"){&really_get_blacklists;}
+	if ( ! -e "/var/www/html/honey/black_lists/base_all_ssh-only.txt"){&really_get_blacklists;}
 }
 
 sub load_local_ips{
