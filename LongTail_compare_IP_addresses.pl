@@ -61,9 +61,12 @@ sub compare_lists {
 	}
 	close (FILE);
 	print "<TD>$list_count</TD>";
-	#print "<TD>$_[0] count is $list_count</TD>";
-#print "\n\nDEBUG list count is $list_count, local_ips_count is $local_ips_count\n\n";
-	$percentage=$match_list/$local_ips_count*100;
+	if ( $local_ips_count > 0){
+		$percentage=$match_list/$local_ips_count*100;
+	}
+	else {
+		$percentage=0;
+	}
 	$percentage=sprintf("%.2f",$percentage);
 
 	print "<TD>$match_list / $percentage\%\n";
