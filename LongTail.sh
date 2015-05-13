@@ -62,29 +62,28 @@ function read_local_config_file {
 }
 
 function lock_down_files {
-#	if [ $START_HOUR -eq $MIDNIGHT ]; then
-	if [ "x$HOSTNAME" == "x/" ] ;then
-if [ -d /var/www/html ] ; then 
-cd /var/www/html
+echo "In function lock_down_files"
+if [ "x$HOSTNAME" == "x/" ] ;then
+	if [ -d /var/www/html ] ; then 
+		cd /var/www/html
+		echo "Small warning: chmod: missing operand after ‘go-r’ is normal for the first 24 hours of running LongTail."
 
-find . -name last-7-days-root-passwords.shtml |xargs chmod go-r 
-find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
-find . -name last-30-days-root-passwords.shtml |xargs chmod go-r 
-find . -name last-30-days-non-root-pairs.shtml |xargs chmod go-r 
-find . -name historical-root-passwords.shtml |xargs chmod go-r 
-find . -name historical-non-root-pairs.shtml |xargs chmod go-r 
+		find . -name last-7-days-root-passwords.shtml |xargs chmod go-r 
+		find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
+		find . -name last-30-days-root-passwords.shtml |xargs chmod go-r 
+		find . -name last-30-days-non-root-pairs.shtml |xargs chmod go-r 
+		find . -name historical-root-passwords.shtml |xargs chmod go-r 
+		find . -name historical-non-root-pairs.shtml |xargs chmod go-r 
 
-find */* -name todays_password |xargs chmod go-r
-find */* -name current-root-passwords.shtml |xargs chmod go-r
-find */* -name current-non-root-passwords.shtml |xargs chmod go-r
-find */* -name current-account-password-pairs.data.gz |xargs chmod go-r
-find */* -name current-admin-passwords.shtml |xargs chmod go-r
-find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
-
-
+		find */* -name todays_password |xargs chmod go-r
+		find */* -name current-root-passwords.shtml |xargs chmod go-r
+		find */* -name current-non-root-passwords.shtml |xargs chmod go-r
+		find */* -name current-account-password-pairs.data.gz |xargs chmod go-r
+		find */* -name current-admin-passwords.shtml |xargs chmod go-r
+		find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
+	fi
 fi
-fi
-#fi
+echo "Done with function lock_down_files"
 
 }
 
@@ -167,15 +166,7 @@ function init_variables {
 	# What hosts are protected by a firewall or Intrusion Detection System?
 	# This is used to set the current-attack-count.data.notfullday flag 
 	# in those directories to help "normalize" the data
-	HOSTS_PROTECTED="erhp erhp2"
-	BLACKRIDGE="blackridge"
-	RESIDENTIAL_SITES="shepherd"
-	EDUCATIONAL_SITES="syrtest edub edu_c"
-	CLOUD_SITES="cloud_v cloud_c"
-	BUSINESS_SITES=""
-
 	HOSTS_PROTECTED=""
-	BLACKRIDGE=""
 	RESIDENTIAL_SITES=""
 	EDUCATIONAL_SITES=""
 	CLOUD_SITES=""
@@ -847,18 +838,6 @@ function count_ssh_attacks {
 		echo "<TR><TH colspan=8>All Hosts Combined</TH></TR>" >> more_statistics_all.shtml
 		egrep '<TR>'\|'<TH>' $HTML_DIR/more_statistics.shtml |sed 's/<TD>/<TD>ALL Hosts /' >> more_statistics_all.shtml
 		
-		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by BlackRidge Technologies</TH></TR>" >> statistics_all.shtml
-		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by BlackRidge Technologies</TH></TR>" >> more_statistics_all.shtml
-		for dir in $BLACKRIDGE ; do
-			if [ -e $dir/statistics.shtml ] ; then
-				DESCRIPTION=`cat $dir/description.html`
-				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
-				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
-				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
-				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
-			fi
-		done
-		
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by an Intrusion Protection System</TH></TR>" >> statistics_all.shtml
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by an Intrusion Protection System</TH></TR>" >> more_statistics_all.shtml
 		for dir in $HOSTS_PROTECTED ; do
@@ -948,6 +927,51 @@ function count_ssh_attacks {
 }
 	
 function todays_assorted_stats {
+	local MONTH_COUNT=0
+	local MONTH_SUM=0
+	local MONTH_AVERAGE=0
+	local MONTH_STD=0
+	local MONTH_MEDIAN=0
+	local MONTH_MAX=0
+	local MONTH_MIN=0
+	local MONTH_STD=0
+
+	local LAST_MONTH_COUNT=0
+	local LAST_MONTH_SUM=0
+	local LAST_MONTH_AVERAGE=0
+	local LAST_MONTH_STD=0
+	local LAST_MONTH_MEDIAN=0
+	local LAST_MONTH_MAX=0
+	local LAST_MONTH_MIN=0
+	local LAST_MONTH_STD=0
+
+	local YEAR_COUNT=0
+	local YEAR_SUM=0
+	local YEAR_AVERAGE=0
+	local YEAR_STD=0
+	local YEAR_MEDIAN=0
+	local YEAR_MAX=0
+	local YEAR_MIN=0
+	local YEAR_STD=0
+
+	local EVERYTHING_COUNT=0
+	local EVERYTHING_SUM=0
+	local EVERYTHING_AVERAGE=0
+	local EVERYTHING_STD=0
+	local EVERYTHING_MEDIAN=0
+	local EVERYTHING_MAX=0
+	local EVERYTHING_MIN=0
+	local EVERYTHING_STD=0
+
+NORMALIZED_COUNT=0
+NORMALIZED_SUM=0
+NORMALIZED_AVERAGE=0
+NORMALIZED_STD=0
+NORMALIZED_MEDIAN=0
+NORMALIZED_MAX=0
+NORMALIZED_MIN=0
+NORMALIZED_STD=0
+
 	local file=$1
 	local outputfile=$2
 	if [ $DEBUG  == 1 ] ; then echo "============================================"; fi
@@ -1002,7 +1026,6 @@ function todays_assorted_stats {
 		MONTH_MEDIAN=$TODAY
 		MONTH_MAX=$TODAY
 		MONTH_MIN=$TODAY
-		#MONTH_AVERAGE=`printf '%.2f' 0`
 		MONTH_STD=`printf '%.2f' 0`
 	fi
 	rm $TMPFILE
@@ -1087,8 +1110,20 @@ function todays_assorted_stats {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now/statistics" ; date ; fi
 	for FILE in  `find $TMP_YEAR/ -name $file` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "YEAR_COUNT=$n\nYEAR_SUM=$s\nYEAR_AVERAGE=$a\nYEAR_STD=$std\nYEAR_MEDIAN=$med\nYEAR_MAX=$m\nYEAR_MIN=$mm";'  > $TMPFILE
 	. $TMPFILE
+echo ""
+echo ""
+echo "Cat'ing TMPFILE NOW"
+cat $TMPFILE
+echo ""
+echo ""
 	rm $TMPFILE
+echo ""
+echo ""
+echo "YEAR_AVERAGE is $YEAR_AVERAGE"
 	YEAR_AVERAGE=`printf '%.2f' $YEAR_AVERAGE`
+echo ""
+echo "YEAR_STD is $YEAR_STD"
+
 	YEAR_STD=`printf '%.2f' $YEAR_STD`
 
 
@@ -1156,6 +1191,8 @@ function todays_assorted_stats {
 		for FILE in  `find ./historical -name $file ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
 		. $TMPFILE
 		rm $TMPFILE
+echo "NORMALIZED_AVERAGE=$NORMALIZED_AVERAGE"
+echo "NORMALIZED_STD=$NORMALIZED_STD"
 		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
 		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
 	fi
@@ -2074,6 +2111,7 @@ function set_permissions {
 # Protect raw data for $NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA
 #
 function protect_raw_data {
+	echo "In function protect_raw_data"
         local TMP_HTML_DIR=$1
 	local count
 	is_directory_good $TMP_HTML_DIR
@@ -2092,6 +2130,7 @@ function protect_raw_data {
 			fi
 		fi
 	fi
+	echo "done with function protect_raw_data"
 }
 
 ############################################################################
@@ -2238,7 +2277,7 @@ date
 
 init_variables
 #read_local_config_file
-#DEBUG=1
+DEBUG=1
 
 SEARCH_FOR="sshd"
 
