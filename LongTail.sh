@@ -168,9 +168,17 @@ function init_variables {
 	# This is used to set the current-attack-count.data.notfullday flag 
 	# in those directories to help "normalize" the data
 	HOSTS_PROTECTED="erhp erhp2"
+	BLACKRIDGE="blackridge"
 	RESIDENTIAL_SITES="shepherd"
 	EDUCATIONAL_SITES="syrtest edub edu_c"
 	CLOUD_SITES="cloud_v cloud_c"
+	BUSINESS_SITES=""
+
+	HOSTS_PROTECTED=""
+	BLACKRIDGE=""
+	RESIDENTIAL_SITES=""
+	EDUCATIONAL_SITES=""
+	CLOUD_SITES=""
 	BUSINESS_SITES=""
  
 	
@@ -838,6 +846,18 @@ function count_ssh_attacks {
 		grep HEADERLINE statistics.shtml |egrep -v footer.html\|'</BODY'\|'</HTML'\|'</TABLE'\|'</TR' > more_statistics_all.shtml
 		echo "<TR><TH colspan=8>All Hosts Combined</TH></TR>" >> more_statistics_all.shtml
 		egrep '<TR>'\|'<TH>' $HTML_DIR/more_statistics.shtml |sed 's/<TD>/<TD>ALL Hosts /' >> more_statistics_all.shtml
+		
+		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by BlackRidge Technologies</TH></TR>" >> statistics_all.shtml
+		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by BlackRidge Technologies</TH></TR>" >> more_statistics_all.shtml
+		for dir in $BLACKRIDGE ; do
+			if [ -e $dir/statistics.shtml ] ; then
+				DESCRIPTION=`cat $dir/description.html`
+				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
+				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
+				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
+				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
+			fi
+		done
 		
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by an Intrusion Protection System</TH></TR>" >> statistics_all.shtml
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by an Intrusion Protection System</TH></TR>" >> more_statistics_all.shtml
