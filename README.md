@@ -136,14 +136,7 @@ LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core com
 	yum install php php-common php-cli php-xml php-pear php-pdo php-gd
 	yum install httpd
 
-Look up the properl EPEL repo at  https://fedoraproject.org/wiki/EPEL/FAQ
-
-	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-	yum install rpm-build ttmkfdir
-	yum install http://sourceforge.net/projects/mscorefonts2/files/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
-	cd /usr/share/fonts
-	ln -s msttcore truetype 
-
+LongTail requires jpgraph and TrueType fonts.  (See next section)
 
 Jpgraph Notes
 --------------
@@ -153,12 +146,22 @@ Edit the include line in /etc/php.ini to reference /usr/local/php.
 
 Fix the timezone line in /etc/php.ini to reference your timezone. (I use America/New_York ).
 
-You will need to install the truetype fonts.  (The following instructions
-are what I think I used, but are untested as of this writing.)
+You will need to install the truetype fonts.  
+
+The following instructions are what I think I used, but are untested as of this writing.)
   wget http://corefonts.sourceforge.net/msttcorefonts-2.0-1.spec
   yum install rpm-build cabextract
   rpmbuild -ba msttcorefonts-2.0-1.spec
   yum localinstall --nogpgcheck <PATH_TO_RPM>/msttcorefonts-2.0-1.noarch.rpm
+	ln -s /usr/share/fonts/msttcore /usr/share/fonts/truetype
+
+OR
+
+Look up the properl EPEL repo at  https://fedoraproject.org/wiki/EPEL/FAQ
+	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
+  yum install rpm-build cabextract
+	yum install rpm-build ttmkfdir
+	yum install http://sourceforge.net/projects/mscorefonts2/files/rpms/msttcore-fonts-installer-2.6-1.noarch.rpm
 	ln -s /usr/share/fonts/msttcore /usr/share/fonts/truetype
 
 LongTail Installation
