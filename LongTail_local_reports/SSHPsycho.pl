@@ -33,8 +33,13 @@ sub pass_1 {
 		}
 		close (FILE);
 	
+		if ($total > 0){
 		$percentage = $sshpsycho/$total;
 		$percentage *= 100;
+		}
+		else {
+			$percentage = 0;
+		}
 		$percentage = sprintf("%.2f",$percentage);
 	
 		$total = &commify($total);
