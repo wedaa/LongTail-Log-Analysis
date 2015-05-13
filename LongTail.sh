@@ -62,28 +62,29 @@ function read_local_config_file {
 }
 
 function lock_down_files {
-echo "In function lock_down_files"
-if [ "x$HOSTNAME" == "x/" ] ;then
-	if [ -d /var/www/html ] ; then 
-		cd /var/www/html
-		echo "Small warning: chmod: missing operand after ‘go-r’ is normal for the first 24 hours of running LongTail."
+#	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	if [ "x$HOSTNAME" == "x/" ] ;then
+if [ -d /var/www/html ] ; then 
+cd /var/www/html
 
-		find . -name last-7-days-root-passwords.shtml |xargs chmod go-r 
-		find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
-		find . -name last-30-days-root-passwords.shtml |xargs chmod go-r 
-		find . -name last-30-days-non-root-pairs.shtml |xargs chmod go-r 
-		find . -name historical-root-passwords.shtml |xargs chmod go-r 
-		find . -name historical-non-root-pairs.shtml |xargs chmod go-r 
+find . -name last-7-days-root-passwords.shtml |xargs chmod go-r 
+find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
+find . -name last-30-days-root-passwords.shtml |xargs chmod go-r 
+find . -name last-30-days-non-root-pairs.shtml |xargs chmod go-r 
+find . -name historical-root-passwords.shtml |xargs chmod go-r 
+find . -name historical-non-root-pairs.shtml |xargs chmod go-r 
 
-		find */* -name todays_password |xargs chmod go-r
-		find */* -name current-root-passwords.shtml |xargs chmod go-r
-		find */* -name current-non-root-passwords.shtml |xargs chmod go-r
-		find */* -name current-account-password-pairs.data.gz |xargs chmod go-r
-		find */* -name current-admin-passwords.shtml |xargs chmod go-r
-		find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
-	fi
+find */* -name todays_password |xargs chmod go-r
+find */* -name current-root-passwords.shtml |xargs chmod go-r
+find */* -name current-non-root-passwords.shtml |xargs chmod go-r
+find */* -name current-account-password-pairs.data.gz |xargs chmod go-r
+find */* -name current-admin-passwords.shtml |xargs chmod go-r
+find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
+
+
 fi
-echo "Done with function lock_down_files"
+fi
+#fi
 
 }
 
@@ -166,11 +167,21 @@ function init_variables {
 	# What hosts are protected by a firewall or Intrusion Detection System?
 	# This is used to set the current-attack-count.data.notfullday flag 
 	# in those directories to help "normalize" the data
-	HOSTS_PROTECTED=""
-	RESIDENTIAL_SITES=""
-	EDUCATIONAL_SITES=""
-	CLOUD_SITES=""
-	BUSINESS_SITES=""
+	if [ `hostname` == "longtail.it.marist.edu" ] ; then
+		HOSTS_PROTECTED="erhp erhp2"
+		BLACKRIDGE="blackridge"
+		RESIDENTIAL_SITES="shepherd"
+		EDUCATIONAL_SITES="syrtest edub edu_c"
+		CLOUD_SITES="cloud_v cloud_c"
+		BUSINESS_SITES=""
+	else
+		HOSTS_PROTECTED=""
+		BLACKRIDGE=""
+		RESIDENTIAL_SITES=""
+		EDUCATIONAL_SITES=""
+		CLOUD_SITES=""
+		BUSINESS_SITES=""
+	fi
  
 	
 	# Do we protect the raw data, and for how long?
@@ -191,7 +202,7 @@ function init_variables {
 	MONTH_AT_START_OF_RUNTIME=`date +%m`
 	DAY_AT_START_OF_RUNTIME=`date +%d`
 	REBUILD=0
-	MIDNIGHT=0
+	MIDNIGHT=19
 	ONE_AM=1
 }
 
@@ -231,7 +242,6 @@ function is_file_good {
 #
 function change_date_in_index {
 	local DATE=`date`
-	echo "DEBUG in change_date_in_index, dir is $1"
 
 	is_file_good $1/index.shtml
 	is_file_good $1/index-long.shtml
@@ -838,6 +848,18 @@ function count_ssh_attacks {
 		echo "<TR><TH colspan=8>All Hosts Combined</TH></TR>" >> more_statistics_all.shtml
 		egrep '<TR>'\|'<TH>' $HTML_DIR/more_statistics.shtml |sed 's/<TD>/<TD>ALL Hosts /' >> more_statistics_all.shtml
 		
+		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by BlackRidge Technologies</TH></TR>" >> statistics_all.shtml
+		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by BlackRidge Technologies</TH></TR>" >> more_statistics_all.shtml
+		for dir in $BLACKRIDGE ; do
+			if [ -e $dir/statistics.shtml ] ; then
+				DESCRIPTION=`cat $dir/description.html`
+				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
+				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
+				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
+				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
+			fi
+		done
+		
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by an Intrusion Protection System</TH></TR>" >> statistics_all.shtml
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by an Intrusion Protection System</TH></TR>" >> more_statistics_all.shtml
 		for dir in $HOSTS_PROTECTED ; do
@@ -963,14 +985,14 @@ function todays_assorted_stats {
 	local EVERYTHING_MIN=0
 	local EVERYTHING_STD=0
 
-NORMALIZED_COUNT=0
-NORMALIZED_SUM=0
-NORMALIZED_AVERAGE=0
-NORMALIZED_STD=0
-NORMALIZED_MEDIAN=0
-NORMALIZED_MAX=0
-NORMALIZED_MIN=0
-NORMALIZED_STD=0
+	local NORMALIZED_COUNT=0
+	local NORMALIZED_SUM=0
+	local NORMALIZED_AVERAGE=0
+	local NORMALIZED_STD=0
+	local NORMALIZED_MEDIAN=0
+	local NORMALIZED_MAX=0
+	local NORMALIZED_MIN=0
+	local NORMALIZED_STD=0
 
 	local file=$1
 	local outputfile=$2
@@ -1026,6 +1048,7 @@ NORMALIZED_STD=0
 		MONTH_MEDIAN=$TODAY
 		MONTH_MAX=$TODAY
 		MONTH_MIN=$TODAY
+		#MONTH_AVERAGE=`printf '%.2f' 0`
 		MONTH_STD=`printf '%.2f' 0`
 	fi
 	rm $TMPFILE
@@ -1110,20 +1133,8 @@ NORMALIZED_STD=0
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now/statistics" ; date ; fi
 	for FILE in  `find $TMP_YEAR/ -name $file` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "YEAR_COUNT=$n\nYEAR_SUM=$s\nYEAR_AVERAGE=$a\nYEAR_STD=$std\nYEAR_MEDIAN=$med\nYEAR_MAX=$m\nYEAR_MIN=$mm";'  > $TMPFILE
 	. $TMPFILE
-echo ""
-echo ""
-echo "Cat'ing TMPFILE NOW"
-cat $TMPFILE
-echo ""
-echo ""
 	rm $TMPFILE
-echo ""
-echo ""
-echo "YEAR_AVERAGE is $YEAR_AVERAGE"
 	YEAR_AVERAGE=`printf '%.2f' $YEAR_AVERAGE`
-echo ""
-echo "YEAR_STD is $YEAR_STD"
-
 	YEAR_STD=`printf '%.2f' $YEAR_STD`
 
 
@@ -1191,8 +1202,6 @@ echo "YEAR_STD is $YEAR_STD"
 		for FILE in  `find ./historical -name $file ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
 		. $TMPFILE
 		rm $TMPFILE
-echo "NORMALIZED_AVERAGE=$NORMALIZED_AVERAGE"
-echo "NORMALIZED_STD=$NORMALIZED_STD"
 		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
 		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
 	fi
@@ -1475,7 +1484,6 @@ function ssh_attacks {
 		if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
 			cat $TMP_DIRECTORY/LongTail-messages.$$  |sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 		else
-			echo "DEBUG -Trying to create $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz"
 			cat $TMP_DIRECTORY/LongTail-messages.$$ |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 		fi
 		# Code do avoid doing this if REBUILD is set
@@ -1756,13 +1764,15 @@ function do_ssh {
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh/last7,30,historical  now" ; fi
 		#----------------------------------------------------------------
 		# Lets check the ssh logs for the last 7 days
-		LAST_WEEK=""
+		LAST_WEEK="/dev/null "
 		for i in 1 2 3 4 5 6 7 ; do
 			TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
+			if [ -e "$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz" ] ; then
 			if [ "$LAST_WEEK" == "" ] ; then
 				LAST_WEEK="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
 			else
 				LAST_WEEK="$LAST_WEEK $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
+			fi
 			fi
 		done
 		TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG
@@ -1771,13 +1781,15 @@ function do_ssh {
 	
 		#----------------------------------------------------------------
 		# Lets check the ssh logs for the last 30 days
-		LAST_MONTH=""
+		LAST_MONTH="/dev/null "
 		for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
 			TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`
+			if [ -e "$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz" ] ; then
 			if [ "$LAST_MONTH" == "" ] ; then
 				LAST_MONTH="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
 			else
 				LAST_MONTH="$LAST_MONTH $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz"
+			fi
 			fi
 		done
 		TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG
@@ -1964,9 +1976,6 @@ function do_ssh {
 					then
 						FILE="current-top-20-non-root-accounts-real.data"
 					fi
-echo "DEBUG ======================================="
-echo "DEBUG Make graph for $FILE"
-echo "DEBUG map file is $MAP"
 					if [[ $FILE == *"accounts"* ]] ; then
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
 							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
@@ -2020,9 +2029,6 @@ echo "DEBUG map file is $MAP"
 						then
 							FILE="historical-top-20-non-root-accounts-real.data"
 						fi
-echo "DEBUG ======================================="
-echo "DEBUG Make graph for $FILE"
-echo "DEBUG map file is $MAP"
 						if [[ $FILE == *"accounts"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
 							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
@@ -2048,7 +2054,6 @@ echo "DEBUG map file is $MAP"
 							if [ "x$HOSTNAME" == "x/" ] ;then
 								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho Blue=others)" "" "" "wide" > $GRAPHIC_FILE
 							else
-echo "DEBUG $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  "
 								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE
 							fi
 
@@ -2111,7 +2116,6 @@ function set_permissions {
 # Protect raw data for $NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA
 #
 function protect_raw_data {
-	echo "In function protect_raw_data"
         local TMP_HTML_DIR=$1
 	local count
 	is_directory_good $TMP_HTML_DIR
@@ -2130,7 +2134,6 @@ function protect_raw_data {
 			fi
 		fi
 	fi
-	echo "done with function protect_raw_data"
 }
 
 ############################################################################
@@ -2257,13 +2260,19 @@ function recount_last_30_days_sshpsycho_attacks {
 		YESTERDAY_MONTH=`date "+%m" --date="$i day ago"`
 		YESTERDAY_DAY=`date "+%d" --date="$i day ago"`
 		# Make current-sshpsycho-attack-count.data
+		if [ -e "$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz" ] ; then
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-attack-count.data
+		fi
 
 		# Make current-friends_of_sshpsycho-attack-count.data
+		if [ -e "$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz" ] ; then 
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-friends_of_sshpsycho-attack-count.data
+		fi
 
 		# Make current-associates_of_sshpsycho-attack-count.data
+		if [ -e "$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz" ] ; then 
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-associates_of_sshpsycho-attack-count.data
+		fi
 
 	done
 }
@@ -2277,7 +2286,7 @@ date
 
 init_variables
 #read_local_config_file
-DEBUG=1
+DEBUG=0
 
 SEARCH_FOR="sshd"
 
@@ -2352,7 +2361,6 @@ fi
 HTML_DIR="$HTML_DIR/$HOSTNAME"
 echo "HTML_DIR is $HTML_DIR"
 
-echo "DEBUG is set to:$DEBUG"
 
 # Uncomment out the next two lines to rebuild all the data files
 # CREATE A BACKUP OF /var/www/html/honey FIRST, just in case.
@@ -2463,8 +2471,6 @@ echo "Doing blacklist efficiency tests now"
 	
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
 		#if [ $START_HOUR -eq 19 ]; then
-			#/usr/local/etc/LongTail_make_30_days_imagemap.pl >/var/www/html/honey/30_days_imagemap.html
-echo "DEBUG Running /usr/local/etc/LongTail_make_30_days_imagemap.pl >$HTML_DIR/30_days_imagemap.html"
 			/usr/local/etc/LongTail_make_30_days_imagemap.pl >$HTML_DIR/30_days_imagemap.html
 		fi
 
@@ -2511,12 +2517,13 @@ echo "DEBUG Running /usr/local/etc/LongTail_make_30_days_imagemap.pl >$HTML_DIR/
 		fi
 	fi
 
-	echo -n "hostname is not set, running analyze now: "
-	date
+#	echo -n "hostname is not set, running analyze now: "
+#	date
 #	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
-	echo -n "Done with LongTail_analyze_attacks.pl at:"
-	date
+#	echo -n "Done with LongTail_analyze_attacks.pl at:"
+#	date
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
+		echo -n "Starting LongTail_class_c_hall_of_shame.pl now "; date
 		make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
 		`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
 		make_footer "$HTML_DIR/class_c_list.shtml" 
@@ -2536,7 +2543,7 @@ fi
 #	make_footer "$HTML_DIR/$filename.shtml" 
 #done
 
-echo "Starting SSHPycho analysis now :-)"
+echo -n "Starting sshPsycho analysis now :-) " ; date
 if [ "x$HOSTNAME" == "x/" ] ; then
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Doing SSHPsycho report now" ; fi
 	make_header "$HTML_DIR/SSHPsycho.shtml" "SSHPsycho Attacks"
