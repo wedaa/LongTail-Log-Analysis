@@ -56,7 +56,11 @@ translate_country_codes \
 LongTail-exclude-accounts.grep \
 LongTail-exclude-webpages.grep  \
 LongTail-exclude-IPs-httpd.grep \
-LongTail-exclude-IPs-ssh.grep "
+LongTail-exclude-IPs-ssh.grep \
+LongTail_friends_of_sshPsycho_IP_addresses \
+LongTail_associates_of_sshPsycho_IP_addresses \
+LongTail_sshPsycho_IP_addresses"
+
 
 for file in $ETC_FILES ; do
 	echo $file
