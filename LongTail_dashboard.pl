@@ -155,7 +155,7 @@ close (FILE);
 
 open (FILE, "/var/www/html/honey/statistics.shtml");
 while (<FILE>){
-	if (/This\ Month/){
+	if (/Last\ Month/){
 		chomp;
 		$_ =~ s/ //g;
 		$_ =~ s/<\/TD><TD>/|/g;
@@ -171,7 +171,7 @@ open (FILE, "/var/www/html/honey/more_statistics.shtml");
 $found=0;
 while (<FILE>){
 	if (/IP Address Count/){$found=1;}
-	if (($found ==1 ) && (/This\ Month/)){
+	if (($found ==1 ) && (/Last\ Month/)){
 		chomp;
 		$_ =~ s/ //g;
 		$_ =~ s/<\/TD><TD>/|/g;
