@@ -1,0 +1,36 @@
+
+ul.comicNav {
+	padding:0;
+	list-style-type:none;
+}
+ul.comicNav li {
+	display: inline;
+}
+
+ul.comicNav  li a {
+	/*background-color: #6E6E6E;*/
+	background-color:#0000ff;
+	color: #FFF;
+	border: 1.5px solid #333;
+	font-size: 16px;
+	font-weight: 600;
+	padding: 1.5px 12px;
+	margin: 0 4px;
+	text-decoration: none;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	box-shadow: 0 0 5px 0 blue;
+	-moz-box-shadow: 0 0 5px 0 blue;
+	-webkit-box-shadow: 0 0 5px 0 blue;	
+}
+
+
+ul.comicNav a:hover, ul.comicNav a:focus {
+	background-color: #FFF;
+	color: #0000ff;
+	box-shadow: none;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+}
+
