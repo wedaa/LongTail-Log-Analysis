@@ -202,7 +202,7 @@ function init_variables {
 	MONTH_AT_START_OF_RUNTIME=`date +%m`
 	DAY_AT_START_OF_RUNTIME=`date +%d`
 	REBUILD=0
-	MIDNIGHT=19
+	MIDNIGHT=0
 	ONE_AM=1
 }
 
