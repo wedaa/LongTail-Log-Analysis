@@ -119,6 +119,7 @@ footer.html \
 institution.html \
 notes.shtml \
 LongTail.css \
+buttons.css \
 404.shtml \
 attacks_view_restricted.shtml"
 
@@ -235,3 +236,6 @@ echo "And download jpgraph from http://jpgraph.net/download/ installed into "
 echo "/usr/local/php/jpgraph.  (Don't forget to edit the include line in "
 echo "/etc/php.ini to reference /usr/local/php)."
 
+echo "Please add these entries to your crontab file"
+echo ""
+cat sample.crontab
