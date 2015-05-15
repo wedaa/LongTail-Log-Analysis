@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+$|=1;
 #
 # Foreign language days/months from
 # http://www.europa-pages.co.uk/lessons/spanish-dates.html
@@ -24,6 +25,7 @@ print "<TABLE>\n";
 print "<TR><TH>Dictionary file</TH><TH>\# of words</TH><TH>\# of Matches</TH><TH>% matches</TH><TH>Comments</TH></TR>\n";
 while (<LS>){
 	chomp;
+	if ( /rockyou/){next;}
 	$dictionary_name=$_;
 	$dictionary_word=0;
 	$dictionary_name_munged = $_;
@@ -47,8 +49,6 @@ while (<LS>){
 		$_ =~ s/\cM//g;
 		if ( $dict{$_} <1){
 			$dict{$_}=1;
-			#$_ =~ tr/[A-Z]/[a-z]/;
-			#$dictlower{$_}=1;
 			$count++;
 		}
 	}
@@ -87,7 +87,10 @@ while (<LS>){
 	}
 	print "</TR>\n";
 	$dictionary_word=0;
-
+	#############################################################################
+	#
+	# Lower Case now
+	#
 	$_ = $dictionary_name;
 	print "<TR><TD>$dictionary_name_munged in lower case ";
 	undef (%dict);
@@ -105,6 +108,7 @@ while (<LS>){
 		open (DICT, "unzip -c  $_|") || die "can not open /usr/local/dict/$_\n";
 	}
 	$count=0;
+	$tmp_count=0;
 	while (<DICT>){
 		chomp;
 		$_ =~ s/\cM//g;
@@ -113,6 +117,8 @@ while (<LS>){
 			$dict{$_}=1;
 			$count++;
 		}
+		$tmp_count++;
+	#	if ($tmp_count > 10000){$tmp_count=0; print ".";}
 	}
 	close (DICT);
 	print "<TD> $count </TD>";
