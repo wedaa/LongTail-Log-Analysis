@@ -67,6 +67,8 @@ function lock_down_files {
 if [ -d /var/www/html ] ; then 
 cd /var/www/html
 
+echo "Expect to see chmod warnings until you have run LongTail for at least 24 hours"
+
 find . -name last-7-days-root-passwords.shtml |xargs chmod go-r 
 find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
 find . -name last-30-days-root-passwords.shtml |xargs chmod go-r 
@@ -2052,7 +2054,7 @@ function do_ssh {
 						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
 							# This works but I want to show sshPsycho data now
 							if [ "x$HOSTNAME" == "x/" ] ;then
-								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho Blue=others)" "" "" "wide" > $GRAPHIC_FILE
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE
 							else
 								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE
 							fi
