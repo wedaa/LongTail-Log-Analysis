@@ -375,7 +375,7 @@ print "DEBUG-I should do this with find . -name '$ip*' |sort -nk6 -t \. instead\
 #print "DEBUG trying sort -nk2 now\n";
 	`sort -rnk2 -t\\| $honey_dir/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
 print "DEBUG trying cat now\n";
-	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/</TD><TD>/'|sed 's/\$/<\/TD><\/TR>/' >> $honey_dir/current_attackers_lifespan.shtml`;
+	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\/TD><TD>/'|sed 's/\$/<\/TD><\/TR>/' >> $honey_dir/current_attackers_lifespan.shtml`;
 	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
 	
 	print "DEBUG DONE sorting by key now\n";
