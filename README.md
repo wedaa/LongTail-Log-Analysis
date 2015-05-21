@@ -132,7 +132,7 @@ LongTail Prerequisites
 --------------
 LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core commands follow:
 
-	yum install jwhois
+	yum install jwhois (RHEL 6) OR yum install whois (RHEL 7)
 	yum install php php-common php-cli php-xml php-pear php-pdo php-gd
 	yum install httpd
 
@@ -221,12 +221,17 @@ is code that only runs during the midnight time frame.
 
 MY crontab entry looks like this one:
 
+	#
+	# LongTail stuff
+	#
 	5 * * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-	45 0 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	45 0,6,12,18 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
+	#
+	# LongTail dashboard stuff
+	#
 	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
 	0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
 	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
-
 	
 
 HTTP Configuration 
@@ -340,6 +345,8 @@ footer.html:
 
 description.html:
 
+organization.html:
+
 index.shtml:
 
 index-long.shtml:
@@ -356,12 +363,6 @@ things are done.)
 44) I need to cleanup the Dictionary section.  It's still ugly-ish
 and needs to be cleaned up and described better
 
-59) CRITICAL: There's a bug in the "normalization" code for some of the 
-statistics webpages.
-
-85) CRITICAL:  Make a "Top 5 LongTail webpages" with a note for new viewers 
-to look at it. (Tour)
-
 KNOWN ISSUESAND IMPROVEMENTS FOR RELEASE 1.5
 --------------
 
@@ -370,7 +371,7 @@ KNOWN ISSUESAND IMPROVEMENTS FOR RELEASE 1.5
 57) RELEASE 1.5 I need to break out attacks by hosts so I can see the attacks
 that get through the IPS more clearly.
 
-60) RELEASE 1.5 I desperately need to optimize the LongTail_analyze_attacks.pl
+60) RELEASE 1.5 (In Progress) I desperately need to optimize the LongTail_analyze_attacks.pl
 script since it takes so long to run
 
 63) RELEASE 1.5: Auto-report attacks to the various IP Abuse websites.
@@ -378,7 +379,17 @@ script since it takes so long to run
 67) RELEASE 1.5: Make a  5 minute "This is LongTail" slideshow explaining the 
 different features and reports in LongTail.
 
+85) RELEASE 1.5:  Make a "Top 5 LongTail webpages" with a note for new viewers 
+to look at it. (Tour)
+
 87) RELEASE 1.5 How do I breakout sshpsycho attacks by host attacked?
+
+90) RELEASE 1.5 Record port and agent (from sshd -dddd)
+Connection from ::1 port 57427
+debug1: Client protocol version 2.0; client software version OpenSSH_6.7
+
+91) Can we do Kippo logs?
+
 
 KNOWN ISSUES AND IMPROVEMENTS FOR RELEASE 2.0
 --------------
@@ -598,6 +609,9 @@ other charts
 55) DONE In statistics section I need to get stats on # of usernames, passwords
 and IP addresses.
 
+59) CRITICAL: FIXED There's a bug in the "normalization" code for some of the 
+statistics webpages.
+
 62) DONE: Cleanup formatting in first seen reports
 
 64) DONE: Can I auto-add a date stamp and website address to my graphics?
@@ -636,3 +650,6 @@ where/when they are.
 88) DONE: To be "really" added once the tour is done.  Add a cookie so that 
 brand new visitors have the option of going to the "Most Important 5 Pages" 
 webpage (Tour)
+
+89) FIXED Need to fix the bug in sshPsycho friends and associates that overwrites
+existing IP addresses in the lists.
