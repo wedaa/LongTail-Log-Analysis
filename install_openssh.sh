@@ -16,7 +16,9 @@ tar -xf openssh-6.7p1.tar.gz
 mv openssh-6.7p1 openssh-6.7p1-22
 cd openssh-6.7p1-22
 mv auth-passwd.c auth-passwd.c.orig
+mv sshd.c sshd.c.orig
 wget https://raw.githubusercontent.com/wedaa/LongTail-Log-Analysis/master/auth-passwd.c
+wget https://raw.githubusercontent.com/wedaa/LongTail-Log-Analysis/master/sshd.c
 wget https://raw.githubusercontent.com/wedaa/LongTail-Log-Analysis/master/sshd_config-22
 cp sshd_config-22 /usr/local/etc
 ./configure
@@ -34,7 +36,9 @@ tar -xf openssh-6.7p1.tar.gz
 mv openssh-6.7p1 openssh-6.7p1-2222
 cd openssh-6.7p1-2222
 wget https://raw.githubusercontent.com/wedaa/LongTail-Log-Analysis/master/auth-passwd-2222.c
+mv sshd.c sshd.c.orig
 mv auth-passwd.c auth-passwd.c.orig
+wget https://raw.githubusercontent.com/wedaa/LongTail-Log-Analysis/master/sshd.c
 cp auth-passwd-2222.c auth-passwd.c
 wget https://raw.githubusercontent.com/wedaa/LongTail-Log-Analysis/master/sshd_config-2222
 cp sshd_config-2222 /usr/local/etc
