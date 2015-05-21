@@ -78,15 +78,12 @@ sub init {
 	}
 	close (FILE);
 }
+# <A HREF="/honey/ip_attacks.shtml#109.161.137.122">109.161.137.122</A> 
 
 &init;
 while (<>){
 	chomp;
 	($trash,$count,$ip)=split (/\s+/,$_,3);
-	#print "DEBUG trash is $trash\n";
-	#print "DEBUG count is $count\n";
-	#print "DEBUG IP is -->$ip<--\n";
-	#print "DEBUG ". $ip_to_country{$ip} ;
 	if ( ($count eq "") && ($ip eq "") ) {
 		#print "DEBUG Only one field, must be ip\n";
 		$ip = $trash;
