@@ -391,6 +391,12 @@ function count_ssh_attacks {
 	if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
 	TMP_DIR="$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY"
 	if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
+	for dir in $HOSTS_PROTECTED $BLACKRIDGE ; do
+		if [ "x$HOSTNAME" == "x$dir" ] ; then
+			touch $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data.notfullday
+			echo $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/
+		fi
+	done
 	#
 	# Why did I add this line?
 	# This makes sure the current day exists and is set to no data ?
@@ -1207,7 +1213,7 @@ function todays_assorted_stats {
 		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
 		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
 	fi
-	echo -n "Down with normalized data"; date
+	echo -n "Done with normalized data"; date
 
 	NORMALIZED_COUNT=`echo $NORMALIZED_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	NORMALIZED_SUM=`echo $NORMALIZED_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -1509,6 +1515,12 @@ function ssh_attacks {
 			if [ ! -d $TMP_DIR  ] ; then mkdir $TMP_DIR ; chmod a+rx $TMP_DIR; fi
 			cp $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
 			chmod a+r $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz
+			for dir in $HOSTS_PROTECTED ; do
+				if [ "x$HOSTNAME" == "x$dir" ] ; then
+					touch $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data.notfullday
+					echo $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/
+				fi
+			done
 		else
 			echo "REBUILD SET, NOT copying .gz file now"
 		fi 
@@ -2156,6 +2168,12 @@ function create_historical_copies {
 		cd  $TMP_HTML_DIR
 
 		mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
+		for dir in $HOSTS_PROTECTED $BLACKRIDGE ; do
+			if [ "x$HOSTNAME" == "x$dir" ] ; then
+				touch $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data.notfullday
+				echo $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/
+			fi
+		done
 		if [ -e $TMP_HTML_DIR/index-historical.shtml ] ; then
 			cp $TMP_HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/index.shtml
 		else
@@ -2243,8 +2261,8 @@ function rebuild {
 # a firewall 
 #
 function set_hosts_protected_flag {
-	if [ "x$HOSTNAME" == "x" ] ;then
-		for host in $HOSTS_PROTECTED ; do
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		for host in $HOSTS_PROTECTED $BLACKRIDGE ; do
 			cd /var/www/html/honey/$host/historical
 			for dir in `find */*/* -type d` ; do
 				touch $dir/current-attack-count.data.notfullday
@@ -2257,7 +2275,7 @@ function recount_last_30_days_sshpsycho_attacks {
 
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-In recount_last_30_days_sshpsycho_attacks" ; date; fi
 	LAST_MONTH=""
-	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45; do
 		YESTERDAY_YEAR=`date "+%Y" --date="$i day ago"`
 		YESTERDAY_MONTH=`date "+%m" --date="$i day ago"`
 		YESTERDAY_DAY=`date "+%d" --date="$i day ago"`
