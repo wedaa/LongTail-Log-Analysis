@@ -236,7 +236,9 @@ for i in perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
 done
 echo "You should probably run the following command to install all the php "
 echo "required for graphing"
-echo "       yum install jwhois php php-devel php-common php-cli php-xml php-pear php-pdo php-gd"
+echo "       yum install jwhois php php-devel php-common php-cli php-xml php-pear php-pdo php-gd (RHEL 6)"
+echo "            OR"
+echo "       yum install whois php php-devel php-common php-cli php-xml php-pear php-pdo php-gd (RHEL 7)"
 echo ""
 echo "And download jpgraph from http://jpgraph.net/download/ installed into "
 echo "/usr/local/php/jpgraph.  (Don't forget to edit the include line in "
