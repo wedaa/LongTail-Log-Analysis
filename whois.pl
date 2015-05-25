@@ -108,7 +108,12 @@ if ( $ip eq "NAMEDPIPE" ){
 			$tmp=$ip_table{$ip};
 		}
 		else {
-			&look_up_country;
+			if ( $ip =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/){
+				&look_up_country;
+			}
+			else {
+				print (STDERR "$ip does not appear to be an IP address\n");
+			}
 		}
 		open (OUT, '>', "pipe2") || die "Can not open named pipe pipe2\n";
 		print (OUT "country: $tmp\n");
@@ -134,7 +139,12 @@ else {
 		print "country: $tmp\n";
 	}
 	else { #It's not in the file or the array :-(
-			&look_up_country;
+			if ( $ip =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/){
+				&look_up_country;
+			}
+			else {
+				print (STDERR "$ip does not appear to be an IP address\n");
+			}
 	}
 
 }
