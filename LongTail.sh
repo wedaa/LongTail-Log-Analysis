@@ -1260,6 +1260,7 @@ function ssh_attacks {
 	local DATE=$4
 	local MESSAGES=$5
 	local FILE_PREFIX=$6
+DEBUG=1
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG TMP_HTML_DIR=$TMP_HTML_DIR, YEAR=$YEAR, PATH_TO_VARLOG=$PATH_TO_VAR_LOG, $DATE, MESSAGES=$MESSAGES, FILE_PREFIX=$FILE_PREFIX" ; fi
 
 	#
@@ -1283,6 +1284,7 @@ function ssh_attacks {
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "hostname is not set"
+echo "PROTOCOL is $PROTOCOL"
 		$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
 	else
 		echo "hostname IS set to $HOSTNAME."
@@ -2385,6 +2387,7 @@ echo "HTML_DIR is $HTML_DIR"
 # Uncomment out the next two lines to rebuild all the data files
 # CREATE A BACKUP OF /var/www/html/honey FIRST, just in case.
 # cd /var/www/html/honeyl tar -cf $TMP_DIRECTORY/honey.tar  .
+#PROTOCOL=$SEARCH_FOR
 #rebuild
 #exit
 
