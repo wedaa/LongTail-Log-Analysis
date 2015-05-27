@@ -1,4 +1,11 @@
 #!/usr/bin/perl
+# You must be in the directory with the kippo logs in it.
+#
+# You must disable all LongTail jobs in crontab before you run this
+#
+# After you run this, then run /usr/local/etc/LongTail.sh REBUILD
+#
+#
 #LONGTAIL: 2015-05-22T15:33:56-04:00 shepherd sshd-22[19597]: IP: 222.186.21.223 PassLog: Username: root Password: mtcl
 #KIPPO:    2015-05-10 18:05:31-0400 [SSHService ssh-userauth on HoneyPotTransport,16534,58.218.204.52] login attempt [root/skata1] failed
 
