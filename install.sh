@@ -70,6 +70,7 @@ done
 
 PROGRAMS=" LongTail_rebuild_dashboard_index.pl \
 LongTail_dashboard.pl \
+LongTail_import_Kippo_to_LongTail.pl \
 LongTail_rebuild_last_month_dashboard_charts.sh \
 LongTail_rebuild_dashboard_index.pl \
 LongTail_make_dashboard_graph.php \
