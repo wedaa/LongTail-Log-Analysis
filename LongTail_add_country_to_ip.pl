@@ -77,6 +77,34 @@ sub init {
 		}
 	}
 	close (FILE);
+
+	if ( -d "/usr/local/etc/LongTail_botnets"){
+			open (FIND, "find /usr/local/etc/LongTail_botnets -type f -print|sort |") || die "Can not run find command\n";
+			while (<FIND>){
+				chomp;
+				if (/.sh$/){next;}
+				if (/.pl$/){next;}
+				if (/.html/){next;}
+				if (/.shtml/){next;}
+				if (/\.201\d\./){next;}
+				if (/\.202\d\./){next;}
+				if (/backups/){next;}
+				if (/sshPsycho/){next;}
+				$filename=$_;
+				$botnet_name=`basename $filename`;
+				chomp $botnet_name;
+				open (FILE, "$_");
+				while (<FILE>){
+					chomp;
+					$ip=$_;
+					if (/\.\.\./){next;}
+					#if ($ssh_psycho_friends{$ip} ){ $tag="sshPsycho_Friend"; }
+					$botnets{$ip}=$botnet_name;
+				}
+				close (FILE);
+			}
+			close (FIND);
+		}
 }
 # <A HREF="/honey/ip_attacks.shtml#109.161.137.122">109.161.137.122</A> 
 
@@ -95,6 +123,7 @@ while (<>){
 	if ($ssh_psycho{$ip} ){ $tag="sshPsycho"; }
 	if ($ssh_psycho_associates{$ip} ){ $tag="sshPsycho_Associate"; }
 	if ($ssh_psycho_friends{$ip} ){ $tag="sshPsycho_Friend"; }
+	if ($botnets{$ip}) { $tag=$botnets{$ip};}
 	if ($tag ne ""){
 		print "$_($tag)\n";
 	}
