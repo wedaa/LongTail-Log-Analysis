@@ -16,6 +16,10 @@ sub init {
 	$MIDNIGHT=0;
 	$HOUR=`date +%h`;
 	chomp $HOUR;
+	if ( ! -e "/var/www/html/honey/attacks/sum2.data"){
+		print "Can not find /var/www/html/honey/attacks/sum2.data, exiting now\n";
+		exit;
+	}
 }
 
 sub pass_1 { 	
