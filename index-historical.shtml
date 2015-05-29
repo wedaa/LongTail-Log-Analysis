@@ -5,7 +5,7 @@
 <!--#include virtual="/honey/header.html" --> 
 
 <TITLE>LongTail Log Analysis @ <!--#include virtual="/honey/institution.html" -->
- Historical Page, All SSH Ports
+ Historical Page, All SSH Ports for
 <!--#include virtual="date.html" --> 
 </TITLE>
 </HEAD>
@@ -14,6 +14,21 @@
 LongTail Log Analysis Historical Page, All SSH Ports for 
 <!--#include virtual="date.html" --> 
 </H3>
+<TABLE>
+<TR><TD>Data on this page last updated on</TD><TD> <!--#include virtual="date_updated.txt" -->
+<TR><TD>Number of ssh login attempts today</TD><TD><!--#include virtual="current-attack-count.data" -->
+<TR><TD>Number of usernames seen today</TD><TD><!--#include virtual="todays_username.count" -->
+<TR><TD>Number of unique usernames seen today</TD><TD><!--#include virtual="todays-uniq-usernames.txt.count" -->
+<TR><TD>Number of passwords seen today</TD><TD><!--#include virtual="todays_password.count" -->
+<TR><TD>Number of unique passwords seen today</TD><TD><!--#include virtual="todays-uniq-passwords.txt.count" -->
+<TR><TD>Number of IP addresses seen today</TD><TD><!--#include virtual="todays_ips.count" -->
+<TR><TD>Number of unique IP addresses seen today</TD><TD><!--#include virtual="todays-uniq-ips.txt.count" -->
+<TR><TD>Number of sshPsycho attacks today</TD><TD><!--#include virtual="current-sshpsycho-attack-count.data" -->
+<TR><TD>Number of friends of sshPsycho attacks today</TD><TD><!--#include virtual="current-friends_of_sshpsycho-attack-count.data" -->
+<TR><TD>Number of associates of sshPsycho attacks today</TD><TD><!--#include virtual="current-associates_of_sshpsycho-attack-count.data" -->
+</TABLE>
+<BR><BR>
+
 <a href="current-root-passwords.shtml">Root Passwords</a>
 <BR>
 <a href="current-top-20-root-passwords.shtml">Top 20 Root Passwords</a>
