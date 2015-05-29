@@ -147,3 +147,6 @@ sub pass_4{
 &pass_2;
 &pass_3;
 &pass_4;
+if ( -e "/tmp/sshpsycho.$$"){ unlink ("/tmp/sshpsycho.$$");}
+if ( -e "/tmp/sshpsycho.$$-2"){unlink ("/tmp/sshpsycho.$$-2");}
+
