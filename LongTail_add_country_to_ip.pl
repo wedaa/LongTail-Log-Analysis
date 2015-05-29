@@ -92,6 +92,7 @@ while (<>){
 	$tmp_country_code=~ tr/A-Z/a-z/;
 	$_ =~ s/$ip/$ip $country_code{$tmp_country_code}/;
 	$tag="";
+	if ($ssh_psycho{$ip} ){ $tag="sshPsycho"; }
 	if ($ssh_psycho_associates{$ip} ){ $tag="sshPsycho_Associate"; }
 	if ($ssh_psycho_friends{$ip} ){ $tag="sshPsycho_Friend"; }
 	if ($tag ne ""){
