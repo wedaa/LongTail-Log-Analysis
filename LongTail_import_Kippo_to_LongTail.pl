@@ -23,7 +23,7 @@ sub init{
 }
 
 sub pass_1 {
-	open (FIND, "find . -type f |sort |")||die "Can not run find command\n";
+	open (FIND, "find . -type f  |sort |")||die "Can not run find command\n";
 	while (<FIND>){
 		chomp;
 		if (/kippo.log.1$/){next;}
@@ -32,12 +32,17 @@ sub pass_1 {
 		$filename=$_;
 		open (FILE, $filename) || die "Can not open $filename\n";
 		while (<FILE>){
+			if (/Sana/){print ;}
 			if (/unauthorized login/){next;}
 			if (/NEW KEYS/){next;}
+			if (/^\t/){next;}
+			if (/ \[-\] /){next;}
 			if (/failed auth password/){next;}
 			if (/starting service ssh-userauth/){next;}
+#print "DEBUG line is -->$_<--";
 			if (/login attempt/){
 				($date,$time,$stuff)=split(/ /,$_,3);
+				$time =~ s/00$/:00/;
 				$stuff =~ s/,/ /g;
 				($trash,$trash,$trash,$trash,$trash,$ip,$trash,$trash,$attempt,$trash)=split(/ /,$stuff);
 				$ip =~ s/\]//;
@@ -46,7 +51,6 @@ sub pass_1 {
 				$attempt =~ s/\]//;
 				$attempt =~ s/\// Password: /;
 				($year,$month,$day)=split(/-/,$date,3);
-				#print "+";
 				if (! -d "/var/www/html/honey/historical/$year/$month/$day"){
 					`mkdir -p /var/www/html/honey/historical/$year/$month/$day`;
 				}
@@ -56,7 +60,7 @@ sub pass_1 {
 					close (OUT);
 				}
 				else {
-					print "This is bad, could not create /var/www/html/honey/historical/$year/$month/$day\n";
+					print "X01: This is bad, could not create /var/www/html/honey/historical/$year/$month/$day\n";
 					print "Exiting now\n\n";
 					exit;
 				}
@@ -64,49 +68,51 @@ sub pass_1 {
 					`mkdir -p /var/www/html/honey/$new_hostname/historical/$year/$month/$day`;
 				}
 				if (! -d "/var/www/html/honey/$new_hostname/historical/$year/$month/$day"){
-					print "This is bad, could not create /var/www/html/honey/$new_hostname/historical/$year/$month/$day\n";
+					print "X02: This is bad, could not create /var/www/html/honey/$new_hostname/historical/$year/$month/$day\n";
 					print "Exiting now\n\n";
 					exit;
 				}
-				open (OUT, ">>/var/www/html/honey/historical/$year/$month/$day/kippo.data");
-				print (OUT "$date"."T"."$time $new_hostname sshd-22[KIPPO]: IP: $ip PassLog: Username: $attempt\n");
-				close (OUT);
 				open (OUT, ">>/var/www/html/honey/$new_hostname/historical/$year/$month/$day/kippo.data");
 				print (OUT "$date"."T"."$time $new_hostname sshd-22[KIPPO]: IP: $ip PassLog: Username: $attempt\n");
 				close (OUT);
 			}
 			else {
+				($date,$time,$stuff)=split(/ /,$_,3);
+				$time =~ s/00$/:00/;
+				$_ = "$date"."T"."$time $new_hostname $stuff";
+				($year,$month,$day)=split(/-/,$date,3);
+
 				if (! -d "/var/www/html/honey/historical/$year/$month/$day"){
-					`mkdir -p /var/www/html/honey/$new_hostname/historical/$year/$month/$day`;
+					`mkdir -p /var/www/html/honey/historical/$year/$month/$day`;
 				}
 				if ( -d "/var/www/html/honey/historical/$year/$month/$day"){
 					open (OUT, ">>/var/www/html/honey/historical/$year/$month/$day/kippo.data");
-					$_ =~ s/ /T/;
-					$_ =~ s/ / $new_hostname /;
 					print (OUT $_ );
 					close (OUT);
 				}
 				else {
-					print "This is bad, could not create /var/www/html/honey/historical/$year/$month/$day\n";
+					print "x03: This is bad, could not create /var/www/html/honey/historical/$year/$month/$day\n";
 					print "Exiting now\n\n";
 					exit;
 				}
+
+
 				if (! -d "/var/www/html/honey/$new_hostname/historical/$year/$month/$day"){
 					`mkdir -p /var/www/html/honey/$new_hostname/historical/$year/$month/$day`;
 				}
 				if (! -d "/var/www/html/honey/$new_hostname/historical/$year/$month/$day"){
-					print "This is bad, could not create /var/www/html/honey/$new_hostname/historical/$year/$month/$day\n";
+					print "X04: This is bad, could not create /var/www/html/honey/$new_hostname/historical/$year/$month/$day\n";
 					print "Exiting now\n\n";
 					exit;
 				}
 				open (OUT, ">>/var/www/html/honey/$new_hostname/historical/$year/$month/$day/kippo.data");
-				$_ =~ s/ /T/;
-				$_ =~ s/ / $new_hostname /;
 				print (OUT $_ );
 				close (OUT);
 			}
 		}
 		close (FILE);
+#	print "sleep 10 now\n";
+	#sleep(10);
 	}
 	close (FIND);
 }
@@ -125,7 +131,7 @@ sub pass_2 {
 		`mv $existing_data $existing_data.$date_right_now`;
 		`cat  $filename  |sort  >> $filename_new`;
 		`gzip $filename_new`;
-		`ls -l $filename_new $existing_data.backup`;
+		#`ls -l $filename_new $existing_data.backup`;
 		`mv $filename $filename.$date_right_now`;
 		 
 	}
@@ -133,7 +139,7 @@ sub pass_2 {
 }
 
 &init;
-&pass_1;
+#&pass_1;
 &pass_2;
 
 print "\n\n";
