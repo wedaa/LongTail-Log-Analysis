@@ -20,7 +20,7 @@ sub init {
 	);
 	$|=1;
 	$GRAPHS=1;
-	$DEBUG=0;
+	$DEBUG=1;
 	$DO_SSH=1;
 	$DO_HTTPD=0;
 	$OBFUSCATE_IP_ADDRESSES=0;
@@ -76,7 +76,7 @@ sub cleanup_old_files {
 		open (PIPE, "find . -type f -o -type l  |") || die "can not open pipe to cleanup files\n";
 		while (<PIPE>){
 			chomp;
-			if (/dict-/){next;}
+			#if (/dict-/){next;}
 			if (/.html/){next;}
 			if (/.shtml/){next;}
 			unlink ("$_");
@@ -142,6 +142,7 @@ sub create_attack_logs {
 			($year,$month,$day)=split(/-/,$date);
 			($time,$trash)=split(/\./,$time);
 			($hour,$minute,$second)=split(/:/,$time);
+			if ($second =~ /-/){ ($second,$trash)=split(/-/,$second);}
 			$good_line=1;
 	 	}
 		elsif (/Failed password/o){
@@ -159,6 +160,7 @@ sub create_attack_logs {
 			($year,$month,$day)=split(/-/,$date);
 			($time,$trash)=split(/\./,$time);
 			($hour,$minute,$second)=split(/:/,$time);
+			if ($second =~ /-/){ ($second,$trash)=split(/-/,$second);}
 			$ip=$my_array[$size-4];
 		}
  	
@@ -176,8 +178,8 @@ sub create_attack_logs {
 			$difference = $epoch - $ip_epoch{$ip};
 			# 180 is hardcoded to be 180 seconds to speed things up
 			if ( (($ip_epoch{$ip} + (180) ) < $epoch) || (! defined $ip_epoch{$ip}) ) {
-				if ($DEBUG){$TRASH=system("date"); print $TRASH; print "DEBUG - new attack from $ip\n";}
-				if ($DEBUG){print "DEBUG - Date is $year,$month,$day,$hour,$minute,$second\n";}
+				#if ($DEBUG){$TRASH=system("date"); print $TRASH; print "DEBUG - new attack from $ip\n";}
+				#if ($DEBUG){print "DEBUG - Date is $year,$month,$day,$hour,$minute,$second\n";}
 				$ip_epoch{$ip}=$epoch;
 				$ip_number_of_attacks{$ip}+=1;
 				$ip_date_of_attacks{$ip}="$year.$month.$day.$hour.$minute.$second";
@@ -187,8 +189,6 @@ sub create_attack_logs {
 				$ip_epoch{$ip}=$epoch;
 			}
 			if (length($username)>0){
-				#if ($DEBUG){print "W";}
-#print "DEBUG-Appending to file $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
 				open (IP_FILE,">>$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}") || die "Can not write to $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
 				print (IP_FILE "$username ->$password<-\n");
 				close (IP_FILE);
@@ -203,6 +203,7 @@ sub create_attack_logs {
 # Look for common attack attempts
 #
 sub analyze {
+	$DEBUG=1;
 	if ($DEBUG){print "Analyzing now.\n";}
 	if ( ! -d $attacks_dir ) { print "Something bad has happened, can not chdir to $attacks_dir, exiting now\n";exit;}
 	chdir ("$attacks_dir");
@@ -229,7 +230,8 @@ sub analyze {
 	system ("md5sum *.*.*.*-* |sort -n  > sum2.data");
 	if ($DEBUG){print "Done making  md5sum all files  now\n";}
 
-	print "DEBUG making dictionaries now\n";
+	$tmp=`date`;
+	print "DEBUG making dictionaries now: $tmp\n";
 	open (FILE, "sum2.data");
 	while (<FILE>){
 		chomp;
@@ -240,6 +242,8 @@ sub analyze {
 		}
 	}
 	close (FILE);
+	$tmp=`date`;
+	print "DEBUG Done making dictionaries now: $tmp\n";
 	
 	# Keep the interesting stuff near the top of the report
 	if ($DEBUG){print "DEBUG Doing multiple attack data now\n";}
@@ -331,7 +335,8 @@ sub analyze {
 #
 # printing out by sorting on AGE of IP address (How long it was alive)
 sub show_lifetime_of_ips {
-print "DEBUG In show_lifetime_of_ips\n";
+	$tmp=`date`;
+print "DEBUG In show_lifetime_of_ips: $tmp\n";
 	#print "DEBUG ===================================================\n\n";
 	#print "DEBUG- Trying to sort by age of ip\n";
 	#open (FILE_DATA, "> $honey_dir/current_attackers_lifespan.data")||die "Can not write to $honey_dir/current_attackers_lifespan.data\n";
@@ -350,29 +355,23 @@ print "DEBUG In show_lifetime_of_ips\n";
 	print (FILE_FORMATTED "<TABLE border=1>\n");
 	print (FILE_FORMATTED "<TR><TH>IP</TH><TH>Lifetime In Days</TH><TH>First Date Seen</TH><TH>Last Date Seen</TH><TH>Number of Attack<BR>Patterns Recorded</TH></TR>\n");
 
-print "DEBUG In sorting by key now\n";
+	$tmp=`date`;
+print "DEBUG In sorting by key now:$tmp\n";
 print "DEBUG-I should do this with find . -name '$ip*' |sort -nk6 -t \. instead\n";
 # and then pipe those shorter results to sort, and then print them out.
 
-#
-# This code works but is mad slow
-#	foreach $key (sort {$ip_age{$b} <=> $ip_age{$a}} keys %ip_age){
-#		$days=$ip_age{$key}/86400;
-#		$first_seen=scalar localtime($ip_earliest_seen_time{$key});
-#		$last_seen=scalar localtime($ip_latest_seen_time{$key});
-#		$attacks_recorded = `ls $honey_dir/attacks/$key* |wc -l 2>/dev/null `;
-#	  	printf(FILE_FORMATTED "<TR><TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"/honey/ip_attacks.shtml#%s\">%d</A></TD></TR>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
-#	}
 	foreach $key (keys %ip_age){
+#print ".";
 		$days=$ip_age{$key}/86400;
 		$first_seen=scalar localtime($ip_earliest_seen_time{$key});
 		$last_seen=scalar localtime($ip_latest_seen_time{$key});
 		$attacks_recorded = `grep $key sum2.data |wc -l 2>/dev/null `;
 	  	printf(FILE_UNFORMATTED "%s|%.2f|%s|%s|<a href=\"/honey/ip_attacks.shtml#%s\">%d</A>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
-	  	#printf(FILE_FORMATTED "<TR><TD>%s</TD><TD>%.2f</TD><TD>%s</TD><TD>%s</TD><TD><a href=\"/honey/ip_attacks.shtml#%s\">%d</A></TD></TR>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
 	}
 	close (FILE_FORMATTED);
-#print "DEBUG trying sort -nk2 now\n";
+
+	$tmp=`date`;
+print "DEBUG trying sort -nk2 now:$tmp\n";
 	`sort -rnk2 -t\\| $honey_dir/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
 print "DEBUG trying cat now\n";
 	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\\/TD><TD>/g'|sed 's/\$/<\\/TD><\\/TR>/' >> $honey_dir/current_attackers_lifespan.shtml`;
@@ -392,6 +391,8 @@ print "DEBUG trying cat now\n";
 #
 
 sub show_attacks_of_ips {
+	$tmp=`date`;
+print "DEBUG In show_attacks_of_ips:$tmp\n";
 
 	chdir ("$honey_dir/attacks");
 
@@ -427,12 +428,15 @@ sub show_attacks_of_ips {
 	#
 	# Sort the IP array
 	#
-print "DEBUG This is slow....\n";
+	$tmp=`date`;
+print "DEBUG This is slow....: $tmp\n";
 	my @sorted = map  { $_->[0] }
              	sort { $a->[1] <=> $b->[1] }
              	map  { [$_, int sprintf("%03.f%03.f%03.f%03.f", split(/\.+/, $_))] }
              	@ip_array;
 	
+$tmp=`date`;
+print "DEBUG foreach sorted arracy....: $tmp\n";
 	foreach (@sorted){
 		print (FILE_FORMATTED "<HR>\n");
 		print (FILE_FORMATTED "<a name=\"$_\"></a>\n");
@@ -459,9 +463,13 @@ print "DEBUG This is slow....\n";
 		}
 		close (GREP);
 	}
+$tmp=`date`;
+print "DEBUG done foreach sorted arracy....: $tmp\n";
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
 	close (FILE_FORMATTED);
+	$tmp=`date`;
+print "DEBUG Done with show_attacks_of_ips:$tmp\n";
 }
 
 
@@ -471,7 +479,6 @@ print "DEBUG This is slow....\n";
 #
 sub create_dict_webpage {
 	if ($DEBUG){print "DEBUG Making dict webpage now\n";}
-	print "DEBUG Making dict webpage now\n";
 	open (FILE_FORMATTED_TEMP, ">/tmp/dictionaries.temp") || die "Can not write to $honey_dir/dictionaries.temp\n";
 	open (FILE_FORMATTED, ">$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
@@ -495,25 +502,19 @@ sub create_dict_webpage {
 		if (/\.txt\.wc/){next;}
 		$dictionary_file=$_;
 #print "dictionary_file is $dictionary_file\n";
-		$WC=`/usr/bin/wc -l $_ `;
-		($WC,$tmp)=split(/ /,$WC);
+#		$WC=`/usr/bin/wc -l $_ `;
+#		($WC,$tmp)=split(/ /,$WC);
+		$WC=`cat $dictionary_file.wc`;
 		chomp $WC;
-		#$SUM=`md5sum $_ `;
-		#($SUM,$tmp)=split(/ /,$SUM);
 		$SUM=$dictionary_file;
 		$SUM =~ s/.txt//;
 		$SUM =~ s/dict-//;
 		$SUM =~ s/\.\///;
-#print "checksum is $SUM\n";
-#print "wc is $WC\n";
-		#$WC = $WC;
-		$TIMES_USED=`grep $SUM sum2.data|grep -v dict- |wc -l |awk '{print \$1}'`;
+		$TIMES_USED=`grep $SUM sum2.data|wc -l |awk '{print \$1}'`;
 		chomp $TIMES_USED;
-#print "TIMES_USED is $TIMES_USED\n";
 		$first_seen_epoch=0;
 		$last_seen_epoch=0;
 		$COUNT=0;
-#print "Trying to figure out first and last used times.\n";
 		open (SUM_FILE, "sum2.data") || die "Can not open sum2.data, this is bad\n";
 		while (<SUM_FILE>){
 			#print "DEBUG $_";
@@ -522,8 +523,6 @@ sub create_dict_webpage {
 			if (/$SUM/){
 				$COUNT++;
 				($tmp,$date_string)=split(/-/,$_);
-				#$year=2015;
-				#2.16.16.38.53
 			($year,$month,$day,$hour,$minute,$second)=split(/\./,$date_string);
 
 			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
@@ -536,7 +535,6 @@ sub create_dict_webpage {
 		$FIRST_SEEN=scalar localtime($first_seen_epoch);
 		$LAST_SEEN=scalar localtime($last_seen_epoch);
 
-		#print "DEBUG $TIMES_USED|$WC|$SUM|$dictionary_file|$FIRST_SEEN|$LAST_SEEN\n";
 		print (FILE_FORMATTED_TEMP "$TIMES_USED|$WC|$SUM|$dictionary_file|$FIRST_SEEN|$LAST_SEEN\n");
 
 	}
