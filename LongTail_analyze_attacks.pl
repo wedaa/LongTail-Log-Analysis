@@ -31,9 +31,10 @@ sub init {
 	$HTML_DIR="/var/www/html/honey/";
 	$PATH_TO_VAR_LOG="/var/log/";
 	$PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/";
+	$TMP_DIRECTORY="/data/tmp";
 
 	if ( -e "/usr/local/etc/LongTail.config"){
-		open (FILE, ">/tmp/LongTail.$$") || die "Can not open /tmp/LongTail.$$, exiting now\n";
+		open (FILE, ">$TMP_DIRECTORY/LongTail.$$") || die "Can not open /$TMP_DIRECTORY/LongTail.$$, exiting now\n";
 		open (CONFIG, "/usr/local/etc/LongTail.config");
 		while (<CONFIG>){
 			chomp;
@@ -46,7 +47,7 @@ sub init {
 		close (CONFIG);
 		close (FILE);
 
-		my %config = do "/tmp/LongTail.$$";
+		my %config = do "/$TMP_DIRECTORY/LongTail.$$";
 		$GRAPHS=$config{GRAPHS};
 		$DEBUG=$config{DEBUG};
 		$DO_SSH=$config{DO_SSH};
@@ -59,7 +60,7 @@ sub init {
 		$HTML_DIR=$config{HTML_DIR};
 		$PATH_TO_VAR_LOG=$config{PATH_TO_VAR_LOG};
 		$PATH_TO_VAR_LOG_HTTPD=$config{PATH_TO_VAR_LOG_HTTPD};
-		unlink ("/tmp/LongTail.$$");
+		unlink ("/$TMP_DIRECTORY/LongTail.$$");
 	}
 	$honey_dir=$HTML_DIR;
 	$attacks_dir="$HTML_DIR/attacks/";
@@ -108,28 +109,28 @@ sub cleanup_old_files {
 #
 sub create_attack_logs {
 	if ($DEBUG){print "starting create_attack_logs .\n";}
-	if ($DEBUG){print "Creating new analysis files(/tmp/tmp.data) .\n";}
+	if ($DEBUG){print "Creating new analysis files(/$TMP_DIRECTORY/tmp.data) .\n";}
 	#
 	# Ok, find does NOT work in the proper order....  Gotta use the ls command.
 	#
 	# This is ugly and will break once I get a ton of data
 	#
-	unlink ("/tmp/tmp.data");
+	unlink ("/$TMP_DIRECTORY/tmp.data");
 	chdir ("$honey_dir/historical/");
 	open (LS, "/bin/ls */*/*/current-raw-data.gz /var/www/html/honey/current-raw-data.gz |") || 
 		die "Can not run /bin/ls command on $honey_dir/historical/\n";
 	while (<LS>){
 		chomp;
-		system ("/usr/local/etc/catall.sh $_ >> /tmp/tmp.data");
+		system ("/usr/local/etc/catall.sh $_ >> /$TMP_DIRECTORY/tmp.data");
 	}
 	close (LS);
 
 	#
 	# This is ugly and will break once I get a ton of data
 	#
-	if ($DEBUG){print "DEBUG Done making /tmp/tmp.data\n";}
-	open (FILE, "/usr/local/etc/catall.sh /tmp/tmp.data |") || 
-		die "Can not open /tmp/tmp.data for reading\n";
+	if ($DEBUG){print "DEBUG Done making /$TMP_DIRECTORY/tmp.data\n";}
+	open (FILE, "/usr/local/etc/catall.sh /$TMP_DIRECTORY/tmp.data |") || 
+		die "Can not open /$TMP_DIRECTORY/tmp.data for reading\n";
 	while (<FILE>){
 		chomp;
 		$good_line=0;
@@ -223,11 +224,11 @@ sub analyze {
 	# This is freaking ugly and time consuming
 	#
 	if ($DEBUG){print "Trying md5sum for multiple attacks  now\n";}
-	system ("md5sum *.*.*.*-* |sort -nr |awk \'{print \$1}\' |uniq -c |grep -v '  1 '> sum.data");
+	system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep -v '  1 '> sum.data");
 	if ($DEBUG){print "Trying md5sum for single attacks  now\n";}
-	system ("md5sum *.*.*.*-* |sort -nr |awk \'{print \$1}\' |uniq -c |grep '  1 '|grep -v sum.data |grep -v sum.data > sum.single.attack.data");
+	system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep '  1 '|grep -v sum.data |grep -v sum.data > sum.single.attack.data");
 	if ($DEBUG){print "Trying md5sum all files  now\n";}
-	system ("md5sum *.*.*.*-* |sort -n  > sum2.data");
+	system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -n  > sum2.data");
 	if ($DEBUG){print "Done making  md5sum all files  now\n";}
 
 	$tmp=`date`;
@@ -357,7 +358,7 @@ print "DEBUG In show_lifetime_of_ips: $tmp\n";
 
 	$tmp=`date`;
 print "DEBUG In sorting by key now:$tmp\n";
-print "DEBUG-I should do this with find . -name '$ip*' |sort -nk6 -t \. instead\n";
+print "DEBUG-I should do this with find . -name '$ip*' |sort -T $TMP_DIRECTORY -nk6 -t \. instead\n";
 # and then pipe those shorter results to sort, and then print them out.
 
 	foreach $key (keys %ip_age){
@@ -371,8 +372,8 @@ print "DEBUG-I should do this with find . -name '$ip*' |sort -nk6 -t \. instead\
 	close (FILE_FORMATTED);
 
 	$tmp=`date`;
-print "DEBUG trying sort -nk2 now:$tmp\n";
-	`sort -rnk2 -t\\| $honey_dir/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
+print "DEBUG trying sort -T $TMP_DIRECTORY -nk2 now:$tmp\n";
+	`sort -T $TMP_DIRECTORY -rnk2 -t\\| $honey_dir/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
 print "DEBUG trying cat now\n";
 	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\\/TD><TD>/g'|sed 's/\$/<\\/TD><\\/TR>/' >> $honey_dir/current_attackers_lifespan.shtml`;
 	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
@@ -479,7 +480,7 @@ print "DEBUG Done with show_attacks_of_ips:$tmp\n";
 #
 sub create_dict_webpage {
 	if ($DEBUG){print "DEBUG Making dict webpage now\n";}
-	open (FILE_FORMATTED_TEMP, ">/tmp/dictionaries.temp") || die "Can not write to $honey_dir/dictionaries.temp\n";
+	open (FILE_FORMATTED_TEMP, ">/$TMP_DIRECTORY/dictionaries.temp") || die "Can not write to $honey_dir/dictionaries.temp\n";
 	open (FILE_FORMATTED, ">$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
@@ -541,8 +542,8 @@ sub create_dict_webpage {
 	close (PIPE);
 	close (FILE_FORMATTED_TEMP);
 
-	system ("sort -nr /tmp/dictionaries.temp > /tmp/dictionaries.temp.sorted");
-	open (FILE, "/tmp/dictionaries.temp.sorted");
+	system ("sort -T $TMP_DIRECTORY -nr /$TMP_DIRECTORY/dictionaries.temp > /$TMP_DIRECTORY/dictionaries.temp.sorted");
+	open (FILE, "/$TMP_DIRECTORY/dictionaries.temp.sorted");
 	while (<FILE>){
 		chomp;
 		($TIMES_USED,$WC,$SUM,$file,$FIRST_SEEN,$LAST_SEEN)=split(/\|/,$_);
@@ -582,7 +583,7 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "<TR><TH>Number Of<BR>Times Used</TH><TH>Number of <BR>Entries</TH><TH>Checksum</TH><TH>Dictionary</TH><TH>First Seen</TH><TH>Last Seen</TH></TR>\n");
 	close (FILE_FORMATTED);
 
-	system ("grep '<TR>' $honey_dir/dictionaries.shtml   |sort -nrk5  >> $honey_dir/dictionaries-k5.shtml");
+	system ("grep '<TR>' $honey_dir/dictionaries.shtml   |sort -T $TMP_DIRECTORY -nrk5  >> $honey_dir/dictionaries-k5.shtml");
 
 	open (FILE_FORMATTED, ">>$honey_dir/dictionaries-k5.shtml") || die "Can not write to $honey_dir/dictionaries-k5.shtml\n";
 	print (FILE_FORMATTED "</TABLE>\n");
@@ -616,9 +617,9 @@ $TMP=`date`;chomp $TMP; print "done with show_attacks_of_ips at $TMP, calling cr
 $TMP=`date`;chomp $TMP; print "done with create_dict_webpage at $TMP, getting rid of temp files now\n";
 #
 # Get rid of temp files
-unlink ("/tmp/dictionaries.temp.sorted");
-unlink ("/tmp/dictionaries.temp");
-unlink ("/tmp/tmp.data");
+unlink ("/$TMP_DIRECTORY/dictionaries.temp.sorted");
+unlink ("/$TMP_DIRECTORY/dictionaries.temp");
+unlink ("/$TMP_DIRECTORY/tmp.data");
 # I am using httpd.conf to protect this directory now
 #if (-d "$attacks_dir" ){
 #	chdir ("$attacks_dir");
