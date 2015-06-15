@@ -13,7 +13,14 @@ sub init {
 	close (FILE);
 }
 
-sub really_get_blacklists{
+
+sub get_blacklists{
+	$HOUR=`date +%H`;
+	chomp $HOUR;
+	$MINUTE=`date +%M`;
+	chomp $MINUTE;
+	if ( ($HOUR<3) && ($HOUR > 1) ){
+		print "Getting blacklists now\n";
 		chdir ("/var/www/html/honey/black_lists");
 		`wget https://www.openbl.org/lists/base_all_ssh-only.txt.gz`;
 		`wget https://www.openbl.org/lists/base_90days.txt.gz`;
@@ -23,26 +30,7 @@ sub really_get_blacklists{
 		`wget http://lists.blocklist.de/lists/ssh.txt`;
 		`cp ssh.txt ssh.txt.$DATE`;
 		`rm *gz`;
-}
-
-sub get_blacklists{
-	$HOUR=`date +%H`;
-	chomp $HOUR;
-	$MINUTE=`date +%M`;
-	chomp $MINUTE;
-	if ( ($HOUR<1) &&($MINUTE<55)){
-		print "Getting blacklists now\n";
-		if ( ! -d "/var/www/html/honey/black_lists"){
-			print "\n\nCan not find /var/www/html/honey/black_lists directory, exiting now\n";
-			print "\n\nYou need to manually run mkdir /var/www/html/honey/black_lists to create it.\n";
-			print "\n\n\n\n\n\n";
-			exit;
-		}
-		&really_get_blacklists;
 	}
-	if ( ! -e "/var/www/html/honey/black_lists/ssh.txt.$DATE"){&really_get_blacklists;}
-	if ( ! -e "/var/www/html/honey/black_lists/base_90days.txt"){&really_get_blacklists;}
-	if ( ! -e "/var/www/html/honey/black_lists/base_all_ssh-only.txt"){&really_get_blacklists;}
 }
 
 sub load_local_ips{
@@ -73,12 +61,9 @@ sub compare_lists {
 	}
 	close (FILE);
 	print "<TD>$list_count</TD>";
-	if ( $local_ips_count > 0){
-		$percentage=$match_list/$local_ips_count*100;
-	}
-	else {
-		$percentage=0;
-	}
+	#print "<TD>$_[0] count is $list_count</TD>";
+#print "\n\nDEBUG list count is $list_count, local_ips_count is $local_ips_count\n\n";
+	$percentage=$match_list/$local_ips_count*100;
 	$percentage=sprintf("%.2f",$percentage);
 
 	print "<TD>$match_list / $percentage\%\n";
