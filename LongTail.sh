@@ -2623,11 +2623,12 @@ echo "Doing blacklist efficiency tests now"
 		make_footer "$HTML_DIR/password_analysis_todays_passwords.shtml"
 	
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
-		#if [ $START_HOUR -eq 19 ]; then
 			/usr/local/etc/LongTail_make_30_days_imagemap.pl >$HTML_DIR/30_days_imagemap.html
 		fi
 
 		if [ $START_HOUR -eq $ONE_AM ]; then
+			awk '{print length, $0}' $HTML_DIR/all-password | sort -n | cut -d " " -f2- |tail -2000 >$HTML_DIR/2000-longest-passwords.txt
+
 			make_header "$HTML_DIR/password_analysis_all_passwords.shtml" "Password Analysis of All Passwords"  "" 
 			$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/all-password >> $HTML_DIR/password_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_analysis_all_passwords.shtml"
