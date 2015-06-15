@@ -169,6 +169,13 @@ LongTail Installation
 Edit LongTail.sh for the locations of your 
 /var/log/messages and /var/log/httpd/access_log files.
 
+Please note that LongTail requires a HUGE temporary
+directory.  There is a variable in LongTail_analyze_attacks.pl
+and LongTail.sh called $TMP_DIRECTORY which you should point
+to someplace with lots of disk space.  LongTail breaks at 
+10 million records with a /tmp of less than a gigabyte of
+disk space.
+
 Edit LongTail.sh for the location of your 
 /honey directory (or whatever you call the directory
 you want your reports to go to.
