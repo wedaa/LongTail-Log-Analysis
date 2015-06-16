@@ -65,6 +65,9 @@ date
 cat << EOFF
 <BR>
 <BR>
+<P>Please see the notes in <A href="https://github.com/wedaa/LongTail-Log-Analysis/blob/master/LongTail_find_badguys_looking_for_passwords.sh">the source code for this script</a> for details on how this analysis is done.
+<BR>
+<BR>
 <TABLE border=1>
 
 EOFF
@@ -93,7 +96,6 @@ sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n /data/tmp/bad_actors |sed 's/^/<TR><TD
 
 echo "</TABLE>"
 echo "<BR>"
-echo "<P>Please see the notes in <A href=\"https://github.com/wedaa/LongTail-Log-Analysis/blob/master/LongTail_find_badguys_looking_for_passwords.sh\">the source code for this script</a> for details on how this analysis is done."
 echo "<!--#include virtual=\"/honey/footer.html\" -->"
 
 
