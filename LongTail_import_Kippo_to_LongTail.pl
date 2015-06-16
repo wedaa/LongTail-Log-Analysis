@@ -139,7 +139,7 @@ sub pass_2 {
 }
 
 &init;
-#&pass_1;
+&pass_1;
 &pass_2;
 
 print "\n\n";
