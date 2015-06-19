@@ -60,7 +60,7 @@ sub look_up_country {
 	close (PIPE);
 	if ($found_country){
 		$country="UNKNOWN";
-		$tmp=`wget -4 -T 3 -qO- ipinfo.io/$ip |grep -i country`;
+		$tmp=`timeout 10  wget -4 -T 3 -qO- ipinfo.io/$ip |grep -i country`;
 		$tmp=~ s/"|,|://g;
 		$tmp =~ s/^\s+//;
 		($tmp2,$country)=split(/\s+/, $tmp);
