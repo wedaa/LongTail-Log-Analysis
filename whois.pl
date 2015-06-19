@@ -60,7 +60,7 @@ sub look_up_country {
 	close (PIPE);
 	if ($found_country){
 		$country="UNKNOWN";
-		$tmp=`wget -qO- ipinfo.io/$ip |grep -i country`;
+		$tmp=`wget -4 -T 3 -qO- ipinfo.io/$ip |grep -i country`;
 		$tmp=~ s/"|,|://g;
 		$tmp =~ s/^\s+//;
 		($tmp2,$country)=split(/\s+/, $tmp);
@@ -108,12 +108,7 @@ if ( $ip eq "NAMEDPIPE" ){
 			$tmp=$ip_table{$ip};
 		}
 		else {
-			if ( $ip =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/){
-				&look_up_country;
-			}
-			else {
-				print (STDERR "$ip does not appear to be an IP address\n");
-			}
+			&look_up_country;
 		}
 		open (OUT, '>', "pipe2") || die "Can not open named pipe pipe2\n";
 		print (OUT "country: $tmp\n");
@@ -139,12 +134,7 @@ else {
 		print "country: $tmp\n";
 	}
 	else { #It's not in the file or the array :-(
-			if ( $ip =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/){
-				&look_up_country;
-			}
-			else {
-				print (STDERR "$ip does not appear to be an IP address\n");
-			}
+			&look_up_country;
 	}
 
 }
