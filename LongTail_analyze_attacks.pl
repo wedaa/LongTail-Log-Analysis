@@ -224,11 +224,17 @@ sub analyze {
 	# This is freaking ugly and time consuming
 	#
 	if ($DEBUG){print "Trying md5sum for multiple attacks  now\n";}
-	system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep -v '  1 '> sum.data");
+	# This broke with too many files system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep -v '  1 '> sum.data");
+	system ("ls |grep - |grep -v dict |xargs md5sum  |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep -v '  1 '> sum.data");
+
 	if ($DEBUG){print "Trying md5sum for single attacks  now\n";}
-	system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep '  1 '|grep -v sum.data |grep -v sum.data > sum.single.attack.data");
+	# This broke with too many files # system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep '  1 '|grep -v sum.data |grep -v sum.data > sum.single.attack.data");
+	system ("ls |grep - |grep -v dict |xargs md5sum  |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep '  1 '|grep -v sum.data |grep -v sum.data > sum.single.attack.data");
+
 	if ($DEBUG){print "Trying md5sum all files  now\n";}
-	system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -n  > sum2.data");
+	# This broke with too many files # system ("md5sum *.*.*.*-* |sort -T $TMP_DIRECTORY -n  > sum2.data");
+	system ("ls |grep - |grep -v dict |xargs md5sum |sort -T $TMP_DIRECTORY -n  > sum2.data");
+
 	if ($DEBUG){print "Done making  md5sum all files  now\n";}
 
 	$tmp=`date`;
