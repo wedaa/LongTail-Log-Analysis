@@ -39,11 +39,17 @@ sub pass_1 {
 			if (/ \[-\] /){next;}
 			if (/failed auth password/){next;}
 			if (/starting service ssh-userauth/){next;}
-#print "DEBUG line is -->$_<--";
 			if (/login attempt/){
+print "DEBUG line is -->$_<--";
 				($date,$time,$stuff)=split(/ /,$_,3);
 				$time =~ s/00$/:00/;
+# This is a hack for Bob M's condensed Kippo Logs
+# Eric Wedaa, 2015-06-18
+				if (/ \[H,/){
+					$stuff =~ s/H,/SSHService ssh-userauth on HoneyPotTransport,/;
+				}
 				$stuff =~ s/,/ /g;
+print "DEBUG stuff is -->$stuff<--";
 				($trash,$trash,$trash,$trash,$trash,$ip,$trash,$trash,$attempt,$trash)=split(/ /,$stuff);
 				$ip =~ s/\]//;
 				#print "$ip $attempt\n";
@@ -57,6 +63,7 @@ sub pass_1 {
 				if ( -d "/var/www/html/honey/historical/$year/$month/$day"){
 					open (OUT, ">>/var/www/html/honey/historical/$year/$month/$day/kippo.data");
 					print (OUT "$date"."T"."$time $new_hostname sshd-22[KIPPO]: IP: $ip PassLog: Username: $attempt\n");
+					print ("$date"."T"."$time $new_hostname sshd-22[KIPPO]: IP: $ip PassLog: Username: $attempt\n");
 					close (OUT);
 				}
 				else {
