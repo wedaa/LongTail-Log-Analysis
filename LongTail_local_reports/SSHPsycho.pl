@@ -101,7 +101,8 @@ sub pass_3{
 	# Third level analysis, look for attacks not already in sshPsycho or sssPsychoFriends
 	# but that have a commanality (in this case, use wubao or jiamima in their attack string
 	chdir ("/var/www/html/honey/attacks");
-	`egrep -l wubao\\|jiamima *.*.*.*.* |egrep -vf /usr/local/etc/LongTail_sshPsycho_IP_addresses |egrep -vf /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr > /tmp/sshpsycho.$$`;
+	#`egrep -l wubao\\|jiamima *.*.*.*.* |egrep -vf /usr/local/etc/LongTail_sshPsycho_IP_addresses |egrep -vf /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr > /tmp/sshpsycho.$$`;
+	`ls |grep -v dict|grep -v sshpsy| xargs egrep -l wubao\\|jiamima  |egrep -vf /usr/local/etc/LongTail_sshPsycho_IP_addresses |egrep -vf /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr > /tmp/sshpsycho.$$`;
 	`ls 222.186.21.*  |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr >> /tmp/sshpsycho.$$`;
 	`ls 222.186.134.*  |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr >> /tmp/sshpsycho.$$`;
 	
