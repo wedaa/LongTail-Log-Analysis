@@ -485,7 +485,8 @@ print "DEBUG Done with show_attacks_of_ips:$tmp\n";
 # Make the dictionary webpage
 #
 sub create_dict_webpage {
-	if ($DEBUG){print "DEBUG Making dict webpage now\n";}
+	$tmp=`date`;
+	if ($DEBUG){print "DEBUG Making dict webpage now:$tmp\n";}
 	open (FILE_FORMATTED_TEMP, ">/$TMP_DIRECTORY/dictionaries.temp") || die "Can not write to $honey_dir/dictionaries.temp\n";
 	open (FILE_FORMATTED, ">$honey_dir/dictionaries.shtml") || die "Can not write to $honey_dir/dictionaries.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
@@ -503,50 +504,52 @@ sub create_dict_webpage {
 	chdir ("$honey_dir/attacks");
 	
 	# This breaks with too many files #open (PIPE, "/bin/ls dict-* |") || die "can not open pipe to cleanup files\n";
-	open (PIPE, "/bin/find . -name 'dict-*' |") || die "can not open pipe to cleanup files\n";
-	while (<PIPE>){
+	$tmp=`date`;
+	print "DEBUG Making temp files for dict webpage now : $tmp\n";
+	open (FILE, "sum2.data") || die "can not open file sum2.data\n";
+	$prior_checksum="";
+	while (<FILE>){
 		chomp;
-		if (/\.txt\.wc/){next;}
-		$dictionary_file=$_;
-#print "dictionary_file is $dictionary_file\n";
-#		$WC=`/usr/bin/wc -l $_ `;
-#		($WC,$tmp)=split(/ /,$WC);
-		$WC=`cat $dictionary_file.wc`;
-		chomp $WC;
-		$SUM=$dictionary_file;
-		$SUM =~ s/.txt//;
-		$SUM =~ s/dict-//;
-		$SUM =~ s/\.\///;
-		$TIMES_USED=`grep $SUM sum2.data|wc -l |awk '{print \$1}'`;
-		chomp $TIMES_USED;
-		$first_seen_epoch=0;
-		$last_seen_epoch=0;
-		$COUNT=0;
-		open (SUM_FILE, "sum2.data") || die "Can not open sum2.data, this is bad\n";
-		while (<SUM_FILE>){
-			#print "DEBUG $_";
-			chomp;
-			if (/dict-/){next;}
-			if (/$SUM/){
-				$COUNT++;
-				($tmp,$date_string)=split(/-/,$_);
+#0000b12b844d2e09b9d979e79b016242  221.146.74.146.edu_c.16-2015.06.10.14.41.35
+		($checksum,$file)=split(/\s+/,$_);
+		if ($checksum ne $prior_checksum){
+			if ( $checksum ne ""){
+				$FIRST_SEEN=scalar localtime($first_seen_epoch);
+				$LAST_SEEN=scalar localtime($last_seen_epoch);
+				$$dictionary_file="dict-$checksum.txt";
+				print (FILE_FORMATTED_TEMP "$TIMES_USED|$WC|$SUM|$dictionary_file|$FIRST_SEEN|$LAST_SEEN\n");
+			}
+			$WC=`cat dict-$checksum.txt.wc`;
+			chomp $WC;
+			$prior_checksum=$checksum;
+			$SUM=$checksum;
+			$TIMES_USED=1;
+			$COUNT=1;
+			$first_seen_epoch=0;
+			$last_seen_epoch=0;
+			($tmp,$date_string)=split(/-/,$file);
 			($year,$month,$day,$hour,$minute,$second)=split(/\./,$date_string);
-
 			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
 			if ($first_seen_epoch == 0){$first_seen_epoch=$epoch};
 			if ($epoch > $last_seen_epoch ){$last_seen_epoch=$epoch};
 			if ($epoch < $first_seen_epoch ){$first_seen_epoch=$epoch};
-			}
 		}
-		close (SUM_FILE);
-		$FIRST_SEEN=scalar localtime($first_seen_epoch);
-		$LAST_SEEN=scalar localtime($last_seen_epoch);
-
-		print (FILE_FORMATTED_TEMP "$TIMES_USED|$WC|$SUM|$dictionary_file|$FIRST_SEEN|$LAST_SEEN\n");
-
+		else { # Checksum is the same as the prior line
+			$TIMES_USED++;	
+			$COUNT++;
+			($tmp,$date_string)=split(/-/,$file);
+			($year,$month,$day,$hour,$minute,$second)=split(/\./,$date_string);
+			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
+			if ($first_seen_epoch == 0){$first_seen_epoch=$epoch};
+			if ($epoch > $last_seen_epoch ){$last_seen_epoch=$epoch};
+			if ($epoch < $first_seen_epoch ){$first_seen_epoch=$epoch};
+		}
 	}
-	close (PIPE);
+	close (FILE);
 	close (FILE_FORMATTED_TEMP);
+
+	$tmp=`date`;
+	print "DEBUG Done Making temp files for dict webpage now : $tmp\n";
 
 	system ("sort -T $TMP_DIRECTORY -nr /$TMP_DIRECTORY/dictionaries.temp > /$TMP_DIRECTORY/dictionaries.temp.sorted");
 	open (FILE, "/$TMP_DIRECTORY/dictionaries.temp.sorted");
@@ -569,11 +572,12 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "</HTML>\n");
 	close (FILE_FORMATTED);
 
-	print "DEBUG Done Making dict webpage now\n";
+	$tmp=`date`;
+	print "DEBUG Done Making dict webpage now : $tmp\n";
 	#
 	# Now we sort by size of dictionary
 	#
-	print "DEBUG Making dictionaries-k5.shtml  now\n";
+	print "DEBUG Making dictionaries-k5.shtml  now: $tmp\n";
 	open (FILE_FORMATTED, ">$honey_dir/dictionaries-k5.shtml") || die "Can not write to $honey_dir/dictionaries-k5.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
@@ -596,7 +600,8 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
 	close (FILE_FORMATTED);
-	print "DEBUG Done Making dictionaries-k5.shtml  now\n";
+	$tmp=`date`;
+	print "DEBUG Done Making dictionaries-k5.shtml  now: $tmp\n";
 
 }
 
