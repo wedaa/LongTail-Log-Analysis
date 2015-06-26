@@ -52,7 +52,8 @@ sub this_month_hall_of_shame {
 sub this_year_hall_of_shame {
 	my %my_array;
 	chdir ("/var/www/html/honey/attacks/");
-	`ls *.*.*.*.*-$YEAR.* >/tmp/LongTail.hall.of.shame.$$`;
+	#`ls *.*.*.*.*-$YEAR.* >/tmp/LongTail.hall.of.shame.$$`;
+	`find . -name '*-$YEAR.*' |sed 's/^..//'   >/tmp/LongTail.hall.of.shame.$$`;
 	
 	open (FILE, "/tmp/LongTail.hall.of.shame.$$");
 	while (<FILE>){
@@ -88,7 +89,7 @@ sub this_year_hall_of_shame {
 sub all_class_c {
 	my %my_array;
 	chdir ("/var/www/html/honey/attacks/");
-	`ls *.*.*.*.* >/tmp/LongTail.hall.of.shame.$$`;
+	`find .  -name '*.*.*.*.*'  |sed 's/^..//' >/tmp/LongTail.hall.of.shame.$$`;
 	
 	open (FILE, "/tmp/LongTail.hall.of.shame.$$");
 	while (<FILE>){
