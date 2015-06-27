@@ -516,7 +516,7 @@ sub create_dict_webpage {
 			if ( $checksum ne ""){
 				$FIRST_SEEN=scalar localtime($first_seen_epoch);
 				$LAST_SEEN=scalar localtime($last_seen_epoch);
-				$$dictionary_file="dict-$checksum.txt";
+				$dictionary_file="dict-$checksum.txt";
 				print (FILE_FORMATTED_TEMP "$TIMES_USED|$WC|$SUM|$dictionary_file|$FIRST_SEEN|$LAST_SEEN\n");
 			}
 			$WC=`cat dict-$checksum.txt.wc`;
