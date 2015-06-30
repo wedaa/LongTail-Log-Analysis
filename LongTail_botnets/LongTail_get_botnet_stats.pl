@@ -20,7 +20,7 @@ sub remove_single_attempts_from_sum2 {
 		($dict,$attack)=split(/  /,$_);
 		$wc = `cat /var/www/html/honey/attacks/dict-$dict.txt.wc`;
 		chomp $wc;
-		if ($wc > 5){
+		if ($wc > 4){
 			print (SUMDATA_OUT $_);
 		}
 	}
@@ -32,6 +32,14 @@ sub remove_single_attempts_from_sum2 {
 sub init {
 	$|=1;
 	chdir ("/usr/local/etc/LongTail_botnets");
+	$botnet_dir="/usr/local/etc/LongTail_botnets";
+	$html_bots_dir="/var/www/html/honey/bots/";
+	if (! -d $html_bots_dir){
+		print "Can't find $html_bots_dir, exiting now\n";
+		exit;
+	}
+	$bots_dir_url="honey/bots/";
+	$attacks_dir="/var/www/html/honey/attacks/";
 	$client_data="/var/www/html/honey/clients.data /var/www/html/honey/kippo_clients.data";
 	$this_year=`date +%Y`;
 	chomp $this_year;
@@ -42,16 +50,15 @@ sub init {
 }
 
 sub print_header {
-	print "<!--#include virtual=\"/honey/header.html\" -->\n";
-	print "<H3>BotNet Analysis</H3>\n";
-	print "<P>BotNet analysis under development.  Botnets shown are.\n";
-	print "smaller than shown here due to a small bug in the code which\n";
-	print "being fixed shortly.\n";
+	print "<!--#include virtual=\"/honey/header_head.html\" -->\n";
+	print "<!--#include virtual=\"/honey/header_fancybox.html\" -->\n";
+	print "<!--#include virtual=\"/honey/header_body.html\" -->\n";
+	print "<H3>BETA-BotNet Analysis</H3>\n";
+	print "<P>BETA-BotNet analysis under development.\n";
 	print "\n";
 	print "<P>These numbers are based on \"Attack Patterns\", which are \n";
 	print "generated 4 times a day, so these numbers will not match\n";
 	print "what is on the front page of LongTail.\n";
-	print "<P>Here's a preview of some of what is coming \n";
 	$date=`date`;
 	print "Created on $date\n";
 	if ( ! -e "/var/www/html/honey/attacks/sum2.data"){
@@ -72,16 +79,31 @@ sub pass_1 {
 		if (/.pl$/){next;}
 		if (/.html/){next;}
 		if (/.shtml/){next;}
+		if (/.accounts/){next;}
 		if (/typescript/){next;}
 		if (/2015/){next;}
 		if (/backups/){next;}
+		if (/.static/){
+			$static=1;
+		}
+		else {
+			$static=0;
+		}
 	#	if (! /small_bots_2/){next;}
 	#print "proceeding with filename $_\n";
 		$filename=$_;
 		$filename=~ s/\.\///;
 		#print "Looking for botnet $filename\n";
 		print "<H3>BotNet $filename</H3>\n";
-		print "<P>Hosts involved with $filename are:\n<BR>\n";
+print "<a href=\"#divhosts$filename\" class=\"various\">Hosts involved with $filename</a>\n";
+print "<div style=\"display:none\">\n";
+print "<div id=\"divhosts$filename\">\n";
+print "<p><strong>Hosts involved with $filename</strong></p>\n";
+
+		# print "<P>Hosts involved with $filename are:\n<BR>\n";
+		if ( -e "$filename.accounts"){
+			unlink ("$filename.accounts");
+		}
 		$total=0;
 		$total_year=0;
 		$total_month=0;
@@ -100,6 +122,7 @@ sub pass_1 {
 			if (/\.\.\./){next;}
 			$number_of_bots++;
 			print "$ip ";
+			$tmp=system("cat $attacks_dir/$ip*|awk '{print \$1}'>> $filename.accounts");
 			if ($ips_seen_already{$ip}){
 				print "<BR>$ip has already been seen in $ips_seen_already{$ip}\n<BR>\n";
 				$ips_seen_already{$ip}=$ips_seen_already{$ip}." ".$filename;
@@ -115,7 +138,7 @@ sub pass_1 {
 					($trash,$date)=split(/-/,$attack);
 					$wc=`cat /var/www/html/honey/attacks/dict-$dict.txt.wc`;
 					# These are patterns to search for from other IP addresses
-					if ($wc > 3){
+					if (($wc > 3) && ($static == 0)){
 						`echo $dict >>/tmp/TAG`;
 					}
 					#print "$wc ";
@@ -136,6 +159,8 @@ sub pass_1 {
 			close (SUMDATA);
 		}
 		close (FILE);
+print "\n</div>\n</div>\n";
+
 		`sort /tmp/TAG |uniq >/tmp/TAG.2`;
 		#
 		# This is where we find similar patterns to what we have
@@ -168,14 +193,27 @@ sub pass_1 {
 		$output=`for ip in \`cat $filename\` ; do grep \$ip $client_data; done`;
 		$output =~ s/\n/\n<BR>/g;
 		$output =~ s/\/var\/www\/html\/honey\///g;
-		print "<P>Client software and level:\n<BR>\n";
+		#print "<P>Client software and level:\n<BR>\n";
+print "<BR><a href=\"#divclient$filename\" class=\"various\">Client software and level</a> \n";
+print "<div style=\"display:none\"> \n";
+print "<div id=\"divclient$filename\"> \n";
+print "<p><strong>Client software and level:</strong></p><br> \n";
+
 		print $output;
+
+print "\b</div>\n</div>\n";
+
 		if ($attacks>0){
 			$average=$total/$attacks;
 		}
 		else {
 			$average=0;
 		}
+
+		$tmp=system ("sort $filename.accounts |uniq -c |sort -nr > $filename.accounts.tmp");
+		$tmp=system ("/bin/mv $filename.accounts.tmp $html_bots_dir/$filename.accounts.txt");
+		$line_count=`cat $html_bots_dir/$filename.accounts.txt |wc -l`;
+		$line_count=&commify($line_count);
 		$average=sprintf("%.2f",$average);
 		$average=&commify($average);
 		$total=&commify($total);
@@ -185,14 +223,18 @@ sub pass_1 {
 		$number_of_bots=&commify($number_of_bots);
 		$min=&commify($min);
 		$max=&commify($max);
-		print "\n<BR>\n<P>Total ssh attempts from $filename since logging began: $total\n";
-		print "<P>Total ssh attempts from $filename this year: $total_year\n";
-		print "<P>Total ssh attempts from $filename this month: $total_month\n";
-		print "<P>Total ssh attempts from $filename today: $total_day\n";
-		print "<P>Total number of bots in $filename: $number_of_bots\n";
-		print "<P>Minimum attack size from $filename: $min\n";
-		print "<P>Average attack size from $filename: $average\n";
-		print "<P>Maximum attack size from $filename: $max\n";
+		print "\n<BR>\n";
+		print "<TABLE>\n";
+		print "<TR><TD>Total ssh attempts from $filename since logging began</TD><TD> $total\n";
+		print "<TR><TD>Total ssh attempts from $filename this year</TD><TD> $total_year\n";
+		print "<TR><TD>Total ssh attempts from $filename this month</TD><TD> $total_month\n";
+		print "<TR><TD>Total ssh attempts from $filename today</TD><TD> $total_day\n";
+		print "<TR><TD>Total number of bots in $filename</TD><TD> $number_of_bots\n";
+		print "<TR><TD>Minimum attack size from $filename</TD><TD> $min\n";
+		print "<TR><TD>Average attack size from $filename</TD><TD> $average\n";
+		print "<TR><TD>Maximum attack size from $filename</TD><TD> $max\n";
+		print "<TR><TD>Number of accounts tried $filename</TD><TD><a href=\"/$bots_dir_url/$filename.accounts.txt\">$line_count</a>\n";
+		print "</TABLE>\n";
 		$total=0;
 		$total_year=0;
 		$total_month=0;

@@ -21,6 +21,7 @@ sub init{
 ##########################################################################
 #
 sub pass_1{
+	print "<BR>Pass 1: Analyzing already categorized botnets\n<BR>\n";
 	`cp /var/www/html/honey/attacks/sum2.data /var/www/html/honey/attacks/not_in_a_botnet.data`;
 	
 	
@@ -31,10 +32,11 @@ sub pass_1{
 	#print "Found filename $_\n";
 		if (/.sh$/){next;}
 		if (/.pl$/){next;}
+		if (/.accounts$/){next;}
 		if (/2015/){next;}
 		if (/backups/){next;}
 		if (/html/){next;}
-	print "proceeding with filename $_\n";
+	print "<BR>Analyzing botnet $_\n";
 		$filename=$_;
 		$filename=~ s/\.\///;
 		#system ("cat $filename");
@@ -53,7 +55,7 @@ sub pass_1{
 # attacks that have less than 6 attacks
 #
 sub pass_2{
-print "In pass2\n";
+	print "\n<BR>\nPass 2: Analyzing attack patterns with 6 or more entries\n<BR>\n";
 
 	if ( -e "/var/www/html/honey/attacks/possible_botnet.data"){
 		unlink("/var/www/html/honey/attacks/possible_botnet.data");
@@ -63,7 +65,8 @@ print "In pass2\n";
 		($dict,$attack)=split (/ /,$_,2);
 		$wc=`cat /var/www/html/honey/attacks/dict-$dict.txt.wc`;
 		chomp $wc;
-		if ($wc >5){
+		#if ($wc >5){
+		if ($wc >3){
 			#print "wc: $wc ; dict: $dict\n";
 			`grep $dict /var/www/html/honey/attacks/not_in_a_botnet.data >> /var/www/html/honey/attacks/possible_botnet.data`;
 		}
@@ -77,7 +80,7 @@ print "In pass2\n";
 # print out attacking IPs per dictionary
 #
 sub pass_3{
-	print "In pass3\n";
+	print "\n<BR>\nPass3, finding new botnets\n<BR>\n";
 	open (FILE, "/var/www/html/honey/attacks/possible_botnet.data");
 	$last_dict="";
 	$ip_list{"null"}=1;
@@ -98,7 +101,7 @@ sub pass_3{
 			undef (@ip_list);
 			$wc=`cat /var/www/html/honey/attacks/dict-$dict.txt.wc`;
 			chomp $wc;
-			$string="\nwc: $wc; $dict: ";
+			$string="\n<BR>wc: $wc; $dict: ";
 			#print "\n";
 			#print "wc: $wc; $dict: ";
 			#print "$ip ";
@@ -121,7 +124,7 @@ sub pass_3{
 		}
 	}
 	close (FILE);
-	print "\n\n";
+	print "<BR><BR>\n";
 }
 
 ##########################################################################
