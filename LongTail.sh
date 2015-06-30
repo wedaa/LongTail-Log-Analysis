@@ -803,7 +803,7 @@ function count_ssh_attacks {
 	########################################################################################
 	# Make statistics.shtml webpage here
 	#
-	make_header "$1/statistics.shtml" "Assorted Statistics" "Analysis does not include today's numbers. Numbers rounded to two decimal places" "Time<BR>Frame" "Number<BR>of Days" "Total<BR>SSH attempts" "Average" "Std. Dev." "Median" "Max" "Min"
+	make_header "$1/statistics.shtml" "Assorted Statistics" "Analysis does not include today's numbers. Numbers rounded to two decimal places" "Time<BR>Frame" "Number<BR>of Days" "Total<BR>SSH attempts" "Average<BR>Per Day" "Std. Dev." "Median" "Max" "Min"
 
 	echo "<TR><TD>So Far Today</TD><TD>1</TD><TD>$TODAY</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD></TR>" >>$1/statistics.shtml
 	echo "<TR><TD>This Month</TD><TD> $MONTH_COUNT</TD><TD> $MONTH_SUM</TD><TD> $MONTH_AVERAGE</TD><TD> $MONTH_STD</TD><TD> $MONTH_MEDIAN</TD><TD> $MONTH_MAX</TD><TD> $MONTH_MIN" >>$1/statistics.shtml
@@ -834,6 +834,7 @@ function count_ssh_attacks {
 	# Make statistics_all.shtml and more_statistics_all.shtml webpage here
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		cd $HTML_DIR
+		table_header="<TR><TH>Time<BR>Frame</TH><TH>Number<BR>of Days</TH><TH>Total<BR>SSH attempts</TH><TH>Average<br>Per Day</TH><TH>Std. Dev.</TH><TH>Median</TH><TH>Max</TH><TH>Min</TH>"
 		grep HEADERLINE statistics.shtml |egrep -v footer.html\|'</BODY'\|'</HTML'\|'</TABLE'\|'</TR' > statistics_all.shtml
 		echo "<TR><TH colspan=8>All Hosts Combined</TH></TR>" >> statistics_all.shtml
 		grep '<TR>' $HTML_DIR/statistics.shtml |grep -v HEADERLINE |sed 's/<TD>/<TD>ALL Hosts /' >> statistics_all.shtml
@@ -841,13 +842,14 @@ function count_ssh_attacks {
 		grep HEADERLINE statistics.shtml |egrep -v footer.html\|'</BODY'\|'</HTML'\|'</TABLE'\|'</TR' > more_statistics_all.shtml
 		echo "<TR><TH colspan=8>All Hosts Combined</TH></TR>" >> more_statistics_all.shtml
 		egrep '<TR>'\|'<TH>' $HTML_DIR/more_statistics.shtml |sed 's/<TD>/<TD>ALL Hosts /' >> more_statistics_all.shtml
-		
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by BlackRidge Technologies</TH></TR>" >> statistics_all.shtml
 		echo "<TR><TH colspan=8>&nbsp;</TH></TR><TR><TH colspan=8>Hosts protected by BlackRidge Technologies</TH></TR>" >> more_statistics_all.shtml
 		for dir in $BLACKRIDGE ; do
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
+		echo $table_header >>statistics_all.shtml
+		echo $table_header >>more_statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
 				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
@@ -860,6 +862,8 @@ function count_ssh_attacks {
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
+		echo $table_header >>statistics_all.shtml
+		echo $table_header >>more_statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
 				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
@@ -872,6 +876,8 @@ function count_ssh_attacks {
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
+		echo $table_header >>statistics_all.shtml
+		echo $table_header >>more_statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
 				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
@@ -884,6 +890,8 @@ function count_ssh_attacks {
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
+		echo $table_header >>statistics_all.shtml
+		echo $table_header >>more_statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
 				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
@@ -896,6 +904,8 @@ function count_ssh_attacks {
 			if [ -e $dir/statistics.shtml ] ; then
 				DESCRIPTION=`cat $dir/description.html`
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
+		echo $table_header >>statistics_all.shtml
+		echo $table_header >>more_statistics_all.shtml
 				grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
 				echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
 				egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
@@ -908,6 +918,8 @@ function count_ssh_attacks {
 			#if [ -e $dir/statistics.shtml ] ; then
 				#DESCRIPTION=`cat $dir/description.html`
 				#echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> statistics_all.shtml
+#		echo $table_header >>statistics_all.shtml
+		#echo $table_header >>more_statistics_all.shtml
 				#grep '<TR>' $dir/statistics.shtml |sed "s/<TD>/<TD>$dir /" >> statistics_all.shtml
 				#echo "<TR><TH colspan=8  ><A href=\"/$HTML_TOP_DIR/$dir/\">$dir $DESCRIPTION</A></TH></TR>" >> more_statistics_all.shtml
 				#egrep '<TR>'\|'<TH>' $dir/more_statistics.shtml |sed "s/<TD>/<TD>$dir /" >> more_statistics_all.shtml
@@ -1215,7 +1227,7 @@ function todays_assorted_stats {
 	echo "<TR><TH>Time<BR>Frame</TH><!--HEADERLINE --> "  >> $outputfile
 	echo "<TH>Number<BR>of Days</TH><!--HEADERLINE --> "  >> $outputfile
 	echo "<TH>Count</TH><!--HEADERLINE --> "  >> $outputfile
-	echo "<TH>Average</TH><!--HEADERLINE --> "  >> $outputfile
+	echo "<TH>Average<BR>Per Day</TH><!--HEADERLINE --> "  >> $outputfile
 	echo "<TH>Std. Dev.</TH><!--HEADERLINE --> "  >> $outputfile
 	echo "<TH>Median</TH><!--HEADERLINE --> "  >> $outputfile
 	echo "<TH>Max</TH><!--HEADERLINE --> "  >> $outputfile
@@ -2717,12 +2729,15 @@ fi
 #	make_footer "$HTML_DIR/$filename.shtml" 
 #done
 
-echo -n "Starting sshPsycho analysis now :-) " ; date
 if [ "x$HOSTNAME" == "x/" ] ; then
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Doing SSHPsycho report now" ; fi
-	make_header "$HTML_DIR/SSHPsycho.shtml" "SSHPsycho Attacks"
-	/usr/local/etc/LongTail_local_reports/SSHPsycho.pl >> $HTML_DIR/SSHPsycho.shtml
-	make_footer "$HTML_DIR/SSHPsycho.shtml"
+	if [ $SEARCH_FOR == "sshd" ] ; then
+		echo -n "Starting sshPsycho analysis now :-) " ; date
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Doing SSHPsycho report now" ; fi
+		make_header "$HTML_DIR/SSHPsycho.shtml" "SSHPsycho Attacks"
+		/usr/local/etc/LongTail_local_reports/SSHPsycho.pl >> $HTML_DIR/SSHPsycho.shtml
+		make_footer "$HTML_DIR/SSHPsycho.shtml"
+		echo -n "Done with sshPsycho analysis now: "; date
+	fi
 fi 
 
 	cd $HTML_DIR/historical
