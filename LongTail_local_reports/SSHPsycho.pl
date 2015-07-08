@@ -152,3 +152,4 @@ if ( -e "/tmp/sshpsycho.$$"){ unlink ("/tmp/sshpsycho.$$");}
 if ( -e "/tmp/sshpsycho.$$-2"){unlink ("/tmp/sshpsycho.$$-2");}
 if ( -e "/tmp/sshPsycho.$$"){ unlink ("/tmp/sshPsycho.$$");}
 if ( -e "/tmp/sshPsycho.$$-2"){unlink ("/tmp/sshPsycho.$$-2");}
+if ( -e "/usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses.tmp"){unlink ("/usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses.tmp");}
