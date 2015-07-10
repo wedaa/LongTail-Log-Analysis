@@ -84,10 +84,12 @@ for ip in `cat /tmp/badguys.txt |uniq ` ; do
 	pages_requested=`grep $ip /data/tmp/access_log_combined |grep -v \ 403\  |wc -l `
 	last_date_seen=`grep $ip /data/tmp/access_log_combined |tail -1 |awk '{print $4}' |sed 's/\[//'`
 	country=`/usr/local/etc/whois.pl $ip |grep -i country|head -1|sed 's/:/: /g'|awk '{print $2}' `
+#	echo  "DEBUG $ip : $country : $attacks_recorded : $password_pages_requested : $pages_requested : $last_date_seen" >>/data/tmp/bad_actors
 	if [ "$pages_requested" -lt 3 ]; then
 		echo  "$ip : $country : $attacks_recorded : $password_pages_requested : $pages_requested : $last_date_seen" >>/data/tmp/bad_actors
 	fi
 done
+
 
 # Sort by IP address
 
@@ -99,6 +101,6 @@ echo "<BR>"
 echo "<!--#include virtual=\"/honey/footer.html\" -->"
 
 
-/bin/rm /data/tmp/bad_actors
-/bin/rm /data/tmp/access_log_combined
-/bin/rm /data/tmp/badguys.txt
+#/bin/rm /data/tmp/bad_actors
+#/bin/rm /data/tmp/access_log_combined
+#/bin/rm /data/tmp/badguys.txt
