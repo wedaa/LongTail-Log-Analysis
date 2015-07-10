@@ -144,12 +144,37 @@ sub pass_4{
 	}
 }
 
+#Cleanup the files and remove IPs from associates once they are in friends
+sub pass_5 {
+	open (FILE, "/usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses");
+	while (<FILE>){
+	chomp;
+	$ip_array{$_}=1;
+	}
+	close (FILE);
+
+	open (FILE, "/usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses");
+	open (OUTPUT, ">/tmp/LongTail_associates");
+	while (<FILE>){
+	chomp;
+	if (! $ip_array{$_}){print (OUTPUT "$_\n");}
+	}
+	close (FILE);
+	close (OUTPUT);
+	unlink ("/usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses");
+	system ("cp /tmp/LongTail_associates /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses");
+	unlink ("/tmp/LongTail_associates");
+}
+
 &pass_1;
 &pass_2;
 &pass_3;
 &pass_4;
+&pass_5; 
 if ( -e "/tmp/sshpsycho.$$"){ unlink ("/tmp/sshpsycho.$$");}
 if ( -e "/tmp/sshpsycho.$$-2"){unlink ("/tmp/sshpsycho.$$-2");}
 if ( -e "/tmp/sshPsycho.$$"){ unlink ("/tmp/sshPsycho.$$");}
 if ( -e "/tmp/sshPsycho.$$-2"){unlink ("/tmp/sshPsycho.$$-2");}
 if ( -e "/usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses.tmp"){unlink ("/usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses.tmp");}
+if ( -e "/usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses.tmp"){unlink ("/usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses.tmp");}
+
