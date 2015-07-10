@@ -20,6 +20,27 @@ sub init {
 		print "Can not find /var/www/html/honey/attacks/sum2.data, exiting now\n";
 		exit;
 	}
+	open (FILE, "/usr/local/etc/translate_country_codes");
+	while (<FILE>){
+		chomp;
+		($code,$country)=split(/ /,$_,2);
+		$country_code{$code}=$country;
+	}
+
+#148.100.100.1 US
+#148.100.100.112 US
+	close (FILE);
+	open (FILE, "tail -20000 /usr/local/etc/ip-to-country|");
+	while (<FILE>){
+		chomp;
+		($ip,$country)=split(/ /,$_,2);
+		($ip1,$ip2,$ip3,$ip4)=split(/\./,$ip);
+		$country= lc($country);
+		$ip="$ip1.$ip2.$ip3";
+		$ip_address{$ip}=$country;
+	}
+	close (FILE);
+
 }
 
 sub pass_1 { 	
@@ -62,6 +83,7 @@ sub pass_2 {
 	print "<H3>Friends of SSHPsycho</H3>\n";
 	print "These IP Addresses are using the exact same attacks as SSHPsycho or as other friends of sshPsycho\n";
 	print "<TABLE><TH>Number Of Lines<BR>In Attack Pattern</TH><TH>Checksum Of Attack Pattern</TH><TH>IP Address</TH><TH>Country</TH><TH>Host<BR>Attacked</TH><TH>Date Of Attack</TH></TR>\n";
+print "DEBUG\n";
 	open (FILE, "/tmp/sshpsycho.$$-2");
 	open (OUTPUT_FILE, "> /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses.tmp");
 	while (<FILE>){
@@ -73,13 +95,22 @@ sub pass_2 {
 			$wc=$_;
 		}
 		close (FILE2);
+
 		($ip1,$ip2,$ip3,$ip4,$host,$attacknumber,$date)=split(/\.|-/,$filename,7);
 		($year,$month,$day,$hour,$minute,$second)=split (/\./,$date);
-		$country=`/usr/local/etc/whois.pl $ip1.$ip2.$ip3.$ip4`;
-		$country=~ s/country: //;
-		$country=`cat /usr/local/etc/translate_country_codes| grep -i ^$country `;
-		($trash,$country)=split (/ /,$country);
+		$tmp="$ip1.$ip2.$ip3";
+		if ( $ip_address{$tmp} ) {
+			$country=$ip_address{$tmp};
+		}
+		else {
+			$country=`/usr/local/etc/whois.pl $ip1.$ip2.$ip3.$ip4`;
+		}
 		chomp $country;
+		$country=~ s/country: //;
+		$country = lc ($country);
+		$country = lc ($country);
+		$country=$country_code{$country};
+
 		if ($wc >9 ){
 			print "<TR><TD>$wc</TD><TD> $checksum</TD><TD>$ip1.$ip2.$ip3.$ip4</TD><TD>$country</TD><TD>$host</TD><TD>$year-$month-$day $hour:$minute</TD>\n";
 			print (OUTPUT_FILE "$ip1.$ip2.$ip3.$ip4\n");
@@ -101,7 +132,6 @@ sub pass_3{
 	# Third level analysis, look for attacks not already in sshPsycho or sssPsychoFriends
 	# but that have a commanality (in this case, use wubao or jiamima in their attack string
 	chdir ("/var/www/html/honey/attacks");
-	#`egrep -l wubao\\|jiamima *.*.*.*.* |egrep -vf /usr/local/etc/LongTail_sshPsycho_IP_addresses |egrep -vf /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr > /tmp/sshpsycho.$$`;
 	`ls |grep -v dict|grep -v sshpsy| xargs egrep -l wubao\\|jiamima  |egrep -vf /usr/local/etc/LongTail_sshPsycho_IP_addresses |egrep -vf /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr > /tmp/sshpsycho.$$`;
 	`ls 222.186.21.*  |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr >> /tmp/sshpsycho.$$`;
 	`ls 222.186.134.*  |awk -F. '{print \$1, \$2, \$3, \$4}' |sed 's/ /./g' |sort |uniq -c |sort -nr >> /tmp/sshpsycho.$$`;
@@ -117,11 +147,28 @@ sub pass_3{
 		($count,$ip)=split(/ /,$_);
 		$wc = `cat $ip.* |wc -l`;
 		chomp $wc;
-		$country=`/usr/local/etc/whois.pl $ip`;
-		$country=~ s/country: //;
-		$country=`cat /usr/local/etc/translate_country_codes| grep -i ^$country `;
-		($trash,$country)=split (/ /,$country);
+
+		($ip1,$ip2,$ip3,$ip4)=split(/\./,$ip);
+		$tmp="$ip1.$ip2.$ip3";
+		if ( $ip_address{$tmp} ) {
+			$country=$ip_address{$tmp};
+		}
+		else {
+			$country=`/usr/local/etc/whois.pl $ip1.$ip2.$ip3.$ip4`;
+		}
+		#$country=`/usr/local/etc/whois.pl $ip`;
+
 		chomp $country;
+		$country=~ s/country: //;
+		$country = lc ($country);
+		$country = lc ($country);
+		$country=$country_code{$country};
+
+#		$country=~ s/country: //;
+#		$country=`cat /usr/local/etc/translate_country_codes| grep -i ^$country `;
+#		($trash,$country)=split (/ /,$country);
+#		chomp $country;
+
 		print "<TR><TD>$ip</TD><TD>$country</TD><TD>$count</TD><TD>$wc</TD></TR>\n";
 		if ($count > 1){
 			print (OUTPUT_FILE "$ip\n");
@@ -139,8 +186,14 @@ sub pass_3{
 }
 
 sub pass_4{
+# sshpsycho original hosts are offline, I'll just run
+# this once a week to catch any imported data
 	if ( $HOUR == $MIDNIGHT){
-		`cat 103.41.124* 103.41.125* 43.255.190* 43.255.191* |sort |uniq -c |sort -n > /var/www/html/honey/attacks/sshpsycho_attacks.txt`
+		$day_of_week=`date +%a`;
+		chomp $day_of_week;
+		if ($day_of_week eq "Sun"){
+			`cat 103.41.124* 103.41.125* 43.255.190* 43.255.191* |sort |uniq -c |sort -n > /var/www/html/honey/attacks/sshpsycho_attacks.txt`
+		}
 	}
 }
 
@@ -166,11 +219,19 @@ sub pass_5 {
 	unlink ("/tmp/LongTail_associates");
 }
 
+&init;
+#$date=`date`;print "DEBUG pass1 at $date \n";
 &pass_1;
+#$date=`date`;print "DEBUG pass2 at $date \n";
 &pass_2;
+#$date=`date`;print "DEBUG pass3 at $date \n";
 &pass_3;
+exit;
+#$date=`date`;print "DEBUG pass4 at $date \n";
 &pass_4;
+#$date=`date`;print "DEBUG pass5 at $date \n";
 &pass_5; 
+#$date=`date`;print "DEBUG done at $date\n";
 if ( -e "/tmp/sshpsycho.$$"){ unlink ("/tmp/sshpsycho.$$");}
 if ( -e "/tmp/sshpsycho.$$-2"){unlink ("/tmp/sshpsycho.$$-2");}
 if ( -e "/tmp/sshPsycho.$$"){ unlink ("/tmp/sshPsycho.$$");}
