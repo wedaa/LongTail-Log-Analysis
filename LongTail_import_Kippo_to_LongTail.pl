@@ -40,7 +40,7 @@ sub pass_1 {
 			if (/failed auth password/){next;}
 			if (/starting service ssh-userauth/){next;}
 			if (/login attempt/){
-print "DEBUG line is -->$_<--";
+#print "DEBUG line is -->$_<--";
 				($date,$time,$stuff)=split(/ /,$_,3);
 				$time =~ s/00$/:00/;
 # This is a hack for Bob M's condensed Kippo Logs
@@ -49,7 +49,7 @@ print "DEBUG line is -->$_<--";
 					$stuff =~ s/H,/SSHService ssh-userauth on HoneyPotTransport,/;
 				}
 				$stuff =~ s/,/ /g;
-print "DEBUG stuff is -->$stuff<--";
+#print "DEBUG stuff is -->$stuff<--";
 				($trash,$trash,$trash,$trash,$trash,$ip,$trash,$trash,$attempt,$trash)=split(/ /,$stuff);
 				$ip =~ s/\]//;
 				#print "$ip $attempt\n";
