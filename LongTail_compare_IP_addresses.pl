@@ -110,7 +110,8 @@ print "<TR><TD>base_90days.txt </TD><TD> <A href=\"https://www.openbl.org/\">htt
 print "<TR><TD>base_all_ssh-only.txt </TD><TD> <A href=\"https://www.openbl.org/ \">https://www.openbl.org/</A></TD>\n";
 &compare_lists ("base_all_ssh-only.txt") ;
 
-print "<TR><TD>LongTail last-30-days-ip-addresses.txt </TD><TD> <A href=\"http://longtail.it.marist.edu/honey/last-30-days-ip-addresses.txt \">http://longtail.it.marist.edu/honey/last-30-days-ip-addresses.txt</A></TD>\n";
-&compare_lists ("last-30-days-ip-addresses.txt") ;
+print "<TR><TD>LongTail last-30-days-ip-addresses.txt </TD><TD> <A href=\"http://longtail.it.marist.edu/honey/last-30-days-ip-addresses.txt \">http://longtail.it.marist.edu/</A></TD>\n";
+#&compare_lists ("last-30-days-ip-addresses.txt") ;
+&compare_lists ("LongTail_last_30_days") ;
 
 print "</TABLE>\n";
