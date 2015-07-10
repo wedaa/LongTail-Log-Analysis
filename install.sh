@@ -92,6 +92,7 @@ for file in $ETC_FILES ; do
 done
 
 PROGRAMS=" LongTail_rebuild_dashboard_index.pl \
+LongTail_whois_analysis.pl \
 LongTail_find_badguys_looking_for_passwords.sh \
 LongTail_dashboard.pl \
 LongTail_import_Kippo_to_LongTail.pl \
@@ -113,7 +114,6 @@ LongTail.sh \
 LongTail_make_graph_sshpsycho.php \
 LongTail_friends_of_sshPsycho_IP_addresses \
 LongTail_sshPsycho_IP_addresses \
-LongTail_rebuild_last_month_dashboard_charts.sh \
 LongTail_rebuild_month_dashboard_charts.sh \
 LongTail_compare_IP_addresses.pl \
 LongTail_make_graph.php \
@@ -124,7 +124,8 @@ LongTail_class_b_hall_of_shame.pl \
 LongTail_class_c_hall_of_shame.pl \
 LongTail_find_first_password_use.pl \
 get_traceroute.sh  \
-get_whois.sh
+get_whois.sh \
+LongTail_find_ssh_probers.pl \
 whois.pl "
 
 for file in $PROGRAMS ; do
