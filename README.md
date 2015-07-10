@@ -23,7 +23,7 @@ No major functionality depends on them.
 
 Licensing
 --------------
-LongTail is a messages and access_log analyzer
+LongTail is a /var/log/messages and access_log analyzer
 
 Copyright (C) 2015 Eric Wedaa
 
@@ -57,8 +57,8 @@ particular day's activities.
 LongTail pre-supposes that you have compiled your own openssh daemon 
 as described below.
 
-LongTail is currently for a single server, and up to 5 servers.  
-With 5 active servers the main analysis report takes over 30 
+LongTail is currently for a single server, and up to 10 servers.  
+With 10 active servers the main analysis report takes over 30 
 minutes to run at night. (This will be improved in release 2.0)
 
 LongTail ALSO refers to a statistical distribution where there
@@ -137,6 +137,13 @@ LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core com
 	yum install httpd
 
 LongTail requires jpgraph and TrueType fonts.  (See next section)
+
+FancyBox notes
+--------------
+I use FancyBox Version 2.1.5 and it is available for non commercial use
+at http://fancyapps.com/fancybox
+
+It should be copied into /var/www/html/honey/fancybox/source
 
 Jpgraph Notes
 --------------
@@ -229,6 +236,7 @@ is code that only runs during the midnight time frame.
 MY crontab entry looks like this one:
 
 	#
+	#
 	# LongTail stuff
 	#
 	1 0 * * * /usr/local/etc/LongTail_make_fake_password.sh
@@ -236,18 +244,19 @@ MY crontab entry looks like this one:
 	1 2 * * * /usr/local/etc/LongTail_whois_analysis.pl > /var/www/html/honey/whois.shtml
 	10 * * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
 	30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
-	45 0,6,12,18 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
+	45 6,18 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
 	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
 	59 * * * * grep telnet /var/log/messages |grep -v \ sshd > /var/www/html/honey/telnet.data
 	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
 	35 23 * * * /usr/local/etc//LongTail_alerts.pl >>/tmp/LongTail_alerts.pl.out
-	#30 * * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
+	30 2 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
 	5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
 	55 3 * * * /usr/local/etc/LongTail_find_badguys_looking_for_passwords.sh >/var/www/html/honey/IPs_looking_for_passwords.shtml
 	#
 	# LongTail Dashboard counter
 	#
 	0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
+
 
 
 HTTP Configuration 
@@ -301,7 +310,7 @@ issue.
 Running rsyslog
 --------------
 1) This has only been tested using rsyslog.  Not syslog, not
-syslog-ng.
+syslog-ng.  I assume they will work too.
 
 2) If you are also logging to a remote host, and you are using 
 a port OTHER than 514, AND you are running selinux, make sure
@@ -355,19 +364,22 @@ This file should be in historical/year/month/date AND in
 systemname/historical/year/month/date when you are using a 
 consolidation server.
 
-header.html:
+header.html: This is the global header and includes the menu bars.
+This is where you can add links to each host's reports.
 
-footer.html:
+footer.html: This is the global footer
 
-description.html:
+description.html: This describes the host.  It should be in 
+/var/www/html/honey AND /var/www/html/honey/HOSTNAME
 
-organization.html:
+index.shtml: This is the "main" page.  It should be in
+/var/www/html/honey AND /var/www/html/honey/HOSTNAME
 
-index.shtml:
+index-long.shtml: This shows the historical stats.  It should be in
+/var/www/html/honey AND /var/www/html/honey/HOSTNAME
 
-index-long.shtml:
-
-index-historical.shtml:
+index-historical.shtml: This is the webpage that gets copied into 
+the historical directories (for instance, /var/www/html/honey/historical/2015/05/05/)
 
 KNOWN ISSUES THAT HAVE YET TO BE DONE
 --------------
@@ -384,9 +396,6 @@ KNOWN ISSUESAND IMPROVEMENTS FOR RELEASE 1.5
 
 56) RELEASE 1.5: I need to somehow show slowscans and bot net attacks
 
-57) RELEASE 1.5 I need to break out attacks by hosts so I can see the attacks
-that get through the IPS more clearly.
-
 60) RELEASE 1.5 (In Progress) I desperately need to optimize the LongTail_analyze_attacks.pl
 script since it takes so long to run
 
@@ -400,12 +409,6 @@ to look at it. (Tour)
 
 87) RELEASE 1.5 How do I breakout sshpsycho attacks by host attacked?
 
-90) RELEASE 1.5 Record port and agent (from sshd -dddd)
-Connection from ::1 port 57427
-debug1: Client protocol version 2.0; client software version OpenSSH_6.7
-
-91) Can we do Kippo logs?
-
 
 KNOWN ISSUES AND IMPROVEMENTS FOR RELEASE 2.0
 --------------
@@ -415,9 +418,6 @@ of countries attacking.
 
 24) RELEASE 2:  Make a chart/Graph of IP addresses that attack more than 
 one host.
-
-37) RELEASE 2: I need to analyze "sshd Disconnect" messages that come 
-from hosts that have not actively tried to login.
 
 39) RELEASE 2: I need to analyze ssh_keys as logins.
 
@@ -575,6 +575,9 @@ in the daily folders.  LongTail.sh needs to be enable this feature
 as I am not going to make a -rebuild flag since I do not want this
 to be easy to be done.  It's still dangerous.
 
+37) DONE: RELEASE 2: I need to analyze "sshd Disconnect" messages that come 
+from hosts that have not actively tried to login.
+
 38) DONE In sshd_config files. I need to make sure I disable ssh_keys as logins.
 
 40) DONE: Added "normalization" of data so I also report full stats
@@ -625,6 +628,9 @@ other charts
 55) DONE In statistics section I need to get stats on # of usernames, passwords
 and IP addresses.
 
+57) DONE RELEASE 1.5 I need to break out attacks by hosts so I can see the attacks
+that get through the IPS more clearly.
+
 59) CRITICAL: FIXED There's a bug in the "normalization" code for some of the 
 statistics webpages.
 
@@ -669,3 +675,9 @@ webpage (Tour)
 
 89) FIXED Need to fix the bug in sshPsycho friends and associates that overwrites
 existing IP addresses in the lists.
+
+90) DONE: RELEASE 1.5 Record port and agent (from sshd -dddd)
+Connection from ::1 port 57427
+debug1: Client protocol version 2.0; client software version OpenSSH_6.7
+
+91) DONE: Can we do Kippo logs?
