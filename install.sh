@@ -11,6 +11,7 @@ exit
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
 HTML_DIR="/var/www/html/honey" # Where do we put the HTML files?
 DICT_DIR="/usr/local/dict"
+BOTS_DIR="/usr/local/etc/LongTail_botnets"
 
 OWNER="wedaa"                  # What is the owner of the process running LongTail?
 
@@ -21,7 +22,7 @@ fi
 
 OTHER_DIRS="/usr/local/etc/black_lists /var/www/html/honey-2222 /var/www/html/honey-22 /var/www/html/telnet /var/www/html/ftp /var/www/html/rlogin"
 
-for dir in $SCRIPT_DIR $HTML_DIR  $DICT_DIR $OTHER_DIRS ; do
+for dir in $SCRIPT_DIR $HTML_DIR  $DICT_DIR $OTHER_DIRS $BOTS_DIR; do
 	if [ -e $dir ] ; then
 		if [ -d $dir ] ; then
 			echo "$dir allready exists, this is a good thing"
@@ -49,6 +50,28 @@ if [ ! -d $SCRIPT_DIR/LongTail_local_reports ] ; then
 fi
 
 DICT_FILES="wordsEn.txt"
+
+BOTS_FILES="big_botnet \
+LongTail_find_botnet.pl  \
+LongTail_get_botnet_stats.pl \
+fromage_puant \
+new_bots_2  \
+pink_roses  \
+small_bots \
+small_bots_4 \
+dead_botnet \
+kippo_1  \
+new_bots_1  \
+new_bots_3  \
+pulgas  \
+small_bots_3"
+
+
+for file in $BOTS_FILES ; do
+	echo $file
+	cp $file $BOTS_DIR
+	chmod a+r $BOTS_DIR/$file
+done
 
 ETC_FILES="ip-to-country \
 translate_country_codes.sed \
@@ -100,6 +123,8 @@ LongTail_make_daily_attacks_chart.pl \
 LongTail_class_b_hall_of_shame.pl \
 LongTail_class_c_hall_of_shame.pl \
 LongTail_find_first_password_use.pl \
+get_traceroute.sh  \
+get_whois.sh
 whois.pl "
 
 for file in $PROGRAMS ; do
@@ -142,7 +167,7 @@ cp honey-2222/* /var/www/html/honey-2222/
 chmod a+r /var/www/html/honey-2222/*
 
 cp dashboard-index.shtml $HTML_DIR/dashboard/index.shtml
-cp dashboard-1.shtml $HTML_DIR/dashboard/ 
+cp dashboard-1.shtml $HTML_DIR/dashboard/
 cp dashboard.shtml $HTML_DIR/
 
 echo "0" > $HTML_DIR/dashboard/count
@@ -168,19 +193,19 @@ if [ ! -e $SCRIPT_DIR/LongTail-exclude-webpages.grep ] ; then
 fi
 
 
-chmod a+r $HTML_DIR/index.shtml 
-chown $OWNER $HTML_DIR/index.shtml 
-chmod a+r $HTML_DIR/index-long.shtml 
-chown $OWNER $HTML_DIR/index-long.shtml 
+chmod a+r $HTML_DIR/index.shtml
+chown $OWNER $HTML_DIR/index.shtml
+chmod a+r $HTML_DIR/index-long.shtml
+chown $OWNER $HTML_DIR/index-long.shtml
 chmod a+r $HTML_DIR/index-historical.shtml
-chown $OWNER $HTML_DIR/index-historical.shtml 
+chown $OWNER $HTML_DIR/index-historical.shtml
 chmod a+r $HTML_DIR/graphics.shtml
-chown $OWNER $HTML_DIR/graphics.shtml 
+chown $OWNER $HTML_DIR/graphics.shtml
 chmod a+r $HTML_DIR/graphics.shtml
-chown $OWNER $HTML_DIR/graphics.shtml 
+chown $OWNER $HTML_DIR/graphics.shtml
 
 chmod a+r $HTML_DIR/LongTail.css
-chown $OWNER $HTML_DIR/LongTail.css 
+chown $OWNER $HTML_DIR/LongTail.css
 chmod a+r $HTML_DIR/header.html
 chown $OWNER $HTML_DIR/header.html
 chmod a+r $HTML_DIR/footer.html
@@ -201,7 +226,7 @@ DAY=`date +%d`
 mkdir -p $HTML_DIR/historical/$YEAR/$MONTH/$DAY
 echo "0" > $HTML_DIR/historical/$YEAR/$MONTH/$DAY/current-attack-count.data
 chown -R $OWNER $HTML_DIR/historical
-chmod a+rx $HTML_DIR $HTML_DIR/historical $HTML_DIR/historical/$YEAR $HTML_DIR/historical/$YEAR/$MONTH $HTML_DIR/historical/$YEAR/$MONTH/$DAY $HTML_DIR/historical/$YEAR/$MONTH/$DAY/current-attack-count.data 
+chmod a+rx $HTML_DIR $HTML_DIR/historical $HTML_DIR/historical/$YEAR $HTML_DIR/historical/$YEAR/$MONTH $HTML_DIR/historical/$YEAR/$MONTH/$DAY $HTML_DIR/historical/$YEAR/$MONTH/$DAY/current-attack-count.data
 
 #
 # Lets deal with the tour
@@ -229,7 +254,7 @@ cd ..
 #
 for i in perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
 	echo -n "Checking for $i...  "
-	which $i >/dev/null 
+	which $i >/dev/null
 	if [ $? -eq 0 ]; then
 		echo "$i found"
 	else
