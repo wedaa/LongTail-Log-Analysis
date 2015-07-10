@@ -9,10 +9,10 @@ $date=`date +"%Y-%m-%d %H:%M"`;
 $URL_LINE="http://longtail.it.marist.edu";
 
 
-// USAGE: php /usr/local/etc/LongTail_make_graph.php filename "header" "X-axis label" "Y-axis label"
+// 	php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE
+
 // Must pass full filename to read and "Quote delimited text header"
 // And redirect the output to a file
-// php LongTail_make_graph.php Total_account_data sshpsycho friends_of_sshpsycho "Number of attacks" "X Title" "Y Title" "wide">current-top-20-root-passwords.png 
 
 $file1 = $argv[1];
 $file2 = $argv[2];
@@ -38,6 +38,9 @@ if ($myfile) {
 	while (($buffer = fgets($myfile, 4096)) !== false) {
 		list($count,$account) = explode(" ",$buffer);
 		$account = chop($account);
+		if ($count <0){
+			$count=0;
+		}
 		$datay[$counter]=$count;
 		$datax[$counter]=$account;
 // print "counter is $counter, account is $account, count is $count\n";
@@ -56,6 +59,9 @@ if ($myfile) {
 	while (($buffer = fgets($myfile, 4096)) !== false) {
 		list($count,$account) = explode(" ",$buffer);
 		$account = chop($account);
+		if ($count <0){
+			$count=0;
+		}
 		$datay2[$counter]=$count;
 		$datay[$counter]=$datay[$counter]-$count;
 		$datax[$counter]=$account;
@@ -75,6 +81,9 @@ if ($myfile) {
 	while (($buffer = fgets($myfile, 4096)) !== false) {
 		list($count,$account) = explode(" ",$buffer);
 		$account = chop($account);
+		if ($count <0){
+			$count=0;
+		}
 		$datay3[$counter]=$count;
 		$datay[$counter]=$datay[$counter]-$count;
 		$datax[$counter]=$account;
@@ -93,8 +102,14 @@ if ($myfile) {
 	while (($buffer = fgets($myfile, 4096)) !== false) {
 		list($count,$account) = explode(" ",$buffer);
 		$account = chop($account);
+		if ($count <0){
+			$count=0;
+		}
 		$datay4[$counter]=$count;
 		$datay[$counter]=$datay[$counter]-$count;
+		if ( $datay[$counter] < 0 ){
+			$datay[$counter] =0;
+		}
 		$datax[$counter]=$account;
 		$counter++;
 	}
