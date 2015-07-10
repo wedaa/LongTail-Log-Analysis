@@ -151,6 +151,7 @@ graphics.shtml \
 header.html \
 footer.html \
 institution.html \
+description.html \
 notes.shtml \
 LongTail.css \
 buttons.css \
