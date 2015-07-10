@@ -254,7 +254,6 @@ sub analyze {
 	
 	# Keep the interesting stuff near the top of the report
 	if ($DEBUG){print "DEBUG Doing multiple attack data now\n";}
-	open (FILE, "sum.data")||die "can not open sum.data\n";
 	open (FILE_FORMATTED, ">$honey_dir/attack_patterns.shtml") || die "Can not write to $honey_dir/attack_patterns.shtml\n";
 	print (FILE_FORMATTED "<HTML>\n");
 	print (FILE_FORMATTED "<HEAD>\n");
@@ -267,6 +266,7 @@ sub analyze {
 	print (FILE_FORMATTED "<P>This page is updated daily.\n");
 	print (FILE_FORMATTED "Last updated on $DATE\n");
 
+	open (FILE, "sum.data")||die "can not open sum.data\n";
 	while (<FILE>){
 		chomp;
 		($tmp,$count, $checksum)=split(/ +/,$_);
@@ -274,6 +274,7 @@ sub analyze {
 		print (FILE_FORMATTED "<a name=\"$checksum\"></a>\n");
 		print (FILE_FORMATTED "<P>IP addresses:\n");
 		open (FILE2, "sum2.data");
+		$checksum_seen=0;
 		while (<FILE2>){
 			if (/$checksum/){
 				chomp;
@@ -281,11 +282,17 @@ sub analyze {
 				($first,$second,$third,$fourth,$host)=split(/\./, $filename);
 				$tmp="$first.$second.$third.$fourth";
 				print (FILE_FORMATTED "<A HREF=\"/honey/ip_attacks.shtml#$tmp\">$tmp</A> \n");
+				$checksum_seen=1;
+			}
+			elsif ($checksum_seen==1) {
+				last;
 			}
 		}
 		close (FILE2);
 
-		$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
+		#$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
+		$WC=`cat dict-$checksum.txt.wc`;
+		chomp $WC;
 		print (FILE_FORMATTED "<BR><A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n");
 		
 	}
@@ -516,7 +523,7 @@ sub create_dict_webpage {
 			if ( $checksum ne ""){
 				$FIRST_SEEN=scalar localtime($first_seen_epoch);
 				$LAST_SEEN=scalar localtime($last_seen_epoch);
-				$dictionary_file="dict-$checksum.txt";
+				$dictionary_file="dict-$prior_checksum.txt";
 				print (FILE_FORMATTED_TEMP "$TIMES_USED|$WC|$SUM|$dictionary_file|$FIRST_SEEN|$LAST_SEEN\n");
 			}
 			$WC=`cat dict-$checksum.txt.wc`;
