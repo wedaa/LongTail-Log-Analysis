@@ -622,6 +622,28 @@ function count_ssh_attacks {
 	#
 	# This really needs to be sped up somehow
 	#
+	# Couting honeypots here
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	if [ "x$HOSTNAME" == "x/" ] ;then
+	if [ $SEARCH_FOR == "sshd" ] ; then
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now"; date ; fi
+		ALLUNIQUEHONEYPOTS=`zcat historical/*/*/*/current-raw-data.gz |egrep IP:\|sshd | awk '{print $2}' |sort -T $TMP_DIRECTORY -u  |wc -l`
+		THISYEARUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |egrep IP:\|sshd |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
+		THISMONTHUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |egrep IP:\|sshd |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
+		THISMONTHUNIQUEHONEYPOTS=`echo $THISMONTHUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		THISYEARUNIQUEHONEYPOTS=`echo $THISYEARUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		ALLUNIQUEHONEYPOTS=`echo $ALLUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		sed -i "s/Number of Honeypots This Month.*$/Number of Honeypots This Month:--> $THISMONTHUNIQUEHONEYPOTS/" $1/index.shtml
+		sed -i "s/Number of Honeypots This Year.*$/Number of Honeypots This Year:--> $THISYEARUNIQUEHONEYPOTS/" $1/index.shtml
+		sed -i "s/Number of Honeypots Since Logging Started.*$/Number of Honeypots Since Logging Started:--> $ALLUNIQUEHONEYPOTS/" $1/index.shtml
+		sed -i "s/Number of Honeypots This Month.*$/Number of Honeypots This Month:--> $THISMONTHUNIQUEHONEYPOTS/" $1/index-long.shtml
+		sed -i "s/Number of Honeypots This Year.*$/Number of Honeypots This Year:--> $THISYEARUNIQUEHONEYPOTS/" $1/index-long.shtml
+		sed -i "s/Number of Honeypots Since Logging Started.*$/Number of Honeypots Since Logging Started:--> $ALLUNIQUEHONEYPOTS/" $1/index-long.shtml
+	fi
+	fi
+	fi
+
+
 	# SOMEWHERE there is a bug which if the password is empty, that the
 	# line sent to syslog is "...Password:$", instead of "...Password: $"
 	# Please note the missing space at the end of the line is the bug
@@ -799,6 +821,15 @@ function count_ssh_attacks {
 
 	sed -i "s/Unique IPs Today.*$/Unique IPs Today:--> $TODAYSUNIQUEIPS/" $1/index-long.shtml
 	sed -i "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/" $1/index-long.shtml
+
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |sort -T $TMP_DIRECTORY -u |wc -l`
+	else
+		HONEYPOTSTODAY=1	
+	fi
+
+	sed -i "s/Number of Honeypots Today:.*$/Number of Honeypots Today:--> $HONEYPOTSTODAY/" $1/index.shtml
+	sed -i "s/Number of Honeypots Today:.*$/Number of Honeypots Today:--> $HONEYPOTSTODAY/" $1/index-long.shtml
 	
 	########################################################################################
 	# Make statistics.shtml webpage here
