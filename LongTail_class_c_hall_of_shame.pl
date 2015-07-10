@@ -192,6 +192,7 @@ sub all_class_c {
 		printf "<TD>$number_of_login_attempts</TD></TR>\n";
 	}
 	close (INPUT);
+	unlink ("/tmp/all_class_c.$$") ;
 }
 
 $YEAR=`date +%Y`;
