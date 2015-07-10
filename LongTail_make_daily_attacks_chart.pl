@@ -13,7 +13,9 @@ use List::Util qw(max min sum);
 @a_6=();
 @a_7=();
 
-chdir ("/var/www/html/honey/historical") || die "can not chdir\n";;
+chdir ("$ARGV[0]") || die "can not chdir to $ARGV[0] \n";;
+
+#chdir ("/var/www/html/honey/historical") || die "can not chdir\n";;
 # Commented out during development of new version chdir ("$ARGV[0]") || die "can not chdir to $ARGV[0] \n";;
 print "<HTML><BODY><TABLE>\n";
 
