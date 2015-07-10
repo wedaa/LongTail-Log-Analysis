@@ -69,7 +69,7 @@ small_bots_3"
 
 for file in $BOTS_FILES ; do
 	echo $file
-	cp $file $BOTS_DIR
+	cp LongTail_botnets/$file $BOTS_DIR
 	chmod a+r $BOTS_DIR/$file
 done
 
