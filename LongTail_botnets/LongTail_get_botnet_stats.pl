@@ -67,7 +67,8 @@ sub print_header {
 }
 
 sub pass_1 {
-	open (FIND, "find . -type f -print|sort |") || die "Can not run find command\n";
+	#open (FIND, "find . -type f -print|sort |") || die "Can not run find command\n";
+	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
 	$number_of_botnets=0;
 	$global_max=0;
 	$global_min=99999;
@@ -81,6 +82,7 @@ sub pass_1 {
 		if (/.shtml/){next;}
 		if (/.accounts/){next;}
 		if (/typescript/){next;}
+		if (/total/){next;}
 		if (/2015/){next;}
 		if (/backups/){next;}
 		if (/.static/){
@@ -225,11 +227,11 @@ print "\b</div>\n</div>\n";
 		$max=&commify($max);
 		print "\n<BR>\n";
 		print "<TABLE>\n";
+		print "<TR><TD>Total number of bots in $filename</TD><TD> $number_of_bots\n";
 		print "<TR><TD>Total ssh attempts from $filename since logging began</TD><TD> $total\n";
 		print "<TR><TD>Total ssh attempts from $filename this year</TD><TD> $total_year\n";
 		print "<TR><TD>Total ssh attempts from $filename this month</TD><TD> $total_month\n";
 		print "<TR><TD>Total ssh attempts from $filename today</TD><TD> $total_day\n";
-		print "<TR><TD>Total number of bots in $filename</TD><TD> $number_of_bots\n";
 		print "<TR><TD>Minimum attack size from $filename</TD><TD> $min\n";
 		print "<TR><TD>Average attack size from $filename</TD><TD> $average\n";
 		print "<TR><TD>Maximum attack size from $filename</TD><TD> $max\n";

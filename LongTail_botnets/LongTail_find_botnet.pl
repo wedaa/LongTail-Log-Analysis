@@ -55,7 +55,7 @@ sub pass_1{
 # attacks that have less than 6 attacks
 #
 sub pass_2{
-	print "\n<BR>\nPass 2: Analyzing attack patterns with 6 or more entries\n<BR>\n";
+	print "\n<BR>\nPass 2: Analyzing attack patterns with 4 or more entries\n<BR>\n";
 
 	if ( -e "/var/www/html/honey/attacks/possible_botnet.data"){
 		unlink("/var/www/html/honey/attacks/possible_botnet.data");
@@ -72,6 +72,8 @@ sub pass_2{
 		}
 	}
 	close (FILE);
+	`sort -u /var/www/html/honey/attacks/possible_botnet.data >/var/www/html/honey/attacks/possible_botnet.data.2`;
+	`mv /var/www/html/honey/attacks/possible_botnet.data.2 /var/www/html/honey/attacks/possible_botnet.data`;
 }
 
 ##########################################################################
@@ -85,42 +87,59 @@ sub pass_3{
 	$last_dict="";
 	$ip_list{"null"}=1;
 	$ip_count=0;
-	$string="";
+	$string=""; #set string to "" so that the first entry is different from the prior entry
+	$botnet_count=1;
+	$ip_string=""; #set string to "" so that the first entry is different from the prior entry
+	$botnet_date=`date +%y-%m-%d`;
+	chomp $botnet_date;
 	while (<FILE>){
-#print "\nDEBUG $_";
 		chomp;
 		($dict,$attack)=split(/  /,$_);
 		($ip1,$ip2,$ip3,$ip4,$trash)=split(/\./,$attack);
 		$ip="$ip1.$ip2.$ip3.$ip4";
 		if ($dict ne $last_dict){
-#print "\nNEW DICT\n";
 			if ($ip_count >1){
-				print $string;
+				print "$string"; #OK, we're done, print the string
+				while ( -e  "$botnet_date-botnet-$botnet_count" ){$botnet_count++;}
+				open (BOTNET_FILE, ">$botnet_date-botnet-$botnet_count");
+#print "\nDEBUG string is -->$string<--\n";
+				$ip_string=$string;
+				$ip_string =~ s/^\n//;
+				$ip_string =~ s/^..*  //;
+				$ip_string =~ s/ /\n/g;
+				print (BOTNET_FILE "$ip_string\n");
+				close (BOTNET_FILE);
+				$botnet_count++;
 			}
 			$last_dict=$dict;
 			undef (@ip_list);
 			$wc=`cat /var/www/html/honey/attacks/dict-$dict.txt.wc`;
 			chomp $wc;
-			$string="\n<BR>wc: $wc; $dict: ";
-			#print "\n";
-			#print "wc: $wc; $dict: ";
-			#print "$ip ";
+			$string="\n<BR>wc: $wc; $dict: "; #Set $string to the first part of what I want to print
 			$ip_list{$ip}=1;
-			$big_ip_list{$ip}=1;
+			$big_ip_list{$ip}++;
 			$ip_count=1;
-			$string="$string $ip";
+			$string="$string $ip"; #Add the IP address to the tail end of the string
+			$ip_string="$ip_string\n$ip";
 		}
-		else {
+		else { #This line has the same dict entry
+			#print "->$dict $last_dict X<-";
 			if (! $ip_list{$ip}){
 				#print "$ip ";
 				$ip_list{$ip}=1;
-				$big_ip_list{$ip}=1;
+				$big_ip_list{$ip}++;
 				$ip_count++;
-				$string="$string $ip";
-				if ( $big_ip_list{$ip}){
-					print "*";
+				$string="$string $ip";#Add the IP address to the tail end of the string
+				$ip_string="$ip_string\n$ip";
+			# probably garbage code.
+				if ( $big_ip_list{$ip}>1){ #what the heck was I trying to do, show an ip that has been seen before?
+					$string="$string* ";
 				}
 			}
+				$big_ip_list{$ip}++;
+			#else { #This ip has been seen before
+			#	$string="$string* ";
+			#}
 		}
 	}
 	close (FILE);
