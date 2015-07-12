@@ -629,7 +629,9 @@ function count_ssh_attacks {
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now"; date ; fi
 		ALLUNIQUEHONEYPOTS=`zcat historical/*/*/*/current-raw-data.gz |egrep IP:\|sshd | awk '{print $2}' |sort -T $TMP_DIRECTORY -u  |wc -l`
 		THISYEARUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |egrep IP:\|sshd |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
-		THISMONTHUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |egrep IP:\|sshd |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
+# THIS line uses all_messages.gz, NOT current-raw-data.gz because some months
+# protected honeypots have no traffic.
+		THISMONTHUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/all_messages.gz |grep ssh |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
 		THISMONTHUNIQUEHONEYPOTS=`echo $THISMONTHUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 		THISYEARUNIQUEHONEYPOTS=`echo $THISYEARUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 		ALLUNIQUEHONEYPOTS=`echo $ALLUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -1430,6 +1432,7 @@ echo "PROTOCOL is $PROTOCOL"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml" "IP Addresses" " " "Count" "IP Address" "Country" "WhoIS" "Blacklisted" "Attack Patterns"
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml" "Top 20 IP Addresses" " " "Count" "IP Address" "Country" "WhoIS" "Blacklisted" "Attack Patterns"
 	# I need to make a temp file for this
+
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "# http://longtail.it.marist.edu "> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# This is a sorted list of IP addresses that have tried to login" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
@@ -2740,6 +2743,7 @@ echo "Doing blacklist efficiency tests now"
 #	echo -n "Done with LongTail_analyze_attacks.pl at:"
 #	date
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	#if [ $START_HOUR -eq 13 ]; then
 		echo -n "Starting LongTail_class_c_hall_of_shame.pl now "; date
 		make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
 		`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
