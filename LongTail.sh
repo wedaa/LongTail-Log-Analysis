@@ -62,7 +62,6 @@ function read_local_config_file {
 }
 
 function lock_down_files {
-#	if [ $START_HOUR -eq $MIDNIGHT ]; then
 	if [ "x$HOSTNAME" == "x/" ] ;then
 if [ -d /var/www/html ] ; then 
 cd /var/www/html
@@ -86,7 +85,6 @@ find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
 
 fi
 fi
-#fi
 
 }
 
@@ -623,7 +621,7 @@ function count_ssh_attacks {
 	# This really needs to be sped up somehow
 	#
 	# Couting honeypots here
-	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq 3 ]; then
 	if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "sshd" ] ; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now"; date ; fi
@@ -826,6 +824,8 @@ function count_ssh_attacks {
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |sort -T $TMP_DIRECTORY -u |wc -l`
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |sort -T $TMP_DIRECTORY |uniq -c > /var/www/html/honey/todays_honeypots.txt
+
 	else
 		HONEYPOTSTODAY=1	
 	fi
@@ -2042,10 +2042,7 @@ function do_ssh {
 	# Deal with creating empty 7-day, 30-day and historical files the 
 	# first time this is run
 echo ""
-echo ""
 echo "Making Graphics now"
-echo ""
-echo ""
 echo ""
 	if [ ! -e last-7-days-top-20-admin-passwords.data ] ; then
 		touch current-attack-count.data
@@ -2108,8 +2105,15 @@ echo ""
 		done        
 
 		
+echo ""
+echo "checking to see if we need to make midnight Graphics now"
+echo "midnight is $MIDNIGHT"
+echo ""
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
-		#if [ $START_HOUR -eq 13 ]; then
+		#if [ $START_HOUR -eq 12 ]; then
+echo ""
+echo "Making midnight Graphics now"
+echo ""
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
@@ -2255,6 +2259,7 @@ function create_historical_copies {
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_copies" ; date; fi
 
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Actually running create_historical_copies $START_HOUR -eq $MIDNIGHT) " ; date; fi
 		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
 		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
 		YESTERDAY_DAY=`date  +"%d" --date="1 day ago"`
@@ -2469,7 +2474,7 @@ function recount_last_30_days_sshpsycho_attacks {
 
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-In recount_last_30_days_sshpsycho_attacks" ; date; fi
 	LAST_MONTH=""
-	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45; do
+	for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 ; do
 		YESTERDAY_YEAR=`date "+%Y" --date="$i day ago"`
 		YESTERDAY_MONTH=`date "+%m" --date="$i day ago"`
 		YESTERDAY_DAY=`date "+%d" --date="$i day ago"`
@@ -2550,10 +2555,15 @@ else
 	HOSTNAME=$1
 	if [ "x$HOSTNAME" != "x" ] ;then
 		echo "hostname set to $HOSTNAME"
+		shift
 	else
 		# I'm relying on "//" being the same as "/"
 		# in unix :-)
 		HOSTNAME="/"
+	fi
+	if [ "x$1" == "xMIDNIGHT" ] ;then
+		echo "DEBUG Running midnight routines now"
+		MIDNIGHT=$START_HOUR
 	fi
 fi	
 
@@ -2604,37 +2614,12 @@ DATE=`date +"%Y-%m-%d"` # THIS IS TODAY
 PROTOCOL=$SEARCH_FOR
 
 #This is a manual re-creation of a dated directory
-#ssh_attacks $HTML_DIR/historical/2015/03/26 $YEAR "/var/www/html/honey/syrtest/historical/2015/03/26" "2015-03-26"      "messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/27 $YEAR "/var/www/html/honey/syrtest/historical/2015/03/27" "2015-03-27"      "messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/28 $YEAR "/var/www/html/honey/syrtest/historical/2015/03/28" "2015-03-28"      "messages" "current"
 #ssh_attacks $HTML_DIR/historical/2015/03/29 $YEAR "/var/www/html/honey/syrtest/historical/2015/03/29" "2015-03-29"      "messages" "current"
 
-#exit
-#ssh_attacks $HTML_DIR/historical/2015/03/16 $YEAR "/var/log" "2015-03-16"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/17 $YEAR "/var/log" "2015-03-17"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/18 $YEAR "/var/log" "2015-03-18"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/19 $YEAR "/var/log" "2015-03-19"      "tmp_messages" "current"
 
 #PROTOCOL=$SEARCH_FOR
-#ssh_attacks $HTML_DIR/historical/2015/03/20 $YEAR "/var/log" "2015-03-20"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/21 $YEAR "/var/log" "2015-03-21"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/22 $YEAR "/var/log" "2015-03-22"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/23 $YEAR "/var/log" "2015-03-23"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/24 $YEAR "/var/log" "2015-03-24"      "tmp_messages" "current"
-##exit
-#ssh_attacks $HTML_DIR/historical/2015/03/25 $YEAR "/var/log" "2015-03-25"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/26 $YEAR "/var/log" "2015-03-26"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/27 $YEAR "/var/log" "2015-03-27"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/28 $YEAR "/var/log" "2015-03-28"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/03/29 $YEAR "/var/log" "2015-03-29"      "tmp_messages" "current"
 #ssh_attacks $HTML_DIR/historical/2015/03/30 $YEAR "/var/log" "2015-03-30"      "tmp_messages" "current"
 #ssh_attacks $HTML_DIR/historical/2015/03/31 $YEAR "/var/log" "2015-03-31"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/04/01 $YEAR "/var/log" "2015-04-01"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/04/02 $YEAR "/var/log" "2015-04-02"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/04/03 $YEAR "/var/log" "2015-04-03"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/04/04 $YEAR "/var/log" "2015-04-04"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/04/05 $YEAR "/var/log" "2015-04-05"      "tmp_messages" "current"
-#ssh_attacks $HTML_DIR/historical/2015/04/06 $YEAR "/var/log" "2015-04-06"      "tmp_messages" "current"
 #exit
 #create_historical_copies  $HTML_DIR
 #exit
@@ -2670,6 +2655,8 @@ if [ $SEARCH_FOR == "telnet-honeypot" ] ; then
 	make_trends
 	do_ssh
 fi
+#echo "DEBUG-exiting now during tests"
+#exit
 
 set_permissions  $HTML_DIR 
 protect_raw_data $HTML_DIR
@@ -2692,7 +2679,7 @@ echo "Doing blacklist efficiency tests now"
 			/usr/local/etc/LongTail_make_30_days_imagemap.pl >$HTML_DIR/30_days_imagemap.html
 		fi
 
-		if [ $START_HOUR -eq $ONE_AM ]; then
+		if [ $START_HOUR -eq $MIDNIGHT ]; then
 			awk '{print length, $0}' $HTML_DIR/all-password | sort -n | cut -d " " -f2- |tail -2000 >$HTML_DIR/2000-longest-passwords.txt
 
 			make_header "$HTML_DIR/password_analysis_all_passwords.shtml" "Password Analysis of All Passwords"  "" 
@@ -2743,7 +2730,6 @@ echo "Doing blacklist efficiency tests now"
 #	echo -n "Done with LongTail_analyze_attacks.pl at:"
 #	date
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-	#if [ $START_HOUR -eq 13 ]; then
 		echo -n "Starting LongTail_class_c_hall_of_shame.pl now "; date
 		make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
 		`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
