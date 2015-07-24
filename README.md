@@ -58,8 +58,10 @@ LongTail pre-supposes that you have compiled your own openssh daemon
 as described below.
 
 LongTail is currently for a single server, and up to 10 servers.  
-With 10 active servers the main analysis report takes over 30 
-minutes to run at night. (This will be improved in release 2.0)
+With 10 active servers the main analysis report program
+(LongTail_analyze_attacks.pl) takes over 36 minutes to run at 
+night with 13 million records. (This will be improved in
+ release 2.0)
 
 LongTail ALSO refers to a statistical distribution where there
 are many "Hits" at the left, and tapering down to a "Long Tail"
@@ -156,6 +158,8 @@ Fix the timezone line in /etc/php.ini to reference your timezone. (I use America
 You will need to install the truetype fonts.  
 
 The following instructions are what I think I used, but are untested as of this writing.)
+goto http://www.tecmint.com/how-to-enable-epel-repository-for-rhel-centos-6-5/ for instructions on installing latest epel repos
+
   wget http://corefonts.sourceforge.net/msttcorefonts-2.0-1.spec
   yum install rpm-build cabextract
   rpmbuild -ba msttcorefonts-2.0-1.spec
