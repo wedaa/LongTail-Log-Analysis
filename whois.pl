@@ -23,7 +23,7 @@ sub look_up_country {
 	#print (STDERR "In look_up_country\n");
 	$found_country=1;
 	#print "DEBUG IP is $ARGV[0]\n";
-	open (PIPE, "whois $ARGV[0]|") || die "Can not open whois command\n";
+	open (PIPE, "timeout 10 whois $ARGV[0]|") || die "Can not open whois command\n";
 	while (<PIPE>){
 		# Sometimes whois lookups for some IPs do not return a Country Code:-(
 		# This is a hack to force a country code
