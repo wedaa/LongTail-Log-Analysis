@@ -61,6 +61,23 @@ function read_local_config_file {
 	fi
 }
 
+# This function is called as 
+# NEW_STRING=$(convert_kippo_to_longtail "$STRING")
+# STRING should look like
+# 2015-05-10 18:05:31-0400 [SSHService ssh-userauth on HoneyPotTransport,16534,58.218.204.52] login attempt [root/skata1] failed
+function convert_kippo_to_longtail {
+  STRING=`echo $STRING |sed -e 's/ /T/' \
+  -e 's/.SSHService ssh-userauth on HoneyPotTransport,.*,//' \
+  -e 's/\]/ /' \
+  -e 's/\] failed$//' \
+  -e 's/\[//' \
+  -e 's/ / LOCALHOST sshd-22[9999]: IP: /' \
+  -e 's/login attempt/PassLog: Username:/' \
+  -e 's/\// Password: /'`
+  echo $STRING
+}
+
+
 function lock_down_files {
 	if [ "x$HOSTNAME" == "x/" ] ;then
 if [ -d /var/www/html ] ; then 
@@ -98,8 +115,38 @@ function init_variables {
 	# http://jpgraph.net/  JpGraph - Most powerful PHP-driven charts
 	GRAPHS=1
 
+	# Which honeypot are you running?  Uncomment only ONE of the following
+	#KIPPO=1 ; LONGTAIL=0 # This is for the Kippo honeypot
+	KIPPO=0 ; LONGTAIL=1 # This is for the LongTail honeypot
+	
+	#Where is the messages file?  Uncomment only ONE of the following
+	PATH_TO_VAR_LOG="/var/log/" # Typically for messages file from ryslog
+	#PATH_TO_VAR_LOG="/usr/local/kippo-master/log/" # One place for kippo
+	#PATH_TO_VAR_LOG="/var/log/kippo/" # another place for kippo
+
+	if [ ! -d $PATH_TO_VAR_LOG ] ; then
+		echo "$PATH_TO_VAR_LOG does not exist, exiting now"
+		exit
+	fi
+
+	# What is the name of the default log file
+	LOGFILE="messages"
+	#LOGFILE="kippo.log"
+	
+	if [ ! -e $PATH_TO_VAR_LOG/$LOGFILE ] ; then
+		echo "$PATH_TO_VAR_LOG/$LOGFILE does not exist, exiting now"
+		exit
+	fi
+	
+	#Where is the apache access_log file?
+	PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/"
+	if [ ! -d $PATH_TO_VAR_LOG_HTTPD ] ; then
+		echo "$PATH_TO_VAR_LOG_HTTPD does not exist, exiting now"
+		exit
+	fi
+
 	# Do you want debug output?  Set this to 1
-	DEBUG=1
+	DEBUG=0
 	
 	# Do you want ssh analysis?  Set this to 1
 	DO_SSH=1
@@ -147,12 +194,6 @@ function init_variables {
 	TELNET_HTML_TOP_DIR="telnet" #NO slashes please, it breaks sed
 	RLOGIN_HTML_TOP_DIR="rlogin" #NO slashes please, it breaks sed
 	FTP_HTML_TOP_DIR="ftp" #NO slashes please, it breaks sed
-	
-	#Where is the messages file?
-	PATH_TO_VAR_LOG="/var/log/"
-	
-	#Where is the apache access_log file?
-	PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/"
 	
 	# This is for my personal debugging, just leave them
 	# commented out if you aren't me.
@@ -412,8 +453,18 @@ function count_ssh_attacks {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/TODAY now" ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
-	else
+		if [ $LONGTAIL -eq 1 ] ; then
+				TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+		fi
+		if [ $KIPPO -eq 1 ] ; then
+			TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt|wc -l`
+		fi
+	else # We were passed a hostname.  This should never happen with Kippo
+		if [ $KIPPO -eq 1 ] ; then
+			echo "LongTail is only for single instances of Kippo.  You passed a hostname to LongTail.sh"
+			echo "Exiting now"
+			exit
+		fi
 		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
 	fi
 	echo $TODAY > $TMP_HTML_DIR/current-attack-count.data
@@ -671,7 +722,11 @@ function count_ssh_attacks {
 		sed -i "s/Unique Passwords Since Logging Started.*$/Unique Passwords Since Logging Started:--> $ALLUNIQUEPASSWORDS/" $1/index-long.shtml
 	fi
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
+		if [ $KIPPO -eq 1 ] ; then
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt| sed 's/^..*\///' | sed 's/\].*$//'|sort -T $TMP_DIRECTORY -u |sed 's/^$/NO-PASSWORD-GIVEN/'> todays_passwords
+		else
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
+		fi
 	else
 		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
 	fi
@@ -718,7 +773,11 @@ function count_ssh_attacks {
 		sed -i "s/Unique Usernames Since Logging Started.*$/Unique Usernames Since Logging Started:--> $ALLUNIQUEUSERNAMES/" $1/index-long.shtml
 	fi
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
+		if [ $KIPPO -eq 1 ] ; then
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*\[//' | sed 's/\/..*$//' |sort -T $TMP_DIRECTORY -u > todays_username
+		else
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
+		fi
 	else
 		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password.:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
 	fi
@@ -765,7 +824,11 @@ function count_ssh_attacks {
 		sed -i "s/Unique IPs Since Logging Started.*$/Unique IPs Since Logging Started:--> $ALLUNIQUEIPSS/" $1/index-long.shtml
 	fi
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u > todays_ips
+		if [ $KIPPO -eq 1 ] ; then
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*,.*,//' |sed 's/\]..*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
+		else
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u > todays_ips
+		fi
 	else
 		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
 	fi
@@ -823,8 +886,12 @@ function count_ssh_attacks {
 	sed -i "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/" $1/index-long.shtml
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |sort -T $TMP_DIRECTORY -u |wc -l`
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |sort -T $TMP_DIRECTORY |uniq -c > /var/www/html/honey/todays_honeypots.txt
+		HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail |sort -T $TMP_DIRECTORY -u |wc -l`
+		
+		make_header "$1/todays_honeypots.shtml" "Today's honeypots" "Count reflects log entries, not actual login attempts" "Entries in syslog" "Hostname" 
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c |\
+		awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $1/todays_honeypots.shtml
+		make_footer "$1/todays_honeypots.shtml" 
 
 	else
 		HONEYPOTSTODAY=1	
@@ -1316,15 +1383,25 @@ function ssh_attacks {
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "hostname is not set"
 echo "PROTOCOL is $PROTOCOL"
-		$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
+		if [ $LONGTAIL -eq 1 ] ; then
+			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
+		fi
+		if [ $KIPPO -eq 1 ] ; then
+			$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep login\ attempt | sed -e 's/ /T/' \
+  -e 's/.SSHService ssh-userauth on HoneyPotTransport,.*,//' \
+  -e 's/\]/ /' \
+  -e 's/\] failed$//' \
+  -e 's/\[//' \
+  -e 's/ / LOCALHOST sshd-22[9999]: IP: /' \
+  -e 's/login attempt/PassLog: Username:/' \
+  -e 's/\// Password: /' \
+  > $TMP_DIRECTORY/LongTail-messages.$$
+ls -l $TMP_DIRECTORY/LongTail-messages.$$
+		fi
 
-#$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME
 
 		if [ $REBUILD  != 1 ] ; then
 			$SCRIPT_DIR/catall.sh $MESSAGES | grep ssh |grep "$DATE"  > $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
-
-#echo "DEBUG TMP_HTML_DIR is $TMP_HTML_DIR"
-#exit;
 
 			touch $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
 			/bin/rm $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
@@ -1386,15 +1463,6 @@ echo "PROTOCOL is $PROTOCOL"
 	# Not root or admin PASSWORDS
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-ssh_attack 3 "  ; date; fi
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml" "Non Root Passwords" " " "Count" "Password"
-
-#	cat $TMP_DIRECTORY/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
-	#sed 's/^..*Password: //' |sed 's/ /SPACECHAR/g' |\
-	#sort |uniq -c|sort -nr |\
-	#awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}'|\
-	#sed 's/SPACECHAR/<font color="red">SPACECHAR<\/font>/g'  >> $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml
-
-	#cat $TMP_DIRECTORY/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
-	#sed 's/^..*Password: //'  | sed 's/ /\&nbsp;/g'
 
 	cat $TMP_DIRECTORY/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
 	sed 's/^..*Password: //'|sed 's/^..*Password:$/ /'  | sed 's/ /\&nbsp;/g'|\
@@ -1481,7 +1549,6 @@ echo "PROTOCOL is $PROTOCOL"
 
 
 #WHOIS.PL
-#	THIS WORKS for IP in `cat $TMP_DIRECTORY/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -u `; do   $SCRIPT_DIR/whois.pl $IP |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort |uniq -c |sort -n | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 
 	for IP in `cat $TMP_DIRECTORY/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -T $TMP_DIRECTORY -u `; do   if [ "x${IP_ADDRESS[$IP]}" == "x" ] ; then $SCRIPT_DIR/whois.pl $IP ; else echo "Country: ${IP_ADDRESS[$IP]}"; fi  |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 
@@ -1821,11 +1888,11 @@ function do_ssh {
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh now" ; fi
 	#-----------------------------------------------------------------
 	# Lets count the ssh attacks
-	count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "messages*"
+	count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
 	
 	#----------------------------------------------------------------
 	# Lets check the ssh logs
-	ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$DATE"  "messages" "current"
+	ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$DATE"  "$LOGFILE*" "current"
 	
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 	#if [ $START_HOUR -eq 16 ]; then
@@ -1930,23 +1997,6 @@ function do_ssh {
 
 		done
 
-
-#		cp $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data.tmp
-#		tac $HTML_DIR/last-30-days-sshpsycho-attack-count.data.tmp > $HTML_DIR/last-30-days-sshpsycho-attack-count.data
-#		rm $HTML_DIR/last-30-days-sshpsycho-attack-count.data.tmp
-
-#		cp $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp
-#		tac $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp > $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
-#		rm $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data.tmp
-
-#		cp $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data.tmp
-#		tac $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data.tmp > $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data
-#		rm $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data.tmp
-
-#		cp $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-attack-count.data.tmp
-#		tac $HTML_DIR/last-30-days-attack-count.data.tmp > $HTML_DIR/last-30-days-attack-count.data
-#		rm $HTML_DIR/last-30-days-attack-count.data.tmp
-
 		for file in $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data $HTML_DIR/last-30-days-todays-uniq-passwords-txt-count.data $HTML_DIR/last-30-days-todays-uniq-ips-txt-count.data  ; do
 			cp $file $file.tmp
 			tac $file.tmp > $file
@@ -2006,32 +2056,32 @@ function do_ssh {
 	#
 #	for LOOP in 04 05 06 07 08 09 ; do
 #		mkdir -p $HTML_DIR/historical/2015/01/$LOOP
-#		ssh_attacks $HTML_DIR/historical/2015/01/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-01-$LOOP"      "messages*" "current"
+#		ssh_attacks $HTML_DIR/historical/2015/01/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-01-$LOOP"      "$LOGFILE*" "current"
 #	done
 #	for LOOP in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31; do
 #		mkdir -p $HTML_DIR/historical/2015/01/$LOOP
-#		ssh_attacks $HTML_DIR/historical/2015/01/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-01-$LOOP"      "messages*" "current"
+#		ssh_attacks $HTML_DIR/historical/2015/01/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-01-$LOOP"      "$LOGFILE*" "current"
 #	done
 #	for LOOP in 01 02 03 04 05 06 07 08 09 ; do
 #		mkdir -p $HTML_DIR/historical/2015/02/$LOOP
-#		ssh_attacks $HTML_DIR/historical/2015/02/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-02-$LOOP"      "messages*" "current"
+#		ssh_attacks $HTML_DIR/historical/2015/02/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-02-$LOOP"      "$LOGFILE*" "current"
 #	done
 #	for LOOP in 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28; do
 #	for LOOP in 25 26 27 28; do
 #		mkdir -p $HTML_DIR/historical/2015/02/$LOOP
-#		ssh_attacks $HTML_DIR/historical/2015/02/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-02-$LOOP"      "messages*" "current"
+#		ssh_attacks $HTML_DIR/historical/2015/02/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-02-$LOOP"      "$LOGFILE*" "current"
 #	done
 #	for LOOP in 01 02 03 04 05 06 07 08 09 ; do
 #		mkdir -p $HTML_DIR/historical/2015/03/$LOOP
-#		ssh_attacks $HTML_DIR/historical/2015/03/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-03-$LOOP"      "messages*" "current"
+#		ssh_attacks $HTML_DIR/historical/2015/03/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-03-$LOOP"      "$LOGFILE*" "current"
 #	done
 #	for LOOP in 10 11 12 13 ; do
 #		mkdir -p $HTML_DIR/historical/2015/03/$LOOP
-#		ssh_attacks $HTML_DIR/historical/2015/03/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-03-$LOOP"      "messages*" "current"
+#		ssh_attacks $HTML_DIR/historical/2015/03/$LOOP $YEAR $PATH_TO_VAR_LOG "2015-03-$LOOP"      "$LOGFILE*" "current"
 #	done
 
 # Example of getting a single date.  Make sure you edit the date in BOTH places in the line.
-#	ssh_attacks $HTML_DIR/historical/2015/02/24 $YEAR $PATH_TO_VAR_LOG "2015-02-24"      "messages*" "current"
+#	ssh_attacks $HTML_DIR/historical/2015/02/24 $YEAR $PATH_TO_VAR_LOG "2015-02-24"      "$LOGFILE*" "current"
 	
 	
 	#-----------------------------------------------------------------
@@ -2292,14 +2342,20 @@ function create_historical_copies {
 		chmod a+r  $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/*
 		echo "$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY" > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/date.html
 
-		grep ssh /var/log/messages* | grep $YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
+		if [ $LONGTAIL -eq 1 ] ; then
+			grep ssh $PATH_TO_VAR_LOG/$LOGFILE* | grep $YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
+		fi
+		if [ $KIPPO -eq 1 ] ; then
+			grep ssh $PATH_TO_VAR_LOG/$LOGFILE* | grep $YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
+		fi
+
 		touch $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 		/bin/rm $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 		gzip $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
 		chmod 0000 $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 
 
-		ssh_attacks   $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY $YESTERDAY_YEAR $PATH_TO_VAR_LOG "$YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY"      "messages*" "current"
+		ssh_attacks   $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY $YESTERDAY_YEAR $PATH_TO_VAR_LOG "$YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY"      "$LOGFILE*" "current"
 
 		#
 		# Make IPs table and count for this day
@@ -2369,8 +2425,8 @@ function rebuild {
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In Rebuild now" ; fi
 	REBUILD=1
   cd $HTML_DIR/historical/
-# ssh_attacks $HTML_DIR/historical/2015/02/24 $YEAR $PATH_TO_VAR_LOG "2015-02-24"      "messages*" "current"
-#	ssh_attacks $HTML_DIR/historical/2015/03/14 $YEAR $PATH_TO_VAR_LOG "2015-03-14"      "messages*" "current"
+# ssh_attacks $HTML_DIR/historical/2015/02/24 $YEAR $PATH_TO_VAR_LOG "2015-02-24"      "$LOGFILE*" "current"
+#	ssh_attacks $HTML_DIR/historical/2015/03/14 $YEAR $PATH_TO_VAR_LOG "2015-03-14"      "$LOGFILE*" "current"
 # ssh_attacks /var/www/html/honey///historical/2015/01/04 2015 /var/www/html/honey///historical/2015/01/04 2015-01-04 current-raw-data.gz current
 
 	#
@@ -2505,7 +2561,7 @@ date
 
 init_variables
 #read_local_config_file
-DEBUG=0
+#DEBUG=1
 
 SEARCH_FOR="sshd"
 
@@ -2614,7 +2670,7 @@ DATE=`date +"%Y-%m-%d"` # THIS IS TODAY
 PROTOCOL=$SEARCH_FOR
 
 #This is a manual re-creation of a dated directory
-#ssh_attacks $HTML_DIR/historical/2015/03/29 $YEAR "/var/www/html/honey/syrtest/historical/2015/03/29" "2015-03-29"      "messages" "current"
+#ssh_attacks $HTML_DIR/historical/2015/03/29 $YEAR "/var/www/html/honey/syrtest/historical/2015/03/29" "2015-03-29"      "$LOGFILE" "current"
 
 
 #PROTOCOL=$SEARCH_FOR
@@ -2668,6 +2724,7 @@ if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "sshd" ] ; then
 echo "Doing blacklist efficiency tests now"
 		make_header "$HTML_DIR/blacklist_efficiency.shtml" "Blacklist Efficiency"  "" 
+
 		/usr/local/etc/LongTail_compare_IP_addresses.pl >> $HTML_DIR/blacklist_efficiency.shtml
 		make_footer "$HTML_DIR/blacklist_efficiency.shtml"
 	
