@@ -132,6 +132,9 @@ sub pass_2 {
 		$filename=$_;
 		$existing_data=$_;
 		$existing_data =~ s/kippo.data/current-raw-data.gz/;
+		if ( ! -e $existing_data ){
+			`echo "" |gzip -f -c > $existing_data`;
+		}
 		$filename_new= $existing_data;
 		$filename_new=~ s/.gz//;
 		`zcat $existing_data >$filename_new`;
