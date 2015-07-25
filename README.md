@@ -160,6 +160,7 @@ You will need to install the truetype fonts.
 The following instructions are what I used for CentOS 6.6.
 
 Look up the properl EPEL repo at  https://fedoraproject.org/wiki/EPEL/FAQ
+
 	rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
 	yum install rpm-build cabextract
 	yum install rpm-build ttmkfdir
