@@ -136,7 +136,7 @@ LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core com
 
 	yum install jwhois (RHEL 6) OR yum install whois (RHEL 7)
 	yum install php php-common php-cli php-xml php-pear php-pdo php-gd
-	yum install httpd
+	yum install which httpd
 
 LongTail requires jpgraph and TrueType fonts.  (See next section)
 
