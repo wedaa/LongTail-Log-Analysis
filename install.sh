@@ -3,17 +3,68 @@
 echo "You need to edit LongTail.sh.  Please see LongTail.sh for details"
 echo ""
 echo "You need to edit this file for SCRIPT_DIR, HTML_DIR, DICT_DIR, and OWNER."
-
+echo ""
 echo "And then comment out the exit statement"
 
 exit
+
+RHEL=0
+
+if [ -e /etc/redhat-release ] ; then
+	echo "This seems to be a RedHat based system"
+	RHEL=1
+fi
+if [ -e /etc/fedora-release ] ; then
+	echo "This seems to be a RedHat/Fedora based system"
+	RHEL=1
+fi
+if [ -e /etc/centos-release ] ; then
+	echo "This seems to be a RedHat/Centos based system"
+	RHEL=1
+fi
+
+which ls >/dev/null 2>&1
+LAST=$?
+if [ $LAST -ne 0 ] ; then
+	echo ""
+	echo "'which' command not found, can't continue"
+	echo "If this is a RedHat based system, please try"
+	echo "   yum install which"
+	echo "Then run this program again"
+	echo ""
+	exit
+fi
+
+echo ""
+HONEYPOT="x"
+while [ $HONEYPOT == "x" ] ; do
+	echo ""
+	echo -n "Is this for a Kippo, Cowrie, or LongTail honeypot (K|k|C|c|L|l): "
+	read HONEYPOT
+	case $HONEYPOT in
+	K|k)
+		HONEYPOT="kippo"
+	;;
+	C|c)
+		HONEYPOT="cowrie"
+	;;
+	L|l)
+		HONEYPOT="longtail"
+	;;
+	*)
+	HONEYPOT="x"
+		echo "Invalid honeypot, please try again"
+	;;
+	esac
+done
+
 
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
 HTML_DIR="/var/www/html/honey" # Where do we put the HTML files?
 DICT_DIR="/usr/local/dict"
 BOTS_DIR="/usr/local/etc/LongTail_botnets"
 
-OWNER="wedaa"                  # What is the owner of the process running LongTail?
+OWNER="longtail"                  # What is the owner of the process running LongTail?
 
 mkdir -p $HTML_DIR/historical/`date +%Y`/`date +%m`/`date +%d`
 if [ ! -d "$HTML_DIR/dashboard" ] ; then
@@ -252,9 +303,7 @@ cd ..
 #
 # Check for required software here
 #
-#Check for required software here
-#
-for i in perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
+for i in tar perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
 	echo -n "Checking for $i...  "
 	which $i >/dev/null
 	if [ $? -eq 0 ]; then
