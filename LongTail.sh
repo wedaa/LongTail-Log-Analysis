@@ -80,28 +80,26 @@ function convert_kippo_to_longtail {
 
 function lock_down_files {
 	if [ "x$HOSTNAME" == "x/" ] ;then
-if [ -d /var/www/html ] ; then 
-cd /var/www/html
+		if [ -d /var/www/html ] ; then 
+		cd /var/www/html
 
-echo "Expect to see chmod warnings until you have run LongTail for at least 24 hours"
+		echo "Expect to see chmod warnings until you have run LongTail for at least 24 hours"
 
-find . -name last-7-days-root-passwords.shtml |xargs chmod go-r 
-find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
-find . -name last-30-days-root-passwords.shtml |xargs chmod go-r 
-find . -name last-30-days-non-root-pairs.shtml |xargs chmod go-r 
-find . -name historical-root-passwords.shtml |xargs chmod go-r 
-find . -name historical-non-root-pairs.shtml |xargs chmod go-r 
+		find . -name last-7-days-root-passwords.shtml.gz |xargs chmod go-r 
+		find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
+		find . -name last-30-days-root-passwords.shtml.gz |xargs chmod go-r 
+		find . -name last-30-days-non-root-pairs.shtml |xargs chmod go-r 
+		find . -name historical-root-passwords.shtml.gz |xargs chmod go-r 
+		find . -name historical-non-root-pairs.shtml |xargs chmod go-r 
 
-find */* -name todays_password |xargs chmod go-r
-find */* -name current-root-passwords.shtml |xargs chmod go-r
-find */* -name current-non-root-passwords.shtml |xargs chmod go-r
-find */* -name current-account-password-pairs.data.gz |xargs chmod go-r
-find */* -name current-admin-passwords.shtml |xargs chmod go-r
-find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
-
-
-fi
-fi
+		find */* -name todays_password |xargs chmod go-r
+		find */* -name current-root-passwords.shtml |xargs chmod go-r
+		find */* -name current-non-root-passwords.shtml |xargs chmod go-r
+		find */* -name current-account-password-pairs.data.gz |xargs chmod go-r
+		find */* -name current-admin-passwords.shtml |xargs chmod go-r
+		find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
+		fi
+	fi
 
 }
 
@@ -454,10 +452,10 @@ function count_ssh_attacks {
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		if [ $LONGTAIL -eq 1 ] ; then
-				TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+				TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
 		fi
 		if [ $KIPPO -eq 1 ] ; then
-			TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt|wc -l`
+			TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt|wc -l`
 		fi
 	else # We were passed a hostname.  This should never happen with Kippo
 		if [ $KIPPO -eq 1 ] ; then
@@ -465,7 +463,7 @@ function count_ssh_attacks {
 			echo "Exiting now"
 			exit
 		fi
-		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
 	fi
 	echo $TODAY > $TMP_HTML_DIR/current-attack-count.data
 
@@ -723,12 +721,12 @@ function count_ssh_attacks {
 	fi
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		if [ $KIPPO -eq 1 ] ; then
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt| sed 's/^..*\///' | sed 's/\].*$//'|sort -T $TMP_DIRECTORY -u |sed 's/^$/NO-PASSWORD-GIVEN/'> todays_passwords
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt| sed 's/^..*\///' | sed 's/\].*$//'|sort -T $TMP_DIRECTORY -u |sed 's/^$/NO-PASSWORD-GIVEN/'> todays_passwords
 		else
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
 		fi
 	else
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
 	fi
 	TODAYSUNIQUEPASSWORDS=`cat todays_passwords |wc -l`
 	echo $TODAYSUNIQUEPASSWORDS  >todays_password.count
@@ -774,12 +772,12 @@ function count_ssh_attacks {
 	fi
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		if [ $KIPPO -eq 1 ] ; then
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*\[//' | sed 's/\/..*$//' |sort -T $TMP_DIRECTORY -u > todays_username
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*\[//' | sed 's/\/..*$//' |sort -T $TMP_DIRECTORY -u > todays_username
 		else
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
 		fi
 	else
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password.:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password.:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
 	fi
 	TODAYSUNIQUEUSERNAMES=`cat todays_username |wc -l`
 	echo $TODAYSUNIQUEUSERNAMES  >todays_username.count
@@ -825,12 +823,12 @@ function count_ssh_attacks {
 	fi
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		if [ $KIPPO -eq 1 ] ; then
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*,.*,//' |sed 's/\]..*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*,.*,//' |sed 's/\]..*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
 		else
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u > todays_ips
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u > todays_ips
 		fi
 	else
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
 	fi
 	TODAYSUNIQUEIPS=`cat todays_ips |wc -l`
 	echo $TODAYSUNIQUEIPS  >todays_ips.count
@@ -886,12 +884,13 @@ function count_ssh_attacks {
 	sed -i "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/" $1/index-long.shtml
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail |sort -T $TMP_DIRECTORY -u |wc -l`
+		HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail |sort -T $TMP_DIRECTORY -u |wc -l`
 		
 		make_header "$1/todays_honeypots.shtml" "Today's honeypots" "Count reflects log entries, not actual login attempts" "Entries in syslog" "Hostname" 
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c |\
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c |\
 		awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $1/todays_honeypots.shtml
 		make_footer "$1/todays_honeypots.shtml" 
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > $1/todays_honeypots.data
 
 	else
 		HONEYPOTSTODAY=1	
@@ -1384,10 +1383,11 @@ function ssh_attacks {
 		echo "hostname is not set"
 echo "PROTOCOL is $PROTOCOL"
 		if [ $LONGTAIL -eq 1 ] ; then
-			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
+echo "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now"
+			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
 		fi
 		if [ $KIPPO -eq 1 ] ; then
-			$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep login\ attempt | sed -e 's/ /T/' \
+			$SCRIPT_DIR/catall.sh $MESSAGES |grep ssh |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep login\ attempt | sed -e 's/ /T/' \
   -e 's/.SSHService ssh-userauth on HoneyPotTransport,.*,//' \
   -e 's/\]/ /' \
   -e 's/\] failed$//' \
@@ -1410,7 +1410,7 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 		fi
 	else
 		echo "hostname IS set to $HOSTNAME."
-		$SCRIPT_DIR/catall.sh $MESSAGES |awk '$2 == "'$HOSTNAME'" {print}' |grep $PROTOCOL |grep "$DATE"|grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
+		$SCRIPT_DIR/catall.sh $MESSAGES |awk '$2 == "'$HOSTNAME'" {print}' |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
 	fi
 
 	#-------------------------------------------------------------------------
@@ -1516,15 +1516,16 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 		RIGHT_NOW=`date`
 		echo "# This list was created on: $RIGHT_NOW" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
-		cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		mv $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
 		$SCRIPT_DIR/LongTail_add_country_to_ip.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp > $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		$SCRIPT_DIR/LongTail_make_map.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt > $TMP_HTML_DIR/$FILE_PREFIX-map.html
 		rm $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
 	fi
 
 	#
 	# Code to try and add the country to the ip-addresses.shtml page
-	cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr   > $TMP_DIRECTORY/Longtail.tmpIP.$$
+	cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr   > $TMP_DIRECTORY/Longtail.tmpIP.$$
 
 	cat $TMP_DIRECTORY/Longtail.tmpIP.$$ | /usr/local/etc/LongTail_add_country_to_ip.pl > $TMP_DIRECTORY/Longtail.tmpIP.$$-2 # Delete this line once the code works
 
@@ -1533,7 +1534,6 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 	rm $TMP_DIRECTORY/Longtail.tmpIP.$$
 	rm $TMP_DIRECTORY/Longtail.tmpIP.$$-2
 
-	#cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort |uniq -c |sort -nr |awk '{printf("<TR><TD>%d</TD><TD>%s</TD><TD><a href=\"http://whois.urih.com/record/%s\">Whois lookup</A></TD><TD><a href=\"http://www.dnsbl-check.info/?checkip=%s\">Blacklisted?</A></TD><TD><a href=\"/HONEY/attacks/ip_attacks.shtml#%s\">Attack Patterns</A></TD></TR>\n",$1,$2,$2,$2,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 	sed -i s/HONEY/$HTML_TOP_DIR/g $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml |head -20 |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml
@@ -1652,7 +1652,7 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 	#
 	if [ $FILE_PREFIX == "current" ] ;
 	then
-		TODAY=`$SCRIPT_DIR/catall.sh $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz  |grep $PROTOCOL | grep -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+		TODAY=`$SCRIPT_DIR/catall.sh $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz  |grep $PROTOCOL | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
 		echo $TODAY > $TMP_HTML_DIR/$FILE_PREFIX-attack-count.data
 	fi
 
@@ -1939,6 +1939,7 @@ function do_ssh {
 		# Lets make last-30-days-attack-count.data
 		echo -n "" > $HTML_DIR/last-30-days-attack-count.data
 		echo -n "" > $HTML_DIR/last-30-days-sshpsycho-attack-count.data
+		echo -n "" > $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data
 		echo -n "" > $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data
 		echo -n "" > $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data
 		for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30; do
@@ -1957,6 +1958,13 @@ function do_ssh {
 				echo "$tmp_attack_count $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-attack-count.data
 			else
 				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-attack-count.data
+			fi
+
+			if [ -e /$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-2-attack-count.data ] ; then
+				tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-2-attack-count.data`
+				echo "$tmp_attack_count $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data
+			else
+				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-attack-2-count.data
 			fi
 
 			if [ -e /$HTML_DIR/historical/$TMP_DATE/current-friends_of_sshpsycho-attack-count.data ] ; then
@@ -1997,7 +2005,7 @@ function do_ssh {
 
 		done
 
-		for file in $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data $HTML_DIR/last-30-days-todays-uniq-passwords-txt-count.data $HTML_DIR/last-30-days-todays-uniq-ips-txt-count.data  ; do
+		for file in $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data $HTML_DIR/last-30-days-todays-uniq-passwords-txt-count.data $HTML_DIR/last-30-days-todays-uniq-ips-txt-count.data  $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data ; do
 			cp $file $file.tmp
 			tac $file.tmp > $file
 			rm $file.tmp
@@ -2157,7 +2165,7 @@ echo ""
 		
 echo ""
 echo "checking to see if we need to make midnight Graphics now"
-echo "midnight is $MIDNIGHT"
+echo "midnight is set to $MIDNIGHT"
 echo ""
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
 		#if [ $START_HOUR -eq 12 ]; then
@@ -2214,9 +2222,9 @@ echo ""
 						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
 							# This works but I want to show sshPsycho data now
 							if [ "x$HOSTNAME" == "x/" ] ;then
-								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attacks (Red=sshPsycho-2, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE
 							else
-								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attack Count (Red=sshPsycho, Yellow=Friends of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE
+								php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attacks (Red=sshPsycho-2, Yellow=Friends of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE
 							fi
 
 						fi
@@ -2372,13 +2380,16 @@ function create_historical_copies {
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_username | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_username.count
 
 		# Make current-sshpsycho-attack-count.data
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-attack-count.data
+
+		# Make current-sshpsycho-2-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-2-attack-count.data
 
 		# Make current-friends_of_sshpsycho-attack-count.data
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-friends_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-friends_of_sshpsycho-attack-count.data
 
 		# Make current-associates_of_sshpsycho-attack-count.data
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-associates_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-associates_of_sshpsycho-attack-count.data
 
     #
     # Make IPs table and count for this day
@@ -2456,13 +2467,16 @@ function rebuild {
 		ssh_attacks $HTML_DIR/historical/$DIRNAME $YEAR $HTML_DIR/historical/$DIRNAME "$DATE"      "current-raw-data.gz" "current"
 
 		# Make current-sshpsycho-attack-count.data
-		zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$DIRNAME/current-sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$DIRNAME/current-sshpsycho-attack-count.data
+
+		# Make current-sshpsycho-2-attack-count.data
+		zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l > $HTML_DIR/historical/$DIRNAME/current-sshpsycho-2-attack-count.data
 
 		# Make current-friends_of_sshpsycho-attack-count.data
-		zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$DIRNAME/current-friends_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$DIRNAME/current-friends_of_sshpsycho-attack-count.data
 
 		# Make current-associates_of_sshpsycho-attack-count.data
-		zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$DIRNAME/current-associates_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$DIRNAME/current-associates_of_sshpsycho-attack-count.data
 
 		#
 		# Make IPs table and count for this day
@@ -2536,17 +2550,22 @@ function recount_last_30_days_sshpsycho_attacks {
 		YESTERDAY_DAY=`date "+%d" --date="$i day ago"`
 		# Make current-sshpsycho-attack-count.data
 		if [ -e "$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz" ] ; then
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-attack-count.data
+			zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-attack-count.data
 		fi
+		# Make current-sshpsycho-2-attack-count.data
+		if [ -e "$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz" ] ; then
+			zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-sshpsycho-2-attack-count.data
+		fi
+
 
 		# Make current-friends_of_sshpsycho-attack-count.data
 		if [ -e "$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz" ] ; then 
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-friends_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-friends_of_sshpsycho-attack-count.data
 		fi
 
 		# Make current-associates_of_sshpsycho-attack-count.data
 		if [ -e "$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz" ] ; then 
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-associates_of_sshpsycho-attack-count.data
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-associates_of_sshpsycho-attack-count.data
 		fi
 
 	done
@@ -2722,7 +2741,7 @@ make_daily_attacks_chart
 
 if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "sshd" ] ; then
-echo "Doing blacklist efficiency tests now"
+		echo "Doing blacklist efficiency tests now"
 		make_header "$HTML_DIR/blacklist_efficiency.shtml" "Blacklist Efficiency"  "" 
 
 		/usr/local/etc/LongTail_compare_IP_addresses.pl >> $HTML_DIR/blacklist_efficiency.shtml
@@ -2781,11 +2800,6 @@ echo "Doing blacklist efficiency tests now"
 		fi
 	fi
 
-#	echo -n "hostname is not set, running analyze now: "
-#	date
-#	$SCRIPT_DIR/LongTail_analyze_attacks.pl $HOSTNAME 2> /dev/null
-#	echo -n "Done with LongTail_analyze_attacks.pl at:"
-#	date
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		echo -n "Starting LongTail_class_c_hall_of_shame.pl now "; date
 		make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
@@ -2796,76 +2810,113 @@ echo "Doing blacklist efficiency tests now"
 
 fi
 
-#echo "Making local reports"
-#cd /usr/local/etc/LongTail_local_reports/
-#for file in * ;do
-#	echo "trying to run $file now"
-#	filename=`echo $file |sed 's/.sh//' |sed 's/.pl//'`
-#echo "$filename"
-#	make_header "$HTML_DIR/$filename.shtml" "$filename"
-#	$file > /var/www/html/honey/$filename.shtml
-#	make_footer "$HTML_DIR/$filename.shtml" 
-#done
-
 if [ "x$HOSTNAME" == "x/" ] ; then
 	if [ $SEARCH_FOR == "sshd" ] ; then
 		echo -n "Starting sshPsycho analysis now :-) " ; date
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Doing SSHPsycho report now" ; fi
 		make_header "$HTML_DIR/SSHPsycho.shtml" "SSHPsycho Attacks"
-		/usr/local/etc/LongTail_local_reports/SSHPsycho.pl >> $HTML_DIR/SSHPsycho.shtml
+		#/usr/local/etc/LongTail_local_reports/SSHPsycho.pl >> $HTML_DIR/SSHPsycho.shtml
 		make_footer "$HTML_DIR/SSHPsycho.shtml"
 		echo -n "Done with sshPsycho analysis now: "; date
 	fi
 fi 
 
-	cd $HTML_DIR/historical
-	TMP_DATE=`date +"%Y-%m-%d"`
+cd $HTML_DIR/historical
+TMP_DATE=`date +"%Y-%m-%d"`
 
+echo "DEBUG-Counting sshpsycho attacks now"
 if [ "x$HOSTNAME" == "x/" ] ; then
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
+	# sshPsycho is dead... TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
+	TODAY=0
 else
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
+	# sshPsycho is dead... TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
+	TODAY=0
 fi
-	# This month
-	TMP=0
-        for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        THIS_MONTH=`expr $TMP + $TODAY`
-	# This year
-	TMP=0
-        for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        THIS_YEAR=`expr $TMP + $TODAY`
-	# Since logging started 
-	TMP=0
-        for FILE in  `find . -name current-sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        TOTAL=`expr $TMP + $TODAY`
+# This month
+TMP=0
+for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-attack-count.data ` ; do
+	COUNT=`cat $FILE`
+	(( TMP += $COUNT ))
+done
+THIS_MONTH=`expr $TMP + $TODAY`
+# This year
+TMP=0
+for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-attack-count.data ` ; do
+	COUNT=`cat $FILE`
+	(( TMP += $COUNT ))
+done
+THIS_YEAR=`expr $TMP + $TODAY`
+# Since logging started 
+TMP=0
+for FILE in  `find . -name current-sshpsycho-attack-count.data ` ; do
+	COUNT=`cat $FILE`
+	(( TMP += $COUNT ))
+done
+TOTAL=`expr $TMP + $TODAY`
 
-	TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-	THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-	THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-	TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-	#echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
-	sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
-	sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
-	sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
-	sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
-	sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
-	sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
-	sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
-	sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+#echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
+sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+
+
+echo "DEBUG-Counting sshpsycho-2 attacks now"
+if [ "x$HOSTNAME" == "x/" ] ; then
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
+else
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
+fi
+# This month
+TMP=0
+for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-2-attack-count.data ` ; do
+	COUNT=`cat $FILE`
+	(( TMP += $COUNT ))
+done
+THIS_MONTH=`expr $TMP + $TODAY`
+# This year
+TMP=0
+for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-2-attack-count.data ` ; do
+	COUNT=`cat $FILE`
+	(( TMP += $COUNT ))
+done
+THIS_YEAR=`expr $TMP + $TODAY`
+# Since logging started 
+TMP=0
+for FILE in  `find . -name current-sshpsycho-2-attack-count.data ` ; do
+	COUNT=`cat $FILE`
+	(( TMP += $COUNT ))
+done
+TOTAL=`expr $TMP + $TODAY`
+
+TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+#echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+sed -i "s/SSHPsycho-2 Today.*$/SSHPsycho-2 Today:--> $TODAY/" $HTML_DIR/index.shtml
+sed -i "s/SSHPsycho-2 This Month.*$/SSHPsycho-2 This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+sed -i "s/SSHPsycho-2 This Year.*$/SSHPsycho-2 This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+sed -i "s/SSHPsycho-2 Since Logging Started.*$/SSHPsycho-2 Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+sed -i "s/SSHPsycho-2 Today.*$/SSHPsycho-2 Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+sed -i "s/SSHPsycho-2 This Month.*$/SSHPsycho-2 This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+sed -i "s/SSHPsycho-2 This Year.*$/SSHPsycho-2 This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+sed -i "s/SSHPsycho-2 Since Logging Started.*$/SSHPsycho-2 Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+
+echo "DEBUG-Counting sshpsycho friends attacks now"
 
 if [ "x$HOSTNAME" == "x/" ] ; then
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
 else
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
+	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
 fi
 
 	# This month
@@ -2894,7 +2945,7 @@ fi
 	THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-	echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+#	echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
 	sed -i "s/SSHfriendsPsycho Today.*$/SSHfriendsPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
 	sed -i "s/SSHfriendsPsycho This Month.*$/SSHfriendsPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
 	sed -i "s/SSHfriendsPsycho This Year.*$/SSHfriendsPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
@@ -2905,10 +2956,11 @@ fi
 	sed -i "s/SSHfriendsPsycho Since Logging Started.*$/SSHfriendsPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
 
 
+echo "DEBUG-Counting sshpsycho associates attacks now"
 if [ "x$HOSTNAME" == "x/" ] ; then
-        TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
+        TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
 else
-        TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
+        TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
 fi
 
         # This month
@@ -2937,7 +2989,7 @@ fi
         THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
         THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
         TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-        echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+#        echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
         sed -i "s/SSHassociatesPsycho Today.*$/SSHassociatesPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
         sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
         sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
