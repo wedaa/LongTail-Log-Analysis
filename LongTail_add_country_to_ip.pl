@@ -46,6 +46,22 @@ sub init {
 	}
 	close (FILE);
 
+	open ("FILE", "/usr/local/etc/LongTail_sshPsycho_2_IP_addresses")|| die "Can not open /usr/local/etc/LongTail_sshPsycho_IP_addresses\nExiting now\n";
+	while (<FILE>){
+		chomp;
+		$ssh_psycho2{$_}=$_;
+		($ip1,$ip2,$ip3,$ip4)=split(/\./,$_);
+		if ( $ip4 eq ""){
+			$counter=1;
+			while ($counter <= 255){
+				$tmp="$_.$counter";
+				$ssh_psycho2{$tmp}="$_.$counter";
+				$counter++;
+			}
+		}
+	}
+	close (FILE);
+
 	open ("FILE", "/usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses")|| die "Can not open /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses\nExiting now\n";
 	while (<FILE>){
 		chomp;
@@ -121,6 +137,7 @@ while (<>){
 	$_ =~ s/$ip/$ip $country_code{$tmp_country_code}/;
 	$tag="";
 	if ($ssh_psycho{$ip} ){ $tag="sshPsycho"; }
+	if ($ssh_psycho2{$ip} ){ $tag="sshPsycho-2"; }
 	if ($ssh_psycho_associates{$ip} ){ $tag="sshPsycho_Associate"; }
 	if ($ssh_psycho_friends{$ip} ){ $tag="sshPsycho_Friend"; }
 	if ($botnets{$ip}) { $tag=$botnets{$ip};}
