@@ -194,6 +194,8 @@ done
 
 HTML_FILES="ip_addresses.shtml \
 index.shtml \
+index-long-map.shtml \
+index-map.shtml \
 how_to_protect_yourself.shtml \
 index-long.shtml \
 how_to_protect_yourself.shtml \
