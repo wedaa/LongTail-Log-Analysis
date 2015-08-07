@@ -12,7 +12,29 @@
 # in 2016
 #
 
+sub show_help {
+print "
+Execute this program as LongTail_analyze_attacks_v2.pl all|year|month|day
+
+You MUST include one of the options all, year, month, or day.
+
+\"all\" rebuilds all the attack patterns.
+\"year\" rebuilds this year's attack patterns.
+\"month\" rebuilds this months's attack patterns.
+\"day\" rebuilds today's attack patterns.
+
+
+";
+
+}
+
 sub init {
+	if (($ARGV[0] eq "help" ) || 
+		($ARGV[0] eq "-h" ) ||
+		($ARGV[0] eq "--help" ) ){
+		&show_help;
+		exit;
+	}
 	use Time::Local;
 	%mon2num = qw(
   	jan 1  feb 2  mar 3  apr 4  may 5  jun 6
@@ -65,13 +87,53 @@ sub init {
 	$honey_dir=$HTML_DIR;
 	$attacks_dir="$HTML_DIR/attacks/";
 	$DATE=`date`;
+	$DEBUG=1;
+	$REBUILD_ALL=0;
+	$REBUILD_YEAR=0;
+	$REBUILD_MONTH=0;
+	$REBUILD_DAY=0;
+	if (($ARGV[0] eq "all" ) || ($ARGV[0] eq "rebuild" )){
+		$REBUILD_ALL=1;
+		if ($DEBUG){print "rebuild all set, this may take some time\n";}
+	}
+	if (($ARGV[0] eq "year" ) ){
+		$REBUILD_YEAR=1;
+	}
+	if (($ARGV[0] eq "month" ) ){
+		$REBUILD_MONTH=1;
+	}
+	if (($ARGV[0] eq "day" ) ){
+		$REBUILD_DAY=1;
+	}
+	if ( ($REBUILD_ALL==0 ) &&
+        ( $REBUILD_YEAR==0 ) &&
+        ( $REBUILD_MONTH==0 ) &&
+        ( $REBUILD_DAY==0 )){
+		print "You forgot an option.\n\n";
+		&show_help;
+		exit;
+	}
+
 }
 
 ########################################################################
 # Get rid of all the old files
 #
 sub cleanup_old_files {
-	if ($DEBUG){print "Deleting old analysis files.\n";}
+	local $TMP;
+	$tmp=`date`;
+
+	local $YEAR;
+	local $MONTH;
+	local $DAY;
+	$YEAR=`date +%Y`;
+	chomp $YEAR;
+	$MONTH=`date +%m`;
+	chomp $MONTH;
+	$DAY=`date +%d`;
+	chomp $DAY;
+
+	if ($DEBUG){print "Deleting old analysis files at $tmp.\n";}
 	if (-d "$attacks_dir" ){
 		chdir ("$attacks_dir");
 		open (PIPE, "find . -type f -o -type l  |") || die "can not open pipe to cleanup files\n";
@@ -80,10 +142,19 @@ sub cleanup_old_files {
 			#if (/dict-/){next;}
 			if (/.html/){next;}
 			if (/.shtml/){next;}
-			unlink ("$_");
-			#if ($DEBUG){print ".";}
+			if ( $REBUILD_ALL == 1 ){
+				unlink ("$_");
+			}
+			if ( $REBUILD_YEAR == 1 ){
+				if (/-$YEAR./){unlink ("$_");}
+			}
+			if ( $REBUILD_MONTH == 1 ){
+				if (/-$YEAR.$MONTH/){unlink ("$_");}
+			}
+			if ( $REBUILD_DAY == 1 ){
+				if (/-$YEAR.$MONTH.$DAY/){unlink ("$_");}
+			}
 		}
-		#if ($DEBUG){print "DONE\n";}
 		close (PIPE);
 		chdir ("..");
 	}
@@ -98,6 +169,8 @@ sub cleanup_old_files {
 			exit 1;
 		}
 	}
+	$tmp=`date`;
+	if ($DEBUG){print "Done Deleting old analysis files at $tmp.\n";}
 }
 
 ########################################################################
@@ -108,7 +181,17 @@ sub cleanup_old_files {
 #Feb 16 10:56:57 shepherd sshd-22[9306]: IP: 103.21.218.221 PassLog: Username: ubnt Password: ubnt
 #
 sub create_attack_logs {
-	if ($DEBUG){print "starting create_attack_logs .\n";}
+
+	local $YEAR;
+	local $MONTH;
+	$YEAR=`date +%Y`;
+	chomp $YEAR;
+	$MONTH=`date +%m`;
+	chomp $MONTH;
+
+	$attack_filename= "";
+	$tmp=`date`;
+	if ($DEBUG){print "starting create_attack_logs at $tmp.\n";}
 	if ($DEBUG){print "Creating new analysis files(/$TMP_DIRECTORY/tmp.data) .\n";}
 	#
 	# Ok, find does NOT work in the proper order....  Gotta use the ls command.
@@ -116,9 +199,32 @@ sub create_attack_logs {
 	# This is ugly and will break once I get a ton of data
 	#
 	unlink ("/$TMP_DIRECTORY/tmp.data");
+	chdir ("/var/www/html/honey/attacks");
+	#
+	# Hmmm, do I really need to 
+	# include /var/www/html/honey/current-raw-data.gz ?
+	#
 	chdir ("$honey_dir/historical/");
-	open (LS, "/bin/ls */*/*/current-raw-data.gz /var/www/html/honey/current-raw-data.gz |") || 
+	if ( $REBUILD_ALL == 1 ){
+		print "rebuilding from all data sets\n";
+		open (LS, "/bin/ls */*/*/current-raw-data.gz /var/www/html/honey/current-raw-data.gz |") || 
 		die "Can not run /bin/ls command on $honey_dir/historical/\n";
+	}
+	if ( $REBUILD_YEAR == 1 ){
+		print "rebuilding from $YEAR sets\n";
+		open (LS, "/bin/ls $YEAR/*/*/current-raw-data.gz /var/www/html/honey/current-raw-data.gz |") || 
+		die "Can not run /bin/ls command on $honey_dir/historical/\n";
+	}
+	if ( $REBUILD_MONTH == 1 ){
+		print "rebuilding from $YEAR/$MONTH sets\n";
+		open (LS, "/bin/ls $YEAR/$MONTH/*/current-raw-data.gz /var/www/html/honey/current-raw-data.gz |") || 
+		die "Can not run /bin/ls command on $honey_dir/historical/\n";
+	}
+	if ( $REBUILD_DAY == 1 ){
+		print "rebuilding from $YEAR/$MONTH/$DAY sets\n";
+		open (LS, "/bin/ls $YEAR/$MONTH/$DAY/current-raw-data.gz /var/www/html/honey/current-raw-data.gz |") || 
+		die "Can not run /bin/ls command on $honey_dir/historical/\n";
+	}
 	while (<LS>){
 		chomp;
 		system ("/usr/local/etc/catall.sh $_ >> /$TMP_DIRECTORY/tmp.data");
@@ -128,45 +234,24 @@ sub create_attack_logs {
 	#
 	# This is ugly and will break once I get a ton of data
 	#
-	if ($DEBUG){print "DEBUG Done making /$TMP_DIRECTORY/tmp.data\n";}
+	$tmp=`date`;
+	if ($DEBUG){print "DEBUG Done making /$TMP_DIRECTORY/tmp.data at $tmp\n";}
 	open (FILE, "/usr/local/etc/catall.sh /$TMP_DIRECTORY/tmp.data |") || 
 		die "Can not open /$TMP_DIRECTORY/tmp.data for reading\n";
 	while (<FILE>){
 		chomp;
-		$good_line=0;
 		$username="";
 		$password="";
 		if ((/ IP: /o) && ((/ PassLog: /o)   || (/ Pass2222Log: /o)  ) ){
-			#if ($DEBUG){print "P";}
 			($timestamp,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
 			($date,$time)=split(/T/,$timestamp);
 			($year,$month,$day)=split(/-/,$date);
 			($time,$trash)=split(/\./,$time);
 			($hour,$minute,$second)=split(/:/,$time);
 			if ($second =~ /-/){ ($second,$trash)=split(/-/,$second);}
-			$good_line=1;
-	 	}
-		elsif (/Failed password/o){
-			#if ($DEBUG){print "F";}
-			# 2015-02-23T23:02:29.061917-05:00 shepherd sshd-22[5208]: Failed password for invalid user ubnt from 223.203.217.202 port 45769 ssh2
-			# 2015-02-23T23:02:29.061917-05:00 shepherd sshd[7245]: Failed password for root from 61.234.146.22 port 52574 ssh2
-			#if ($DEBUG){print "Failed password\n";}
-			$good_line=1;
-			# WAS ($month,$day,$time,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
-			($timestamp,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
-			$username="";
-			$size=@my_array=split(/ +/,$_);
-			$timestamp=$my_array[0];
-			($date,$time)=split(/T/,$timestamp);
-			($year,$month,$day)=split(/-/,$date);
-			($time,$trash)=split(/\./,$time);
-			($hour,$minute,$second)=split(/:/,$time);
-			if ($second =~ /-/){ ($second,$trash)=split(/-/,$second);}
-			$ip=$my_array[$size-4];
-		}
- 	
-		if ($good_line){
-			#if ($DEBUG){print ".";}
+
+			if ($month > 11){print "month is > 12 for $_\n";}
+			if ($month < 1){print "month is < 1 for $_\n";}
 			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
 			if (! defined $ip_epoch{$ip}) {
 				$ip_earliest_seen_time{$ip}=$epoch;
@@ -179,33 +264,35 @@ sub create_attack_logs {
 			$difference = $epoch - $ip_epoch{$ip};
 			# 180 is hardcoded to be 180 seconds to speed things up
 			if ( (($ip_epoch{$ip} + (180) ) < $epoch) || (! defined $ip_epoch{$ip}) ) {
-				#if ($DEBUG){$TRASH=system("date"); print $TRASH; print "DEBUG - new attack from $ip\n";}
-				#if ($DEBUG){print "DEBUG - Date is $year,$month,$day,$hour,$minute,$second\n";}
 				$ip_epoch{$ip}=$epoch;
 				$ip_number_of_attacks{$ip}+=1;
 				$ip_date_of_attacks{$ip}="$year.$month.$day.$hour.$minute.$second";
-				#if ($DEBUG){print "count is $ip $ip_number_of_attacks{$ip},$month,$day,$time\n";}
 			}
 			else {
 				$ip_epoch{$ip}=$epoch;
 			}
 			if (length($username)>0){
-				open (IP_FILE,">>$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}") || die "Can not write to $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
+				if ( $attack_filename ne $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip} ){
+					#print "n";
+					close (IP_FILE);
+					open (IP_FILE,">>$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}") || die "Can not write to $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
+					$attack_filename = "$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}";
+				}
 				print (IP_FILE "$username ->$password<-\n");
-				close (IP_FILE);
 			}
 		}
 	}
 	close (FILE);
-	if ($DEBUG){print "done with create_attack_logs .\n";}
+	$tmp=`date`;
+	if ($DEBUG){print "done with create_attack_logs at $tmp.\n";}
 }
 
 ########################################################################
 # Look for common attack attempts
 #
-sub analyze {
-	$DEBUG=1;
-	if ($DEBUG){print "Analyzing now.\n";}
+sub sort_attack_files {
+	$tmp=`date`;
+	if ($DEBUG){print "Sorting attack files now at $tmp.\n";}
 	if ( ! -d $attacks_dir ) { print "Something bad has happened, can not chdir to $attacks_dir, exiting now\n";exit;}
 	chdir ("$attacks_dir");
 	#
@@ -219,141 +306,189 @@ sub analyze {
 		`sort $_ --output $_`;
 	}
 	close (PIPE);
+	$tmp=`date`;
+	if ($DEBUG){print "Done Sorting attack files now at $tmp.\n";}
+}
+
+
+########################################################################
+# make md5 checksums.  This takes 1:45 to run with 13 million records
+# and could probably be sped up somehow
+#
+sub make_md5_checksums{
+	$tmp=`date`;
+	if ($DEBUG){print "Making md5sum files now at $tmp.\n";}
+	chdir ("$attacks_dir");
+	print "DEBUG $attacks_dir\n";
 
 	#
-	# This is freaking ugly and time consuming
+	# I always rebuild md5sum data since there might be
+	# attacks that are no longer valid due to a partial
+	# attack being previously recorded.
 	#
-
-	if ($DEBUG){print "Trying md5sum all files  now\n";}
-	system ("ls |grep - |grep -v dict |grep -v sshpsycho |xargs md5sum |sort -T $TMP_DIRECTORY -n  > sum2.data");
+	system ("ls |grep - |grep -v dict |grep -v sshpsycho |xargs md5sum |sort -T $TMP_DIRECTORY -n |uniq   > sum2.data");
 
 	if ($DEBUG){print "Trying md5sum for multiple attacks  now\n";}
-	#system ("ls |grep - |grep -v dict |xargs md5sum  |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep -v '  1 '> sum.data");
 	system ("cat sum2.data |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep -v '  1 '> sum.data");
 
 	if ($DEBUG){print "Trying md5sum for single attacks  now\n";}
-	#system ("ls |grep - |grep -v dict |xargs md5sum  |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep '  1 '|grep -v sum.data |grep -v sum.data > sum.single.attack.data");
 	system ("cat sum2.data |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep '  1 '> sum.single.attack.data");
 
-	if ($DEBUG){print "Done making  md5sum all files  now\n";}
-
 	$tmp=`date`;
+	if ($DEBUG){print "Done Making md5sum files now at $tmp.\n";}
+}
+
+
+########################################################################
+# make the dictionary files
+# Why does this take longer than md5 checksuming all the files?
+#
+# Don't forget that there are LESS dictionaries than attacks
+# because many attacks are duplicates.
+#
+sub make_dictionaries{
+	local $lines_in_sum2_data;
+	$lines_in_sum2_data=0;
+	local $dictionaries_made;
+	$dictionaries_made=0;
+	$tmp=`date`;
+	chdir ("$attacks_dir");
 	print "DEBUG making dictionaries now: $tmp\n";
+	
 	open (FILE, "sum2.data");
 	while (<FILE>){
 		chomp;
 		($checksum,$file)=split(/  /,$_);
+		$lines_in_sum2_data++;
 		if ( ! -e "dict-$checksum.txt"){
-			`cp $file dict-$checksum.txt`;
-			`cat $file |wc -l > dict-$checksum.txt.wc`;
+			$dictionaries_made++;
+			#`ln -s  $file dict-$checksum.txt`; # linking is faster than copying (1:18)
+			symlink ($file, "dict-$checksum.txt"); # and symlink is marginally faster (0:58)
+			#`cat $file |wc -l > dict-$checksum.txt.wc`;
+			# Hmm, I tested this, and dealing with counting lines
+			# is faster in perl than using cat and wc
+			open (FILE2, $file);
+			while (<FILE2>){}
+			$WC = $.;
+			close (FILE2);
+			open (FILE2, ">dict-$checksum.txt.wc");
+			print (FILE2 "$WC\n");
+			close (FILE2);
 		}
 	}
 	close (FILE);
+	#print "$lines_in_sum2_data, $dictionaries_made\n";
 	$tmp=`date`;
 	print "DEBUG Done making dictionaries now: $tmp\n";
+
+}
 	
+
+########################################################################
+# First pass at analyzing the attack files
+#
+sub analyze {
 	# Keep the interesting stuff near the top of the report
-	if ($DEBUG){print "DEBUG Doing multiple attack data now\n";}
-	open (FILE_FORMATTED, ">$honey_dir/attack_patterns.shtml") || die "Can not write to $honey_dir/attack_patterns.shtml\n";
-	print (FILE_FORMATTED "<HTML>\n");
-	print (FILE_FORMATTED "<HEAD>\n");
-	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Multiple Use Of Same Dictionary Attacks</TITLE>\n");
-	print (FILE_FORMATTED "</HEAD>\n");
-	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
-	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
-	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
-	print (FILE_FORMATTED "<H1>LongTail Log Analysis Multiple Use Of Same Dictionary Attacks</H1>\n");
-	print (FILE_FORMATTED "<P>This page is updated daily.\n");
-	print (FILE_FORMATTED "Last updated on $DATE\n");
+	chdir ("$attacks_dir");
+	$tmp=`date`;
+	print "DEBUG doing analyze now: $tmp\n";
+	open (FILE_FORMATTED_MULTI, ">$honey_dir/attack_patterns.shtml") || die "Can not write to $honey_dir/attack_patterns.shtml\n";
+	print (FILE_FORMATTED_MULTI "<HTML>\n");
+	print (FILE_FORMATTED_MULTI "<HEAD>\n");
+	print (FILE_FORMATTED_MULTI "<TITLE>LongTail Log Analysis Multiple Use Of Same Dictionary Attacks</TITLE>\n");
+	print (FILE_FORMATTED_MULTI "</HEAD>\n");
+	print (FILE_FORMATTED_MULTI "<BODY bgcolor=#00f0FF>\n");
+	print (FILE_FORMATTED_MULTI "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
+	print (FILE_FORMATTED_MULTI "<!--#include virtual=\"/honey/header.html\" --> \n");
+	print (FILE_FORMATTED_MULTI "<H1>LongTail Log Analysis Multiple Use Of Same Dictionary Attacks</H1>\n");
+	print (FILE_FORMATTED_MULTI "<P>This page is updated daily.\n");
+	print (FILE_FORMATTED_MULTI "Last updated on $DATE\n");
 
-	open (FILE, "sum.data")||die "can not open sum.data\n";
+	open (FILE_FORMATTED_SINGLE, ">$honey_dir/attack_patterns_single.shtml") || die "Can not write to $honey_dir/attack_patterns_single.shtml\n";
+	print (FILE_FORMATTED_SINGLE "<HTML>\n");
+	print (FILE_FORMATTED_SINGLE "<HEAD>\n");
+	print (FILE_FORMATTED_SINGLE "<TITLE>LongTail Log Analysis Single Use Dictionary Attacks</TITLE>\n");
+	print (FILE_FORMATTED_SINGLE "</HEAD>\n");
+	print (FILE_FORMATTED_SINGLE "<BODY bgcolor=#00f0FF>\n");
+	print (FILE_FORMATTED_SINGLE "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
+	print (FILE_FORMATTED_SINGLE "<!--#include virtual=\"/honey/header.html\" --> \n");
+	print (FILE_FORMATTED_SINGLE "<H1>LongTail Log Analysis Single Use Dictionary Attacks</H1>\n");
+	print (FILE_FORMATTED_SINGLE "<P>This page is updated daily.\n");
+	print (FILE_FORMATTED_SINGLE "Last updated on $DATE\n");
+
+	open (FILE, "sum2.data")||die "can not open sum2.data\n";
+	$prior_checksum="";
+	$checksum_occurences=0;
+	$prior_checksum="";
+	$prior_ip="";
+	$checksum_seen=0;
 	while (<FILE>){
 		chomp;
-		($tmp,$count, $checksum)=split(/ +/,$_);
-		print (FILE_FORMATTED "<HR>\n");
-		print (FILE_FORMATTED "<a name=\"$checksum\"></a>\n");
-		print (FILE_FORMATTED "<P>IP addresses:\n");
-		open (FILE2, "sum2.data");
-		$checksum_seen=0;
-		while (<FILE2>){
-			if (/$checksum/){
-				chomp;
-				($trash,$filename)=split(/ +/,$_);
-				($first,$second,$third,$fourth,$host)=split(/\./, $filename);
-				$tmp="$first.$second.$third.$fourth";
-				print (FILE_FORMATTED "<A HREF=\"/honey/ip_attacks.shtml#$tmp\">$tmp</A> \n");
-				$checksum_seen=1;
+		($checksum,$ip_1,$ip_2,$ip_3,$ip_4,$host,$attack_number,
+		$year,$month,$day,$hour,$minute,$second )=split(/ +|\.|-/,$_);
+		$current_checksum=$checksum;
+		$current_ip="$ip_1.$ip_2.$ip_3.$ip_4";
+		if ($prior_checksum ne $current_checksum){
+			if ($prior_checksum eq ""){
+				$prior_ip=$current_ip;
+				$prior_checksum=$current_checksum;
+				$WC=`cat dict-$prior_checksum.txt.wc`;
+				chomp $WC;
+				$print_string="<HR>\n<a name=\"$current_checksum\"></a>\n<A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n<P>IP addresses:\n<A HREF=\"/honey/ip_attacks.shtml#$current_ip\">$current_ip</A>\n";
+				$checksum_occurences=1;
 			}
-			elsif ($checksum_seen==1) {
-				last;
-			}
-		}
-		close (FILE2);
-
-		#$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
-		$WC=`cat dict-$checksum.txt.wc`;
-		chomp $WC;
-		print (FILE_FORMATTED "<BR><A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n");
-		
-	}
-	close (FILE);
-	print (FILE_FORMATTED "</TABLE>\n");
-	print (FILE_FORMATTED "</BODY>\n");
-	print (FILE_FORMATTED "</HTML>\n");
-	close (FILE_FORMATTED);
-
-	if ($DEBUG){print "DEBUG Doing single attack data now\n";}
-	open (FILE, "sum.single.attack.data")||die "can not open sum.single.attack.data\n";
-	open (FILE_FORMATTED, ">$honey_dir/attack_patterns_single.shtml") || die "Can not write to $honey_dir/attack_patterns_single.shtml\n";
-	print (FILE_FORMATTED "<HTML>\n");
-	print (FILE_FORMATTED "<HEAD>\n");
-	print (FILE_FORMATTED "<TITLE>LongTail Log Analysis Single Use Dictionary Attacks</TITLE>\n");
-	print (FILE_FORMATTED "</HEAD>\n");
-	print (FILE_FORMATTED "<BODY bgcolor=#00f0FF>\n");
-	print (FILE_FORMATTED "<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> \n");
-	print (FILE_FORMATTED "<!--#include virtual=\"/honey/header.html\" --> \n");
-	print (FILE_FORMATTED "<H1>LongTail Log Analysis Single Use Dictionary Attacks</H1>\n");
-	print (FILE_FORMATTED "<P>This page is updated daily.\n");
-	print (FILE_FORMATTED "Last updated on $DATE\n");
-
-	while (<FILE>){
-		chomp;
-		($tmp,$count, $checksum)=split(/ +/,$_);
-		print (FILE_FORMATTED "<HR>\n");
-		print (FILE_FORMATTED "<P>IP addresses:\n");
-		open (FILE2, "sum2.data");
-		while (<FILE2>){
-			if (/$checksum/){
-				chomp;
-				($trash,$filename)=split(/ +/,$_);
-				($first,$second,$third,$fourth,$host)=split(/\./, $filename);
-				$tmp="$first.$second.$third.$fourth";
-				print (FILE_FORMATTED "<A HREF=\"/honey/ip_attacks.shtml#$tmp\">$tmp</A> \n");
+			else {
+				if ($checksum_occurences == 1 ){ #There was only one instance
+					print (FILE_FORMATTED_SINGLE $print_string);
+					$prior_ip=$current_ip;
+					$prior_checksum=$current_checksum;
+					$WC=`cat dict-$prior_checksum.txt.wc`;
+					chomp $WC;
+					$print_string="<HR>\n<a name=\"$current_checksum\"></a>\n<A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n<P>IP addresses:\n<A HREF=\"/honey/ip_attacks.shtml#$current_ip\">$current_ip</A>\n";
+					$checksum_occurences=1;
+				}
+				elsif ($checksum_occurences > 1 ){#There was more than one instance
+					print (FILE_FORMATTED_MULTI $print_string);
+					$prior_ip=$current_ip;
+					$prior_checksum=$current_checksum;
+					$WC=`cat dict-$prior_checksum.txt.wc`;
+					chomp $WC;
+					$print_string="<HR>\n<a name=\"$current_checksum\"></a>\n<A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n<P>IP addresses:\n<A HREF=\"/honey/ip_attacks.shtml#$current_ip\">$current_ip</A>\n";
+					$checksum_occurences=1;
+				}
 			}
 		}
-		$WC=`/usr/bin/wc -l $filename |awk '{print \$1}' `;
-		print (FILE_FORMATTED "<BR><A href=\"attacks/dict-$checksum.txt\">$WC Lines, attack pattern $checksum</a>\n");
-		close (FILE2);
-		
+		else {  # Checksum is the same as the line before it
+			$print_string=$print_string."<A HREF=\"/honey/ip_attacks.shtml#$current_ip\">$current_ip</A>\n";
+			$checksum_occurences ++ ;
+		}
 	}
 	close (FILE);
-	print (FILE_FORMATTED "</TABLE>\n");
-	print (FILE_FORMATTED "</BODY>\n");
-	print (FILE_FORMATTED "</HTML>\n");
-	close (FILE_FORMATTED);
+
+	print (FILE_FORMATTED_MULTI "</TABLE>\n");
+	print (FILE_FORMATTED_MULTI "</BODY>\n");
+	print (FILE_FORMATTED_MULTI "</HTML>\n");
+	close (FILE_FORMATTED_MULTI);
+
+	print (FILE_FORMATTED_SINGLE "</TABLE>\n");
+	print (FILE_FORMATTED_SINGLE "</BODY>\n");
+	print (FILE_FORMATTED_SINGLE "</HTML>\n");
+	close (FILE_FORMATTED_SINGLE);
+	$tmp=`date`;
+	print "DEBUG Done doing analyze now: $tmp\n";
 }
 
+#####################################################################
 # Lets try and print out the lifetimes of attackers
 # I don't really care about sorting by IP address,
 # especially since it doesn't seem to sort properly anyways
 #
 # printing out by sorting on AGE of IP address (How long it was alive)
+# 
+# This really needs to be sped up
 sub show_lifetime_of_ips {
 	$tmp=`date`;
-print "DEBUG In show_lifetime_of_ips: $tmp\n";
-	#print "DEBUG ===================================================\n\n";
-	#print "DEBUG- Trying to sort by age of ip\n";
-	#open (FILE_DATA, "> $honey_dir/current_attackers_lifespan.data")||die "Can not write to $honey_dir/current_attackers_lifespan.data\n";
+	print "DEBUG In show_lifetime_of_ips: $tmp\n";
 	open (FILE_FORMATTED, ">$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
 	open (FILE_UNFORMATTED, ">$honey_dir/current_attackers_lifespan.tmp") || die "Can not write to $honey_dir/current_attackers_lifespan.tmp\n";
 	print (FILE_FORMATTED "<HTML>\n");
@@ -366,38 +501,186 @@ print "DEBUG In show_lifetime_of_ips: $tmp\n";
 	print (FILE_FORMATTED "<H1>LongTail Log Analysis Attackers Lifespan</H1>\n");
 	print (FILE_FORMATTED "<P>This page is updated daily.\n");
 	print (FILE_FORMATTED "<P>Last updated on $DATE\n");
+	print (FILE_FORMATTED "<P>Click the header to sort on that column\n");
 	print (FILE_FORMATTED "<TABLE border=1>\n");
-	print (FILE_FORMATTED "<TR><TH>IP</TH><TH>Lifetime In Days</TH><TH>First Date Seen</TH><TH>Last Date Seen</TH><TH>Number of Attack<BR>Patterns Recorded</TH></TR>\n");
-
-	$tmp=`date`;
-print "DEBUG In sorting by key now:$tmp\n";
-print "DEBUG-I should do this with find . -name '$ip*' |sort -T $TMP_DIRECTORY -nk6 -t \. instead\n";
-# and then pipe those shorter results to sort, and then print them out.
-
-	foreach $key (keys %ip_age){
-#print ".";
-		$days=$ip_age{$key}/86400;
-		$first_seen=scalar localtime($ip_earliest_seen_time{$key});
-		$last_seen=scalar localtime($ip_latest_seen_time{$key});
-		$attacks_recorded = `grep $key sum2.data |wc -l 2>/dev/null `;
-	  	printf(FILE_UNFORMATTED "%s|%.2f|%s|%s|<a href=\"/honey/ip_attacks.shtml#%s\">%d</A>\n", $key, $days,$first_seen, $last_seen, $key, $attacks_recorded);
-	}
+	print (FILE_FORMATTED "<TR>
+<TH><a href=\"/honey/current_attackers_lifespan_ip.shtml\">IP</a></TH>
+<TH><a href=\"/honey/current_attackers_lifespan.shtml\">Lifetime In Days</a></TH>
+<TH><a href=\"/honey/current_attackers_lifespan_botnet.shtml\">Botnet</a></TH>
+<TH><a href=\"/honey/current_attackers_lifespan_first.shtml\">First Date Seen</a></TH>
+<TH><a href=\"/honey/current_attackers_lifespan_last.shtml\">Last Date Seen</a></TH>
+<TH><a href=\"/honey/current_attackers_lifespan_number.shtml\">Number of Attack<BR>Patterns Recorded</a></TH></TR>\n");
 	close (FILE_FORMATTED);
+	`cp $honey_dir/current_attackers_lifespan.shtml $honey_dir/current_attackers_lifespan_ip.shtml`;
+	`cp $honey_dir/current_attackers_lifespan.shtml $honey_dir/current_attackers_lifespan_botnet.shtml`;
+	`cp $honey_dir/current_attackers_lifespan.shtml $honey_dir/current_attackers_lifespan_first.shtml`;
+	`cp $honey_dir/current_attackers_lifespan.shtml $honey_dir/current_attackers_lifespan_last.shtml`;
+	`cp $honey_dir/current_attackers_lifespan.shtml $honey_dir/current_attackers_lifespan_number.shtml`;
 
-	$tmp=`date`;
-print "DEBUG trying sort -T $TMP_DIRECTORY -nk2 now:$tmp\n";
-	`sort -T $TMP_DIRECTORY -rnk2 -t\\| $honey_dir/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
-print "DEBUG trying cat now\n";
+
+	if ( ! -e "/var/www/html/honey/attacks/sum2.data"){
+		print "Can't find /var/www/html/honey/attacks/sum2.data, exiting now\n";
+		exit;
+	}
+	open (FILE, "/var/www/html/honey/attacks/sum2.data");
+	open (OUTPUT, ">$TMP_DIRECTORY/sum2.data_munged") || die "can not write to $TMP_DIRECTORY/sum2.data_munged, exiting now\n";;
+	while (<FILE>){
+		chomp;
+		($checksum,$info)=split(/ +/,$_,2);
+		($ip1,$ip2,$ip3,$ip4,$host,$attack_number,$year,$month,$day,$hour,$minute,$second)=split(/\.|-/,$info);
+		print (OUTPUT "$ip1.$ip2.$ip3.$ip4.$year.$month.$day.$hour.$minute.$second\n");
+	}
+	close (FILE);
+	close (OUTPUT);
+	
+	`sort $TMP_DIRECTORY/sum2.data_munged --output $TMP_DIRECTORY/sum2.data_munged`;
+	
+	$times_used=0;
+	$prior_ip="";
+	$first_used=0;
+	$last_used=0;
+	
+	open (FILE, "$TMP_DIRECTORY/sum2.data_munged");
+	open (FILE_UNFORMATTED, ">$TMP_DIRECTORY/current_attackers_lifespan.tmp") || die "Can not write to $TMP_DIRECTORY/current_attackers_lifespan.tmp\n";
+	while (<FILE>){
+		chomp;
+		($ip1,$ip2,$ip3,$ip4,$line_year,$line_month,$line_day,$line_hour,$line_minute,$line_second)=split(/\.|-/,$_);
+		$this_ip="$ip1.$ip2.$ip3.$ip4";
+		if ( $this_ip ne $prior_ip){
+			if ($prior_ip ne ""){
+				($year,$month,$day,$hour,$minute,$second)=split(/\./,$first_used);
+				$epoch_first=timelocal($second,$minute,$hour,$day,$month-1,$year);
+				$first_used="$year/$month/$day $hour:$minute:$second";
+	
+				($year,$month,$day,$hour,$minute,$second)=split(/\./,$last_used);
+				$epoch_last=timelocal($second,$minute,$hour,$day,$month-1,$year);
+				$last_used="$year/$month/$day $hour:$minute:$second";
+	
+				$lifetime=$epoch_last-$epoch_first;
+	
+				$days=$lifetime/86400;
+				if ( ( $prior_ip =~ /^43.255.190/) ||
+					( $prior_ip =~ /^43.255.191/) ||
+					( $prior_ip =~ /^103.41.124/) ||
+					( $prior_ip =~ /^103.41.125/) ){
+					$botnet="sshPsycho";
+				}
+				else {
+					if (( $prior_ip =~ /^43.229.52/) ||
+						( $prior_ip =~ /^43.255.188/) ||
+						( $prior_ip =~ /^43.255.189/) ||
+						( $prior_ip =~ /^43.229.53/) ){
+						$botnet="sshPsycho-2";
+					}
+					else {
+						$botnet=" : ";
+						# This is UGLY and takes too long
+						# It opens too many files and doesn't exit after it finds it
+						$botnet=`grep ^$prior_ip /usr/local/etc/LongTail_botnets/* /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses  /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses |egrep -v accounts|grep -v 2015 2>/dev/null `;
+						($botnet,$trash)=split(/:/,$botnet);
+						$botnet =~ s/.usr.local.etc.//;
+						$botnet =~ s/LongTail_botnets.//;
+						$botnet =~ s/LongTail_//;
+					}
+				}
+				
+
+	
+				printf(FILE_UNFORMATTED "%s|%.2f|%s|%s|%s|<a href=\"/honey/ip_attacks.shtml#%s\">%d</A>\n", $prior_ip, $days, $botnet, $first_used, $last_used, $prior_ip, $times_used);
+			}
+	
+			$first_seen="$first_used";
+			$last_seen="$last_used";
+	
+			$prior_ip=$this_ip;
+			$times_used=1;
+			$first_used="$line_year.$line_month.$line_day.$line_hour.$line_minute.$line_second";
+			$last_used="$line_year.$line_month.$line_day.$line_hour.$line_minute.$line_second";
+		}
+		else {
+			$times_used++;
+			$last_used="$line_year.$line_month.$line_day.$line_hour.$line_minute.$line_second";
+		}
+		
+	
+	}
+	close (FILE);
+	close (FILE_UNFORMATTED);
+	
+	unlink ("$TMP_DIRECTORY/sum2.data_munged");
+
+	$tmp=`date`; print "DEBUG trying sort -T $TMP_DIRECTORY -nk2 now:$tmp\n";
+
+	#
+	# Main lifetime page / Sorted by lifetime in days
+	#
+	`sort -T $TMP_DIRECTORY -rnk2 -t\\| $TMP_DIRECTORY/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
 	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\\/TD><TD>/g'|sed 's/\$/<\\/TD><\\/TR>/' >> $honey_dir/current_attackers_lifespan.shtml`;
 	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
-	
-	print "DEBUG DONE sorting by key now\n";
-
 	print (FILE_FORMATTED "</TABLE>\n");
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
-	#close(FILE_DATA);
 	close(FILE_FORMATTED);
+
+	#
+	# Sorted by ip
+	# sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n
+	#`sort -T $TMP_DIRECTORY -rnk1 -t\\| $TMP_DIRECTORY/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
+	`sort -T $TMP_DIRECTORY -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n  $TMP_DIRECTORY/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
+	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\\/TD><TD>/g'|sed 's/\$/<\\/TD><\\/TR>/' >> $honey_dir/current_attackers_lifespan_ip.shtml`;
+	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan_ip.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
+	print (FILE_FORMATTED "</TABLE>\n");
+	print (FILE_FORMATTED "</BODY>\n");
+	print (FILE_FORMATTED "</HTML>\n");
+	close(FILE_FORMATTED);
+
+	#
+	# Sorted by botnet
+	#
+	`sort -T $TMP_DIRECTORY -k3 -t\\| $TMP_DIRECTORY/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
+	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\\/TD><TD>/g'|sed 's/\$/<\\/TD><\\/TR>/' >> $honey_dir/current_attackers_lifespan_botnet.shtml`;
+	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan_botnet.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
+	print (FILE_FORMATTED "</TABLE>\n");
+	print (FILE_FORMATTED "</BODY>\n");
+	print (FILE_FORMATTED "</HTML>\n");
+	close(FILE_FORMATTED);
+
+	#
+	# Sorted by first date seen
+	#
+	`sort -T $TMP_DIRECTORY -k4 -t\\| $TMP_DIRECTORY/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
+	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\\/TD><TD>/g'|sed 's/\$/<\\/TD><\\/TR>/' >> $honey_dir/current_attackers_lifespan_first.shtml`;
+	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan_first.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
+	print (FILE_FORMATTED "</TABLE>\n");
+	print (FILE_FORMATTED "</BODY>\n");
+	print (FILE_FORMATTED "</HTML>\n");
+	close(FILE_FORMATTED);
+
+	#
+	# Sorted by last date seen
+	#
+	`sort -T $TMP_DIRECTORY -k5 -t\\| $TMP_DIRECTORY/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
+	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\\/TD><TD>/g'|sed 's/\$/<\\/TD><\\/TR>/' >> $honey_dir/current_attackers_lifespan_last.shtml`;
+	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan_last.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
+	print (FILE_FORMATTED "</TABLE>\n");
+	print (FILE_FORMATTED "</BODY>\n");
+	print (FILE_FORMATTED "</HTML>\n");
+	close(FILE_FORMATTED);
+
+	#
+	# Sorted by number of attacks
+	#
+print "DEBUG Trying to sort by number of attacks now\n";
+	`sort -T $TMP_DIRECTORY -nrk2 -t\'>\' $TMP_DIRECTORY/current_attackers_lifespan.tmp > $honey_dir/current_attackers_lifespan.tmp2`;
+	`cat $honey_dir/current_attackers_lifespan.tmp2 |sed 's/^/<TR><TD>/' |sed 's/|/<\\/TD><TD>/g'|sed 's/\$/<\\/TD><\\/TR>/' >> $honey_dir/current_attackers_lifespan_number.shtml`;
+	open (FILE_FORMATTED, ">>$honey_dir/current_attackers_lifespan_ip.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
+	print (FILE_FORMATTED "</TABLE>\n");
+	print (FILE_FORMATTED "</BODY>\n");
+	print (FILE_FORMATTED "</HTML>\n");
+	close(FILE_FORMATTED);
+
+	$tmp=`date`;
+	print "DEBUG done with show_lifetime_of_ips: $tmp\n";
 }
 
 ########################################################################
@@ -423,73 +706,50 @@ print "DEBUG In show_attacks_of_ips:$tmp\n";
 	print (FILE_FORMATTED "<P>Results are sorted by IP, and then by dictionary used.\n");
 	print (FILE_FORMATTED "<P>Last updated on $DATE\n");
 
-	# Data format
-	#[shepherd@shepherd attacks]$ head sum2.data 
-	#00c5c88080c454cd587646ecb2320a91  122.225.97.84.shepherd.4-1.16.01.30.35
-	#00ec2c6c48b95f9dce17cd85dff5154a  122.225.97.88.shepherd.1-1.5.07.18.58
-	#0a2b14b5a46482433674508e8e182670  211.157.103.36.shepherd.3-1.31.08.40.28
-	#
-	open (FILE, "sum2.data");
+	open (FILE, "sort -k2 sum2.data |");
+	$prior_ip="";
 	while (<FILE>){
 		chomp;
-		($checksum,$first,$second,$third,$fourth,$trash)=split(/ +|\./,$_);
-		if (!( "$first.$second.$third.$fourth" ~~ @ip_array )) {
-			push @ip_array , "$first.$second.$third.$fourth";
-		}
-	}
-	close (FILE);
+		($checksum,$ip_1,$ip_2,$ip_3,$ip_4,$host,$attack_number,
+		$year,$month,$day,$hour,$minute,$second )=split(/ +|\.|-/,$_);
 	
-	#
-	# Sort the IP array
-	#
+		$current_ip="$ip_1.$ip_2.$ip_3.$ip_4";
+		if ($current_ip ne $prior_ip){
+			print (FILE_FORMATTED "<HR>\n");
+			print (FILE_FORMATTED "<a name=\"$_\"></a>\n");
+			print (FILE_FORMATTED "<B>$current_ip</B>\n");
+			$prior_ip=$current_ip;
+		}
+	
+		# I shouldn't have to do this but it's faster than finding
+		# the borked code
+		if ( ! -e "dict-$checksum.txt.wc" ){
+			$temp=`cat dict-$checksum.txt | wc -l  > dict-$checksum.txt.wc`;
+		}
+	
+		open (FILE2, "dict-$checksum.txt.wc");
+		while (<FILE2>){
+			chomp;
+			$lines=$_;
+		}
+		close (FILE2);
+		print (FILE_FORMATTED "<BR>$lines lines, <a href=\"attacks/dict-$checksum.txt\">dict-$checksum.txt</a> <!-- From: $ip_1.$ip_2.$ip_3.$ip_4--> To: $host Attack #: $attack_number started on $year/$month/$day $hour:$minute:$second\n");
+	}
 	$tmp=`date`;
-print "DEBUG This is slow....: $tmp\n";
-	my @sorted = map  { $_->[0] }
-             	sort { $a->[1] <=> $b->[1] }
-             	map  { [$_, int sprintf("%03.f%03.f%03.f%03.f", split(/\.+/, $_))] }
-             	@ip_array;
-	
-$tmp=`date`;
-print "DEBUG foreach sorted arracy....: $tmp\n";
-	foreach (@sorted){
-		print (FILE_FORMATTED "<HR>\n");
-		print (FILE_FORMATTED "<a name=\"$_\"></a>\n");
-		print (FILE_FORMATTED "<B>$_</B>\n");
-		open (GREP, "grep $_ sum2.data|");
-		while (<GREP>){
-			($checksum, $file)=split (/ +/,$_,2);
-			# 211.157.103.36.shepherd.3-2015.1.31.08.40.28
-			($ip_and_host,$date)=split(/-/,$file,2);
-			($year,$month,$day,$hour,$minute,$second)=split(/\./,$date);
-			($ip_1,$ip_2,$ip_3,$ip_4,$host,$attack_number)=split(/\./,$ip_and_host);
-			# I shouldn't have to do this but it's faster than finding
-			# the borked code
-			if ( ! -e "dict-$checksum.txt.wc" ){
-				$temp=`cat dict-$checksum.txt | wc -l  > dict-$checksum.txt.wc`;
-			}
-			open (FILE2, "dict-$checksum.txt.wc");
-			while (<FILE2>){
-				chomp;
-				$lines=$_;
-			}
-			close (FILE2);
-			print (FILE_FORMATTED "<BR>$lines lines, <a href=\"attacks/dict-$checksum.txt\">dict-$checksum.txt</a> <!-- From: $ip_1.$ip_2.$ip_3.$ip_4--> To: $host Attack #: $attack_number started on $year/$month/$day $hour:$minute:$second\n");
-		}
-		close (GREP);
-	}
-$tmp=`date`;
-print "DEBUG done foreach sorted arracy....: $tmp\n";
+	print "DEBUG done foreach sorted array....: $tmp\n";
 	print (FILE_FORMATTED "</BODY>\n");
 	print (FILE_FORMATTED "</HTML>\n");
 	close (FILE_FORMATTED);
+	close (FILE);
 	$tmp=`date`;
-print "DEBUG Done with show_attacks_of_ips:$tmp\n";
+	print "DEBUG Done with show_attacks_of_ips:$tmp\n";
 }
 
 
-#############################################################################3
+#############################################################################
 #
-# Make the dictionary webpage
+# Make the dictionary webpages.  At 13 million records this takes 34 seconds
+# and is "fast enough" for now.
 #
 sub create_dict_webpage {
 	$tmp=`date`;
@@ -510,14 +770,13 @@ sub create_dict_webpage {
 	print (FILE_FORMATTED "<TR><TH>Number Of<BR>Times Used</TH><TH>Number of <BR>Entries</TH><TH>Checksum</TH><TH>Dictionary</TH><TH>First Seen</TH><TH>Last Seen</TH></TR>\n");
 	chdir ("$honey_dir/attacks");
 	
-	# This breaks with too many files #open (PIPE, "/bin/ls dict-* |") || die "can not open pipe to cleanup files\n";
 	$tmp=`date`;
 	print "DEBUG Making temp files for dict webpage now : $tmp\n";
 	open (FILE, "sum2.data") || die "can not open file sum2.data\n";
 	$prior_checksum="";
 	while (<FILE>){
 		chomp;
-#0000b12b844d2e09b9d979e79b016242  221.146.74.146.edu_c.16-2015.06.10.14.41.35
+		#0000b12b844d2e09b9d979e79b016242  221.146.74.146.edu_c.16-2015.06.10.14.41.35
 		($checksum,$file)=split(/\s+/,$_);
 		if ($checksum ne $prior_checksum){
 			if ( $checksum ne ""){
@@ -618,33 +877,34 @@ sub create_dict_webpage {
 #
 #
 $TMP=`date`;
+print "######################################################################\n";
 print "LongTail_analyze_attacks.pl Started at $TMP\n";
+if ($DEBUG){print "----------------------------------------------\n";}
 &init;
-$TMP=`date`;chomp $TMP; print "done with init at $TMP, calling cleanup_old_files\n";
+if ($DEBUG){print "----------------------------------------------\n";}
 &cleanup_old_files;
-$TMP=`date`;chomp $TMP; print "done with cleanup_old_files at $TMP, calling create_attack_logs\n";
+if ($DEBUG){print "----------------------------------------------\n";}
 &create_attack_logs;
-$TMP=`date`;chomp $TMP; print "done with create_attack_logs at $TMP, calling analyze\n";
+if ($DEBUG){print "----------------------------------------------\n";}
+&sort_attack_files;
+if ($DEBUG){print "----------------------------------------------\n";}
+&make_md5_checksums;
+if ($DEBUG){print "----------------------------------------------\n";}
+&make_dictionaries;
+if ($DEBUG){print "----------------------------------------------\n";}
 &analyze;
-$TMP=`date`;chomp $TMP; print "done with analyze at $TMP, calling show_lifetime_of_ips\n";
+if ($DEBUG){print "----------------------------------------------\n";}
 &show_lifetime_of_ips;
-$TMP=`date`;chomp $TMP; print "done with show_lifetime_of_ips at $TMP, calling show_attacks_of_ips\n";
+if ($DEBUG){print "----------------------------------------------\n";}
 &show_attacks_of_ips;
-$TMP=`date`;chomp $TMP; print "done with show_attacks_of_ips at $TMP, calling create_dict_webpage\n";
+if ($DEBUG){print "----------------------------------------------\n";}
 &create_dict_webpage;
-$TMP=`date`;chomp $TMP; print "done with create_dict_webpage at $TMP, getting rid of temp files now\n";
+if ($DEBUG){print "----------------------------------------------\n";}
 #
 # Get rid of temp files
 unlink ("/$TMP_DIRECTORY/dictionaries.temp.sorted");
 unlink ("/$TMP_DIRECTORY/dictionaries.temp");
 unlink ("/$TMP_DIRECTORY/tmp.data");
-# I am using httpd.conf to protect this directory now
-#if (-d "$attacks_dir" ){
-#	chdir ("$attacks_dir");
-#	$tmp=system("find . -type f -size -128c | xargs chmod go-rwx ");
-#	$tmp=system("chmod a+r ip_attacks.shtml");
-#	$tmp=system("chmod a+rx .");
-#}
 
 $TMP=`date`;
 print "LongTail_analyze_attacks.pl Done at $TMP\n";
