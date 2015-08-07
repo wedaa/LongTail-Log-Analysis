@@ -8,6 +8,7 @@ function print_divider {
 print_divider
 START_HOUR=`date +%H` # This is used at the end of the program but we want to know it NOW
 if [ $START_HOUR -eq 0 ]; then
+	echo "It's MIDNIGHT, running midnight scripts"
 	date; /usr/local/etc/LongTail.sh 2222  ; print_divider # This runs first since it's fastest
 	date; /usr/local/etc/LongTail.sh  ; print_divider # This should still run at midnight
 	date; /usr/local/etc/LongTail.sh ssh blackridge MIDNIGHT ; print_divider
@@ -58,9 +59,6 @@ if [ $START_HOUR -eq $ONE_AM ]; then
 	grep blackridge /var/log/messages* |grep $YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY |egrep -v systemd-logind\|dbus\|\ su: |sed 's/Password:..*$/Password: XXXX/'|grep 'blackridge sshd\[' > /var/www/html/honey/blackridge/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/identified_traffic.data
 	cat /var/www/html/honey/blackridge/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/identified_traffic.data |grep Accepted\ publickey\ for\ wedaa |wc -l > /var/www/html/honey/blackridge/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/identified_traffic.data.count
 fi
-
-
-#date; /usr/local/etc/LongTail_analyze_attacks-2222.pl ; print_divider
 
 #date; /usr/local/etc/LongTail.sh telnet shepherd ; print_divider
 #date; /usr/local/etc/LongTail.sh telnet erhp ; print_divider
