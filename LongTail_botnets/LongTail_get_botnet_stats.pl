@@ -41,6 +41,11 @@ sub init {
 	$bots_dir_url="honey/bots/";
 	$attacks_dir="/var/www/html/honey/attacks/";
 	$client_data="/var/www/html/honey/clients.data /var/www/html/honey/kippo_clients.data";
+	$download_dir="/var/www/html/honey/downloads/";
+	if ( ! -d $download_dir ){
+		print "$download_dir does not exist or is not a directory, exiting now\n";
+		exit;
+	}
 	$this_year=`date +%Y`;
 	chomp $this_year;
 	$this_month=`date +%m`;
@@ -67,7 +72,6 @@ sub print_header {
 }
 
 sub pass_1 {
-	#open (FIND, "find . -type f -print|sort |") || die "Can not run find command\n";
 	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
 	$number_of_botnets=0;
 	$global_max=0;
@@ -175,10 +179,6 @@ print "\n</div>\n</div>\n";
 		# I don't want some weird recursive loop going on forever
 		# until I just happen to catch it.
 	
-#		print "New matching patterns are:\n";
-#		$TMP=`for pattern in \`cat /tmp/TAG.2\` ; do grep -F \$pattern /var/www/html/honey/attacks/sum2.data_large_attacks; done`;
-#		print $TMP;
-#		print "\n";
 		`for pattern in \`cat /tmp/TAG.2\` ; do grep -F \$pattern /var/www/html/honey/attacks/sum2.data_large_attacks; done  |awk '{print \$2}' |sed 's/-..*//'  | awk -F\. '{print \$1,\$2,\$3,\$4}' |sed 's/ /./g' |sort |uniq >/tmp/tag.3`;
 	
 	
@@ -196,14 +196,14 @@ print "\n</div>\n</div>\n";
 		$output =~ s/\n/\n<BR>/g;
 		$output =~ s/\/var\/www\/html\/honey\///g;
 		#print "<P>Client software and level:\n<BR>\n";
-print "<BR><a href=\"#divclient$filename\" class=\"various\">Client software and level</a> \n";
-print "<div style=\"display:none\"> \n";
-print "<div id=\"divclient$filename\"> \n";
-print "<p><strong>Client software and level:</strong></p><br> \n";
+		print "<BR><a href=\"#divclient$filename\" class=\"various\">Client software and level</a> \n";
+		print "<div style=\"display:none\"> \n";
+		print "<div id=\"divclient$filename\"> \n";
+		print "<p><strong>Client software and level:</strong></p><br> \n";
 
 		print $output;
 
-print "\b</div>\n</div>\n";
+		print "\b</div>\n</div>\n";
 
 		if ($attacks>0){
 			$average=$total/$attacks;
@@ -244,6 +244,34 @@ print "\b</div>\n</div>\n";
 	close (FIND);
 }
 
+sub pass_2 {
+	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
+	$number_of_botnets=0;
+	$global_max=0;
+	$global_min=99999;
+	$global_total=0;
+	while (<FIND>){
+		chomp;
+		if (/.sh$/){next;}
+		if (/.pl$/){next;}
+		if (/.html/){next;}
+		if (/.shtml/){next;}
+		if (/.accounts/){next;}
+		if (/typescript/){next;}
+		if (/total/){next;}
+		if (/2015/){next;}
+		if (/backups/){next;}
+		if (/.static/){
+			$static=1;
+		}
+		else {
+			$static=0;
+		}
+		$filename=$_;
+		`cp $filename $download_dir`;
+	}
+	close (FIND);
+}
 sub print_footer {
 	if ($global_attacks>0){
 		$average=$global_total/$global_attacks;
@@ -272,5 +300,6 @@ sub print_footer {
 &remove_single_attempts_from_sum2 ;
 &print_header ;
 &pass_1 ;
+&pass_2 ;
 &print_footer ;
 
