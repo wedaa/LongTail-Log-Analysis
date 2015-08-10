@@ -52,6 +52,18 @@ sub init {
 	chomp $this_month;
 	$this_day=`date +%d`;
 	chomp $this_day;
+
+	open ("FILE", "/usr/local/etc/translate_country_codes")|| die "Can not open /usr/local/etc/translate_country_codes\nExiting now\n";
+	while (<FILE>){
+		chomp;
+		$_ =~ s/  / /g;
+		($code,$country)=split (/ /,$_,2);
+		$country =~ s/ /_/g;
+		$country_code{$code}=$country;
+	}
+	close (FILE);
+
+
 }
 
 sub print_header {
@@ -70,6 +82,11 @@ sub print_header {
 		print "<P>Attack patterns being generated now, please check back later\n";
 	}
 }
+
+###############################################################################
+#
+# do the real work
+#
 
 sub pass_1 {
 	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
@@ -95,16 +112,14 @@ sub pass_1 {
 		else {
 			$static=0;
 		}
-	#	if (! /small_bots_2/){next;}
-	#print "proceeding with filename $_\n";
 		$filename=$_;
 		$filename=~ s/\.\///;
 		#print "Looking for botnet $filename\n";
 		print "<H3>BotNet $filename</H3>\n";
-print "<a href=\"#divhosts$filename\" class=\"various\">Hosts involved with $filename</a>\n";
-print "<div style=\"display:none\">\n";
-print "<div id=\"divhosts$filename\">\n";
-print "<p><strong>Hosts involved with $filename</strong></p>\n";
+		print "<a href=\"#divhosts$filename\" class=\"various\">Hosts involved with $filename</a>\n";
+		print "<div style=\"display:none\">\n";
+		print "<div id=\"divhosts$filename\">\n";
+		print "<p><strong>Hosts involved with $filename</strong></p>\n";
 
 		# print "<P>Hosts involved with $filename are:\n<BR>\n";
 		if ( -e "$filename.accounts"){
@@ -165,7 +180,7 @@ print "<p><strong>Hosts involved with $filename</strong></p>\n";
 			close (SUMDATA);
 		}
 		close (FILE);
-print "\n</div>\n</div>\n";
+		print "\n</div>\n</div>\n";
 
 		`sort /tmp/TAG |uniq >/tmp/TAG.2`;
 		#
@@ -211,6 +226,27 @@ print "\n</div>\n</div>\n";
 		else {
 			$average=0;
 		}
+		
+		# Get country info here
+		`grep -F -f $filename /usr/local/etc/ip-to-country | awk '{print \$2}' |sort |uniq -c |sort -nr > $html_bots_dir/$filename.countries.txt`;
+		open (FILE, "$html_bots_dir/$filename.countries.txt");
+		open (OUTPUT, ">$html_bots_dir/$filename.countries.tmp");
+		while (<FILE>){
+			chomp;
+			$_ =~ tr/A-Z/a-z/;
+			($trash,$count,$country)=split (/\s+/,$_,3);
+			$_ =~ s/$country/$country_code{$country}/;
+			$_ =~ s/_/ /g;
+			print (OUTPUT "$_\n");
+		}
+		close (FILE);
+		close (OUTPUT);
+		if ( -e){
+			unlink ("$html_bots_dir/$filename.countries.txt");
+		}
+		`/bin/mv $html_bots_dir/$filename.countries.tmp $html_bots_dir/$filename.countries.txt`;
+		$country_count=`cat $html_bots_dir/$filename.countries.txt |wc -l`;
+		
 
 		$tmp=system ("sort $filename.accounts |uniq -c |sort -nr > $filename.accounts.tmp");
 		$tmp=system ("/bin/mv $filename.accounts.tmp $html_bots_dir/$filename.accounts.txt");
@@ -236,6 +272,7 @@ print "\n</div>\n</div>\n";
 		print "<TR><TD>Average attack size from $filename</TD><TD> $average\n";
 		print "<TR><TD>Maximum attack size from $filename</TD><TD> $max\n";
 		print "<TR><TD>Number of accounts tried $filename</TD><TD><a href=\"/$bots_dir_url/$filename.accounts.txt\">$line_count</a>\n";
+		print "<TR><TD>Number of countries in $filename</TD><TD><a href=\"/$bots_dir_url/$filename.countries.txt\">$country_count</a>\n";
 		print "</TABLE>\n";
 		$total=0;
 		$total_year=0;
@@ -244,9 +281,13 @@ print "\n</div>\n</div>\n";
 	close (FIND);
 }
 
+###############################################################################
+#
+# Copy files to download dir
+#
+
 sub pass_2 {
 	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
-	$number_of_botnets=0;
 	$global_max=0;
 	$global_min=99999;
 	$global_total=0;
