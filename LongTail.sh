@@ -2571,6 +2571,213 @@ function recount_last_30_days_sshpsycho_attacks {
 	done
 }
 
+
+
+###########################################################################
+#
+# Lets count all the sshpsycho (and friends, etc) attacks
+#
+
+function count_sshpsycho_attacks {
+
+	cd $HTML_DIR/historical
+	TMP_DATE=`date +"%Y-%m-%d"`
+	
+	###########################################################################
+	echo "DEBUG-Counting sshpsycho attacks now"
+	if [ "x$HOSTNAME" == "x/" ] ; then
+		# sshPsycho is dead... TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
+		TODAY=0
+	else
+		# sshPsycho is dead... TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
+		TODAY=0
+	fi
+	# This month
+	TMP=0
+	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-attack-count.data ` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	THIS_MONTH=`expr $TMP + $TODAY`
+	# This year
+	TMP=0
+	for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-attack-count.data ` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	THIS_YEAR=`expr $TMP + $TODAY`
+	# Since logging started 
+	TMP=0
+	for FILE in  `find . -name current-sshpsycho-attack-count.data ` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	TOTAL=`expr $TMP + $TODAY`
+	
+	TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	#echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+	sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+	
+	###########################################################################
+	
+	echo "DEBUG-Counting sshpsycho-2 attacks now"
+	echo -n "DEBUG counting sshpsycho-2 today: "; date
+	if [ "x$HOSTNAME" == "x/" ] ; then
+		#TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
+		TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
+	else
+		#TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
+		TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
+	fi
+	# This month
+	echo -n "DEBUG counting sshpsycho-2 month: "; date
+	TMP=0
+	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-2-attack-count.data ` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	THIS_MONTH=`expr $TMP + $TODAY`
+	# This year
+	echo -n "DEBUG counting sshpsycho-2 year: "; date
+	TMP=0
+	for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-2-attack-count.data ` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	THIS_YEAR=`expr $TMP + $TODAY`
+	# Since logging started 
+	TMP=0
+	echo -n "DEBUG counting sshpsycho-2 since logging started: "; date
+	for FILE in  `find . -name current-sshpsycho-2-attack-count.data ` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	TOTAL=`expr $TMP + $TODAY`
+	
+	echo -n "DEBUG counting sshpsycho-2 doing sed commands: "; date
+	TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	#echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+	sed -i "s/SSHPsycho-2 Today.*$/SSHPsycho-2 Today:--> $TODAY/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho-2 This Month.*$/SSHPsycho-2 This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho-2 This Year.*$/SSHPsycho-2 This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho-2 Since Logging Started.*$/SSHPsycho-2 Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+	sed -i "s/SSHPsycho-2 Today.*$/SSHPsycho-2 Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho-2 This Month.*$/SSHPsycho-2 This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho-2 This Year.*$/SSHPsycho-2 This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+	sed -i "s/SSHPsycho-2 Since Logging Started.*$/SSHPsycho-2 Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+	echo -n "DEBUG Done counting sshpsycho-2 doing sed commands: "; date
+	
+	###########################################################################
+	echo -n "DEBUG-Counting sshpsycho friends attacks now"; date
+	
+	if [ "x$HOSTNAME" == "x/" ] ; then
+		#TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
+		TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
+	else
+		#TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
+		TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
+	fi
+	
+		# This month
+		TMP=0
+	        for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-friends_of_sshpsycho-attack-count.data ` ; do
+	                COUNT=`cat $FILE`
+	                (( TMP += $COUNT ))
+	        done
+	        THIS_MONTH=`expr $TMP + $TODAY`
+		# This year
+		TMP=0
+	        for FILE in  `find $TMP_YEAR/ -name current-friends_of_sshpsycho-attack-count.data ` ; do
+	                COUNT=`cat $FILE`
+	                (( TMP += $COUNT ))
+	        done
+	        THIS_YEAR=`expr $TMP + $TODAY`
+		# Since logging started
+		TMP=0
+	        for FILE in  `find . -name current-friends_of_sshpsycho-attack-count.data ` ; do
+	                COUNT=`cat $FILE`
+	                (( TMP += $COUNT ))
+	        done
+	        TOTAL=`expr $TMP + $TODAY`
+	
+		TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+		TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	#	echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+		sed -i "s/SSHfriendsPsycho Today.*$/SSHfriendsPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
+		sed -i "s/SSHfriendsPsycho This Month.*$/SSHfriendsPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+		sed -i "s/SSHfriendsPsycho This Year.*$/SSHfriendsPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+		sed -i "s/SSHfriendsPsycho Since Logging Started.*$/SSHfriendsPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+		sed -i "s/SSHfriendsPsycho Today.*$/SSHfriendsPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+		sed -i "s/SSHfriendsPsycho This Month.*$/SSHfriendsPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+		sed -i "s/SSHfriendsPsycho This Year.*$/SSHfriendsPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+		sed -i "s/SSHfriendsPsycho Since Logging Started.*$/SSHfriendsPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+	
+	
+	###########################################################################
+	echo "DEBUG-Counting sshpsycho associates attacks now"
+	if [ "x$HOSTNAME" == "x/" ] ; then
+	        #TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
+	        TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
+	else
+	        #TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
+	        TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
+	fi
+	
+	        # This month
+	        TMP=0
+	        for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-associates_of_sshpsycho-attack-count.data ` ; do
+	                COUNT=`cat $FILE`
+	                (( TMP += $COUNT ))
+	        done
+	        THIS_MONTH=`expr $TMP + $TODAY`
+	        # This year
+	        TMP=0
+	        for FILE in  `find $TMP_YEAR/ -name current-associates_of_sshpsycho-attack-count.data ` ; do
+	                COUNT=`cat $FILE`
+	                (( TMP += $COUNT ))
+	        done
+	        THIS_YEAR=`expr $TMP + $TODAY`
+	        # Since logging started
+	        TMP=0
+	        for FILE in  `find . -name current-associates_of_sshpsycho-attack-count.data ` ; do
+	                COUNT=`cat $FILE`
+	                (( TMP += $COUNT ))
+	        done
+	        TOTAL=`expr $TMP + $TODAY`
+	
+	        TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	        THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	        THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	        TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+	#        echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
+	        sed -i "s/SSHassociatesPsycho Today.*$/SSHassociatesPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
+	        sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
+	        sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
+	        sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
+	        sed -i "s/SSHassociatesPsycho Today.*$/SSHassociatesPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
+	        sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
+	        sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
+	        sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
+	echo -n "DEBUG-Done Counting sshpsycho attacks* now: "; date
+	###########################################################################
+	
+}
+
 ############################################################################
 # Main 
 #
@@ -2814,9 +3021,16 @@ if [ "x$HOSTNAME" == "x/" ] ; then
 	if [ $SEARCH_FOR == "sshd" ] ; then
 		echo -n "Starting sshPsycho analysis now :-) " ; date
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Doing SSHPsycho report now" ; fi
-		make_header "$HTML_DIR/SSHPsycho.shtml" "SSHPsycho Attacks"
-		#/usr/local/etc/LongTail_local_reports/SSHPsycho.pl >> $HTML_DIR/SSHPsycho.shtml
-		make_footer "$HTML_DIR/SSHPsycho.shtml"
+		if [ $HTML_DIR/SSHPsycho.shtml -ot $HTML_DIR/attacks/sum2.data ] ; then
+			echo "$HTML_DIR/SSHPsycho.shtml is older than $HTML_DIR/attacks/sum2.data, running SSHPsycho.shtml"
+			ls -l $HTML_DIR/SSHPsycho.shtml  $HTML_DIR/attacks/sum2.data 
+			make_header "$HTML_DIR/SSHPsycho.shtml" "SSHPsycho Attacks"
+			/usr/local/etc/LongTail_local_reports/SSHPsycho.pl >> $HTML_DIR/SSHPsycho.shtml
+			make_footer "$HTML_DIR/SSHPsycho.shtml"
+		else
+			echo "$HTML_DIR/SSHPsycho.shtml is younger than $HTML_DIR/attacks/sum2.data, notrunning SSHPsycho.shtml"
+			ls -l $HTML_DIR/SSHPsycho.shtml  $HTML_DIR/attacks/sum2.data 
+		fi
 		echo -n "Done with sshPsycho analysis now: "; date
 	fi
 fi 
@@ -2824,182 +3038,13 @@ fi
 cd $HTML_DIR/historical
 TMP_DATE=`date +"%Y-%m-%d"`
 
-echo "DEBUG-Counting sshpsycho attacks now"
-if [ "x$HOSTNAME" == "x/" ] ; then
-	# sshPsycho is dead... TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
-	TODAY=0
-else
-	# sshPsycho is dead... TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
-	TODAY=0
-fi
-# This month
-TMP=0
-for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-attack-count.data ` ; do
-	COUNT=`cat $FILE`
-	(( TMP += $COUNT ))
-done
-THIS_MONTH=`expr $TMP + $TODAY`
-# This year
-TMP=0
-for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-attack-count.data ` ; do
-	COUNT=`cat $FILE`
-	(( TMP += $COUNT ))
-done
-THIS_YEAR=`expr $TMP + $TODAY`
-# Since logging started 
-TMP=0
-for FILE in  `find . -name current-sshpsycho-attack-count.data ` ; do
-	COUNT=`cat $FILE`
-	(( TMP += $COUNT ))
-done
-TOTAL=`expr $TMP + $TODAY`
+echo -n "Calling count_sshpsycho_attacks: "; date
+count_sshpsycho_attacks
+echo -n "Back from Calling count_sshpsycho_attacks: "; date
 
-TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-#echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
-sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
-sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
-sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
-sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
-sed -i "s/SSHPsycho Today.*$/SSHPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
-sed -i "s/SSHPsycho This Month.*$/SSHPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
-sed -i "s/SSHPsycho This Year.*$/SSHPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
-sed -i "s/SSHPsycho Since Logging Started.*$/SSHPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
-
-
-echo "DEBUG-Counting sshpsycho-2 attacks now"
-if [ "x$HOSTNAME" == "x/" ] ; then
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
-else
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
-fi
-# This month
-TMP=0
-for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-2-attack-count.data ` ; do
-	COUNT=`cat $FILE`
-	(( TMP += $COUNT ))
-done
-THIS_MONTH=`expr $TMP + $TODAY`
-# This year
-TMP=0
-for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-2-attack-count.data ` ; do
-	COUNT=`cat $FILE`
-	(( TMP += $COUNT ))
-done
-THIS_YEAR=`expr $TMP + $TODAY`
-# Since logging started 
-TMP=0
-for FILE in  `find . -name current-sshpsycho-2-attack-count.data ` ; do
-	COUNT=`cat $FILE`
-	(( TMP += $COUNT ))
-done
-TOTAL=`expr $TMP + $TODAY`
-
-TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-#echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
-sed -i "s/SSHPsycho-2 Today.*$/SSHPsycho-2 Today:--> $TODAY/" $HTML_DIR/index.shtml
-sed -i "s/SSHPsycho-2 This Month.*$/SSHPsycho-2 This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
-sed -i "s/SSHPsycho-2 This Year.*$/SSHPsycho-2 This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
-sed -i "s/SSHPsycho-2 Since Logging Started.*$/SSHPsycho-2 Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
-sed -i "s/SSHPsycho-2 Today.*$/SSHPsycho-2 Today:--> $TODAY/" $HTML_DIR/index-long.shtml
-sed -i "s/SSHPsycho-2 This Month.*$/SSHPsycho-2 This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
-sed -i "s/SSHPsycho-2 This Year.*$/SSHPsycho-2 This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
-sed -i "s/SSHPsycho-2 Since Logging Started.*$/SSHPsycho-2 Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
-
-echo "DEBUG-Counting sshpsycho friends attacks now"
-
-if [ "x$HOSTNAME" == "x/" ] ; then
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
-else
-	TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
-fi
-
-	# This month
-	TMP=0
-        for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-friends_of_sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        THIS_MONTH=`expr $TMP + $TODAY`
-	# This year
-	TMP=0
-        for FILE in  `find $TMP_YEAR/ -name current-friends_of_sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        THIS_YEAR=`expr $TMP + $TODAY`
-	# Since logging started
-	TMP=0
-        for FILE in  `find . -name current-friends_of_sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        TOTAL=`expr $TMP + $TODAY`
-
-	TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-	THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-	THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-	TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-#	echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
-	sed -i "s/SSHfriendsPsycho Today.*$/SSHfriendsPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
-	sed -i "s/SSHfriendsPsycho This Month.*$/SSHfriendsPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
-	sed -i "s/SSHfriendsPsycho This Year.*$/SSHfriendsPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
-	sed -i "s/SSHfriendsPsycho Since Logging Started.*$/SSHfriendsPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
-	sed -i "s/SSHfriendsPsycho Today.*$/SSHfriendsPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
-	sed -i "s/SSHfriendsPsycho This Month.*$/SSHfriendsPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
-	sed -i "s/SSHfriendsPsycho This Year.*$/SSHfriendsPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
-	sed -i "s/SSHfriendsPsycho Since Logging Started.*$/SSHfriendsPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
-
-
-echo "DEBUG-Counting sshpsycho associates attacks now"
-if [ "x$HOSTNAME" == "x/" ] ; then
-        TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
-else
-        TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
-fi
-
-        # This month
-        TMP=0
-        for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-associates_of_sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        THIS_MONTH=`expr $TMP + $TODAY`
-        # This year
-        TMP=0
-        for FILE in  `find $TMP_YEAR/ -name current-associates_of_sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        THIS_YEAR=`expr $TMP + $TODAY`
-        # Since logging started
-        TMP=0
-        for FILE in  `find . -name current-associates_of_sshpsycho-attack-count.data ` ; do
-                COUNT=`cat $FILE`
-                (( TMP += $COUNT ))
-        done
-        TOTAL=`expr $TMP + $TODAY`
-
-        TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-        THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-        THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-        TOTAL=`echo $TOTAL | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-#        echo "TODAY is $TODAY, THIS_MONTH is $THIS_MONTH, this year is $THIS_YEAR"
-        sed -i "s/SSHassociatesPsycho Today.*$/SSHassociatesPsycho Today:--> $TODAY/" $HTML_DIR/index.shtml
-        sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index.shtml
-        sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index.shtml
-        sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index.shtml
-        sed -i "s/SSHassociatesPsycho Today.*$/SSHassociatesPsycho Today:--> $TODAY/" $HTML_DIR/index-long.shtml
-        sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
-        sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
-        sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
-
+echo -n "Calling lock_down_files: "; date
 lock_down_files 
+echo -n "Back from lock_down_files: "; date
 
 echo -n "Done with LongTail.sh at:"
 date
