@@ -132,6 +132,7 @@ LongTail-exclude-webpages.grep  \
 LongTail-exclude-IPs-httpd.grep \
 LongTail-exclude-IPs-ssh.grep \
 LongTail_friends_of_sshPsycho_IP_addresses \
+LongTail_sshPsycho_2_IP_addresses \
 LongTail_associates_of_sshPsycho_IP_addresses \
 LongTail_sshPsycho_IP_addresses"
 
