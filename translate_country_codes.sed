@@ -87,7 +87,7 @@ s/<TD>gi<\/TD>/<TD>Gibraltar<\/TD>/i
 s/<TD>gl<\/TD>/<TD>Greenland<\/TD>/i
 s/<TD>gm<\/TD>/<TD>Gambia<\/TD>/i
 s/<TD>gn<\/TD>/<TD>Guinea<\/TD>/i
-s/<TD>go<\/TD>v/<TD>USA Government<\/TD>/i
+s/<TD>go<\/TD>/<TD>USA Government<\/TD>/i
 s/<TD>gp<\/TD>/<TD>Guadeloupe (French)<\/TD>/i
 s/<TD>gq<\/TD>/<TD>Equatorial Guinea<\/TD>/i
 s/<TD>gr<\/TD>/<TD>Greece<\/TD>/i
