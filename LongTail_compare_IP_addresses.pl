@@ -30,8 +30,7 @@ sub get_blacklists{
 		`wget http://lists.blocklist.de/lists/ssh.txt`;
 		`cp ssh.txt ssh.txt.$DATE`;
 		`rm *gz`;
-
-		` grep -v \# /var/www/html/honey/last-30-days-ip-addresses.txt |awk '{print $2}' >LongTail_last_30_days`;
+		` grep -v \\# /var/www/html/honey/last-30-days-ip-addresses.txt |awk '{print \$2}' >LongTail_last_30_days`;
 		` cp LongTail_last_30_days LongTail_last_30_days.$DATE`;
 
 	}
