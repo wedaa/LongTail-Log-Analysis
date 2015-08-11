@@ -288,9 +288,6 @@ sub pass_1 {
 
 sub pass_2 {
 	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
-	$global_max=0;
-	$global_min=99999;
-	$global_total=0;
 	while (<FIND>){
 		chomp;
 		if (/.sh$/){next;}
