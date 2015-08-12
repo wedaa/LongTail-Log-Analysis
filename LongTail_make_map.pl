@@ -42,11 +42,15 @@ while (<FILE>){
 }
 close (FILE);
 
-
+$count=0;
 foreach $name(keys %attacks){
+$count++;
 #	if ($attacks{$name} > 100){
 		print "['$name', $attacks{$name}, $ip_addresses{$name} ],\n";
 #	}
+}
+if ($count <1){
+	print "['', 0, 0 ],\n";
 }
 
 
