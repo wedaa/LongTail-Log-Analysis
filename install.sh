@@ -316,14 +316,27 @@ for i in tar perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ;
 		echo "$i not found, you need to install this"
 	fi
 done
+
+if [ ! -d /usr/local/php/jpgraph-3.5.0b1 ] ; then
+	if [ ! -d /usr/local/php ] ; then
+		mkdir -p /usr/local/php
+		cp jpgraph-3.5.0b1.tar.gz /usr/local/php
+		pushd /usr/local/php
+		tar -xvf /usr/local/php
+		popd
+	fi
+else
+	echo "It appears that /usr/local/php/jpgraph-3.5.0b1 already "
+	echo "exists, not installing it again."
+fi
+
 echo "You should probably run the following command to install all the php "
 echo "required for graphing"
 echo "       yum install jwhois php php-devel php-common php-cli php-xml php-pear php-pdo php-gd (RHEL 6)"
 echo "            OR"
 echo "       yum install whois php php-devel php-common php-cli php-xml php-pear php-pdo php-gd (RHEL 7)"
 echo ""
-echo "And download jpgraph from http://jpgraph.net/download/ installed into "
-echo "/usr/local/php/jpgraph.  (Don't forget to edit the include line in "
+echo "Don't forget to edit the include line in "
 echo "/etc/php.ini to reference /usr/local/php)."
 
 echo "Please add these entries to your crontab file"
