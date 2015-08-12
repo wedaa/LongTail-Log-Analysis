@@ -12,7 +12,7 @@ Last updated on Fri Aug  7 15:10:01 EDT 2015
 <BR>
 <BR>
 <table>
-<TR><TH>Today's Attack Map</TH></TR>
+<TR><TH>Today's Attack Map <a href="index.shtml">(Numbers View)</TH></TR>
 <TR><TD><div id="regions_div" style="width: 810; height: 380;"></div>
 </TABLE>
 <BR><BR>
