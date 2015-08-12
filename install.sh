@@ -195,6 +195,9 @@ done
 
 HTML_FILES="ip_addresses.shtml \
 index.shtml \
+last-30-days-map.html \
+current-map.html \
+index-long.shtml \
 index-long-map.shtml \
 index-map.shtml \
 how_to_protect_yourself.shtml \
