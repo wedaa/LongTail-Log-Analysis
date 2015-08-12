@@ -1,0 +1,27 @@
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["geochart"]});
+      google.setOnLoadCallback(drawRegionsMap);
+
+      function drawRegionsMap() {
+        var data = google.visualization.arrayToDataTable([
+          ['Country', 'Attacks', 'IP Addresses'],
+
+['', , ],
+
+	]);
+
+        var options = {
+                <!-- colorAxis: {colors: ['#00853f', 'black', '#e31b23']}, -->
+                <!--colorAxis: {colors: ['#000000', 'red', '#FF0000']},-->
+                colorAxis: {colors: ['#0000F0', '#FF0000']},
+
+        };
+
+        var chart = new google.visualization.GeoChart(document.getElementById('regions_div'));
+
+        chart.draw(data, options);
+      }
+    </script>
+
