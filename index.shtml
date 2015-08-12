@@ -7,23 +7,23 @@
 <H3>LongTail Log Analysis @ <!--#include virtual="/honey/institution.html" -->
 / Today's Data<BR>All SSH Ports,  <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Tue May 12 08:07:08 EDT 2015
+Last updated on Wed Aug 12 19:10:02 EDT 2015
 <BR>
 <BR>
 <TABLE border=1>
-<TR><TH colspan=6>SSH Brute Force Attempts</TH></TR>
+<TR><TH colspan=6>SSH Brute Force Attempts <a href="index-map.shtml">(Map View)</a></TH></TR>
 <TR><TH>Description</TH><TH>Today</TH><TH>Never seen<BR>Before Today</TH><TH>This<BR>Month</TH><TH>This<BR>Year</TH><TH>Since Logging<BR>Started</TH>
 
 <TR><TH>Login Attempts
 <TD>
-<!--Login Attempts Today:--> 48,640
+<!--Login Attempts Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--Login Attempts This Month:--> 964,393
+<!--Login Attempts This Month:--> 0
 </TD><TD>
-<!--Login Attempts This Year:--> 5,311,845
+<!--Login Attempts This Year:--> 0
 </TD><TD>
-<!--Login Attempts Since Logging Started:--> 5,311,845
+<!--Login Attempts Since Logging Started:--> 0
 </TR>
 
 <TR><TH>SSHPsycho Login Attempts <a href="/honey/notes.shtml#3">[3]</a>
@@ -31,78 +31,106 @@ Last updated on Tue May 12 08:07:08 EDT 2015
 <!--SSHPsycho Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--SSHPsycho This Month:--> 201,745
+<!--SSHPsycho This Month:--> 0
 </TD><TD>
-<!--SSHPsycho This Year:--> 2,970,152
+<!--SSHPsycho This Year:--> 0
 </TD><TD>
-<!--SSHPsycho Since Logging Started:--> 2,970,152
+<!--SSHPsycho Since Logging Started:--> 0
 </TR>
+
+<TR><TH>SSHPsycho-2 Login Attempts <a href="/honey/notes.shtml#7">[7]</a>
+<TD>
+<!--SSHPsycho-2 Today:--> 0
+</TD><TD> N/A
+</TD><TD>
+<!--SSHPsycho-2 This Month:--> 0
+</TD><TD>
+<!--SSHPsycho-2 This Year:--> 0
+</TD><TD>
+<!--SSHPsycho-2 Since Logging Started:--> 0
+</TR>
+
 
 <TR><TH>Friends of SSHPsycho Login Attempts <a href="/honey/notes.shtml#4">[4]</a>
 <TD>
-<!--SSHfriendsPsycho Today:--> 25,805
+<!--SSHfriendsPsycho Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--SSHfriendsPsycho This Month:--> 200,948
+<!--SSHfriendsPsycho This Month:--> 0
 </TD><TD>
-<!--SSHfriendsPsycho This Year:--> 661,508
+<!--SSHfriendsPsycho This Year:--> 0
 </TD><TD>
-<!--SSHfriendsPsycho Since Logging Started:--> 661,508
+<!--SSHfriendsPsycho Since Logging Started:--> 0
 </TR>
 
 <TR><TH>Associates of SSHPsycho Login Attempts <a href="/honey/notes.shtml#5">[5]</a>
 <TD>
-<!--SSHassociatesPsycho Today:--> 20,908
+<!--SSHassociatesPsycho Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--SSHassociatesPsycho This Month:--> 328,588
+<!--SSHassociatesPsycho This Month:--> 0
 </TD><TD>
-<!--SSHassociatesPsycho This Year:--> 765,123
+<!--SSHassociatesPsycho This Year:--> 0
 </TD><TD>
-<!--SSHassociatesPsycho Since Logging Started:--> 765,123
+<!--SSHassociatesPsycho Since Logging Started:--> 0
 </TR>
 
 
 <TR><TH>Unique Passwords</TH>
 <TD>
-<!--Unique Passwords Today:--> 24,176
+<!--Unique Passwords Today:--> 0
 </TD><TD>
-<!--New Passwords Today:--> 112
+<!--New Passwords Today:--> 0
 </TD><TD>
-<!--Unique Passwords This Month:--> 109,231
+<!--Unique Passwords This Month:--> 0
 </TD><TD>
-<!--Unique Passwords This Year:--> 495,788
+<!--Unique Passwords This Year:--> 0
 </TD><TD>
-<!--Unique Passwords Since Logging Started:--> 495,788
+<!--Unique Passwords Since Logging Started:--> 0
 </TD><TD>
 </TR>
 <TR><TH>Unique Usernames </TH>
 <TD>
-<!--Unique Usernames Today:--> 61
+<!--Unique Usernames Today:--> 0
 </TD><TD>
-<!--New Usernames Today:--> 9
+<!--New Usernames Today:--> 0
 </TD><TD>
-<!--Unique Usernames This Month:--> 1,655
+<!--Unique Usernames This Month:--> 0
 </TD><TD>
-<!--Unique Usernames This Year:--> 5,268
+<!--Unique Usernames This Year:--> 0
 </TD><TD>
-<!--Unique Usernames Since Logging Started:--> 5,268
+<!--Unique Usernames Since Logging Started:--> 0
 </TD><TD>
 </TR>
 <TR>
 <TH>Unique IPs </TH>
 <TD>
-<!--Unique IPs Today:--> 73
+<!--Unique IPs Today:--> 0
 </TD><TD>
-<!--New IPs Today:--> 17
+<!--New IPs Today:--> 0
 </TD><TD>
-<!--Unique IPs This Month:--> 863
+<!--Unique IPs This Month:--> 0
 </TD><TD>
-<!--Unique IPs This Year:--> 4,897
+<!--Unique IPs This Year:--> 0
 </TD><TD>
-<!--Unique IPs Since Logging Started:--> 4,897
+<!--Unique IPs Since Logging Started:--> 0
 </TD><TD>
 </TR>
+<TR>
+<TH>Active Honeypots </TH>
+<TD><A href="/honey/todays_honeypots.shtml">
+<!--Number of Honeypots Today:--> 1
+</a></TD><TD>
+<!--New Honeypots Today:--> 
+</TD><TD>
+<!--Number of Honeypots This Month:--> 1
+</TD><TD>
+<!--Number of Honeypots This Year:--> 1
+</TD><TD>
+<!--Number of Honeypots Since Logging Started:--> 1
+</TD><TD>
+</TR>
+
 </TABLE>
 <BR>
 <BR>
