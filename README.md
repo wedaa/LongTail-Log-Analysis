@@ -212,16 +212,6 @@ Run LongTail by hand as the account you want it to run as to
 make sure it works.  (And that it can write to the /honey 
 directory.)
 
-Site Specific Reports
---------------
-After you have run LongTail for "a while", you may wish to 
-add your own special reports.  Those reports should be included 
-in a special file that will NOT be overwritten by install.sh
-
-This scripts is:
-
-	$SCRIPT_DIR/Longtail-ssh-local-reports
-
 CRON Entry
 --------------
 You'll need to run this through cron every hour.  PLEASE NOTE
@@ -232,28 +222,29 @@ is code that only runs during the midnight time frame.
 MY crontab entry looks like this one:
 
 	#
+	# LongTail dashboard stuff
+	#
+	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
+	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
+	
 	#
 	# LongTail stuff
 	#
-	1 0 * * * /usr/local/etc/LongTail_make_fake_password.sh
-	1 1 * * * /usr/local/etc/get_whois.sh > /tmp/get_whois.sh.out
-	1 2 * * * /usr/local/etc/LongTail_whois_analysis.pl > /var/www/html/honey/whois.shtml
-	10 * * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-	30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
-	45 6,18 * * * /usr/local/etc/LongTail_analyze_attacks.pl  >> /tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
-	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-	59 * * * * grep telnet /var/log/messages |grep -v \ sshd > /var/www/html/honey/telnet.data
-	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
-	35 23 * * * /usr/local/etc//LongTail_alerts.pl >>/tmp/LongTail_alerts.pl.out
-	30 2 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
-	5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
+	# Optional 1 0 * * * /usr/local/etc/LongTail_make_fake_password.sh
+	# Optional 1 1 * * * /usr/local/etc/get_whois.sh > /tmp/get_whois.sh.out
+	# Optional 1 2 * * * /usr/local/etc/LongTail_whois_analysis.pl > /var/www/html/honey/whois.shtml
+	10 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	10 0,2,4,6,8,10,12,14,16,18,20,22 * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	#
+	# Optional 30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
+	45 6,18 * * * /usr/local/etc/LongTail_analyze_attacks.pl rebuild >> /tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
+	5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; cat /var/log/messages | grep Csoftware  | awk '{print $6,$8,$10}' | sed 's/;//g' >> /var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
 	55 3 * * * /usr/local/etc/LongTail_find_badguys_looking_for_passwords.sh >/var/www/html/honey/IPs_looking_for_passwords.shtml
 	#
-	# LongTail Dashboard counter
-	#
-	0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
-
-
+	# Gather botnet stats.  
+	# Note: You need to run /usr/local/etc/LongTail_botnets/LongTail_find_botnet.pl by hand
+	30 2 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
 
 HTTP Configuration 
 --------------
