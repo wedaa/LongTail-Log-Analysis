@@ -358,3 +358,11 @@ echo ""
 echo "Please add these entries to your crontab file"
 echo ""
 cat sample.crontab
+
+echo ""
+echo "Please run "
+echo "      /usr/local/etc/LongTail.sh "
+echo "and"
+echo "      /usr/local/etc/LongTail.sh MIDNIGHT"
+echo "to both test your installation, and to finish creating all the webpages"
+echo ""
