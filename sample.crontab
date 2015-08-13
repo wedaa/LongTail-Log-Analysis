@@ -17,8 +17,10 @@
 # Optional 30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
 45 6,18 * * * /usr/local/etc/LongTail_analyze_attacks.pl rebuild >> /tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
 5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; cat /var/log/messages | grep Csoftware  | awk '{print $6,$8,$10}' | sed 's/;//g' >> /var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
-55 3 * * * /usr/local/etc/LongTail_find_badguys_looking_for_passwords.sh >/var/www/html/honey/IPs_looking_for_passwords.shtml
+#
+# Run this only if you have a public facing webserver that the badguys can find
+55 3 * * * /usr/local/etc/LongTail_find_badguys_looking_for_passwords.sh 
 #
 # Gather botnet stats.  
-# Note: You need to run /usr/local/etc/LongTail_botnets/LongTail_find_botnet.pl by hand
+# Note: You need to run /usr/local/etc/LongTail_botnets/LongTail_find_botnet.pl by hand once a week
 30 2 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
