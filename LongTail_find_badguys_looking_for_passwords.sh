@@ -78,7 +78,7 @@ echo "" > /data/tmp/bad_actors
 
 # Look for password page requests AND regular page requests here
 
-for ip in `cat /tmp/badguys.txt |uniq ` ; do
+for ip in `cat /data/tmp/badguys.txt |uniq ` ; do
 	attacks_recorded=`grep $ip /var/www/html/honey/attacks/sum2.data |wc -l `
 	password_pages_requested=`grep $ip /data/tmp/badguys.txt |wc -l `
 	pages_requested=`grep $ip /data/tmp/access_log_combined |grep -v \ 403\  |wc -l `
@@ -101,6 +101,6 @@ echo "<BR>"
 echo "<!--#include virtual=\"/honey/footer.html\" -->"
 
 
-#/bin/rm /data/tmp/bad_actors
-#/bin/rm /data/tmp/access_log_combined
-#/bin/rm /data/tmp/badguys.txt
+/bin/rm /data/tmp/bad_actors
+/bin/rm /data/tmp/access_log_combined
+/bin/rm /data/tmp/badguys.txt
