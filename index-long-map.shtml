@@ -2,7 +2,7 @@
 <BODY bgcolor=#00f0FF>
 <link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
 <!--#include virtual="/honey/header.html" --> 
-<!--#include virtual="/honey/last-30-days-map.html" -->
+<!--#include virtual="last-30-days-map.html" -->
 
 
 <H3>LongTail Log Analysis @ <!--#include virtual="/honey/institution.html" -->
@@ -12,7 +12,7 @@ Last updated on Fri Aug  7 15:49:13 EDT 2015
 <BR>
 <BR>
 <table>
-<TR><TH>Last 30 Day's Attack Map</TH></TR>
+<TR><TH>Last 30 Day's Attack Map  <a href="index-long.shtml">(Numbers View)</TH></TR>
 <TR><TD><div id="regions_div" style="width: 810; height: 380;"></div>
 </TABLE>
 
