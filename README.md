@@ -138,23 +138,29 @@ LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core com
 	yum install php php-common php-cli php-xml php-pear php-pdo php-gd
 	yum install which httpd
 
-LongTail requires jpgraph and TrueType fonts.  (See next section)
+LongTail requires jpgraph, FancyBox, and TrueType fonts.  (See next sections.)
 
 FancyBox notes
 --------------
-I use FancyBox Version 2.1.5 and it is available for non commercial use
-at http://fancyapps.com/fancybox
+I use FancyBox Version 2.1.5 and is available for non commercial use
+at http://fancyapps.com/fancybox.
 
-It should be copied into /var/www/html/honey/fancybox/source
+The LongTail install script
+will install it into /var/www/html/honey/fancybox/source.
 
 Jpgraph Notes
 --------------
-jpgraph from http://jpgraph.net/download/ installed into /usr/local/php/jpgraph.  
+jpgraph is from http://jpgraph.net/download/.  
+
+The LongTail install script
+will install it into /usr/local/php/jpgraph.  
 
 Edit the include line in /etc/php.ini to reference /usr/local/php.
 
 Fix the timezone line in /etc/php.ini to reference your timezone. (I use America/New_York ).
 
+TrueType Font Notes
+--------------
 You will need to install the truetype fonts.  
 
 The following instructions are what I used for CentOS 6.6.
@@ -179,10 +185,6 @@ to someplace with lots of disk space.  LongTail breaks at
 10 million records with a /tmp of less than a gigabyte of
 disk space.
 
-Edit LongTail.sh for the location of your 
-/honey directory (or whatever you call the directory
-you want your reports to go to.
-
 Edit Longtail.sh and LongTail.config for site-specific variables 
 (which are explained in the files).
 
@@ -199,10 +201,7 @@ in your reports, now would you?)
 Edit LongTail-exclude-webpages.grep to add any local webpages 
 you don't want in your LongTail reports.
 
-Edit LongTail_make_graph.php for the appropriate location of
-the jpgraph installation.
-
-Edit install.sh for SCRIPT_DIR, HTML_DIR, and OWNER.  You also 
+Edit install.sh for $OWNER.  You also 
 need to comment out the "exit" command, which is there to make 
 sure you edit the install.sh script.
 
@@ -219,7 +218,7 @@ that it starts at the 5 minute mark.  If you want to run this
 just once a day, I would advise running it at 12:05 AM, as there
 is code that only runs during the midnight time frame.
 
-MY crontab entry looks like this one:
+MY crontab entry looks like this one(See the file crontab.sample too):
 
 	#
 	# LongTail dashboard stuff
