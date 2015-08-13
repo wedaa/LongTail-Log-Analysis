@@ -321,17 +321,25 @@ for i in tar perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ;
 done
 
 if [ ! -d /usr/local/php/jpgraph-3.5.0b1 ] ; then
-	if [ ! -d /usr/local/php ] ; then
 		mkdir -p /usr/local/php
 		cp jpgraph-3.5.0b1.tar.gz /usr/local/php
 		pushd /usr/local/php
 		tar -xvf /usr/local/php
 		popd
-	fi
 else
 	echo "It appears that /usr/local/php/jpgraph-3.5.0b1 already "
 	echo "exists, not installing it again."
 fi
+
+if [ ! -d /var/www/html/honey/fancybox ] ; then
+		mkdir -p /var/www/html/honey/fancybox
+		unzip fancyapps-fancyBox-v2.1.5-0-ge2248f4.zip 
+		mv fancyapps-fancyBox-18d1712/ /var/www/html/honey/fancybox
+else
+	echo "It appears that /var/www/html/honey/fancybox already "
+	echo "exists, not installing it again."
+fi
+
 
 echo "You should probably run the following command to install all the php "
 echo "required for graphing"
@@ -342,6 +350,11 @@ echo ""
 echo "Don't forget to edit the include line in "
 echo "/etc/php.ini to reference /usr/local/php)."
 
+echo ""
+echo "You need to install truetype fonts by hand.  Please see the README for directions"
+echo ""
+
+echo ""
 echo "Please add these entries to your crontab file"
 echo ""
 cat sample.crontab
