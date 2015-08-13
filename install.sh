@@ -144,7 +144,6 @@ for file in $ETC_FILES ; do
 done
 
 PROGRAMS=" LongTail_rebuild_dashboard_index.pl \
-LongTail_whois_analysis.pl \
 LongTail_find_badguys_looking_for_passwords.sh \
 LongTail_make_map.pl \
 LongTail_dashboard.pl \
