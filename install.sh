@@ -35,28 +35,28 @@ if [ $LAST -ne 0 ] ; then
 	exit
 fi
 
-echo ""
-HONEYPOT="x"
-while [ $HONEYPOT == "x" ] ; do
-	echo ""
-	echo -n "Is this for a Kippo, Cowrie, or LongTail honeypot (K|k|C|c|L|l): "
-	read HONEYPOT
-	case $HONEYPOT in
-	K|k)
-		HONEYPOT="kippo"
-	;;
-	C|c)
-		HONEYPOT="cowrie"
-	;;
-	L|l)
-		HONEYPOT="longtail"
-	;;
-	*)
-	HONEYPOT="x"
-		echo "Invalid honeypot, please try again"
-	;;
-	esac
-done
+#echo ""
+#HONEYPOT="x"
+#while [ $HONEYPOT == "x" ] ; do
+#	echo ""
+#	echo -n "Is this for a Kippo, Cowrie, or LongTail honeypot (K|k|C|c|L|l): "
+#	read HONEYPOT
+#	case $HONEYPOT in
+#	K|k)
+#		HONEYPOT="kippo"
+#	;;
+#	C|c)
+#		HONEYPOT="cowrie"
+#	;;
+#	L|l)
+#		HONEYPOT="longtail"
+#	;;
+#	*)
+#	HONEYPOT="x"
+#		echo "Invalid honeypot, please try again"
+#	;;
+#	esac
+#done
 
 
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
