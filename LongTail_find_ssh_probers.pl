@@ -67,7 +67,7 @@ sub init {
 	print (OUT "<P>$count IP addresses found that performed ssh login attempts\n");
 	print (OUT_2 "<P>$count IP addresses found that performed ssh login attempts\n");
 
-	`zcat /var/www/html/honey/historical/*/*/*/all_messages.gz |grep discon |awk '{print \$1, \$7}'|sed 's/:\$//'|sort -T /data/tmp >/data/tmp/ssh_disconnect`;
+	`zcat /var/www/html/honey/historical/*/*/*/all_messages.gz |grep discon  |grep -v 'login attempt '|awk '{print \$1, \$7}'|sed 's/:\$//'|sort -T /data/tmp >/data/tmp/ssh_disconnect`;
 
 }
 
