@@ -55,6 +55,13 @@ chdir "..";
 open (OUTPUT, ">$file.$$") || die "Can not open $dir/$file.$$, exiting now\n";;
 while (($password, $date) = each(%password_array)){
 	if (($search_for eq "Usernames" ) || ($search_for eq "IP Addresses")){
+		# This is a hack to cleanup bad input
+		if ($search_for eq "Usernames"){
+			($password,$trash)=split(/ /,$password);
+		}
+		if ($search_for eq "IP Addresses"){
+			($password,$trash)=split(/ /,$password);
+		}
 		print (OUTPUT "<TR><TD>$date&nbsp;</TD><TD>$password_last_seen_array{$password}&nbsp;</TD><TD align=left>$password</TD></TR>\n");
 	}
 	else {
