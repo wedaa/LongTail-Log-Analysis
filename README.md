@@ -59,9 +59,10 @@ as described below.
 
 LongTail is currently for a single server, and up to 10 servers.  
 With 10 active servers the main analysis report program
-(LongTail_analyze_attacks.pl) takes over 36 minutes to run at 
-night with 13 million records. (This will be improved in
- release 2.0)
+(LongTail_analyze_attacks.pl) takes over 7 minutes to run
+a single pass (All hosts together) at 
+night with 21 million records and 8 months of data. (This will be improved in
+ release 2.0).
 
 LongTail ALSO refers to a statistical distribution where there
 are many "Hits" at the left, and tapering down to a "Long Tail"
