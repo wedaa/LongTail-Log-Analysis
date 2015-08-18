@@ -388,7 +388,7 @@ echo "Installing fancybox now"
 echo ""
 
 if [ ! -d /var/www/html/honey/fancybox ] ; then
-		mkdir -p /var/www/html/honey/fancybox
+#		mkdir -p /var/www/html/honey/fancybox
 		unzip fancyapps-fancyBox-v2.1.5-0-ge2248f4.zip 
 		mv fancyapps-fancyBox-18d1712/ /var/www/html/honey/fancybox
 else
