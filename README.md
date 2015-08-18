@@ -58,11 +58,14 @@ LongTail pre-supposes that you have compiled your own openssh daemon
 as described below.
 
 LongTail is currently for a single server, and up to 20 servers.  
-With 15 active servers the main analysis report program
-(LongTail_analyze_attacks.pl) takes over 7 minutes to run
-a single pass (All hosts together) at 
-night with 21 million records and 8 months of data. (This will be improved in
- release 2.0).
+With 15 active servers the main analysis report program (
+LongTail_analyze_attacks.pl) takes over 7 minutes to run a single 
+pass (All hosts together) at night with 21 million records and 8 
+months of data. (This will be improved in release 2.0).  LongTail.sh 
+runs in several minutes for the hourly reports, but takes almost an 
+hour to run at midnight when all the historical reports are run 
+(again, this is with 21 million records and 8 months of data).  
+This will be improved with LongTail 2.0.
 
 LongTail ALSO refers to a statistical distribution where there
 are many "Hits" at the left, and tapering down to a "Long Tail"
@@ -392,10 +395,6 @@ KNOWN ISSUESAND IMPROVEMENTS FOR RELEASE 1.5
 --------------
 
 56) RELEASE 1.5: I need to somehow show slowscans and bot net attacks
-
-60) RELEASE 1.5 (In Progress) I desperately need to optimize the LongTail_analyze_attacks.pl
-script since it takes so long to run
-
 63) RELEASE 1.5: Auto-report attacks to the various IP Abuse websites.
 
 67) RELEASE 1.5: Make a  5 minute "This is LongTail" slideshow explaining the 
@@ -410,8 +409,6 @@ to look at it. (Tour)
 KNOWN ISSUES AND IMPROVEMENTS FOR RELEASE 2.0
 --------------
 
-21) RELEASE 2: NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph 
-of countries attacking.
 
 24) RELEASE 2:  Make a chart/Graph of IP addresses that attack more than 
 one host.
@@ -444,10 +441,6 @@ should probably go somewhere else, but I'm not sure where.
 
 78) RELEASE 2: Attacks by Country should also show the number of attacks 
 by each country.
-
-80) RELEASE 2: LongTail shoul also analyze /var/log/httpd/access_log files
-to analyze the attacks and probes that a webserver is
-subject to.
 
 81) RELEASE 2: (Maybe) "All" graphs, can I color code the amounts by host?
 
@@ -522,6 +515,9 @@ running LongTail on that server also.
 
 20) DONE: (Also fixed everywhere) Does not properly handle spaces in 
 password for account:password pairs
+
+21) DONE: NICE TO HAVE BUT NOT A PRIORITY  Make a pretty graph 
+of countries attacking.
 
 22) DONE: Make a pretty graph of attacks per day over the last 30 days.
 
@@ -631,6 +627,9 @@ that get through the IPS more clearly.
 59) CRITICAL: FIXED There's a bug in the "normalization" code for some of the 
 statistics webpages.
 
+60) DONE: I desperately need to optimize the LongTail_analyze_attacks.pl script since it takes so long to run
+
+
 62) DONE: Cleanup formatting in first seen reports
 
 64) DONE: Can I auto-add a date stamp and website address to my graphics?
@@ -655,6 +654,10 @@ the week doesn't always show up in the right column.
 79) RELEASE 1.5: 30 day Graphics(DONE) should also be image maps so the 
 user can click on a column and get more information about that date,
 Account, or password.
+
+80) DONE: LongTail shoul also analyze /var/log/httpd/access_log files
+to analyze the attacks and probes that a webserver is
+subject to.
 
 83)DONE:  Make a "What do I do to protect myself?" webpage.  Include 
 links to other sites and documents.
