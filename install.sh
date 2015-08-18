@@ -114,7 +114,7 @@ echo "#############################################################"
 echo "Making other dirs now"
 echo ""
 
-OTHER_DIRS="$HTML_DIR/dashboard /usr/local/etc/black_lists /var/www/html/honey-2222 /var/www/html/honey-22 /var/www/html/telnet /var/www/html/ftp /var/www/html/rlogin"
+OTHER_DIRS="$HTML_DIR/dashboard /usr/local/etc/black_lists /var/www/html/honey-2222 /var/www/html/honey-22 /var/www/html/telnet /var/www/html/ftp /var/www/html/rlogin  /var/www/html/honey/bots/ /var/www/html/honey/downloads/"
 
 for dir in $SCRIPT_DIR $HTML_DIR  $DICT_DIR $OTHER_DIRS $BOTS_DIR; do
 	if [ -e $dir ] ; then
