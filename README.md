@@ -57,8 +57,8 @@ particular day's activities.
 LongTail pre-supposes that you have compiled your own openssh daemon 
 as described below.
 
-LongTail is currently for a single server, and up to 10 servers.  
-With 10 active servers the main analysis report program
+LongTail is currently for a single server, and up to 20 servers.  
+With 15 active servers the main analysis report program
 (LongTail_analyze_attacks.pl) takes over 7 minutes to run
 a single pass (All hosts together) at 
 night with 21 million records and 8 months of data. (This will be improved in
@@ -71,12 +71,20 @@ for more details.
 
 New SSHD Installation, The Easy Way
 --------------
-Make sure you have zlib-devel and openssl-devel installed on your
-system (plus make, gcc, etc)
+RHEL -- Make sure you have zlib-devel and openssl-devel installed on your
+system (plus make, gcc, etc).  (The following commands are for 
+RHEL, CentOS, Fedora Core.)
 
 	yum install zlib-devel # For the openssh honeypot
 	yum install openssl-devel # For the openssh honeypot
 	yum install policycoreutils-python # This gives you semanage
+
+BEAGLEBONE BLACK, rev C (Based on Debian Wheezy) -- All the packages 
+required are allready installed on the BeagleBone.
+
+RASPBERRY PI (Based on Debian) -- I don't have a Raspberry Pi 
+to test with.  It "should" work but I don't know what additional packages
+may be required.
 
 The EASY way: Run install_openssh.sh from the repository.  It
 will download openssh, modifiy the appropriate source files,
@@ -187,7 +195,9 @@ to someplace with lots of disk space.  LongTail breaks at
 disk space.
 
 Edit Longtail.sh and LongTail.config for site-specific variables 
-(which are explained in the files).
+(which are explained in the files).  (NOTE: The current release 
+of LongTail does not yet use  the LongTail.config file, but will
+"soon".
 
 Edit LongTail-exclude-accounts.grep to add your valid local 
 accounts.  This will exclude these accounts from your reports.  
