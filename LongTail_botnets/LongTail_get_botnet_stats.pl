@@ -39,6 +39,7 @@ sub init {
 		exit;
 	}
 	$bots_dir_url="honey/bots/";
+	$bots_dir="/var/www/html/honey/bots/";
 	$attacks_dir="/var/www/html/honey/attacks/";
 	$client_data="/var/www/html/honey/clients.data /var/www/html/honey/kippo_clients.data";
 	$download_dir="/var/www/html/honey/downloads/";
@@ -106,6 +107,9 @@ sub pass_1 {
 		if (/total/){next;}
 		if (/2015/){next;}
 		if (/backups/){next;}
+		#if (/big_botnet/){next;}
+		#if (/pink/){next;}
+		#if (/fromage/){next;}
 		if (/.static/){
 			$static=1;
 		}
@@ -132,6 +136,7 @@ sub pass_1 {
 		$attacks=0;
 		$min=999999999;
 		$max=0;
+		open (OUTPUT, ">$bots_dir/$filename.nmap.txt");
 		open (FILE, "$_");
 		unlink ("/tmp/TAG");
 		`echo \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\" > /tmp/TAG`;
@@ -139,6 +144,7 @@ sub pass_1 {
 		$number_of_botnets++;
 		while (<FILE>){
 			chomp;
+#			open (OUTPUT2, "/var/www/
 			$ip=$_;
 			if (/\.\.\./){next;}
 			$number_of_bots++;
@@ -180,6 +186,7 @@ sub pass_1 {
 			close (SUMDATA);
 		}
 		close (FILE);
+		close (OUTPUT);
 		print "\n</div>\n</div>\n";
 
 		`sort /tmp/TAG |uniq >/tmp/TAG.2`;
@@ -246,10 +253,19 @@ sub pass_1 {
 		}
 		`/bin/mv $html_bots_dir/$filename.countries.tmp $html_bots_dir/$filename.countries.txt`;
 		$country_count=`cat $html_bots_dir/$filename.countries.txt |wc -l`;
+
+		# Get NMAP data here
 		
 
 		$tmp=system ("sort $filename.accounts |uniq -c |sort -nr > $filename.accounts.tmp");
+		if ( -e "$html_bots_dir/$filename.accounts.txt" ){ 
+			unlink ("$html_bots_dir/$filename.accounts.txt");
+		}
 		$tmp=system ("/bin/mv $filename.accounts.tmp $html_bots_dir/$filename.accounts.txt");
+		#$tmp=`ls -l $filename.accounts $html_bots_dir/$filename.accounts.txt`;
+		#open (DEBUG, ">>/tmp/LongTail_get_botnet_stats.debug");
+		#print (DEBUG "$tmp\n");
+		#close (DEBUG);
 		$line_count=`cat $html_bots_dir/$filename.accounts.txt |wc -l`;
 		$line_count=&commify($line_count);
 		$average=sprintf("%.2f",$average);
@@ -273,6 +289,7 @@ sub pass_1 {
 		print "<TR><TD>Maximum attack size from $filename</TD><TD> $max\n";
 		print "<TR><TD>Number of accounts tried $filename</TD><TD><a href=\"/$bots_dir_url/$filename.accounts.txt\">$line_count</a>\n";
 		print "<TR><TD>Number of countries in $filename</TD><TD><a href=\"/$bots_dir_url/$filename.countries.txt\">$country_count</a>\n";
+#		print "<TR><TD>NMap data for $filename</TD><TD><a href=\"/$bots_dir_url/$filename.nmap.txt\">nmap</a>\n";
 		print "</TABLE>\n";
 		$total=0;
 		$total_year=0;
