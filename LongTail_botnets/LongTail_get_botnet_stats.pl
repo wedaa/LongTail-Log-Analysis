@@ -64,7 +64,6 @@ sub init {
 	}
 	close (FILE);
 
-
 }
 
 sub print_header {
@@ -136,15 +135,20 @@ sub pass_1 {
 		$attacks=0;
 		$min=999999999;
 		$max=0;
-		open (OUTPUT, ">$bots_dir/$filename.nmap.txt");
-		open (FILE, "$_");
 		unlink ("/tmp/TAG");
 		`echo \"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX\" > /tmp/TAG`;
 		$number_of_bots=0;
 		$number_of_botnets++;
+		open (OUTPUT, ">$bots_dir/$filename.nmap.txt");
+		open (FILE, "$_");
+		#
+		# This loop counts the number of attacks, login attempts, and bots
+		# and creates a file /tmp/TAG containing the md5sums of the attacks
+		#
+		# This loop REALLLLLY needs to be cleaned up to make it faster
+		#
 		while (<FILE>){
 			chomp;
-#			open (OUTPUT2, "/var/www/
 			$ip=$_;
 			if (/\.\.\./){next;}
 			$number_of_bots++;
@@ -159,7 +163,10 @@ sub pass_1 {
 			}
 			open (SUMDATA, "/var/www/html/honey/attacks/sum2.data");	
 			while (<SUMDATA>){
-				if (/$ip/){
+				$line=$_;
+				if (/\Q$ip.\E/){
+#`echo "$line" >>/tmp/FOUND`;
+#print "line is $line\n";
 					($dict,$attack)=split(/ /,$_,2);
 					#/var/www/html/honey/attacks/218.25.54.51.shepherd.1-2015.05.04.12.53.19-04
 					($trash,$date)=split(/-/,$attack);
@@ -202,7 +209,11 @@ sub pass_1 {
 		# until I just happen to catch it.
 	
 		`for pattern in \`cat /tmp/TAG.2\` ; do grep -F \$pattern /var/www/html/honey/attacks/sum2.data_large_attacks; done  |awk '{print \$2}' |sed 's/-..*//'  | awk -F\. '{print \$1,\$2,\$3,\$4}' |sed 's/ /./g' |sort |uniq >/tmp/tag.3`;
-	
+		#
+		# The following line is so I can debug how hosts get 
+		# moved into botnets
+		#
+		`for pattern in \`cat /tmp/TAG.2\` ; do grep -F \$pattern /var/www/html/honey/attacks/sum2.data_large_attacks; done  >/tmp/tag.4`;
 	
 		$DATE= `date +%Y.%m.%d:%H.%M`;
 		`cp $filename $filename.$DATE`;
@@ -210,11 +221,11 @@ sub pass_1 {
 		`sort -u $filename >> $filename.2`;
 		`cp  $filename.2  $filename`;
 		`rm $filename.2`;
-		unlink("/tmp/TAG.2");
-		unlink ("/tmp/tag.3");
+		#commented out so I can look at the file after it runs #unlink("/tmp/TAG.2");
+		#commented out so I can look at the file after it runs #unlink ("/tmp/tag.3");
 	
 		print "\n";
-		$output=`for ip in \`cat $filename\` ; do grep \$ip $client_data; done`;
+		$output=`for ip in \`cat $filename\` ; do grep -F \$ip\. $client_data; done`;
 		$output =~ s/\n/\n<BR>/g;
 		$output =~ s/\/var\/www\/html\/honey\///g;
 		#print "<P>Client software and level:\n<BR>\n";
@@ -254,9 +265,6 @@ sub pass_1 {
 		`/bin/mv $html_bots_dir/$filename.countries.tmp $html_bots_dir/$filename.countries.txt`;
 		$country_count=`cat $html_bots_dir/$filename.countries.txt |wc -l`;
 
-		# Get NMAP data here
-		
-
 		$tmp=system ("sort $filename.accounts |uniq -c |sort -nr > $filename.accounts.tmp");
 		if ( -e "$html_bots_dir/$filename.accounts.txt" ){ 
 			unlink ("$html_bots_dir/$filename.accounts.txt");
@@ -289,11 +297,14 @@ sub pass_1 {
 		print "<TR><TD>Maximum attack size from $filename</TD><TD> $max\n";
 		print "<TR><TD>Number of accounts tried $filename</TD><TD><a href=\"/$bots_dir_url/$filename.accounts.txt\">$line_count</a>\n";
 		print "<TR><TD>Number of countries in $filename</TD><TD><a href=\"/$bots_dir_url/$filename.countries.txt\">$country_count</a>\n";
-#		print "<TR><TD>NMap data for $filename</TD><TD><a href=\"/$bots_dir_url/$filename.nmap.txt\">nmap</a>\n";
+		print "<TR><TD>NMap data (if available)</TD><TD><a href=\"/$bots_dir_url/$filename.nmap.txt\">nmap</a>\n";
+		print "<TR><TD>NMap OS Guess (if available)</TD><TD><a href=\"/$bots_dir_url/$filename.nmap.os.txt\">nmap</a>\n";
 		print "</TABLE>\n";
 		$total=0;
 		$total_year=0;
 		$total_month=0;
+#print "DEBUG - Exiting now while debugging\n";
+#exit;
 	}
 	close (FIND);
 }
@@ -327,6 +338,101 @@ sub pass_2 {
 	}
 	close (FIND);
 }
+
+
+
+###############################################################################
+#
+# Collect NMap data
+#
+
+sub pass_3 {
+	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
+	$number_of_botnets=0;
+	$global_max=0;
+	$global_min=99999;
+	$global_total=0;
+	while (<FIND>){
+		chomp;
+		if (/.sh$/){next;}
+		if (/.pl$/){next;}
+		if (/.html/){next;}
+		if (/.shtml/){next;}
+		if (/.accounts/){next;}
+		if (/typescript/){next;}
+		if (/total/){next;}
+		if (/2015/){next;}
+		if (/backups/){next;}
+		#if (/big_botnet/){next;}
+		#if (/pink/){next;}
+		#if (/china/){next;}
+		#if (/15-/){next;}
+		#if (/fromage/){next;}
+		if (/.static/){
+			$static=1;
+		}
+		else {
+			$static=0;
+		}
+		$filename=$_;
+		$filename=~ s/\.\///;
+		open (OUTPUT, ">$bots_dir/$filename.nmap.txt");
+		print (OUTPUT "==================================================================\n");
+		print (OUTPUT "Botnet $filename\n");
+		open (OUTPUT2, ">$bots_dir/$filename.nmap.os.txt");
+		print (OUTPUT2 "==================================================================\n");
+		print (OUTPUT2 "Botnet $filename\n");
+#print "DEBUG botnet is $filename\n";
+		open (FILE, "$_");
+		$print_ports=0;
+		while (<FILE>){
+#print "DEBUG looking for ip $_";
+			chomp;
+			$ip=$_;
+			if (/\.\.\./){next;}
+			open (FIND2, "find /usr/local/etc/nmap -name '$ip-*'|sort | ");
+			print (OUTPUT "+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+			print (OUTPUT "Looking for IP Address $ip\n");
+			print (OUTPUT2 "+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
+			print (OUTPUT2 "Looking for IP Address $ip\n");
+			while (<FIND2>){
+#print "DEBUG nmap file is $_\n";
+				print (OUTPUT "======================================\n");
+				print (OUTPUT $_);
+				print (OUTPUT2 "======================================\n");
+				print (OUTPUT2 $_);
+
+				open (FILE2, $_);
+				while (<FILE2>){
+					if (/Discovered open port/){next;}
+					if (/Aggressive OS guesses/){print(OUTPUT $_);next;}
+					if (/Service Info: OS/){print(OUTPUT $_);next;}
+					if (/^OS CPE/){print(OUTPUT $_);print (OUTPUT2 $_); next;}
+					if (/No exact OS matches for host/){print(OUTPUT $_);print (OUTPUT2 $_); next;}
+					if (/OS: /){print(OUTPUT $_);print (OUTPUT2 $_); next;}
+					if (/NetBIOS computer name/){print(OUTPUT $_);print (OUTPUT2 $_); next;}
+
+					if (/open port/){print(OUTPUT $_);}
+					if (/^PORT/){ 
+						$print_ports=1;
+						print (OUTPUT "\n$_");next;
+					}	
+					if (/^TRACEROUTE/){ $print_ports=0;next;}	
+					if ((/^\d/) && ( $print_ports ==1)){print(OUTPUT $_);next;}
+				}
+				close (FILE2);
+				
+			}
+			close (FIND2);
+		}
+		close (FILE);
+		close (OUTPUT);
+		close (OUTPUT2);
+	}
+	close (FIND);
+}
+
+
 sub print_footer {
 	if ($global_attacks>0){
 		$average=$global_total/$global_attacks;
@@ -356,5 +462,6 @@ sub print_footer {
 &print_header ;
 &pass_1 ;
 &pass_2 ;
+&pass_3 ;
 &print_footer ;
 
