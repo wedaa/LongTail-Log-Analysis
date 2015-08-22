@@ -91,7 +91,7 @@ print_header "/var/www/html/honey/IPs_looking_for_passwords-last-seen.shtml" ;
 
 /usr/local/etc/catall.sh  /var/log/httpd/access_log*  /var/log/httpd/access_log|\
 egrep -v ~148.100\|^10\. |\
-egrep -v 'GET /honey/LongTail.css'\|'GET /honey/buttons.css'\|'GET /favicon.ico'\|'GET / HTTP'\|'dict\-'\|'GET /robots.txt'\|'GET /honey/ HTTP'\|'GET // '\|^148\|^10\|^173\|71.107.60.174\|74.120.64.243\|70.209.143\|70.209.129\|74.105.128\|70.209\|70.193.209\|google\|bing\|crawl\|bot  > /data/tmp/access_log_combined 
+egrep -v 'GET /honey/LongTail.css'\|'GET /honey/buttons.css'\|'GET /favicon.ico'\|'GET / HTTP'\|'dict\-'\|'GET /robots.txt'\|'GET /honey/ HTTP'\|'GET // '\|^148\|^10\|^173\|71.107.60.174\|74.120.64.243\|70.209.143\|70.209.129\|74.105.128\|70.209\|70.193.209\|google\|bing\|crawl\|bot\|baidu.com  > /data/tmp/access_log_combined 
 
 cat /data/tmp/access_log_combined |\
 	grep \ 403\  |\
