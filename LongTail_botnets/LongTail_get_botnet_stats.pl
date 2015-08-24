@@ -230,7 +230,7 @@ sub pass_1 {
 		$output =~ s/\n/\n<BR>/g;
 		$output =~ s/\/var\/www\/html\/honey\///g;
 		#print "<P>Client software and level:\n<BR>\n";
-		print "<BR>href=\"/$bots_dir_url/$filename.lifespan.shtml\">Lifetimes of IPs in $filename</a>\n";
+		print "<BR><a href=\"/$bots_dir_url/$filename.lifespan.shtml\">Lifetimes of IPs in $filename</a>\n";
 		print "<BR><a href=\"#divclient$filename\" class=\"various\">Client software and level</a> \n";
 		print "<div style=\"display:none\"> \n";
 		print "<div id=\"divclient$filename\"> \n";
@@ -512,7 +512,8 @@ print "DEBUG writing to $bots_dir/$filename.lifespan.shtml\n";
 		open (OUTPUT, ">$bots_dir/$filename.lifespan_last.shtml"); print (OUTPUT $header); close (OUTPUT);
 		open (OUTPUT, ">$bots_dir/$filename.lifespan_number.shtml"); print (OUTPUT $header); close (OUTPUT);
 		
-		`cat $filename |cat big_botnet |sed 's/^/<TD>/' |sed 's/\$/</' > $filename.sed.out`;
+		#`cat $filename |cat big_botnet |sed 's/^/<TD>/' |sed 's/\$/</' > $filename.sed.out`;
+		`cat $filename |sed 's/^/<TD>/' |sed 's/\$/</' > $filename.sed.out`;
 		#works `cat $filename |cat big_botnet |sed 's/^/<TD>/' >$filename.sed.out`;
 
 		`grep -F -f $filename.sed.out /var/www/html/honey/current_attackers_lifespan_botnet.shtml >> $bots_dir/$filename.lifespan_botnet.shtml`;
