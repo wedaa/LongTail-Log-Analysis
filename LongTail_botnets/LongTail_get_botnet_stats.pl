@@ -105,6 +105,7 @@ sub pass_1 {
 		if (/typescript/){next;}
 		if (/total/){next;}
 		if (/2015/){next;}
+		if (/sed.out/){next;}
 		if (/backups/){next;}
 		#if (/big_botnet/){next;}
 		#if (/pink/){next;}
@@ -229,6 +230,7 @@ sub pass_1 {
 		$output =~ s/\n/\n<BR>/g;
 		$output =~ s/\/var\/www\/html\/honey\///g;
 		#print "<P>Client software and level:\n<BR>\n";
+		print "<BR>href=\"/$bots_dir_url/$filename.lifespan.shtml\">Lifetimes of IPs in $filename</a>\n";
 		print "<BR><a href=\"#divclient$filename\" class=\"various\">Client software and level</a> \n";
 		print "<div style=\"display:none\"> \n";
 		print "<div id=\"divclient$filename\"> \n";
@@ -326,6 +328,7 @@ sub pass_2 {
 		if (/typescript/){next;}
 		if (/total/){next;}
 		if (/2015/){next;}
+		if (/sed.out/){next;}
 		if (/backups/){next;}
 		if (/.static/){
 			$static=1;
@@ -362,6 +365,7 @@ sub pass_3 {
 		if (/typescript/){next;}
 		if (/total/){next;}
 		if (/2015/){next;}
+		if (/sed.out/){next;}
 		if (/backups/){next;}
 		#if (/big_botnet/){next;}
 		#if (/pink/){next;}
@@ -433,6 +437,97 @@ sub pass_3 {
 }
 
 
+###############################################################################
+#
+# Collect IP Lifetime data
+# 
+# current_attackers_lifespan_botnet.shtml
+# current_attackers_lifespan_first.shtml
+# current_attackers_lifespan_ip.shtml
+# current_attackers_lifespan_last.shtml
+# current_attackers_lifespan_number.shtml
+# current_attackers_lifespan.shtml
+
+#
+
+sub pass_4 {
+	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
+	$number_of_botnets=0;
+	$global_max=0;
+	$global_min=99999;
+	$global_total=0;
+	while (<FIND>){
+		chomp;
+		if (/.sh$/){next;}
+		if (/.pl$/){next;}
+		if (/.html/){next;}
+		if (/.shtml/){next;}
+		if (/.accounts/){next;}
+		if (/typescript/){next;}
+		if (/total/){next;}
+		if (/2015/){next;}
+		if (/sed.out/){next;}
+		if (/backups/){next;}
+		#if (/big_botnet/){next;}
+		#if (/pink/){next;}
+		#if (/china/){next;}
+		#if (/15-/){next;}
+		#if (/fromage/){next;}
+		if (/.static/){
+			$static=1;
+		}
+		else {
+			$static=0;
+		}
+		$filename=$_;
+		$filename=~ s/\.\///;
+print "DEBUG looking for $filename\n";
+$header="
+<HTML>
+<HEAD>
+<TITLE>LongTail Log Analysis Attackers Lifespan</TITLE>
+</HEAD>
+<BODY bgcolor=#00f0FF>
+<link rel=\"stylesheet\" type=\"text/css\" href=\"/honey/LongTail.css\"> 
+<!--#include virtual=\"/honey/header.html\" --> 
+<H1>LongTail Log Analysis Attackers Lifespan</H1>
+<P>This page is updated daily.
+<P>Last updated on Sun Aug 23 17:45:01 EDT 2015
+
+<P>Click the header to sort on that column
+<TABLE border=1>
+<TR>
+<TH><a href=\"/honey/bots/".$filename.".lifespan_ip.shtml\">IP</a></TH>
+<TH><a href=\"/honey/bots/".$filename.".lifespan.shtml\">Lifetime In Days</a></TH>
+<TH><a href=\"/honey/bots/".$filename.".lifespan_botnet.shtml\">Botnet</a></TH>
+<TH><a href=\"/honey/bots/".$filename.".lifespan_first.shtml\">First Date Seen</a></TH>
+<TH><a href=\"/honey/bots/".$filename.".lifespan_last.shtml\">Last Date Seen</a></TH>
+<TH><a href=\"/honey/bots/".$filename.".lifespan_number.shtml\">Number of Attack<BR>Patterns Recorded</a></TH></TR>
+"; 
+print "DEBUG writing to $bots_dir/$filename.lifespan.shtml\n";
+		open (OUTPUT, ">$bots_dir/$filename.lifespan.shtml"); print (OUTPUT $header); close (OUTPUT);
+		open (OUTPUT, ">$bots_dir/$filename.lifespan_ip.shtml"); print (OUTPUT $header); close (OUTPUT);
+		open (OUTPUT, ">$bots_dir/$filename.lifespan_botnet.shtml"); print (OUTPUT $header); close (OUTPUT);
+		open (OUTPUT, ">$bots_dir/$filename.lifespan_first.shtml"); print (OUTPUT $header); close (OUTPUT);
+		open (OUTPUT, ">$bots_dir/$filename.lifespan_last.shtml"); print (OUTPUT $header); close (OUTPUT);
+		open (OUTPUT, ">$bots_dir/$filename.lifespan_number.shtml"); print (OUTPUT $header); close (OUTPUT);
+		
+		`cat $filename |cat big_botnet |sed 's/^/<TD>/' |sed 's/\$/</' > $filename.sed.out`;
+		#works `cat $filename |cat big_botnet |sed 's/^/<TD>/' >$filename.sed.out`;
+
+		`grep -F -f $filename.sed.out /var/www/html/honey/current_attackers_lifespan_botnet.shtml >> $bots_dir/$filename.lifespan_botnet.shtml`;
+		`grep -F -f $filename.sed.out /var/www/html/honey/current_attackers_lifespan_first.shtml >> $bots_dir/$filename.lifespan_first.shtml`;
+		`grep -F -f $filename.sed.out /var/www/html/honey/current_attackers_lifespan_ip.shtml >> $bots_dir/$filename.lifespan_ip.shtml`;
+		`grep -F -f $filename.sed.out /var/www/html/honey/current_attackers_lifespan_last.shtml >> $bots_dir/$filename.lifespan_last.shtml`;
+		`grep -F -f $filename.sed.out /var/www/html/honey/current_attackers_lifespan_number.shtml >> $bots_dir/$filename.lifespan_number.shtml`;
+		`grep -F -f $filename.sed.out /var/www/html/honey/current_attackers_lifespan.shtml >> $bots_dir/$filename.lifespan.shtml`;
+
+		$print_ports=0;
+		unlink ("$filename.sed.out");
+	}
+	close (FIND);
+}
+
 sub print_footer {
 	if ($global_attacks>0){
 		$average=$global_total/$global_attacks;
@@ -463,5 +558,6 @@ sub print_footer {
 &pass_1 ;
 &pass_2 ;
 &pass_3 ;
+&pass_4;
 &print_footer ;
 
