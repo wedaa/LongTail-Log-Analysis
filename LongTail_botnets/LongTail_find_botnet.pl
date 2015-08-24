@@ -46,6 +46,7 @@ sub pass_1{
 	`for pattern in \`cat /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses\` ; do  grep -vF \$pattern /var/www/html/honey/attacks/not_in_a_botnet.data > /var/www/html/honey/attacks/not_in_a_botnet.data.2; mv /var/www/html/honey/attacks/not_in_a_botnet.data.2 /var/www/html/honey/attacks/not_in_a_botnet.data; done`;
 	`for pattern in \`cat /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses\` ; do  grep -vF \$pattern /var/www/html/honey/attacks/not_in_a_botnet.data > /var/www/html/honey/attacks/not_in_a_botnet.data.2; mv /var/www/html/honey/attacks/not_in_a_botnet.data.2 /var/www/html/honey/attacks/not_in_a_botnet.data; done`;
 	`for pattern in \`cat /usr/local/etc/LongTail_sshPsycho_IP_addresses\` ; do  grep -vF \$pattern /var/www/html/honey/attacks/not_in_a_botnet.data > /var/www/html/honey/attacks/not_in_a_botnet.data.2; mv /var/www/html/honey/attacks/not_in_a_botnet.data.2 /var/www/html/honey/attacks/not_in_a_botnet.data; done`;
+	`for pattern in \`cat /usr/local/etc/LongTail_sshPsycho_2_IP_addresses\` ; do  grep -vF \$pattern /var/www/html/honey/attacks/not_in_a_botnet.data > /var/www/html/honey/attacks/not_in_a_botnet.data.2; mv /var/www/html/honey/attacks/not_in_a_botnet.data.2 /var/www/html/honey/attacks/not_in_a_botnet.data; done`;
 }
 
 
@@ -101,14 +102,14 @@ sub pass_3{
 			if ($ip_count >1){
 				print "$string"; #OK, we're done, print the string
 				while ( -e  "$botnet_date-botnet-$botnet_count" ){$botnet_count++;}
-#				open (BOTNET_FILE, ">$botnet_date-botnet-$botnet_count");
+				open (BOTNET_FILE, ">$botnet_date-botnet-$botnet_count");
 				$ip_string=$string;
 				$ip_string =~ s/^\n//;
 				$ip_string =~ s/^..*  //;
 				$ip_string =~ s/ /\n/g;
-				print ("$ip_string\n");
-#				print (BOTNET_FILE "$ip_string\n");
-#				close (BOTNET_FILE);
+				#print ("$ip_string\n");
+				print (BOTNET_FILE "$ip_string\n");
+				close (BOTNET_FILE);
 				$botnet_count++;
 			}
 			$last_dict=$dict;
