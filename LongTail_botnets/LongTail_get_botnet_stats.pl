@@ -107,7 +107,7 @@ sub pass_1 {
 		if (/2015/){next;}
 		if (/sed.out/){next;}
 		if (/backups/){next;}
-		#if (/big_botnet/){next;}
+		if (/big_botnet/){next;}
 		#if (/pink/){next;}
 		#if (/fromage/){next;}
 		if (/.static/){
@@ -165,13 +165,19 @@ sub pass_1 {
 			open (SUMDATA, "/var/www/html/honey/attacks/sum2.data");	
 			while (<SUMDATA>){
 				$line=$_;
-				if (/\Q$ip.\E/){
+				if (/\Q $ip.\E/){ #2014-08-25 added the space to terminate the start of the IP address
 #`echo "$line" >>/tmp/FOUND`;
 #print "line is $line\n";
 					($dict,$attack)=split(/ /,$_,2);
 					#/var/www/html/honey/attacks/218.25.54.51.shepherd.1-2015.05.04.12.53.19-04
 					($trash,$date)=split(/-/,$attack);
 					$wc=`cat /var/www/html/honey/attacks/dict-$dict.txt.wc`;
+					#open (CAT_FILE, "/var/www/html/honey/attacks/dict-$dict.txt.wc");
+					#while (<CAT_FILE>){
+					#	chomp;
+					#	$wc=$_;
+					#}
+					#close (CAT_FILE);
 					# These are patterns to search for from other IP addresses
 					if (($wc > 3) && ($static == 0)){
 						`echo $dict >>/tmp/TAG`;
@@ -226,7 +232,9 @@ sub pass_1 {
 		#commented out so I can look at the file after it runs #unlink ("/tmp/tag.3");
 	
 		print "\n";
-		$output=`for ip in \`cat $filename\` ; do grep -F \$ip\. $client_data; done`;
+		#$output=`for ip in \`cat $filename\` ; do grep -F \$ip  $client_data; done`;
+		$output=`for ip in \`cat $filename | sed 's/\\./\\\\\\./g' \` ; do grep  ^\$ip\   $client_data; done`;
+
 		$output =~ s/\n/\n<BR>/g;
 		$output =~ s/\/var\/www\/html\/honey\///g;
 		#print "<P>Client software and level:\n<BR>\n";
