@@ -107,7 +107,7 @@ sub pass_1 {
 		if (/2015/){next;}
 		if (/sed.out/){next;}
 		if (/backups/){next;}
-		if (/big_botnet/){next;}
+		#if (/big_botnet/){next;}
 		#if (/pink/){next;}
 		#if (/fromage/){next;}
 		if (/.static/){
@@ -359,10 +359,6 @@ sub pass_2 {
 
 sub pass_3 {
 	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
-	$number_of_botnets=0;
-	$global_max=0;
-	$global_min=99999;
-	$global_total=0;
 	while (<FIND>){
 		chomp;
 		if (/.sh$/){next;}
@@ -460,10 +456,6 @@ sub pass_3 {
 
 sub pass_4 {
 	open (FIND, "find . -type f -print|xargs wc -l |sort -nr |awk '{print \$2}' |") || die "Can not run find command\n";
-	$number_of_botnets=0;
-	$global_max=0;
-	$global_min=99999;
-	$global_total=0;
 	while (<FIND>){
 		chomp;
 		if (/.sh$/){next;}
@@ -489,7 +481,7 @@ sub pass_4 {
 		}
 		$filename=$_;
 		$filename=~ s/\.\///;
-print "DEBUG looking for $filename\n";
+#print "DEBUG looking for $filename\n";
 $header="
 <HTML>
 <HEAD>
@@ -512,7 +504,7 @@ $header="
 <TH><a href=\"/honey/bots/".$filename.".lifespan_last.shtml\">Last Date Seen</a></TH>
 <TH><a href=\"/honey/bots/".$filename.".lifespan_number.shtml\">Number of Attack<BR>Patterns Recorded</a></TH></TR>
 "; 
-print "DEBUG writing to $bots_dir/$filename.lifespan.shtml\n";
+#print "DEBUG writing to $bots_dir/$filename.lifespan.shtml\n";
 		open (OUTPUT, ">$bots_dir/$filename.lifespan.shtml"); print (OUTPUT $header); close (OUTPUT);
 		open (OUTPUT, ">$bots_dir/$filename.lifespan_ip.shtml"); print (OUTPUT $header); close (OUTPUT);
 		open (OUTPUT, ">$bots_dir/$filename.lifespan_botnet.shtml"); print (OUTPUT $header); close (OUTPUT);
