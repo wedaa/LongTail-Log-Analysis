@@ -99,7 +99,7 @@ sub pass_1b {
 		print "<H3>SSHPsycho-2 Numbers For Today</H3>\n";
 		print "<p>Total attacks so far today:  $total\n";
 		print "<p>Total SSHPsycho-2 attacks so far today: $sshpsycho2\n";
-		print "<P>Percent of all attacks today that were from SSHPsycho: $percentage\n";
+		print "<P>Percent of all attacks today that were from SSHPsycho-2: $percentage\n";
 	}
 }
 
@@ -112,7 +112,8 @@ sub pass_2 {
 	
 	print "<H3>Friends of SSHPsycho</H3>\n";
 	print "These IP Addresses are using the exact same attacks as SSHPsycho or as other friends of sshPsycho\n";
-	print "<TABLE><TH>Number Of Lines<BR>In Attack Pattern</TH><TH>Checksum Of Attack Pattern</TH><TH>IP Address</TH><TH>Country</TH><TH>Host<BR>Attacked</TH><TH>Date Of Attack</TH></TR>\n";
+	# Attack Pattern
+#print "<TABLE><TH>Number Of Lines<BR>In Attack Pattern</TH><TH>Checksum Of Attack Pattern</TH><TH>IP Address</TH><TH>Country</TH><TH>Host<BR>Attacked</TH><TH>Date Of Attack</TH></TR>\n";
 
 	open (FILE, "/tmp/sshpsycho.$$-2");
 	open (OUTPUT_FILE, "> /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses.tmp");
@@ -142,7 +143,8 @@ sub pass_2 {
 		$country=$country_code{$country};
 
 		if ($wc >9 ){
-			print "<TR><TD>$wc</TD><TD> $checksum</TD><TD>$ip1.$ip2.$ip3.$ip4</TD><TD>$country</TD><TD>$host</TD><TD>$year-$month-$day $hour:$minute</TD>\n";
+			#print "<TR><TD>$wc</TD><TD> $checksum</TD><TD>$ip1.$ip2.$ip3.$ip4</TD><TD>$country</TD><TD>$host</TD><TD>$year-$month-$day $hour:$minute</TD>\n";
+			print "$ip1.$ip2.$ip3.$ip4 ";
 			print (OUTPUT_FILE "$ip1.$ip2.$ip3.$ip4\n");
 		}
 	}
@@ -151,7 +153,7 @@ sub pass_2 {
 	`cat /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses >> /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses.tmp`;
 	`sort -u /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses.tmp > /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses`;
 #	`echo 43.229.52 >> /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses`;
-	print "</TABLE>\n";
+#	print "</TABLE>\n";
 	
 	unlink ("/tmp/sshpsycho.$$");
 	unlink ("/tmp/sshpsycho.$$-2");
@@ -251,6 +253,34 @@ sub pass_5 {
 	unlink ("/tmp/LongTail_associates");
 }
 
+sub pass_6 {
+}
+
+print "\n";
+print "<P>sshPsycho accounts tried\n";
+print "<PRE>\n";
+system ("for ip in `cat /usr/local/etc/LongTail_sshPsycho_IP_addresses ` ;do cat /var/www/html/honey/attacks/\$ip.*; done | awk '{print \$1}'| sort |uniq -c");
+print "</PRE>\n";
+
+print "\n";
+print "<P>sshPsycho_2 accounts tried\n";
+print "<PRE>\n";
+system ("for ip in `cat /usr/local/etc/LongTail_sshPsycho_2_IP_addresses ` ;do cat /var/www/html/honey/attacks/\$ip.*; done | awk '{print \$1}'| sort |uniq -c");
+print "</PRE>\n";
+
+print "\n";
+print "<P>sshPsycho friends accounts tried\n";
+print "<PRE>\n";
+system ("for ip in `cat /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses ` ;do cat /var/www/html/honey/attacks/\$ip.*; done | awk '{print \$1}'| sort |uniq -c");
+print "</PRE>\n";
+
+print "\n";
+print "<P>sshPsycho associates accounts tried\n";
+print "<PRE>\n";
+system ("for ip in `cat /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses ` ;do cat /var/www/html/honey/attacks/\$ip.*; done | awk '{print \$1}'| sort |uniq -c");
+print "</PRE>\n";
+
+
 &init;
 #$date=`date`;print "DEBUG pass1 at $date \n";
 &pass_1;
@@ -265,6 +295,7 @@ sub pass_5 {
 #$date=`date`;print "DEBUG pass5 at $date \n";
 &pass_5; 
 #$date=`date`;print "DEBUG done at $date\n";
+&pass_6; # accounts
 if ( -e "/tmp/sshpsycho.$$"){ unlink ("/tmp/sshpsycho.$$");}
 if ( -e "/tmp/sshpsycho.$$-2"){unlink ("/tmp/sshpsycho.$$-2");}
 if ( -e "/tmp/sshPsycho.$$"){ unlink ("/tmp/sshPsycho.$$");}
