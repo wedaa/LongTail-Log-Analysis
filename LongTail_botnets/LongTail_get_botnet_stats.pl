@@ -482,6 +482,7 @@ sub pass_4 {
 		$filename=$_;
 		$filename=~ s/\.\///;
 #print "DEBUG looking for $filename\n";
+$tmp_date=`date`;
 $header="
 <HTML>
 <HEAD>
@@ -492,7 +493,7 @@ $header="
 <!--#include virtual=\"/honey/header.html\" --> 
 <H1>LongTail Log Analysis Attackers Lifespan</H1>
 <P>This page is updated daily.
-<P>Last updated on Sun Aug 23 17:45:01 EDT 2015
+<P>Last updated on $tmp_date
 
 <P>Click the header to sort on that column
 <TABLE border=1>
