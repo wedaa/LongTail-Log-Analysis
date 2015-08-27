@@ -22,7 +22,7 @@ print "
 
       function drawRegionsMap() {
         var data = google.visualization.arrayToDataTable([
-          ['Country', 'Attacks', 'IP Addresses'],
+          ['Country', 'Login Attempts', 'IP Addresses'],
 
 ";
 
