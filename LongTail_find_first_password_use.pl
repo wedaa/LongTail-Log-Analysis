@@ -8,28 +8,28 @@ if (! defined ($search_for)){
 	exit;
 }
 
-chdir "/var/www/html/honey/historical";
-
+chdir "/var/www/html/honey/historical" || die "Can not chdir to /var/www/html/honey/historical, this is bad\n";;
+ 
 open (FIND_YEAR, "ls |") || die "Can not run ls is /var/www/html/honey/historical, exiting now\n";
 while (<FIND_YEAR>){
 	chomp;
 	$year=$_;
 	#print "year is $year, ";
-	chdir $year;
+	chdir $year || die "Can not chdir to /var/www/html/honey/historical/$year, this is bad\n";;;
 
 	open (FIND_MONTH, "ls |") || die "Can not run ls is /var/www/html/honey/historical/$year, exiting now\n";;
 	while (<FIND_MONTH>){
 		chomp;
 		$month=$_;
 		#print "month is $month, ";
-		chdir $month;
+		chdir $month || die "Can not chdir to /var/www/html/honey/historical/$year/$month, this is bad\n";;;
 
 		open (FIND_DAY, "ls |") || die "Can not run ls is /var/www/html/honey/historical/$year/$month, exiting now\n";;
 		while (<FIND_DAY>){
 			chomp;
 			$day=$_;
 			#print "day is $day\n";
-			chdir $day;
+			chdir $day || die "Can not chdir to /var/www/html/honey/historical/$year/$month/$day, this is bad\n";;;
 			if ( -e $file){
 				open (FILE, $file) || die "Can not open file $file in /var/www/html/honey/historical/$year/$month/$day, exiting now\n";;
 				while (<FILE>){
