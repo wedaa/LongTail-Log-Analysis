@@ -398,7 +398,7 @@ sub pass_3 {
 			chomp;
 			$ip=$_;
 			if (/\.\.\./){next;}
-			open (FIND2, "find /usr/local/etc/nmap -name '$ip-*'|sort | ");
+			open (FIND2, "find /usr/local/etc/nmap -name '$ip-*' -o -name '$ip.*' |sort | ");
 			print (OUTPUT "+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
 			print (OUTPUT "Looking for IP Address $ip\n");
 			print (OUTPUT2 "+++++++++++++++++++++++++++++++++++++++++++++++++++++\n");
