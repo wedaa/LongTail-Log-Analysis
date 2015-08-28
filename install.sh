@@ -221,6 +221,7 @@ LongTail_analyze_attacks.pl \
 catall.sh \
 LongTail_add_country_to_ip.pl \
 LongTail.sh \
+LongTail_nmap_hosts.sh \
 LongTail_make_graph_sshpsycho.php \
 LongTail_friends_of_sshPsycho_IP_addresses \
 LongTail_sshPsycho_IP_addresses \
