@@ -1,0 +1,18 @@
+<!--#include virtual="/honey/header_head.html" -->
+<!--#include virtual="/honey/header_fancybox.html" -->
+<!--#include virtual="/honey/header_body.html" -->
+<H3>BETA-BotNet Analysis</H3>
+<P>BETA-BotNet analysis under development.
+
+<P>BotNet analysis has not yet been run on this server.
+
+<P>If you own this server, please wait at least one day 
+as you gather attack patterns (via /usr/local/etc/LongTail_analyze_attacks.pl)
+before you run:
+<PRE>
+/usr/local/etc/LongTail_botnets/LongTail_find_botnet.pl
+/usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl 
+<PRE>
+
+<!--#include virtual="/honey/footer.html" -->
+
