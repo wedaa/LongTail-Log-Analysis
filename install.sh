@@ -6,7 +6,7 @@ echo "You need to edit this file for OWNER."
 echo ""
 echo "And then comment out the exit statement"
 
-#exit
+exit
 
 OWNER="wedaa" # What is the owner of the process running LongTail?
 
@@ -263,6 +263,7 @@ echo "Copying assorted html files now"
 echo ""
 HTML_FILES="ip_addresses.shtml \
 index.shtml \
+botnet.shtml \
 last-30-days-map.html \
 current-map.html \
 index-long.shtml \
