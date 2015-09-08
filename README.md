@@ -86,6 +86,7 @@ BEAGLEBONE BLACK, rev C (Based on Debian Wheezy) -- All the packages
 required are allready installed on the BeagleBone.
 
 RASPBERRY PI (Based on Debian) -- I'm working on this.
+
 	apt-get install libssl-dev
 
 The EASY way: Run install_openssh.sh from the repository.  It
