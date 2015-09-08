@@ -85,9 +85,8 @@ RHEL, CentOS, Fedora Core.)
 BEAGLEBONE BLACK, rev C (Based on Debian Wheezy) -- All the packages 
 required are allready installed on the BeagleBone.
 
-RASPBERRY PI (Based on Debian) -- I don't have a Raspberry Pi 
-to test with.  It "should" work but I don't know what additional packages
-may be required.
+RASPBERRY PI (Based on Debian) -- I'm working on this.
+	apt-get install libssl-dev
 
 The EASY way: Run install_openssh.sh from the repository.  It
 will download openssh, modifiy the appropriate source files,
