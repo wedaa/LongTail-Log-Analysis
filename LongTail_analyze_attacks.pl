@@ -327,6 +327,8 @@ sub make_md5_checksums{
 	# attack being previously recorded.
 	#
 	system ("ls |grep - |grep -v dict |grep -v sshpsycho |xargs md5sum |sort -T $TMP_DIRECTORY -n |uniq   > sum2.data");
+	# sum2.data.wc is used by /usr/local/etc/bots/LongTail_get_botnet_stats.pl
+	# Nope, not being used yet. #system ("ls |grep - |grep -v dict |grep -v sshpsycho |xargs wc -l |grep -v \ total > sum2.data.wc");
 
 	if ($DEBUG){print "Trying md5sum for multiple attacks  now\n";}
 	system ("cat sum2.data |sort -T $TMP_DIRECTORY -nr |awk \'{print \$1}\' |uniq -c |grep -v '  1 '> sum.data");

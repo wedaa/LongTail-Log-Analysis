@@ -102,6 +102,32 @@ function lock_down_files {
 	fi
 
 }
+############################################################################
+#
+# Make sure paths really exist
+function check_config {
+	if [ ! -d $PATH_TO_VAR_LOG ] ; then
+		echo "$PATH_TO_VAR_LOG does not exist, exiting now"
+		exit
+	fi
+	if [ ! -e $PATH_TO_VAR_LOG/$LOGFILE ] ; then
+		echo "$PATH_TO_VAR_LOG/$LOGFILE does not exist, exiting now"
+		exit
+	fi
+	if [ ! -d $PATH_TO_VAR_LOG_HTTPD ] ; then
+		echo "$PATH_TO_VAR_LOG_HTTPD does not exist, exiting now"
+		exit
+	fi
+	if [ ! -d $SCRIPT_DIR ] ; then
+		echo "Can not find SCRIPT_DIR: $SCRIPT_DIR, exiting now"
+		exit
+	fi
+	if [ ! -d $HTML_DIR ] ; then
+		echo "Can not find HTML_DIR: $HTML_DIR, exiting now"
+		exit
+	fi
+
+}
 
 ############################################################################
 # Assorted Variables, you should probably edit /usr/local/etc/LongTail.config
@@ -122,26 +148,14 @@ function init_variables {
 	#PATH_TO_VAR_LOG="/usr/local/kippo-master/log/" # One place for kippo
 	#PATH_TO_VAR_LOG="/var/log/kippo/" # another place for kippo
 
-	if [ ! -d $PATH_TO_VAR_LOG ] ; then
-		echo "$PATH_TO_VAR_LOG does not exist, exiting now"
-		exit
-	fi
 
 	# What is the name of the default log file
 	LOGFILE="messages"
 	#LOGFILE="kippo.log"
 	
-	if [ ! -e $PATH_TO_VAR_LOG/$LOGFILE ] ; then
-		echo "$PATH_TO_VAR_LOG/$LOGFILE does not exist, exiting now"
-		exit
-	fi
 	
 	#Where is the apache access_log file?
 	PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/"
-	if [ ! -d $PATH_TO_VAR_LOG_HTTPD ] ; then
-		echo "$PATH_TO_VAR_LOG_HTTPD does not exist, exiting now"
-		exit
-	fi
 
 	# Do you want debug output?  Set this to 1
 	DEBUG=0
@@ -174,17 +188,9 @@ function init_variables {
 	
 	# Where are the scripts we need to run?
 	SCRIPT_DIR="/usr/local/etc/"
-	if [ ! -d $SCRIPT_DIR ] ; then
-		echo "Can not find SCRIPT_DIR: $SCRIPT_DIR, exiting now"
-		exit
-	fi
 	
 	# Where do we put the reports?
 	HTML_DIR="/var/www/html"
-	if [ ! -d $HTML_DIR ] ; then
-		echo "Can not find HTML_DIR: $HTML_DIR, exiting now"
-		exit
-	fi
 	# What's the top level directory?
 	SSH_HTML_TOP_DIR="honey" #NO slashes please, it breaks sed
 	SSH22_HTML_TOP_DIR="honey-22" #NO slashes please, it breaks sed
@@ -1107,7 +1113,7 @@ function todays_assorted_stats {
 	#
 	# TODAY
 	#
-	ls -l $TMP_HTML_DIR/$file
+	#ls -l $TMP_HTML_DIR/$file
 	if [ -e $TMP_HTML_DIR/$file ] ; then
 		TODAY=`cat $TMP_HTML_DIR/$file`
 	else
@@ -1286,7 +1292,7 @@ function todays_assorted_stats {
 	# Normalized data
 	#
 	if [ "x$HOSTNAME" == "x" ] ;then
-		echo -n  "IN Normalized data, no hostname set" ; date
+		echo -n  "IN Normalized data, no hostname set " ; date
 		# I have no idea where this breaks, but it's a big-ass number of files
 		cd $HTML_DIR
 		# OK, this may not be 100% secure, but it's close enough for now
@@ -1298,7 +1304,7 @@ function todays_assorted_stats {
 		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
 		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
 	else
-		echo -n "IN Normalized data, hostname was set" ; date
+		echo -n "IN Normalized data, hostname was set " ; date
 		# I have no idea where this breaks, but it's a big-ass number of files
 		cd $HTML_DIR
 		# OK, this may not be 100% secure, but it's close enough for now
@@ -1383,7 +1389,7 @@ function ssh_attacks {
 		echo "hostname is not set"
 echo "PROTOCOL is $PROTOCOL"
 		if [ $LONGTAIL -eq 1 ] ; then
-echo "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now"
+#echo "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now"
 			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
 		fi
 		if [ $KIPPO -eq 1 ] ; then
@@ -1505,7 +1511,7 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 # and (more importantly) each host's index.shtml can be a copy/paste of the main
 # index.shtml
 #	if [ "x$HOSTNAME" == "x/" ] ;then
-echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
+#echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
 		echo "# http://longtail.it.marist.edu "> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# This is a sorted list of IP addresses that have tried to login" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# to a server related to LongTail." >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
@@ -1523,7 +1529,7 @@ echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
 		cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		mv $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
 		$SCRIPT_DIR/LongTail_add_country_to_ip.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp > $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
-echo "DEBUG writing map include file to $TMP_HTML_DIR/$FILE_PREFIX-map.html"
+#echo "DEBUG writing map include file to $TMP_HTML_DIR/$FILE_PREFIX-map.html"
 		$SCRIPT_DIR/LongTail_make_map.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt > $TMP_HTML_DIR/$FILE_PREFIX-map.html
 		rm $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
 #	fi
@@ -1651,7 +1657,7 @@ echo "DEBUG writing map include file to $TMP_HTML_DIR/$FILE_PREFIX-map.html"
 	fi
 
 
-	if [ $DEBUG ] ; then echo -n "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz "; date ;fi
+	if [ $DEBUG == 1 ] ; then echo -n "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz "; date ;fi
 	#
 	# I only need the count data for today, so there's no point counting 7, 30, or historical
 	#
@@ -1664,7 +1670,7 @@ echo "DEBUG writing map include file to $TMP_HTML_DIR/$FILE_PREFIX-map.html"
 	#
 	# read and run any LOCALLY WRITTEN reports
 	#
-	if [ $DEBUG ] ; then echo "Running ssh-local-reports"; fi
+	if [ $DEBUG == 1 ] ; then echo "Running ssh-local-reports"; fi
 	. $SCRIPT_DIR/Longtail-ssh-local-reports
 
 	# cd back to the original directory.  this should be the last command in 
@@ -2170,7 +2176,7 @@ echo ""
 		
 echo ""
 echo "checking to see if we need to make midnight Graphics now"
-echo "midnight is set to $MIDNIGHT"
+#echo "midnight is set to $MIDNIGHT"
 echo ""
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
 		#if [ $START_HOUR -eq 12 ]; then
@@ -2503,12 +2509,12 @@ function rebuild {
 		awk 'FNR==NR{a[$0]++;next}(!($0 in a))' /tmp/LongTail.$$.passwords $HTML_DIR/historical/$DIRNAME/todays_password >$HTML_DIR/historical/$DIRNAME/todays-uniq-passwords.txt
 
 echo "looking at $HTML_DIR/historical/$DIRNAME/todays_username"
-ls -l $HTML_DIR/historical/$DIRNAME/todays_username
-wc -l $HTML_DIR/historical/$DIRNAME/todays_username
+#ls -l $HTML_DIR/historical/$DIRNAME/todays_username
+#wc -l $HTML_DIR/historical/$DIRNAME/todays_username
 
 		awk 'FNR==NR{a[$0]++;next}(!($0 in a))' /tmp/LongTail.$$.usernames $HTML_DIR/historical/$DIRNAME/todays_username >$HTML_DIR/historical/$DIRNAME/todays-uniq-usernames.txt
 
-ls -l $HTML_DIR/historical/$DIRNAME/todays-uniq-usernames.txt
+#ls -l $HTML_DIR/historical/$DIRNAME/todays-uniq-usernames.txt
 
 		cat $HTML_DIR/historical/$DIRNAME/todays_password > /tmp/LongTail.$$.passwords
 		sort -T $TMP_DIRECTORY -u /tmp/LongTail.$$.passwords > /tmp/LongTail.$$.passwords.tmp
@@ -2589,7 +2595,7 @@ function count_sshpsycho_attacks {
 	TMP_DATE=`date +"%Y-%m-%d"`
 	
 	###########################################################################
-	echo "DEBUG-Counting sshpsycho attacks now"
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Counting sshpsycho attacks now" ; fi
 	if [ "x$HOSTNAME" == "x/" ] ; then
 		# sshPsycho is dead... TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses |wc -l`
 		TODAY=0
@@ -2635,8 +2641,8 @@ function count_sshpsycho_attacks {
 	
 	###########################################################################
 	
-	echo "DEBUG-Counting sshpsycho-2 attacks now"
-	echo -n "DEBUG counting sshpsycho-2 today: "; date
+	if [ $DEBUG  == 1 ] ; then echo -n  "DEBUG-Counting sshpsycho-2 attacks now"; date; fi
+	#echo -n "DEBUG counting sshpsycho-2 today: "; date
 	if [ "x$HOSTNAME" == "x/" ] ; then
 		#TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
 		TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
@@ -2645,7 +2651,7 @@ function count_sshpsycho_attacks {
 		TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
 	fi
 	# This month
-	echo -n "DEBUG counting sshpsycho-2 month: "; date
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG counting sshpsycho-2 month: "; date ; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-sshpsycho-2-attack-count.data ` ; do
 		COUNT=`cat $FILE`
@@ -2653,7 +2659,7 @@ function count_sshpsycho_attacks {
 	done
 	THIS_MONTH=`expr $TMP + $TODAY`
 	# This year
-	echo -n "DEBUG counting sshpsycho-2 year: "; date
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG counting sshpsycho-2 year: "; date ;fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/ -name current-sshpsycho-2-attack-count.data ` ; do
 		COUNT=`cat $FILE`
@@ -2662,14 +2668,14 @@ function count_sshpsycho_attacks {
 	THIS_YEAR=`expr $TMP + $TODAY`
 	# Since logging started 
 	TMP=0
-	echo -n "DEBUG counting sshpsycho-2 since logging started: "; date
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG counting sshpsycho-2 since logging started: "; date; fi
 	for FILE in  `find . -name current-sshpsycho-2-attack-count.data ` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	TOTAL=`expr $TMP + $TODAY`
 	
-	echo -n "DEBUG counting sshpsycho-2 doing sed commands: "; date
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG counting sshpsycho-2 doing sed commands: "; date; fi
 	TODAY=`echo $TODAY | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	THIS_MONTH=`echo $THIS_MONTH | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	THIS_YEAR=`echo $THIS_YEAR | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -2683,10 +2689,10 @@ function count_sshpsycho_attacks {
 	sed -i "s/SSHPsycho-2 This Month.*$/SSHPsycho-2 This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
 	sed -i "s/SSHPsycho-2 This Year.*$/SSHPsycho-2 This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
 	sed -i "s/SSHPsycho-2 Since Logging Started.*$/SSHPsycho-2 Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
-	echo -n "DEBUG Done counting sshpsycho-2 doing sed commands: "; date
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG Done counting sshpsycho-2 doing sed commands: "; date; fi
 	
 	###########################################################################
-	echo -n "DEBUG-Counting sshpsycho friends attacks now"; date
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-Counting sshpsycho friends attacks now"; date ; fi
 	
 	if [ "x$HOSTNAME" == "x/" ] ; then
 		#TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
@@ -2734,7 +2740,7 @@ function count_sshpsycho_attacks {
 	
 	
 	###########################################################################
-	echo "DEBUG-Counting sshpsycho associates attacks now"
+	if [ $DEBUG  == 1 ] ; then  echo "DEBUG-Counting sshpsycho associates attacks now" ;fi
 	if [ "x$HOSTNAME" == "x/" ] ; then
 	        #TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
 	        TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_associates_of_sshPsycho_IP_addresses|wc -l`
@@ -2778,7 +2784,7 @@ function count_sshpsycho_attacks {
 	        sed -i "s/SSHassociatesPsycho This Month.*$/SSHassociatesPsycho This Month:--> $THIS_MONTH/" $HTML_DIR/index-long.shtml
 	        sed -i "s/SSHassociatesPsycho This Year.*$/SSHassociatesPsycho This Year:--> $THIS_YEAR/" $HTML_DIR/index-long.shtml
 	        sed -i "s/SSHassociatesPsycho Since Logging Started.*$/SSHassociatesPsycho Since Logging Started:--> $TOTAL/" $HTML_DIR/index-long.shtml
-	echo -n "DEBUG-Done Counting sshpsycho attacks* now: "; date
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-Done Counting sshpsycho attacks* now: "; date ;fi
 	###########################################################################
 	
 }
@@ -2791,7 +2797,8 @@ echo -n "Started LongTail.sh at:"
 date
 
 init_variables
-#read_local_config_file
+read_local_config_file
+check_config
 #DEBUG=1
 
 SEARCH_FOR="sshd"
@@ -2849,7 +2856,7 @@ else
 		HOSTNAME="/"
 	fi
 	if [ "x$1" == "xMIDNIGHT" ] ;then
-		echo "DEBUG Running midnight routines now"
+		echo "Running midnight routines now"
 		MIDNIGHT=$START_HOUR
 	fi
 fi	
@@ -3028,13 +3035,13 @@ if [ "x$HOSTNAME" == "x/" ] ; then
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Doing SSHPsycho report now" ; fi
 		if [ $HTML_DIR/SSHPsycho.shtml -ot $HTML_DIR/attacks/sum2.data ] ; then
 			echo "$HTML_DIR/SSHPsycho.shtml is older than $HTML_DIR/attacks/sum2.data, running SSHPsycho.shtml"
-			ls -l $HTML_DIR/SSHPsycho.shtml  $HTML_DIR/attacks/sum2.data 
+			#ls -l $HTML_DIR/SSHPsycho.shtml  $HTML_DIR/attacks/sum2.data 
 			make_header "$HTML_DIR/SSHPsycho.shtml" "SSHPsycho Attacks"
 			/usr/local/etc/LongTail_local_reports/SSHPsycho.pl >> $HTML_DIR/SSHPsycho.shtml
 			make_footer "$HTML_DIR/SSHPsycho.shtml"
 		else
 			echo "$HTML_DIR/SSHPsycho.shtml is younger than $HTML_DIR/attacks/sum2.data, notrunning SSHPsycho.shtml"
-			ls -l $HTML_DIR/SSHPsycho.shtml  $HTML_DIR/attacks/sum2.data 
+			#ls -l $HTML_DIR/SSHPsycho.shtml  $HTML_DIR/attacks/sum2.data 
 		fi
 		echo -n "Done with sshPsycho analysis now: "; date
 	fi
