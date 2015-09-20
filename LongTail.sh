@@ -292,7 +292,9 @@ function change_date_in_index {
 	is_file_good $1/index-long.shtml
 	is_file_good $1/graphics.shtml
 	sed -i "s/updated on..*$/updated on $DATE/" $1/index.shtml
+	sed -i "s/updated on..*$/updated on $DATE/" $1/index-map.shtml
 	sed -i "s/updated on..*$/updated on $DATE/" $1/index-long.shtml
+	sed -i "s/updated on..*$/updated on $DATE/" $1/index-long-map.shtml
 	sed -i "s/updated on..*$/updated on $DATE/" $1/graphics.shtml
 }
 	
