@@ -3,8 +3,7 @@ README for LongTail Log Analysis.
 
 WARNING
 --------------
-LongTail is in a constant state of development.  A stable release
-will be available (soon?) at http://www.wedaa.com/eric/software/index.html.  
+LongTail is mostly stable now.
 But it's more fun to download what's "live" at github to get the 
 latest features.  Reasonable system administration skills are 
 required to run and install this software.
