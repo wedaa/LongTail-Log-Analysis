@@ -55,35 +55,37 @@ sub init {
 	$PATH_TO_VAR_LOG_HTTPD="/var/log/httpd/";
 	$TMP_DIRECTORY="/data/tmp";
 
-	if ( -e "/usr/local/etc/LongTail.config"){
-		open (FILE, ">$TMP_DIRECTORY/LongTail.$$") || die "Can not open /$TMP_DIRECTORY/LongTail.$$, exiting now\n";
-		open (CONFIG, "/usr/local/etc/LongTail.config");
-		while (<CONFIG>){
-			chomp;
-			$_ =~ s/#.*//;
-			if (/[A-Z]/){
-				$_ =~ s/=/\t=> /;
-				print (FILE "$_,\n");
-			}
-		}
-		close (CONFIG);
-		close (FILE);
-
-		my %config = do "/$TMP_DIRECTORY/LongTail.$$";
-		$GRAPHS=$config{GRAPHS};
-		$DEBUG=$config{DEBUG};
-		$DO_SSH=$config{DO_SSH};
-		$DO_HTTPD=$config{DO_HTTPD};
-		$OBFUSCATE_IP_ADDRESSES=$config{OBFUSCATE_IP_ADDRESSES};
-		$OBFUSCATE_URLS=$config{OBFUSCATE_URLS};
-		$PASSLOG=$config{PASSLOG};
-		$PASSLOG2222=$config{PASSLOG2222};
-		$SCRIPT_DIR=$config{SCRIPT_DIR};
-		$HTML_DIR=$config{HTML_DIR};
-		$PATH_TO_VAR_LOG=$config{PATH_TO_VAR_LOG};
-		$PATH_TO_VAR_LOG_HTTPD=$config{PATH_TO_VAR_LOG_HTTPD};
-		unlink ("/$TMP_DIRECTORY/LongTail.$$");
-	}
+#THIS IS BROKEN	if ( -e "/usr/local/etc/LongTail.config"){
+#THIS IS BROKEN		open (FILE, ">$TMP_DIRECTORY/LongTail.$$") || die "Can not open /$TMP_DIRECTORY/LongTail.$$, exiting now\n";
+#THIS IS BROKEN		open (CONFIG, "/usr/local/etc/LongTail.config");
+#THIS IS BROKEN		while (<CONFIG>){
+#THIS IS BROKEN			chomp;
+#THIS IS BROKEN			$_ =~ s/#.*//;
+#THIS IS BROKEN			if (/[A-Z]/){
+#THIS IS BROKEN				$_ =~ s/=/\t=> /;
+#THIS IS BROKEN				print (FILE "$_,\n");
+#THIS IS BROKEN			}
+#THIS IS BROKEN		}
+#THIS IS BROKEN		close (CONFIG);
+#THIS IS BROKEN		close (FILE);
+#THIS IS BROKEN
+#THIS IS BROKEN		my %config = do "/$TMP_DIRECTORY/LongTail.$$";
+#THIS IS BROKEN		$GRAPHS=$config{GRAPHS};
+#THIS IS BROKEN		$DEBUG=$config{DEBUG};
+#THIS IS BROKEN		$DO_SSH=$config{DO_SSH};
+#THIS IS BROKEN		$DO_HTTPD=$config{DO_HTTPD};
+#THIS IS BROKEN		$OBFUSCATE_IP_ADDRESSES=$config{OBFUSCATE_IP_ADDRESSES};
+#THIS IS BROKEN		$OBFUSCATE_URLS=$config{OBFUSCATE_URLS};
+#THIS IS BROKEN		$PASSLOG=$config{PASSLOG};
+#THIS IS BROKEN		$PASSLOG2222=$config{PASSLOG2222};
+#THIS IS BROKEN		$SCRIPT_DIR=$config{SCRIPT_DIR};
+#THIS IS BROKEN		$HTML_DIR=$config{HTML_DIR};
+#THIS IS BROKEN		$PATH_TO_VAR_LOG=$config{PATH_TO_VAR_LOG};
+#THIS IS BROKEN		$PATH_TO_VAR_LOG_HTTPD=$config{PATH_TO_VAR_LOG_HTTPD};
+#THIS IS BROKEN		unlink ("/$TMP_DIRECTORY/LongTail.$$");
+#THIS IS BROKEN	}
+#print "DEBUG HTML_DIR is $HTML_DIR\n";
+#exit;
 	$honey_dir=$HTML_DIR;
 	$attacks_dir="$HTML_DIR/attacks/";
 	$DATE=`date`;
@@ -250,7 +252,8 @@ sub create_attack_logs {
 			($hour,$minute,$second)=split(/:/,$time);
 			if ($second =~ /-/){ ($second,$trash)=split(/-/,$second);}
 
-			if ($month > 11){print "month is > 12 for $_\n";}
+			#if ($month > 11){print "month is > 12 for $_\n";}
+			if ($month > 11){print "BUG month is > 12 \n";}
 			if ($month < 1){print "month is < 1 for $_\n";}
 			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
 			if (! defined $ip_epoch{$ip}) {
@@ -491,6 +494,7 @@ sub analyze {
 sub show_lifetime_of_ips {
 	$tmp=`date`;
 	print "DEBUG In show_lifetime_of_ips: $tmp\n";
+	print "DEBUG honey_dir is set to $honey_dir\n";
 	open (FILE_FORMATTED, ">$honey_dir/current_attackers_lifespan.shtml") || die "Can not write to $honey_dir/current_attackers_lifespan.shtml\n";
 	open (FILE_UNFORMATTED, ">$honey_dir/current_attackers_lifespan.tmp") || die "Can not write to $honey_dir/current_attackers_lifespan.tmp\n";
 	print (FILE_FORMATTED "<HTML>\n");
@@ -895,9 +899,9 @@ if ($DEBUG){print "----------------------------------------------\n";}
 &make_dictionaries;
 if ($DEBUG){print "----------------------------------------------\n";}
 &analyze;
-if ($DEBUG){print "----------------------------------------------\n";}
+if ($DEBUG){print "calling show_lifetime_of_ips ----------------------------------------------\n";}
 &show_lifetime_of_ips;
-if ($DEBUG){print "----------------------------------------------\n";}
+if ($DEBUG){print "calling &show_attacks_of_ips ----------------------------------------------\n";}
 &show_attacks_of_ips;
 if ($DEBUG){print "----------------------------------------------\n";}
 &create_dict_webpage;
