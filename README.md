@@ -196,10 +196,10 @@ to someplace with lots of disk space.  LongTail breaks at
 10 million records with a /tmp of less than a gigabyte of
 disk space.
 
-Edit Longtail.sh and LongTail.config for site-specific variables 
-(which are explained in the files).  (NOTE: The current release 
-of LongTail does not yet use  the LongTail.config file, but will
-"soon".
+Edit Longtail.sh, LongTail_analyze_attacks.pl and LongTail.config for site-specific variables 
+(which are explained in the files).  (NOTE: Not all programs in
+the current release of LongTail does not yet use  the 
+LongTail.config file, but will "soon".
 
 Edit LongTail-exclude-accounts.grep to add your valid local 
 accounts.  This will exclude these accounts from your reports.  
