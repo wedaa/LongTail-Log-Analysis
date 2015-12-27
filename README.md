@@ -170,6 +170,15 @@ Edit the include line in /etc/php.ini to reference /usr/local/php.
 
 Fix the timezone line in /etc/php.ini to reference your timezone. (I use America/New_York ).
 
+Troubleshooting JPGraph
+--------------
+
+You might get an error saying “The function imageantialias() is not available in your PHP installation. Use the GD version that comes with PHP and not the standalone version.”
+
+Don’t worry. Open the file ~/public_html/lib/jpgraph/src/gd_image.inc.php, find the function SetAntiAliasing and comment this line out like this:
+	
+	// JpGraphError::RaiseL(25128);//('The function imageantialias() is not available
+
 TrueType Font Notes
 --------------
 You will need to install the truetype fonts.  
