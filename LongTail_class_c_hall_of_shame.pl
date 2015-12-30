@@ -150,14 +150,18 @@ sub all_class_c {
 	}
 	close (FILE);
 	open (OUTPUT, ">/tmp/all_class_c.$$") ||die "Can not write to /tmp/all_class_c.$$\n";
+	# foreach takes forever...
+	if ($DEBUG >0){print "DEBUG Starting foreach loop at:";$TMP_DATE=`date`; print $TMP_DATE;}
 	foreach my $name (keys %my_array) {
                 print (OUTPUT "$name $my_array{$name}\n");
         }
 	close (OUTPUT);
+	if ($DEBUG >0){print "DEBUG done with foreach loop at:";$TMP_DATE=`date`; print $TMP_DATE;}
 	system ("sort -nrk2 /tmp/all_class_c.$$ > /tmp/all_class_c.$$.tmp");
 	unlink ("/tmp/all_class_c.$$");
 	system ("mv /tmp/all_class_c.$$.tmp /tmp/all_class_c.$$");
 
+	if ($DEBUG >0){print "DEBUG done with sort command at:";$TMP_DATE=`date`; print $TMP_DATE;}
 	print "</TABLE>\n";
 	print "<BR><BR>\n";
 	print "<TABLE BORDER=3>\n";
@@ -165,14 +169,30 @@ sub all_class_c {
 	print "<TR> <TH>Class C Address</TH> <TH>Number Of Attacks</TH> <TH>Number Of Login Attempts</TH> </TR> \n";
 #	foreach my $name (sort { $my_array{$b} <=> $my_array{$a} } keys %my_array) {
 	open (INPUT, "/tmp/all_class_c.$$") ;
+	if ($DEBUG >0){print "DEBUG Starting reading /tmp/all_class_c.$$ at:";$TMP_DATE=`date`; print $TMP_DATE;}
 	while (<INPUT>){
 		chomp;
 		($name, $number_of_attacks)=split (/ /,$_);
+		if ($DEBUG >0){ print "DEBUG name is $name\n";}
 		$note="";
 		if ( -e "/var/www/html/honey/notes/$name" ){
 			$note=`cat /var/www/html/honey/notes/$name`;
+			chomp $note;
 		}
+		#
+		# this was horribly slow too
+		# Can also fail with "bash: /usr/bin/wc: Argument list too long"
+		#
 		#$number_of_login_attempts=`cat $name* |wc -l`;
+
+		#
+		# Damn, I'm reading this file a bazillion times
+		# If there are 11,000 Class C spaces, then I
+		# read this file 11,000 times.  This sucks.
+		#
+		# I need to make this significantly faster
+		# 2015-12-30 ericw
+		#
 		$number_of_login_attempts=0;
 		open (INPUT2, "/var/www/html/honey/attacks/sum2.data");
 		while (<INPUT2>){
@@ -192,9 +212,15 @@ sub all_class_c {
 		printf "<TD>$number_of_login_attempts</TD></TR>\n";
 	}
 	close (INPUT);
+	if ($DEBUG >0){print "DEBUG Done reading /tmp/all_class_c.$$ at:";$TMP_DATE=`date`; print $TMP_DATE;}
 	unlink ("/tmp/all_class_c.$$") ;
 }
+#####################################################################
+#
+# Main line of code
+#
 
+$DEBUG=0;
 $YEAR=`date +%Y`;
 chomp $YEAR;
 $MONTH=`date +%m`;
