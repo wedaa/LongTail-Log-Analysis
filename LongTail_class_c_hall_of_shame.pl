@@ -283,6 +283,7 @@ sub all_class_c {
 # Main line of code
 #
 
+$|=1;
 $DEBUG=0;
 $YEAR=`date +%Y`;
 chomp $YEAR;
