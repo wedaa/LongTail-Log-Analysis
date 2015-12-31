@@ -80,24 +80,24 @@ function convert_kippo_to_longtail {
 
 function lock_down_files {
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		if [ -d /var/www/html ] ; then 
-		cd /var/www/html
+		if [ -d $HTML_DIR ] ; then 
+		cd $HTML_DIR
 
 		echo "Expect to see chmod warnings until you have run LongTail for at least 24 hours"
+			find . -name last-7-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA  \
+			-o -name last-7-days-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name last-30-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name last-30-days-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name historical-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name historical-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |\
+			xargs chmod go-r
 
-		find . -name last-7-days-root-passwords.shtml.gz |xargs chmod go-r 
-		find . -name last-7-days-non-root-pairs.shtml |xargs chmod go-r 
-		find . -name last-30-days-root-passwords.shtml.gz |xargs chmod go-r 
-		find . -name last-30-days-non-root-pairs.shtml |xargs chmod go-r 
-		find . -name historical-root-passwords.shtml.gz |xargs chmod go-r 
-		find . -name historical-non-root-pairs.shtml |xargs chmod go-r 
-
-		find */* -name todays_password |xargs chmod go-r
-		find */* -name current-root-passwords.shtml |xargs chmod go-r
-		find */* -name current-non-root-passwords.shtml |xargs chmod go-r
-		find */* -name current-account-password-pairs.data.gz |xargs chmod go-r
-		find */* -name current-admin-passwords.shtml |xargs chmod go-r
-		find */* -name current-root-passwords.shtml.gz |xargs chmod go-r
+			find . -name todays_password -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name current-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name current-non-root-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name current-account-password-pairs.data.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name current-admin-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |\
+			xargs chmod go-r
 		fi
 	fi
 
@@ -678,15 +678,43 @@ function count_ssh_attacks {
 	# This really needs to be sped up somehow
 	#
 	# Couting honeypots here
-	if [ $START_HOUR -eq 3 ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 	if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "sshd" ] ; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now"; date ; fi
-		ALLUNIQUEHONEYPOTS=`zcat historical/*/*/*/current-raw-data.gz |egrep IP:\|sshd | awk '{print $2}' |sort -T $TMP_DIRECTORY -u  |wc -l`
-		THISYEARUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |egrep IP:\|sshd |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
-# THIS line uses all_messages.gz, NOT current-raw-data.gz because some months
-# protected honeypots have no traffic.
-		THISMONTHUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/all_messages.gz |grep ssh |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
+
+		#ALLUNIQUEHONEYPOTS=`zcat historical/*/*/*/current-raw-data.gz |egrep IP:\|sshd | awk '{print $2}' |sort -T $TMP_DIRECTORY -u  |wc -l`
+		#THISYEARUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |egrep IP:\|sshd |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
+		#THISMONTHUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/all_messages.gz |grep ssh |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
+
+		honey_file="todays-honeypots.txt"
+		TMP=0
+		touch /$TMP_DIRECTORY/honeypots.$$
+		rm /$TMP_DIRECTORY/honeypots.$$
+		for FILE in  `find historical/$TMP_YEAR/$TMP_MONTH -name $honey_file` ; do
+			awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
+		done
+		THISMONTHUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
+		rm /$TMP_DIRECTORY/honeypots.$$
+
+		TMP=0
+		touch /$TMP_DIRECTORY/honeypots.$$
+		rm /$TMP_DIRECTORY/honeypots.$$
+		for FILE in  `find historical/$TMP_YEAR/ -name $honey_file` ; do
+			awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
+		done
+		THISYEARUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
+		rm /$TMP_DIRECTORY/honeypots.$$
+		TMP=0
+
+		touch /$TMP_DIRECTORY/honeypots.$$
+		rm /$TMP_DIRECTORY/honeypots.$$
+		for FILE in  `find historical/  -name $honey_file` ; do
+			awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
+		done
+		ALLUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
+		rm /$TMP_DIRECTORY/honeypots.$$
+
 		THISMONTHUNIQUEHONEYPOTS=`echo $THISMONTHUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 		THISYEARUNIQUEHONEYPOTS=`echo $THISYEARUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 		ALLUNIQUEHONEYPOTS=`echo $ALLUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -696,6 +724,7 @@ function count_ssh_attacks {
 		sed -i "s/Number of Honeypots This Month.*$/Number of Honeypots This Month:--> $THISMONTHUNIQUEHONEYPOTS/" $1/index-long.shtml
 		sed -i "s/Number of Honeypots This Year.*$/Number of Honeypots This Year:--> $THISYEARUNIQUEHONEYPOTS/" $1/index-long.shtml
 		sed -i "s/Number of Honeypots Since Logging Started.*$/Number of Honeypots Since Logging Started:--> $ALLUNIQUEHONEYPOTS/" $1/index-long.shtml
+
 	fi
 	fi
 	fi
@@ -805,6 +834,12 @@ function count_ssh_attacks {
 	# This really needs to be sped up somehow
 	#
 #2015-03-29T03:07:36-04:00 shepherd sshd-22[2766]: IP: 103.41.124.140 PassLog: Username: root Password: tommy007
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Honeypots now"; date ; fi
+
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
+			cat $1/todays-honeypots.txt |wc -l  > todays-honeypots.txt.count
+	fi
 
 	if [ ! -e all-ips ] ; then
 		touch all-ips
@@ -891,14 +926,21 @@ function count_ssh_attacks {
 	sed -i "s/Unique IPs Today.*$/Unique IPs Today:--> $TODAYSUNIQUEIPS/" $1/index-long.shtml
 	sed -i "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/" $1/index-long.shtml
 
+	#
+	# Count honeypots here
+	#
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail |sort -T $TMP_DIRECTORY -u |wc -l`
-		
 		make_header "$1/todays_honeypots.shtml" "Today's honeypots" "Count reflects log entries, not actual login attempts" "Entries in syslog" "Hostname" 
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c |\
-		awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $1/todays_honeypots.shtml
+
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > $1/todays-honeypots.txt
+		cat $1/todays-honeypots.txt |wc -l  > $1/todays-honeypots.txt.count
+
+		HONEYPOTSTODAY=`cat $1/todays-honeypots.txt.count`
+		
+		cat $1/todays-honeypots.txt | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $1/todays_honeypots.shtml
+
+
 		make_footer "$1/todays_honeypots.shtml" 
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > $1/todays_honeypots.data
 
 	else
 		HONEYPOTSTODAY=1	
@@ -2383,6 +2425,10 @@ function create_historical_copies {
 		#todays_ips.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |sed 's/^..*IP: //' |tr -cd '\11\12\40-\176'  |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips; 
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips.count;
+
+		# Make todays_honeypot.count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | egrep IP:\|sshd | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt 
+	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt.count
 
 		# Make todays_password.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |grep IP: |sed 's/^.*Password://'|sed 's/^ //'| sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_password 
