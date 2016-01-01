@@ -492,6 +492,8 @@ function count_ssh_attacks {
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
 	#
+	# This fails on the first of the month
+	#
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Month/Statistics now" ; fi
