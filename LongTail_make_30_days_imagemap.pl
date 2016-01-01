@@ -11,11 +11,11 @@ $count=30;
 $x=65;
 $x_20=88;
 while ($count >0){
-	$DATE=`date "+%m/%d" --date="$count day ago"`;
+	$DATE=`date "+%Y/%m/%d" --date="$count day ago"`;
 	chomp $DATE;
 	#print "<area shape=\"rect\" coords=\"$x,0,$x_20,220\" href=\"http://longtail.it.marist.edu/honey/historical/$YEAR/$DATE/\" alt=\"$DATE\" title=\"$DATE\" >\n";
 	#I changed this so that image maps point DOWNHILL, instead of to the top level historical dir
-	print "<area shape=\"rect\" coords=\"$x,0,$x_20,220\" href=\"historical/$YEAR/$DATE/\" alt=\"$DATE\" title=\"$DATE\" >\n";
+	print "<area shape=\"rect\" coords=\"$x,0,$x_20,220\" href=\"historical/$DATE/\" alt=\"$DATE\" title=\"$DATE\" >\n";
 	$x += 24;
 	$x_20 += 24;
 
