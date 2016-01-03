@@ -242,30 +242,54 @@ is code that only runs during the midnight time frame.
 
 MY crontab entry looks like this one(See the file crontab.sample too):
 
-	#
-	# LongTail dashboard stuff
-	#
-	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-	0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
-	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
-	
+
 	#
 	# LongTail stuff
 	#
-	# Optional 1 0 * * * /usr/local/etc/LongTail_make_fake_password.sh
-	# Optional 1 1 * * * /usr/local/etc/get_whois.sh > /tmp/get_whois.sh.out
-	# Optional 1 2 * * * /usr/local/etc/LongTail_whois_analysis.pl > /var/www/html/honey/whois.shtml
+	1 0 * * * /usr/local/etc/LongTail_make_fake_password.sh
+	1 1 * * * /usr/local/etc/get_whois.sh > /tmp/get_whois.sh.out
+	1 2 * * * /usr/local/etc/LongTail_whois_analysis.pl > /var/www/html/honey/whois.shtml
 	10 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-	10 0,2,4,6,8,10,12,14,16,18,20,22 * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	10 0,2,4,6,8,10,12,14,16,18,20,22 * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail-wrapper.sh.out 2>> /tmp/LongTail-wrapper.sh.out
+	30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
 	#
-	# Optional 30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
-	45 6,18 * * * /usr/local/etc/LongTail_analyze_attacks.pl rebuild >> /tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
+	# Create and analyze attack patterns here
+	#
+	45 5,17 * * * /usr/local/etc/LongTail_analyze_attacks.pl rebuild >> /data/tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
+	#
+	# Analyze botnets here.  MUST be run after LongTail_analyze_attacks.pl is done
+	# I run this by hand because it takes a long time and I want to watch what is
+	# happening.
+	#TEMP30 19 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
+	#TEMP03 7 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
+	#
+	# LongTail Dashboard stuff
+	#
+	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
+	#
 	5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; cat /var/log/messages | grep Csoftware  | awk '{print $6,$8,$10}' | sed 's/;//g' >> /var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
-	55 3 * * * /usr/local/etc/LongTail_find_badguys_looking_for_passwords.sh >/var/www/html/honey/IPs_looking_for_passwords.shtml
+	55 3 * * * /usr/local/etc/LongTail_find_badguys_looking_for_passwords.sh >/tmp/LongTail_find_badguys_looking_for_passwords.out
 	#
-	# Gather botnet stats.  
-	# Note: You need to run /usr/local/etc/LongTail_botnets/LongTail_find_botnet.pl by hand
-	30 2 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
+	# BlackRidge only stuff
+	# Run only if you do BlackRidge honeypots also
+	#35 3 * * * /usr/local/etc/BlackRidge_make_30_day_ok_traffic.sh >/tmp/BlackRidge_make_30_day_ok_traffic.sh.out
+	#
+	# LongTail Dashboard counter
+	#
+	0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
+	#
+	# Pull nmap files from shepherd (a little bit before running LongTail_get_botnet_stats.pl)
+	# I can't run nmap at work, so I run it at home and pull the files to here
+	# No, you can't pull from my home server :-)
+	#
+	#15 19 * * * wget -P /usr/local/etc/nmap -nv -nc -nH --cut-dirs=1   --no-parent --accept txt  -r http://XXX.XXX.XXX.XXX/nmap/ > /tmp/wget.out 2>&1
+	#45 6 * * * wget -P /usr/local/etc/nmap -nv -nc -nH --cut-dirs=1   --no-parent --accept txt  -r http://XXX.XXX.XXX.XXX/nmap/ > /tmp/wget.out 2>&1
+	#
+	#
+	# Kick syslog at 10:00 every night because sometimes it "hangs"
+	0 22 * * * /sbin/service rsyslog restart
+
 
 HTTP Configuration 
 --------------
