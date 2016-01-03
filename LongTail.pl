@@ -255,7 +255,7 @@ sub init_variables {
 	# What hosts are protected by a firewall or Intrusion Detection System?
 	# This is used to set the current-attack-count.data.notfullday flag 
 	# in those directories to help "normalize" the data
-	if ( `hostname` == "longtail.it.marist.edu" ) {
+	if ( `hostname` eq "longtail.it.marist.edu" ) {
 		$HOSTS_PROTECTED="erhp erhp2";
 		$BLACKRIDGE="blackridge";
 		$RESIDENTIAL_SITES="shepherd";
@@ -497,7 +497,7 @@ sub count_ssh_attacks {
 		foreach (@my_word_list) {
 			chomp;
 			$dir=$_;
-			if ( "x$HOSTNAME" == "x$dir" ) {
+			if ( "x$HOSTNAME" eq "x$dir" ) {
 				&touch ("$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data.notfullday");
 				#print "$TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/ \n";
 			}
@@ -517,15 +517,17 @@ sub count_ssh_attacks {
 	#
 	# TODAY
 	#
-	if ( $DEBUG  == 1 ) { print "DEBUG-in count_ssh_attacks/TODAY now\n" ; `date`; }
+	if ( $DEBUG  == 1 ) { print "DEBUG-in count_ssh_attacks/TODAY now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	# WHY WAS THIS HERE? 2015-12-29 chdir ("$PATH_TO_VAR_LOG");
 	chdir ("$HTML_DIR");
-	if ( "x$HOSTNAME" == "x/" ) {
+	if ( "x$HOSTNAME" eq "x/" ) {
 		if ( $LONGTAIL == 1 ) {
 				$TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`;
+				chomp $TODAY;
 		}
 		if ( $KIPPO == 1 ) {
 			$TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt|wc -l`;
+				chomp $TODAY;
 		}
 	}
 	else { # We were passed a hostname.  This should never happen with Kippo
@@ -535,8 +537,10 @@ sub count_ssh_attacks {
 			exit;
 		}
 		$TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`;
+			chomp $TODAY;
 	}
 	`echo  $TODAY > $TMP_HTML_DIR/current-attack-count.data`;
+print "\n\nDEBUG TODAY is $TODAY\n\n";
 
 
 	if ( $START_HOUR == $MIDNIGHT ) {
@@ -544,6 +548,7 @@ sub count_ssh_attacks {
 		# THIS MONTH
 		#
 		chdir ("$TMP_HTML_DIR/historical/");
+print "Its midnight, doing midnight stuff\n";
 print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		if ( $DEBUG  == 1 ) { print  "DEBUG-in count_ssh_attacks-This Month now\n"  }
 		$TMP=0;
@@ -561,7 +566,7 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		close (FIND);
 		$THIS_MONTH=$TMP + $TODAY ;
 		# OK, this may not be 100% secure, but it's close enough for now
-		if ( $DEBUG  == 1 ) { print  "DEBUG this month statistics;" ;`date`; }
+		if ( $DEBUG  == 1 ) { print  "DEBUG this month statistics;" ;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 		#
 		# So there's a problem if it's the first day of the month and there's
 		# No real statistics yet.
@@ -657,7 +662,7 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		}
 		$LAST_MONTH=$TMP;
 		# OK, this may not be 100% secure, but it's close enough for now
-		if ( $DEBUG  == 1 ) { print  "DEBUG Last month statistics \n" ;`date` ;  }
+		if ( $DEBUG  == 1 ) { print  "DEBUG Last month statistics :" ;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; ;  }
 		#
 		# So there's a problem if it's the first day of the month and there's
 		# No real statistics yet.
@@ -667,7 +672,7 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		#
 		print "DEBUG-1\n"; `$date`;
 		if ( -d "$TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH" ) { 
-			if ( $DEBUG  == 1 ) { print "DEBUG-in count_ssh_attacks/Last Month/statistics now\n" ;`date`; }
+			if ( $DEBUG  == 1 ) { print "DEBUG-in count_ssh_attacks/Last Month/statistics now:" ;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	
 			@a=();
 			open (FIND, "find $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/*/current-attack-count.data|");
@@ -852,7 +857,7 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		if ( $DEBUG  == 1 ) { print  "DEBUG ALL Normalized statistics \n"  }
 	
 		@a=();
-		open (FIND, "find *historical -name current-attack-count.data|");
+		open (FIND, "find . -name current-attack-count.data|");
 		while(<FIND>){
 			chomp;
 			if ( ! -e "$_.notfullday" ) {
@@ -894,6 +899,15 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		$NORMALIZED_MAX=&commify( $NORMALIZED_MAX );
 		$NORMALIZED_MIN=&commify( $NORMALIZED_MIN );
 	
+		$THIS_MONTH=&commify( $THIS_MONTH);
+		$THIS_YEAR=&commify( $THIS_YEAR);
+		$TOTAL=&commify( $TOTAL);
+		chomp $THIS_MONTH;
+		`sed -i 's/Login Attempts This Month.*\$/Login Attempts This Month:--> $THIS_MONTH/' $TMP_HTML_DIR/index.shtml`;
+		chomp $THIS_YEAR;
+		`sed -i 's/Login Attempts This Year.*\$/Login Attempts This Year:--> $THIS_YEAR/' $TMP_HTML_DIR/index.shtml`;
+		chomp $TOTAL;
+		`sed -i 's/Login Attempts Since Logging Started.*\$/Login Attempts Since Logging Started:--> $TOTAL/' $TMP_HTML_DIR/index.shtml`;
 	
 		
 		########################################################################################
@@ -902,7 +916,6 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 	print "\n\nDEBUG Make statistics.shtml webpage here\n";
 		&make_header ("$TMP_HTML_DIR/statistics.shtml", "Assorted Statistics", "Analysis does not include today's numbers. Numbers rounded to two decimal places", "Time<BR>Frame", "Number<BR>of Days", "Total<BR>SSH attempts", "Average<BR>Per Day", "Std. Dev.", "Median", "Max", "Min");
 	
-	print "debug-M\n";
 		open (FILE, ">> $TMP_HTML_DIR/statistics.shtml");
 		print (FILE "
 	<TR><TD>So Far Today</TD><TD>1</TD><TD>$TODAY</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD></TR> 
@@ -937,7 +950,7 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 	
 	
 		# Make statistics_all.shtml and more_statistics_all.shtml webpage here
-		if ( "x$HOSTNAME" == "x/" ) {
+		if ( "x$HOSTNAME" eq "x/" ) {
 			chdir ("$HTML_DIR");
 			$table_header="<TR><TH>Time<BR>Frame</TH><TH>Number<BR>of Days</TH><TH>Total<BR>SSH attempts</TH><TH>Average<br>Per Day</TH><TH>Std. Dev.</TH><TH>Median</TH><TH>Max</TH><TH>Min</TH>";
 			`grep HEADERLINE statistics.shtml |egrep -v footer.html\\|'</BODY'\\|'</HTML'\\|'</TABLE'\\|'</TR' > statistics_all.shtml`;
@@ -1186,15 +1199,24 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 	#
 	# Couting honeypots here
 	if ( $START_HOUR == $MIDNIGHT ) {
-		if ( "x$HOSTNAME" == "x/" ) {
-			if ( $SEARCH_FOR == "sshd" ) {
-				if ( $DEBUG  == 1 ) { print  "DEBUG-Getting all honeypots now, this really should be sped up somehow\n"; }
-				$ALLUNIQUEHONEYPOTS=`zcat historical/*/*/*/current-raw-data.gz |egrep IP:\\|sshd | awk '{print \$2}' |sort -T $TMP_DIRECTORY -u  |wc -l`;
-				$THISYEARUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |egrep IP:\\|sshd |awk '{print \$2}'|sort -T $TMP_DIRECTORY -u |wc -l `;
+		if ( "x$HOSTNAME" eq "x/" ) {
+			if ( $SEARCH_FOR eq "sshd" ) {
+				if ( $DEBUG  == 1 ) { print  "DEBUG-Getting all honeypots now, this really should be sped up somehow:";$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
+				#$ALLUNIQUEHONEYPOTS=`zcat historical/*/*/*/current-raw-data.gz |egrep IP:\\|sshd | awk '{print \$2}' |sort -T $TMP_DIRECTORY -u  |wc -l`;
+				#$THISYEARUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |egrep IP:\\|sshd |awk '{print \$2}'|sort -T $TMP_DIRECTORY -u |wc -l `;
  				#all_messages.gz, NOT current-raw-data.gz because some months
-				#honeypots have no traffic.
+				#honeypots like BlackRidge protected honeypots like erhp and erhp2 
+				#have no traffic.
 				# 2015-12-29- Why is that?  I need to document it better
-				$THISMONTHUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/all_messages.gz |grep ssh |awk '{print \$2}'|sort -T $TMP_DIRECTORY -u |wc -l `;
+				#$THISMONTHUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/all_messages.gz |grep ssh |awk '{print \$2}'|sort -T $TMP_DIRECTORY -u |wc -l `;
+
+				`cat historical/*/*/*/todays-honeypots.txt |sort -T $TMP_DIRECTORY -u > all-honeypots`;
+				$THISYEARUNIQUEHONEYPOTS=`cat historical/$TMP_YEAR/*/*/todays-honeypots.txt |sort -T $TMP_DIRECTORY -u |wc -l `;
+				chomp $THISYEARUNIQUEHONEYPOTS;
+				$THISMONTHUNIQUEHONEYPOTS=`cat historical/$TMP_YEAR/$TMP_MONTH/*/todays-honeypots.txt |sort -T $TMP_DIRECTORY -u |wc -l `;
+				chomp $THISMONTHUNIQUEHONEYPOTS;
+				$ALLUNIQUEHONEYPOTS=`cat all-honeypots |wc -l`;
+				chomp $ALLUNIQUEHONEYPOTS;
 
 				$THISMONTHUNIQUEHONEYPOTS=&commify($THISMONTHUNIQUEHONEYPOTS);
 				$THISYEARUNIQUEHONEYPOTS=&commify( $THISYEARUNIQUEHONEYPOTS);
@@ -1223,18 +1245,21 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		&touch ("all-password");
 	}
 	if ( $START_HOUR == $MIDNIGHT ) {
-		if ( $DEBUG  == 1 ) { print  "DEBUG-Getting all passwords now\n"; `date` ; }
+		if ( $DEBUG  == 1 ) { print  "DEBUG-Getting all passwords now "; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; ; }
 		`cat historical/*/*/*/todays_password |sort -T $TMP_DIRECTORY -u > all-password`;
 		$THISYEARUNIQUEPASSWORDS=`cat historical/$TMP_YEAR/*/*/todays_password |sort -T $TMP_DIRECTORY -u |wc -l `;
+		chomp $THISYEARUNIQUEPASSWORDS;
 		$THISMONTHUNIQUEPASSWORDS=`cat historical/$TMP_YEAR/$TMP_MONTH/*/todays_password |sort -T $TMP_DIRECTORY -u |wc -l `;
-		if ( $DEBUG  == 1 ) { print  "DEBUG-Done Getting all passwords now\n"; }
+		chomp $THISMONTHUNIQUEPASSWORDS;
 		$ALLUNIQUEPASSWORDS=`cat all-password |wc -l`;
+		chomp $ALLUNIQUEPASSWORDS;
+		if ( $DEBUG  == 1 ) { print  "DEBUG-Done Getting all passwords now "; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 
-print "DEBUG WAS $THISMONTHUNIQUEPASSWORDS $THISYEARUNIQUEPASSWORDS $ALLUNIQUEPASSWORDS\n";
+#print "DEBUG WAS $THISMONTHUNIQUEPASSWORDS $THISYEARUNIQUEPASSWORDS $ALLUNIQUEPASSWORDS\n";
 		$THISMONTHUNIQUEPASSWORDS=&commify( $THISMONTHUNIQUEPASSWORDS );
 		$THISYEARUNIQUEPASSWORDS=&commify( $THISYEARUNIQUEPASSWORDS );
 		$ALLUNIQUEPASSWORDS=&commify( $ALLUNIQUEPASSWORDS );
-print "DEBUG IS $THISMONTHUNIQUEPASSWORDS $THISYEARUNIQUEPASSWORDS $ALLUNIQUEPASSWORDS\n";
+#print "DEBUG IS $THISMONTHUNIQUEPASSWORDS $THISYEARUNIQUEPASSWORDS $ALLUNIQUEPASSWORDS\n";
 
 		`sed -i "s/Unique Passwords This Month.*\$/Unique Passwords This Month:--> $THISMONTHUNIQUEPASSWORDS/" $TMP_HTML_DIR/index.shtml`;
 		`sed -i "s/Unique Passwords This Year.*\$/Unique Passwords This Year:--> $THISYEARUNIQUEPASSWORDS/" $TMP_HTML_DIR/index.shtml`;
@@ -1244,15 +1269,15 @@ print "DEBUG IS $THISMONTHUNIQUEPASSWORDS $THISYEARUNIQUEPASSWORDS $ALLUNIQUEPAS
 		`sed -i "s/Unique Passwords Since Logging Started.*\$/Unique Passwords Since Logging Started:--> $ALLUNIQUEPASSWORDS/" $TMP_HTML_DIR/index-long.shtml`;
 	}
 
-	if ( "x$HOSTNAME" == "x/" ) {
+	if ( "x$HOSTNAME" eq "x/" ) {
 		open (FILE, "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES|");
 		open (OUTPUT, ">todays_passwords.tmp");
-print "DEBUG getting todays passwords\n";
+		if ( $DEBUG  == 1 ) { print  "DEBUG-Getting todays passwords now "; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; ; }
 		while (<FILE>){
 			if (/$PROTOCOL/){
 				if (/$TMP_DATE/){
 				if (/ Password: /){
-					#grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |
+					#NOTYETCONVERTED grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |
 					$_ =~ s/^..*Password:\ //;
 					$_ =~ s/^..*Password:$/ /;
 					chomp;
@@ -1267,14 +1292,13 @@ print "DEBUG getting todays passwords\n";
 	}else{
 		`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '\$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords`
 	}
+	if ( $DEBUG  == 1 ) { print  "DEBUG-Done Getting todays passwords now "; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; ; }
 	$TODAYSUNIQUEPASSWORDS=`cat todays_passwords |wc -l`;
+	chomp $TODAYSUNIQUEPASSWORDS;
 	`echo $TODAYSUNIQUEPASSWORDS  >todays_password.count`;
 	`awk 'FNR==NR{a[\$0]++;next}(!(\$0 in a))' all-password todays_passwords >todays-uniq-passwords.txt`;
-#$tmp=`pwd`;
-#print "debug pwd is $tmp";
-#$tmp=`ls -l all-password todays_passwords todays-uniq-passwords.txt`;
-#print "debug file is $tmp";
 	$PASSWORDSNEWTODAY=`cat todays-uniq-passwords.txt |wc -l`;
+	chomp $PASSWORDSNEWTODAY;
 
 	&make_header ("$TMP_HTML_DIR/todays-uniq-passwords.shtml", "Passwords Never Seen Before Today");
 	open (TMP_FILE, "$TMP_HTML_DIR/todays-uniq-passwords.txt");
@@ -1292,6 +1316,7 @@ print "DEBUG getting todays passwords\n";
 	close (TMP_OUTPUT_FILE);
 	&make_footer("$TMP_HTML_DIR/todays-uniq-passwords.shtml");
 #print "DEBUG exiting now, look for todays-uniq-passwords.txt\n";exit;
+		if ( $DEBUG  == 1 ) { print  "DEBUG-Done Getting all passwords now:"; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; ; }
 
 
 
@@ -1307,9 +1332,12 @@ print "DEBUG getting todays passwords\n";
 		if ( $DEBUG  == 1 ) { print  "DEBUG-Getting all Usernames now\n"; }
 		`cat historical/*/*/*/todays_username |sort -T $TMP_DIRECTORY -u > all-username`;
 		$THISYEARUNIQUEUSERNAMES=`cat historical/$TMP_YEAR/*/*/todays_username |sort -T $TMP_DIRECTORY -u |wc -l `;
+		chomp $THISYEARUNIQUEUSERNAMES;
 		$THISMONTHUNIQUEUSERNAMES=`cat historical/$TMP_YEAR/$TMP_MONTH/*/todays_username |sort -T $TMP_DIRECTORY -u |wc -l `;
+		chomp $THISMONTHUNIQUEUSERNAMES;
 		if ( $DEBUG  == 1 ) { print  "DEBUG-Done Getting all username now\n"; }
 		$ALLUNIQUEUSERNAMES=`cat all-username |wc -l`;
+		chomp $ALLUNIQUEUSERNAMES;
 
 		$THISMONTHUNIQUEUSERNAMES=&commify( $THISMONTHUNIQUEUSERNAMES);
 		$THISYEARUNIQUEUSERNAMES=&commify( $THISYEARUNIQUEUSERNAMES);
@@ -1323,7 +1351,7 @@ print "DEBUG getting todays passwords\n";
 		`sed -i "s/Unique Usernames This Year.*\$/Unique Usernames This Year:--> $THISYEARUNIQUEUSERNAMES/" $TMP_HTML_DIR/index-long.shtml`;
 		`sed -i "s/Unique Usernames Since Logging Started.*\$/Unique Usernames Since Logging Started:--> $ALLUNIQUEUSERNAMES/" $TMP_HTML_DIR/index-long.shtml`;
 	}
-#	if ( "x$HOSTNAME" == "x/" ) {
+#	if ( "x$HOSTNAME" eq "x/" ) {
 #		if ( $KIPPO == 1 ) {
 #			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*\[//' | sed 's/\/..*$//' |sort -T $TMP_DIRECTORY -u > todays_username
 #		else
@@ -1333,9 +1361,11 @@ print "DEBUG getting todays passwords\n";
 #		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password.:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
 #	}
 	$TODAYSUNIQUEUSERNAMES=`cat todays_username |wc -l`;
+	chomp $TODAYSUNIQUEUSERNAMES;
 	`echo $TODAYSUNIQUEUSERNAMES  >todays_username.count`;
 	`awk 'FNR==NR{a[\$0]++;next}(!(\$0 in a))' all-username todays_username >todays-uniq-username.txt`;
 	$USERNAMESNEWTODAY=`cat todays-uniq-username.txt |wc -l`;
+	chomp $USERNAMESNEWTODAY;
 
 	&make_header("$TMP_HTML_DIR/todays-uniq-username.shtml", "Usernames Never Seen Before Today");
 #	print "</TABLE>" >> $TMP_HTML_DIR/todays-uniq-username.shtml
@@ -1358,9 +1388,12 @@ print "DEBUG getting todays passwords\n";
 		if ( $DEBUG  == 1 ) { print  "DEBUG-Getting all IPs now\n"; }
 		`cat historical/*/*/*/todays_ips |sort -T $TMP_DIRECTORY -u > all-ips`;
 		$THISYEARUNIQUEIPSS=`cat historical/$TMP_YEAR/*/*/todays_ips |sort -T $TMP_DIRECTORY -u |wc -l `;
+		chomp $THISYEARUNIQUEIPSS;
 		$THISMONTHUNIQUEIPSS=`cat historical/$TMP_YEAR/$TMP_MONTH/*/todays_ips |sort -T $TMP_DIRECTORY -u |wc -l `;
+		chomp $THISMONTHUNIQUEIPSS;
 		if ( $DEBUG  == 1 ) { print  "DEBUG-Done Getting all ips now\n"; }
 		$ALLUNIQUEIPSS=`cat all-ips |wc -l`;
+		chomp $ALLUNIQUEIPSS;
 
 		$THISMONTHUNIQUEIPSS=&commify( $THISMONTHUNIQUEIPSS);
 		$THISYEARUNIQUEIPSS=&commify( $THISYEARUNIQUEIPSS);
@@ -1375,7 +1408,7 @@ print "DEBUG getting todays passwords\n";
 		`sed -i "s/Unique IPs Since Logging Started.*\$/Unique IPs Since Logging Started:--> $ALLUNIQUEIPSS/" $TMP_HTML_DIR/index-long.shtml`;
 	}
 	#
-#NOTYETCONVERTED	if ( "x$HOSTNAME" == "x/" ) {
+#NOTYETCONVERTED	if ( "x$HOSTNAME" eq "x/" ) {
 #NOTYETCONVERTED		if ( $KIPPO == 1 ) {
 #NOTYETCONVERTED			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*,.*,//' |sed 's/\]..*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
 #NOTYETCONVERTED		else
@@ -1385,9 +1418,11 @@ print "DEBUG getting todays passwords\n";
 #NOTYETCONVERTED		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
 #NOTYETCONVERTED	}
 	$TODAYSUNIQUEIPS=`cat todays_ips |wc -l`;
+	chomp $TODAYSUNIQUEIPS;
 	`echo $TODAYSUNIQUEIPS  >todays_ips.count`;
 	`awk 'FNR==NR{a[\$0]++;next}(!(\$0 in a))' all-ips todays_ips >todays-uniq-ips.txt`;
 	$IPSNEWTODAY=`cat todays-uniq-ips.txt |wc -l`;
+	chomp $IPSNEWTODAY;
 
 	&make_header ("$TMP_HTML_DIR/todays-uniq-ips.shtml", "IP Addresses Never Seen Before Today", " ", "Count", "IP Address", "Country", "WhoIS", "Blacklisted", "Attack Patterns");
 
@@ -1396,11 +1431,7 @@ print "DEBUG getting todays passwords\n";
 	&make_footer ("$TMP_HTML_DIR/todays-uniq-ips.shtml");
 	`sed -i s/HONEY/$HTML_TOP_DIR/g $TMP_HTML_DIR/todays-uniq-ips.shtml`;
 
-	
-	$TODAY=&commify( $TODAY);
-	$THIS_MONTH=&commify( $THIS_MONTH);
-	$THIS_YEAR=&commify( $THIS_YEAR);
-	$TOTAL=&commify( $TOTAL);
+	$TODAY=&commify($TODAY);
 
 	$TODAYSUNIQUEPASSWORDS=&commify( $TODAYSUNIQUEPASSWORDS);
 	$PASSWORDSNEWTODAY=&commify( $PASSWORDSNEWTODAY);
@@ -1408,14 +1439,9 @@ print "DEBUG getting todays passwords\n";
 	$USERNAMESNEWTODAY=&commify( $USERNAMESNEWTODAY);
 	$TODAYSUNIQUEIPS=&commify( $TODAYSUNIQUEIPS);
 	$IPSNEWTODAY=&commify( $IPSNEWTODAY);
+
 	chomp $TODAY;
 	`sed -i 's/Login Attempts Today.*\$/Login Attempts Today:--> $TODAY/' $TMP_HTML_DIR/index.shtml`;
-	chomp $THIS_MONTH;
-	`sed -i 's/Login Attempts This Month.*\$/Login Attempts This Month:--> $THIS_MONTH/' $TMP_HTML_DIR/index.shtml`;
-	chomp $THIS_YEAR;
-	`sed -i 's/Login Attempts This Year.*\$/Login Attempts This Year:--> $THIS_YEAR/' $TMP_HTML_DIR/index.shtml`;
-	chomp $TOTAL;
-	`sed -i 's/Login Attempts Since Logging Started.*\$/Login Attempts Since Logging Started:--> $TOTAL/' $TMP_HTML_DIR/index.shtml`;
 
 	chomp $TODAYSUNIQUEPASSWORDS;
 	`sed -i 's/Unique Passwords Today.*\$/Unique Passwords Today:--> $TODAYSUNIQUEPASSWORDS/' $TMP_HTML_DIR/index.shtml`;
@@ -1456,32 +1482,49 @@ print "DEBUG getting todays passwords\n";
 	chomp $IPSNEWTODAY;
 	`sed -i 's/New IPs Today.*\$/New IPs Today:--> $IPSNEWTODAY/' $TMP_HTML_DIR/index-long.shtml`;
 
-	if ( "x$HOSTNAME" == "x/" ) {
+	if ( "x$HOSTNAME" eq "x/" ) {
+		if ( $DEBUG  == 1 ) { print  "DEBUG-looking for honeypots now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 
-		$HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\\|sshd |awk '{print \$2}'  |grep -v longtail |sort -T $TMP_DIRECTORY -u |wc -l`;
+		#$HONEYPOTSTODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\\|sshd |awk '{print \$2}'  |grep -v longtail |sort -T $TMP_DIRECTORY -u |wc -l`;
+		#`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\\|sshd |awk '{print \$2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c | awk '{printf(\"<TR><TD>%d</TD><TD>%s</TD></TR>\\n\",\$1,\$2)}' >> $TMP_HTML_DIR/todays_honeypots.shtml`;
 
+print "DEBUG DEBUG_DATE is $DEBUG_DATE\n";
+		`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | egrep IP:\\|sshd |awk '{print \$2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > $TMP_HTML_DIR/todays-honeypots.txt`;
+		`cat $TMP_HTML_DIR/todays-honeypots.txt |wc -l  > $TMP_HTML_DIR/todays-honeypots.txt.count`;
+
+		$HONEYPOTSTODAY=`cat $TMP_HTML_DIR/todays-honeypots.txt.count`;
 		chomp $HONEYPOTSTODAY;
+
 
 	`sed -i 's/Number of Honeypots Today:.*\$/Number of Honeypots Today:--> $HONEYPOTSTODAY/' $TMP_HTML_DIR/index.shtml`;
 	`sed -i 's/Number of Honeypots Today:.*\$/Number of Honeypots Today:--> $HONEYPOTSTODAY/' $TMP_HTML_DIR/index-long.shtml`;
 		
 		&make_header ("$TMP_HTML_DIR/todays_honeypots.shtml", "Today's honeypots", "Count reflects log entries, not actual login attempts", "Entries in syslog", "Hostname" );
+		open(INPUT_HONEY, "$TMP_HTML_DIR/todays-honeypots.txt");
+		open (OUTPUT, "$TMP_HTML_DIR/todays_honeypots.shtml");
+		while (<INPUT_HONEY>){
+			chomp;
+			($count,$name)=split(/\s/,$_,2);
+ 			print(OUTPUT "<TR><TD>$count<TD><TD>$name</TD></TR>\n");
+		}
+		close(INPUT_HONEY);
+		close(OUTPUT);
 
-		`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\\|sshd |awk '{print \$2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c | awk '{printf(\"<TR><TD>%d</TD><TD>%s</TD></TR>\\n\",\$1,\$2)}' >> $TMP_HTML_DIR/todays_honeypots.shtml`;
 
 		&make_footer ("$TMP_HTML_DIR/todays_honeypots.shtml" );
 		#
 		# Is this really necessary?  2015-08-20
-		#
-		`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\\|sshd |awk '{print \$2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > $TMP_HTML_DIR/todays_honeypots.data`;
+		# 2015-12-31 Apparently not :-)
+		#`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\\|sshd |awk '{print \$2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > $TMP_HTML_DIR/todays_honeypots.data`;
 	}
 	else{
 		$HONEYPOTSTODAY=1	
 	}
+	if ( $DEBUG  == 1 ) { print  "DEBUG-Done looking for honeypots now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	
 	chdir ("$ORIGINAL_DIRECTORY");
 
-	print "DEBUG end of count_ssh_attacks\n";
+	print "DEBUG end of count_ssh_attacks "; $TMP=`date`;print $TMP;
 } # end of sub count_ssh_attacks
 	
 sub todays_assorted_stats {
@@ -1530,10 +1573,12 @@ sub todays_assorted_stats {
 	my $NORMALIZED_MIN=0;
 	my $NORMALIZED_STD=0;
 
+	my $TODAY=0;
+
 	my $file=shift;
 	my $outputfile=shift;
 	if ( $DEBUG  == 1 ) { print "============================================\n"; }
-	if ( $DEBUG  == 1 ) { print  "DEBUG-in todays_assorted_stats/This Month now\n" ; `date`; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-in todays_assorted_stats/This Month now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 
 	#
 	# TODAY
@@ -1586,11 +1631,11 @@ sub todays_assorted_stats {
 	# No real statistics yet.
 	#
 	if ( -e "$TMP_YEAR/$TMP_MONTH" ) { 
-		if ( $DEBUG  == 1 ) { print   "DEBUG-in todays_assorted_stats/This Month/Statistics now\n" ; `date` ;}
+		if ( $DEBUG  == 1 ) { print   "DEBUG-in todays_assorted_stats/This Month/Statistics now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; ;}
 		@a=();
 $TMP=`pwd`;
-print "DEBUG pwd is $TMP\n";
-print "DEBUG FFF Find $TMP_YEAR/$TMP_MONTH/*/$file\n";
+#print "DEBUG pwd is $TMP\n";
+#print "DEBUG FFF Find $TMP_YEAR/$TMP_MONTH/*/$file\n";
 		open (FIND, "find $TMP_YEAR/$TMP_MONTH/*/ -name $file|");
 		$tmp_count=0;
 		while(<FIND>){
@@ -1652,7 +1697,7 @@ print "DEBUG FFF Find $TMP_YEAR/$TMP_MONTH/*/$file\n";
 	# LAST MONTH
 	#
 	chdir ("$TMP_HTML_DIR/historical/");
-		if ( $DEBUG  == 1 ) { print "DEBUG-in todays_assorted_stats/Last Month now\n" ; }
+		if ( $DEBUG  == 1 ) { print "DEBUG-in todays_assorted_stats/REALLY in Last Month now\n" ; }
 #
 # Gotta fix this for the year boundary
 #
@@ -1665,7 +1710,7 @@ print "DEBUG FFF Find $TMP_YEAR/$TMP_MONTH/*/$file\n";
 	#	COUNT=`cat $FILE`
 	#	(( TMP += $COUNT ))
 	#done
-	open (FIND, "find $TMP_YEAR/$TMP_LAST_MONTH -name $file |");
+	open (FIND, "find $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH -name $file |");
 	$tmp_count=0;
 	while (<FIND>){
 		chomp;
@@ -1689,7 +1734,7 @@ print "DEBUG FFF Find $TMP_YEAR/$TMP_MONTH/*/$file\n";
 	# Gotta do the date calculation to figure out "When" is last month
 	#
 	if ( -d "$TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH" ) {
-		if ( $DEBUG  == 1 ) { print  "DEBUG-in todays_assorted_stats/Last Month/statistics now\n" ; `date` };
+		if ( $DEBUG  == 1 ) { print  "DEBUG-in todays_assorted_stats/Last Month/statistics now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; };
 
     @a=();
     open (FIND, "find $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/*/ -name $file|");
@@ -1763,11 +1808,11 @@ print "DEBUG FFF Find $TMP_YEAR/$TMP_MONTH/*/$file\n";
 	# THIS YEAR
 	#
 	chdir ("$TMP_HTML_DIR/historical/");
-		if ( $DEBUG  == 1 ) { print "DEBUG-in todays_assorted_stats/Last Month now\n" ; }
+		if ( $DEBUG  == 1 ) { print "DEBUG-in todays_assorted_stats/Last Year now\n" ; }
 #
 # Gotta fix this for the year boundary
 #
-	$TMP_YEAR=`date "+%Y" --date="last month"`;
+	$TMP_YEAR=`date "+%Y" `;
 	chomp $TMP_YEAR;
 	$TMP=0;
 
@@ -1794,7 +1839,7 @@ print "DEBUG FFF Find $TMP_YEAR/$TMP_MONTH/*/$file\n";
 	# Gotta do the date calculation to figure out "When" is last month
 	#
 	if ( -d "$TMP_YEAR" ) {
-		if ( $DEBUG  == 1 ) { print  "DEBUG-in todays_assorted_stats/Last Month/statistics now\n" ; `date` };
+		if ( $DEBUG  == 1 ) { print  "DEBUG-in todays_assorted_stats/Last Month/statistics now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; };
 
     @a=();
     open (FIND, "find $TMP_YEAR/*/*/ -name $file|");
@@ -1864,13 +1909,13 @@ print "DEBUG FFF Find $TMP_YEAR/$TMP_MONTH/*/$file\n";
 	# EVERYTHING
 	#
 	# I have no idea where this breaks, but it's a big-ass number of files
-print "DEBUG before EVERYTHING\n";
+#print "DEBUG before EVERYTHING\n";
 
 	#
 	# THIS EVERYTHING
 	#
 	chdir ("$TMP_HTML_DIR/historical/");
-		if ( $DEBUG  == 1 ) { print "DEBUG-in todays_assorted_stats/Last Month now\n" ; }
+		if ( $DEBUG  == 1 ) { print "DEBUG-in todays_assorted_stats/Everything now\n" ; }
 #
 # Gotta fix this for the year boundary
 #
@@ -1901,7 +1946,7 @@ print "DEBUG before EVERYTHING\n";
 	# Gotta do the date calculation to figure out "When" is last month
 	#
 	if ( -d "$TMP_EVERYTHING" ) {
-		if ( $DEBUG  == 1 ) { print  "DEBUG-in todays_assorted_stats/Last Month/statistics now\n" ; `date` };
+		if ( $DEBUG  == 1 ) { print  "DEBUG-in todays_assorted_stats/Last Month/statistics now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; };
 
     @a=();
     open (FIND, "find $TMP_EVERYTHING/*/*/ -name $file|");
@@ -1971,7 +2016,8 @@ print "DEBUG before EVERYTHING\n";
 	# Normalized data
 	#
 print "DEBUG before Normalized data\n";
-#NOTYETCONVERTED	if ( "x$HOSTNAME" == "x" ) {
+print "THIS STILL needs to be converted to perl\n\n\n\n";
+#NOTYETCONVERTED	if ( "x$HOSTNAME" eq "x" ) {
 #NOTYETCONVERTED		print -n  "IN Normalized data, no hostname set" ; date
 #NOTYETCONVERTED		# I have no idea where this breaks, but it's a big-ass number of files
 #NOTYETCONVERTED		chdir ("$HTML_DIR
@@ -2056,7 +2102,7 @@ sub ssh_attacks {
 	my $DATE=shift;
 	my $MESSAGES=shift;
 	my $FILE_PREFIX=shift;
-	if ( $DEBUG  == 1 ) { print "DEBUG TMP_HTML_DIR=$TMP_HTML_DIR, YEAR=$YEAR, PATH_TO_VARLOG=$PATH_TO_VAR_LOG, $DATE, MESSAGES=$MESSAGES, FILE_PREFIX=$FILE_PREFIX\n" ; }
+	if ( $DEBUG  == 1 ) { print "DEBUG TMP_HTML_DIR=$TMP_HTML_DIR, YEAR=$YEAR, PATH_TO_VARLOG=$PATH_TO_VAR_LOG, DATE=$DATE, MESSAGES=$MESSAGES, FILE_PREFIX=$FILE_PREFIX\n" ; }
 
 	#
 	# I do a chdir ("tp $PATH_TO_VAR_LOG to reduce the commandline length.  If the 
@@ -2075,12 +2121,12 @@ sub ssh_attacks {
 	# So we grep out Username:\ \  so my reports work
 	# It took 55 days for this bug to show up
 
-	if ( $DEBUG  == 1 ) { print  "DEBUG-Making temp file now "  ;`date`; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-Making temp file now "  ;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 
-	if ( "x$HOSTNAME" == "x/" ) {
+	if ( "x$HOSTNAME" eq "x/" ) {
 		print "hostname is not set\n";
 		print "PROTOCOL is $PROTOCOL\n";
-		print "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now\n";
+		print "Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now\n";
 		#
 		# Because $MESSAGES can be several files, some compressed
 		# I can't use the perl 'seek' command to speed things up
@@ -2127,7 +2173,7 @@ sub ssh_attacks {
 	}
 	else {
 		print "hostname IS set to $HOSTNAME.\n";
-	if ( $DEBUG  == 1 ) { print  "DEBUG-Making temp file for HOSTNAME:$HOSTNAME now "  ;`date`; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-Making temp file for HOSTNAME:$HOSTNAME now "  ;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 		`$SCRIPT_DIR/catall.sh $MESSAGES |awk '\$2 == "'$HOSTNAME'" {print}' |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$`;
 	}
 
@@ -2137,7 +2183,7 @@ sub ssh_attacks {
 	# This takes longer to run than "admin" passwords because there are so 
 	# many more root passwords to look at.
 	#
-	if ( $DEBUG  == 1 ) {  print  "DEBUG-ssh_attack 1\n" ; `date`; }
+	if ( $DEBUG  == 1 ) {  print  "DEBUG-ssh_attack 1:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml", "Root Passwords", " ", "Count", "Password");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml", "Admin Passwords", " ", "Count", "Password");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml", "Non Root Passwords", " ", "Count", "Password");
@@ -2180,6 +2226,7 @@ sub ssh_attacks {
 			print (OUTPUT_ROOT_PASSWORDS_TO_BE_SORTED $_);
 		}
 		elsif (/Username\:\ admin/){
+#print "DEBUG admin password found\n";
       $_ =~ s/^..*Password: //;
       $_ =~ s/^..*Password:$/ /;
       $_ =~ s/ /\&nbsp;/g;
@@ -2227,22 +2274,28 @@ sub ssh_attacks {
 	}
 	close (INPUT);
 	close (OUTPUT_ROOT_PASSWORDS);
-
 	unlink ("$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.tmp.data");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml", "Top 20 Root Passwords", "", "Count", "Password");
 	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml | head -21   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml`;
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml");
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml");
-	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data`;
+	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data`;
+print "DEBUG Just made $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data\n";
+$tmp=`ls -l $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data`;
+print $tmp;
 
 	&touch ("$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml.gz");
 	unlink("$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml.gz");
 	`gzip $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml`;
-print "DEBUG-done with root passwords\n";
+
 
 	#
 	# admin passwords next
 	#
+print "DEBUG Doing admin passwords now\n";
+$tmp=`ls -l $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.tmp.data`;
+print $tmp;
+
 	open (INPUT, "sort -T $TMP_DIRECTORY $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.tmp.data |uniq -c|sort -T $TMP_DIRECTORY -nr |");
 	open (OUTPUT_ADMIN_PASSWORDS, ">>$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml")||die "Can't open $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml, exiting now!\n";
 	while (<INPUT>){
@@ -2259,7 +2312,10 @@ print "DEBUG-done with root passwords\n";
 	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml | head -21   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml`;
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml");
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml");
-	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.data`;
+	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.data`;
+print "\n============================================================\n";
+$tmp=`ls -l $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.data`;
+print $tmp;
 
 #	&touch ("$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml.gz");
 #	unlink("$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml.gz");
@@ -2286,9 +2342,9 @@ print "DEBUG-done with root passwords\n";
 	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml | head -21   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml`;
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml");
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml");
-	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.data`;
+	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.data`;
 
-print "DEBUG-done with non-root passwords\n";
+#print "DEBUG-done with non-root passwords\n";
 
 
 
@@ -2311,18 +2367,18 @@ print "DEBUG-done with non-root passwords\n";
 	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -21   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml`;
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml");
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml");
-	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data`;
+	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data`;
 
-print "DEBUG-done with non-root accounts\n";
+#print "DEBUG-done with non-root accounts\n";
 
 	#-------------------------------------------------------------------------
 	# This works but gives only IP addresses
-	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 5 " ; `date` ; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 5 " ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; ; }
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml", "IP Addresses", " ", "Count", "IP Address", "Country", "WhoIS", "Blacklisted", "Attack Patterns");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml", "Top 20 IP Addresses", " ", "Count", "IP Address", "Country", "WhoIS", "Blacklisted", "Attack Patterns");
 	# I need to make a temp file for this
 
-	if ( "x$HOSTNAME" == "x/" ) {
+	if ( "x$HOSTNAME" eq "x/" ) {
 		open (OUTPUT, ">$TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt");
 		print (OUTPUT "# http://longtail.it.marist.edu \n");
 		print (OUTPUT "# This is a sorted list of IP addresses that have tried to login\n" );
@@ -2345,8 +2401,8 @@ print "DEBUG-done with non-root accounts\n";
 		`mv $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp`;
 		`$SCRIPT_DIR/LongTail_add_country_to_ip.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp > $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt`;
 		`$SCRIPT_DIR/LongTail_make_map.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt > $TMP_HTML_DIR/$FILE_PREFIX-map.html`;
-		print "DEBUG $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp\n";
-		print "DEBUG $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.tmp.txt\n";
+		##print "DEBUG $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp\n";
+		#print "DEBUG $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.tmp.txt\n";
 	}
 
 	#
@@ -2380,7 +2436,7 @@ print "DEBUG-done with non-root accounts\n";
 
 	#-------------------------------------------------------------------------
 	# This translates IPs to countries
-	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 6, doing whois.pl lookups " ; `date`; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 6, doing whois.pl lookups " ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml", "Attacks by Country", " ", "Count", "Country");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml", "Top 20 Countries", " ", "Count", "Country");
 	# I need to make a temp file for this
@@ -2397,7 +2453,7 @@ print "DEBUG-done with non-root accounts\n";
 	
 	#-------------------------------------------------------------------------
 	# Figuring out most common non-root pairs
-	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 7 Figuring out most common non-root pairs " ; `date`; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 7 Figuring out most common non-root pairs " ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml", "Non Root Pairs", " ", "Count", "Account:Password");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml", "Top 20 Non Root Pairs", " ", "Count", "Account:Password");
 	if ( $DEBUG  == 1 ) { print "DEBUG current non-root-pairs\n"; }
@@ -2421,7 +2477,7 @@ print "DEBUG-done with non-root accounts\n";
 
 	#-------------------------------------------------------------------------
 	# Report ssh-attacks-by-time-of-day (Data collected earlier)
-	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 7B Figuring out ssh-attacks-by-time-of-day " ; `date`; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 7B Figuring out ssh-attacks-by-time-of-day " ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-ssh-attacks-by-time-of-day.shtml", "Historical SSH Attacks By Time Of Day", "", "Hour of Day", "Count");
 	open (OUTPUT, ">>$TMP_HTML_DIR/$FILE_PREFIX-ssh-attacks-by-time-of-day.shtml");
 	my $hour_counter=0;
@@ -2438,8 +2494,8 @@ print "DEBUG-done with non-root accounts\n";
 	# This only prints the account and the password
 	# This is different from the temp file I make earlier as it does
 	# a grep for both Password AND password (Note the capitalization differences).
-	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 8, gathering data for raw-data.gz " ; `date`; }
-	if ( $FILE_PREFIX == "current" ) {
+	if ( $DEBUG  == 1 ) { print  "DEBUG-ssh_attack 8, gathering data for raw-data.gz " ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
+	if ( $FILE_PREFIX eq "current" ) {
 		if ( $OBFUSCATE_IP_ADDRESSES > 0 ) {
 #NOTYETCONVERTED			cat $TMP_DIRECTORY/LongTail-messages.$$  |sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 		print "DEBUG OBFUSCATE_IP_ADDRESSES disabled for now\n";
@@ -2448,7 +2504,7 @@ print "DEBUG-done with non-root accounts\n";
 			}
 		}
 		# Code do avoid doing this if REBUILD is set
-print "DEBUG REBUILD is set to $REBUILD\n";
+#print "DEBUG REBUILD is set to $REBUILD\n";
 		if ( $REBUILD  != 1 ) {
 			print "REBUILD NOT SET, copying .gz file now\n";
 			# Lets make sure we have one for today and this month and this year
@@ -2473,7 +2529,7 @@ print "DEBUG REBUILD is set to $REBUILD\n";
 			`cp $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz`;
 			`chmod a+r $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-raw-data.gz`;
 #NOTYETCONVERTED			for dir in $HOSTS_PROTECTED  {
-#NOTYETCONVERTED				if ( "x$HOSTNAME" == "x$dir" ) {
+#NOTYETCONVERTED				if ( "x$HOSTNAME" eq "x$dir" ) {
 #NOTYETCONVERTED					&touch $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data.notfullday
 #NOTYETCONVERTED					print $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/
 #NOTYETCONVERTED				}
@@ -2483,12 +2539,13 @@ print "DEBUG REBUILD is set to $REBUILD\n";
 		} 
 
 
-	if ( $DEBUG ) { print  "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz "; `date`;}
+	if ( $DEBUG ) { print  "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz "; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	#
 	# I only need the count data for today, so there's no point counting 7, 30, or historical
 	#
-	if ( $FILE_PREFIX == "current" ) {
+	if ( $FILE_PREFIX eq "current" ) {
 		$TODAY=`$SCRIPT_DIR/catall.sh $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz  |grep $PROTOCOL | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`;
+		chomp $TODAY;
 		open (OUTPUT, ">$TMP_HTML_DIR/$FILE_PREFIX-attack-count.data");
 		print (OUTPUT "$TODAY");
 		close (OUTPUT);
@@ -2505,7 +2562,7 @@ print "DEBUG REBUILD is set to $REBUILD\n";
 	# the function.
 	chdir ("$ORIGINAL_DIRECTORY");
 	unlink("$TMP_DIRECTORY/LongTail-messages.$$");
-	if ( $DEBUG  == 1 ) { print  "DEBUG-Done with ssh_attack\n " ; `date`; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-Done with ssh_attack: " ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	`date > $TMP_HTML_DIR/date_updated.txt`;
 }
 
@@ -2535,7 +2592,6 @@ sub make_trends {
 			$TMP =~ s/$/ <\/a>/;
 			print (OUTPUT "$tmp\n");
 			print (OUTPUT "</TD>\n");
-			#grep TR $FILE | sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; >> $TMPFILE
 			open (INPUT_2, $FILE);
 			while (<INPUT_2>){
 				if (/TR/){
@@ -2578,7 +2634,7 @@ sub make_trends {
 		# commented this out for debugging unlink($TMPFILE);
 	
 		&make_footer ("$HTML_DIR/trends-in-non-root-passwords.shtml");
-		`sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-non-root-passwords.shtml`;
+		`sed -i 's\/<TD>\/<TD class="td-some-name">\/g' $HTML_DIR/trends-in-non-root-passwords.shtml`;
 		
 	
 #NOTYETCONVERTED		#-----------------------------------------------------------------
@@ -2753,6 +2809,7 @@ sub do_ssh {
 	&ssh_attacks ("$HTML_DIR", "$YEAR", "$PATH_TO_VAR_LOG", "$DATE", "$LOGFILE*", "current");
 
 	if ( $START_HOUR == $MIDNIGHT ) {
+	#if ( $START_HOUR == 16 ) {
 		if ( $DEBUG  == 1 ) { print "DEBUG-in do_ssh/last 7 days  now\n" ; }
 		#----------------------------------------------------------------
 		# Lets check the ssh logs for the last 7 days
@@ -2760,8 +2817,10 @@ sub do_ssh {
 		$i=1;
 		while ($i < 8) {
 			$TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`;
+			chomp $TMP_DATE;
+print "DEBUG looking for $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz\n";
 			if ( -e "$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz" ) {
-				if ( "$LAST_WEEK" == "" ) {
+				if ( "$LAST_WEEK" eq "" ) {
 					$LAST_WEEK="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz";
 				} else {
 					$LAST_WEEK="$LAST_WEEK $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz";
@@ -2771,7 +2830,9 @@ sub do_ssh {
 		}
 		if ( $DEBUG  == 1 ) { print "DEBUG-done with do_ssh/last 7 days  now\n" ; }
 		$TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG;
-		if ( $DEBUG  == 1 ) { print "DEBUG-calling last 7 days report now\n" ;;$TMP_DATE=`date`; print "$TMP_DATE"; }
+		if ( $DEBUG  == 1 ) { print "DEBUG-calling last 7 days report now\n" ;;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
+print "\n\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1\n\n";
+print "Calling ssh attacks with HTML_DIR=$HTML_DIR, YEAR=$YEAR, /, ., $LAST_WEEK, last-7-days\n";
 		&ssh_attacks ($HTML_DIR, $YEAR, "/", ".", "$LAST_WEEK", "last-7-days");
 		$PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG;
 	
@@ -2782,8 +2843,9 @@ sub do_ssh {
 		$i=1;
 		while ($i < 31) {
 			$TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`;
+			chomp $TMP_DATE;
 			if ( -e "$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz" ) {
-				if ( "$LAST_MONTH" == "" ) {
+				if ( "$LAST_MONTH" eq "" ) {
 					$LAST_MONTH="$HTML_DIR/historical/$TMP_DATE/current-raw-data.gz";
 				} else {
 					$LAST_MONTH="$LAST_MONTH $HTML_DIR/historical/$TMP_DATE/current-raw-data.gz";
@@ -2792,39 +2854,38 @@ sub do_ssh {
 			$i++;
 		}
 		$TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG;
-		if ( $DEBUG  == 1 ) { print "DEBUG-calling last 30 days report now\n" ;;$TMP_DATE=`date`; print "$TMP_DATE"; }
+		if ( $DEBUG  == 1 ) { print "DEBUG-calling last 30 days report now\n" ;;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 		&ssh_attacks ($HTML_DIR, $YEAR, "/", ".", "$LAST_MONTH", "last-30-days");
 		$PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG;
 
-		if ( $DEBUG  == 1 ) { print "DEBUG-in do_ssh/historical  now\n" ;;$TMP_DATE=`date`; print "$TMP_DATE"; }
+		if ( $DEBUG  == 1 ) { print "DEBUG-in do_ssh/historical  now\n" ;;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 		$TMP_PATH_TO_VAR_LOG=$PATH_TO_VAR_LOG;
-		if ( $DEBUG  == 1 ) { print "DEBUG-calling historical report now\n" ;;$TMP_DATE=`date`; print "$TMP_DATE"; }
+		if ( $DEBUG  == 1 ) { print "DEBUG-calling historical report now\n" ;;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 		&ssh_attacks ($HTML_DIR, $YEAR, "/$HTML_DIR/historical/", ".",      "*/*/*/current-raw-data.gz", "historical");
 		$PATH_TO_VAR_LOG=$TMP_PATH_TO_VAR_LOG;
 		#----------------------------------------------------------------
 		# Lets make zero out the last-30-days-attack-count.data
-		open (TMP_FILE,">$HTML_DIR/last-30-days-attack-count.data");
-		close (TMP_FILE);
-		open (TMP_FILE,">$HTML_DIR/last-30-days-sshpsycho-attack-count.data");
-		close (TMP_FILE);
-		open (TMP_FILE,">$HTML_DIR/last-30-days-sshpsycho-2-attack-count.data");
-		close (TMP_FILE);
-		open (TMP_FILE,">$HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data");
-		close (TMP_FILE);
-		open (TMP_FILE,">$HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data");
-		close (TMP_FILE);
+		open (TMP_FILE,">$HTML_DIR/last-30-days-attack-count.data"); close (TMP_FILE);
+		open (TMP_FILE,">$HTML_DIR/last-30-days-sshpsycho-attack-count.data"); close (TMP_FILE);
+		open (TMP_FILE,">$HTML_DIR/last-30-days-sshpsycho-2-attack-count.data"); close (TMP_FILE);
+		open (TMP_FILE,">$HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data"); close (TMP_FILE);
+		open (TMP_FILE,">$HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data"); close (TMP_FILE);
+		open (TMP_FILE,">$HTML_DIR/last-30-days-todays-uniq-ips-txt-count.data"); close (TMP_FILE);
+		open (TMP_FILE,">$HTML_DIR/last-30-days-todays-uniq-passwords-txt-count.data"); close (TMP_FILE);
+		open (TMP_FILE,">$HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data"); close (TMP_FILE);
 		$i=1;
 		while ($i < 31){
-			if ( $DEBUG  == 1 ) { print "DEBUG-i is set to $i\n" ;$TMP_DATE=`date`; print "$TMP_DATE"; }
-			if ( $DEBUG  == 1 ) { print "DEBUG-in do_ssh/last 30 days misc stuff  now\n" ; }
+			#if ( $DEBUG  == 1 ) { print "DEBUG-i is set to $i\n" ;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
+			#if ( $DEBUG  == 1 ) { print "DEBUG-in do_ssh/last 30 days misc stuff  now\n" ; }
 			$TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`;
 			chomp $TMP_DATE;
 			$TMP_DATE2=`date "+%m/%d" --date="$i day ago"`;
 			chomp $TMP_DATE2;
-print "DEBUG-da"; $TMP_DATE=`date`; print "$TMP_DATE";
+#print "DEBUG-da"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-attack-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/current-attack-count.data" ) {
 				$tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-attack-count.data`;
+				chomp ($tmp_attack_count);
 				print (TMP_OUTPUT "$tmp_attack_count $TMP_DATE2\n");
 			} 
 			else {
@@ -2832,83 +2893,90 @@ print "DEBUG-da"; $TMP_DATE=`date`; print "$TMP_DATE";
 			}
 			close (TMP_OUTPUT);
 
-print "DEBUG-db"; $TMP_DATE=`date`; print "$TMP_DATE";
+#print "DEBUG-db"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 			open (TMP_OUTPUT, ">>  $HTML_DIR/last-30-days-sshpsycho-attack-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-attack-count.data" ) {
 				$tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-attack-count.data`;
+				chomp ($tmp_attack_count);
 				print (TMP_OUTPUT "$tmp_attack_count $TMP_DATE2\n");
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
 			}
 			close (TMP_OUTPUT);
 
-print "DEBUG-dc"; $TMP_DATE=`date`; print "$TMP_DATE";
+#print "DEBUG-dc"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-2-attack-count.data" ) {
 				$tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-2-attack-count.data`;
+				chomp ($tmp_attack_count);
 				print (TMP_OUTPUT "$tmp_attack_count $TMP_DATE2\n");
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
 			}
 			close (TMP_OUTPUT);
 
-print "DEBUG-dd"; $TMP_DATE=`date`; print "$TMP_DATE";
+#print "DEBUG-dd"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 			open (TMP_OUTPUT, ">>$HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/current-friends_of_sshpsycho-attack-count.data" ) {
 				$tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-friends_of_sshpsycho-attack-count.data`;
+				chomp ($tmp_attack_count);
 				print (TMP_OUTPUT "$tmp_attack_count $TMP_DATE2\n");
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
 			}
 			close (TMP_OUTPUT);
 
-print "DEBUG-de"; $TMP_DATE=`date`; print "$TMP_DATE";
+#print "DEBUG-de"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/current-associates_of_sshpsycho-attack-count.data" ) {
 				$tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-associates_of_sshpsycho-attack-count.data`;
+				chomp ($tmp_attack_count);
 				print (TMP_OUTPUT "$tmp_attack_count $TMP_DATE2\n");
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
 			}
 			close (TMP_OUTPUT);
 
-print "DEBUG-df"; $TMP_DATE=`date`; print "$TMP_DATE";
+#print "DEBUG-df"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-todays-uniq-ips-txt-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/todays-uniq-ips.txt.count" ) {
 				$tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/todays-uniq-ips.txt.count`;
+				chomp ($tmp_attack_count);
 				print (TMP_OUTPUT "$tmp_attack_count $TMP_DATE2\n");
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
 			}
 			close (TMP_OUTPUT);
 
-print "DEBUG-dg"; $TMP_DATE=`date`; print "$TMP_DATE";
+#print "DEBUG-dg"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-todays-uniq-passwords-txt-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/todays-uniq-passwords.txt.count" ) {
 				$tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/todays-uniq-passwords.txt.count`;
+				chomp ($tmp_attack_count);
 				print (TMP_OUTPUT "$tmp_attack_count $TMP_DATE2\n");
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
 			}
 			close (TMP_OUTPUT);
 
-print "DEBUG-dh"; $TMP_DATE=`date`; print "$TMP_DATE";
+#print "DEBUG-dh"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/todays-uniq-usernames.txt.count" ) {
 				$tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/todays-uniq-usernames.txt.count`;
+				chomp ($tmp_attack_count);
 				print (TMP_OUTPUT "$tmp_attack_count $TMP_DATE2\n");
 			} else {
 				#echo "Can't find /$HTML_DIR/historical/$TMP_DATE/todays-uniq-usernames.txt.count "
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
 			}
 			close (TMP_OUTPUT);
-
+			$i++;
 		} # End of if ( $START_HOUR == $MIDNIGHT )
 
-print "DEBUG-di"; $TMP_DATE=`date`; print "$TMP_DATE";
+print "DEBUG-di"; $DEBUG_DATE=`date`; print "$DEBUG_DATE";
 		
 			if ( $DEBUG  == 1 ) { print "DEBUG-reversing files  now\n" ; }
-		foreach (split (/ /,"$HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data $HTML_DIR/last-30-days-todays-uniq-passwords-txt-count.data $HTML_DIR/last-30-days-todays-uniq-ips-txt-count.data  $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data") ){
+		foreach (split (/\s+/,"$HTML_DIR/last-30-days-sshpsycho-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data $HTML_DIR/last-30-days-todays-uniq-passwords-txt-count.data $HTML_DIR/last-30-days-todays-uniq-ips-txt-count.data $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data") ){
 			print "DEBUG reversing file $_ now\n";
 			$file =$_;
 			`cp $file $file.tmp`;
@@ -2929,8 +2997,8 @@ print "DEBUG-di"; $TMP_DATE=`date`; print "$TMP_DATE";
 		close (TMP_FILE);
 		$i=1;
 		while ($i < 31){
-			if ( $DEBUG  == 1 ) { print "DEBUG-i is set to $i\n" ;$TMP_DATE=`date`; print "$TMP_DATE"; }
-			if ( $DEBUG  == 1 ) { print "DEBUG-in do_ssh/last 30 days misc stuff  now\n" ; }
+			#if ( $DEBUG  == 1 ) { print "DEBUG-i is set to $i\n" ;$DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
+			#if ( $DEBUG  == 1 ) { print "DEBUG-in do_ssh/last 30 days misc stuff  now\n" ; }
 			$TMP_DATE=`date "+%Y/%m/%d" --date="$i day ago"`;
 			chomp $TMP_DATE;
 			$TMP_DATE2=`date "+%m/%d" --date="$i day ago"`;
@@ -2939,6 +3007,7 @@ print "DEBUG-di"; $TMP_DATE=`date`; print "$TMP_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-password-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/todays_password.count" ) {
 				$tmp_password=`cat /$HTML_DIR/historical/$TMP_DATE/todays_password.count`;
+				chomp ($tmp_password);
 				print (TMP_OUTPUT "$tmp_password $TMP_DATE2\n" );
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
@@ -2948,6 +3017,7 @@ print "DEBUG-di"; $TMP_DATE=`date`; print "$TMP_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-username-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/todays_username.count" ) {
 				$tmp_username=`cat /$HTML_DIR/historical/$TMP_DATE/todays_username.count`;
+				chomp ($tmp_username);
 				print (TMP_OUTPUT "$tmp_username $TMP_DATE2\n");
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
@@ -2957,6 +3027,7 @@ print "DEBUG-di"; $TMP_DATE=`date`; print "$TMP_DATE";
 			open (TMP_OUTPUT, ">> $HTML_DIR/last-30-days-ips-count.data");
 			if ( -e "/$HTML_DIR/historical/$TMP_DATE/todays_ips.count" ) {
 				$tmp_ips=`cat /$HTML_DIR/historical/$TMP_DATE/todays_ips.count`;
+				chomp ($tmp_ips);
 				print (TMP_OUTPUT "$tmp_ips $TMP_DATE2\n");
 			} else {
 				print (TMP_OUTPUT "0 $TMP_DATE2\n");
@@ -2991,7 +3062,7 @@ print "DEBUG-di"; $TMP_DATE=`date`; print "$TMP_DATE";
 	
 	#-----------------------------------------------------------------
 	chdir ("$HTML_DIR/");
-	if ( $DEBUG  == 1 ) { print "DEBUG-Making Graphics now\n" ; `date`; }
+	if ( $DEBUG  == 1 ) { print "DEBUG-Making Graphics now\n" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	if ( $GRAPHS == 1 ) {
 	#
 	# Deal with creating empty 7-day, 30-day and historical files the 
@@ -3098,7 +3169,7 @@ print "DEBUG-Graphics-looking for data files\n";
 	print "midnight is set to $MIDNIGHT\n";
 	print "\n";;
 	if ( $START_HOUR == $MIDNIGHT ) {
-	#if ( $START_HOUR == 12 ) 
+	#if ( $START_HOUR == 16 ) {
 		print "\nMaking midnight Graphics now\n\n";
 		open (LS, "/bin/ls historical*.data last-*.data |");
 		while (<LS>){
@@ -3121,41 +3192,54 @@ print "DEBUG-Graphics-looking for data files\n";
 
 				if ( -s "$FILE" ) {
 #					# Hack to make sure we use the real "top 20 non root accounts"
-					if ( "$FILE" == "current-top-20-non-root-accounts.data" ) {
+					if ( "$FILE" eq "current-top-20-non-root-accounts.data" ) {
 						$FILE="current-top-20-non-root-accounts-real.data";
 					}
-					if ( "$FILE" == "last-7-days-top-20-non-root-accounts.data" ) {
+					if ( "$FILE" eq "last-7-days-top-20-non-root-accounts.data" ) {
 						$FILE="last-7-days-top-20-non-root-accounts-real.data";
 					}
-					if ( "$FILE" == "last-30-days-top-20-non-root-accounts.data" ) {
+					if ( "$FILE" eq "last-30-days-top-20-non-root-accounts.data" ) {
 						$FILE="last-30-days-top-20-non-root-accounts-real.data";
 					}
-					if ( "$FILE" == "historical-top-20-non-root-accounts.data" ) {
+					if ( "$FILE" eq "historical-top-20-non-root-accounts.data" ) {
 						$FILE="historical-top-20-non-root-accounts-real.data";
 					}
+print "FILE is $FILE, TITLE is $TITLE, GRAPHIC_FILE is $GRAPHIC_FILE\n\n";
 					if ( $FILE =~ "accounts" ) {
+print "accounts\n";
 						`php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE`;
 						`$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP`;
 					}
 					if ( $FILE =~ "password" ) {
+print "password\n";
 						`php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE`;
 						`$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP`;
 					}
 					if ( $FILE =~ "last-30-days-username-count.data" ) {
+print "\n\n30 days username\n";
 						`php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Usernames" "" "" "wide"> $GRAPHIC_FILE`;
 						`$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP`;
 					}
 					if ( $FILE =~ "last-30-days-password-count.data" ) {
+print "\n\n30 days passwords\n";
 						`php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Passwords" "" "" "wide"> $GRAPHIC_FILE`;
 						`$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP`;
 					}
 					if ( $FILE =~ "last-30-days-ips-count.data" ) {
+print "\n\n30 days ip\n";
+print "FILE is $FILE\n";
+$tmp=`ls -l $FILE`;
+print "$tmp\n";
+$tmp=`pwd`;
+print "$tmp\n";
 						`php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE`;
 						`$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP`;
+#exit;
 					}
 					if ( $FILE =~ "last-30-days-attack-count.data" ) {
+print "\n\n30 days attack count\n";
 						# This works but I want to show sshPsycho data now
-						if ( "x$HOSTNAME" == "x/" ) {
+						if ( "x$HOSTNAME" eq "x/" ) {
 							`php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attacks (Red=sshPsycho-2, Yellow=Friends of sshPsycho, Green=Associates of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE`;
 						} else {
 							`php /usr/local/etc/LongTail_make_graph_sshpsycho.php $HTML_DIR/last-30-days-attack-count.data $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data $HTML_DIR/last-30-days-friends-of-sshpsycho-attack-count.data  $HTML_DIR/last-30-days-associates-of-sshpsycho-attack-count.data "Last 30 Days Attacks (Red=sshPsycho-2, Yellow=Friends of sshPsycho, Blue=others)" "" "" "wide" > $GRAPHIC_FILE`;
@@ -3204,19 +3288,19 @@ print "DEBUG-Graphics-looking for data files\n";
 			}
 		}        
 	} # end of if ( $START_HOUR == $MIDNIGHT ) 
-	if ( $DEBUG  == 1 ) { print "DEBUG-Done Making Graphics now\n" ; `date`; }
+	if ( $DEBUG  == 1 ) { print "DEBUG-Done Making Graphics now\n" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	} # end of if ( $GRAPHS == 1 )     
 } # End of do_ssh
 
 sub make_daily_attacks_chart {
-	$TMP_DATE=`date`;
-	if ( $DEBUG  == 1 ) { print "DEBUG-make_daily_attacks_chart: $TMP_DATE"  }
+	$DEBUG_DATE=`date`;
+	if ( $DEBUG  == 1 ) { print "DEBUG-make_daily_attacks_chart: $DEBUG_DATE"  }
 	chdir ("$HTML_DIR/historical");
 	&make_header ("$HTML_DIR/attacks_by_day.shtml", "Attacks By Day",  "" );
 	`$SCRIPT_DIR/LongTail_make_daily_attacks_chart.pl "$HTML_DIR/historical" >> $HTML_DIR/attacks_by_day.shtml `;
 	&make_footer ("$HTML_DIR/attacks_by_day.shtml");
-	$TMP_DATE=`date`;
-	if ( $DEBUG  == 1 ) { print "DEBUG-Done make_daily_attacks_chart: $TMP_DATE" }
+	$DEBUG_DATE=`date`;
+	if ( $DEBUG  == 1 ) { print "DEBUG-Done make_daily_attacks_chart: $DEBUG_DATE" }
 }
 
 ############################################################################
@@ -3240,12 +3324,14 @@ sub protect_raw_data {
 			chdir ("$TMP_HTML_DIR");
 
 			$count=`find . -name current-raw-data.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA -print -quit | wc -l`;
+			chomp $count;
 			if ( $count > 0 ) {
 				`find . -name current-raw-data.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |xargs chmod go-r`;
 			}
 
 			$count=`find . -name current-raw-data.gz -mtime +$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA -print -quit | wc -l`;
-			if ( $count < 0 ) {
+			chomp $count;
+			if ( $count > 0 ) {
 				`find . -name current-raw-data.gz -mtime +$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |xargs chmod go+r`;
 			}
 		}
@@ -3260,7 +3346,7 @@ sub protect_raw_data {
 sub create_historical_copies {
 	$TMP_HTML_DIR=shift;
 	$REBUILD=1;
-	if ( $DEBUG  == 1 ) { print "DEBUG-In create_historical_copies\n" ; `date`; }
+	if ( $DEBUG  == 1 ) { print "DEBUG-In create_historical_copies:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 
 	if ( $START_HOUR == $MIDNIGHT ) {
 		if ( $DEBUG  == 1 ) { print "DEBUG-Actually running create_historical_copies $START_HOUR == $MIDNIGHT\n" ; }
@@ -3275,7 +3361,7 @@ sub create_historical_copies {
 
 		`mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY`;
 #NOTYETCONVERTED		for dir in $HOSTS_PROTECTED $BLACKRIDGE ; do
-#NOTYETCONVERTED			if ( "x$HOSTNAME" == "x$dir" ) {
+#NOTYETCONVERTED			if ( "x$HOSTNAME" eq "x$dir" ) {
 #NOTYETCONVERTED				&touch $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data.notfullday
 #NOTYETCONVERTED				print $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/
 #NOTYETCONVERTED			}
@@ -3370,7 +3456,7 @@ sub create_historical_copies {
 
 
 	}
-	if ( $DEBUG  == 1 ) { print "DEBUG-DONE with create_historical_copies\n" ; `date`; }
+	if ( $DEBUG  == 1 ) { print "DEBUG-DONE with create_historical_copies\n" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 }
 
 ############################################################################
@@ -3447,15 +3533,15 @@ sub rebuild {
 		#
 		# Make IPs table and count for this day
 		#todays_ips.count
-		`zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u  > $HTML_DIR/historical/$DIRNAME/todays_ips `;
+		`zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |sed 's\/^..*IP: \/\/' |sed 's\/ .*$\/\/'|sort -T $TMP_DIRECTORY -u  > $HTML_DIR/historical/$DIRNAME/todays_ips `;
 		`cat $HTML_DIR/historical/$DIRNAME/todays_ips |wc -l > $HTML_DIR/historical/$DIRNAME//todays_ips.count`;
 
 		# Make todays_password.count
-		`zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |sed 's/^.*Password://'|sed 's/^ //'| sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$DIRNAME//todays_password `;
+		`zcat $HTML_DIR/historical/$DIRNAME/current-raw-data.gz |grep IP: |sed 's\/^.*Password:\/\/'|sed 's\/^ \/\/'| sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$DIRNAME//todays_password `;
 	`cat $HTML_DIR/historical/$DIRNAME/todays_password | wc -l > $HTML_DIR/historical/$DIRNAME//todays_password.count`;
 
 		# Make todays_username.count
-		`zcat $HTML_DIR/historical/$DIRNAME//current-raw-data.gz |grep IP:|sed 's/^.*Username: //' |sed 's/ Password..*$//'|uniq |sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$DIRNAME/todays_username`;
+		`zcat $HTML_DIR/historical/$DIRNAME//current-raw-data.gz |grep IP:|sed 's\/^.*Username: \/\/' |sed 's\/ Password..*$\/\/'|uniq |sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$DIRNAME/todays_username`;
 		`cat $HTML_DIR/historical/$DIRNAME//todays_username | wc -l > $HTML_DIR/historical/$DIRNAME//todays_username.count`;
 
 
@@ -3496,7 +3582,7 @@ sub rebuild {
 # a firewall 
 #
 sub set_hosts_protected_flag {
-	if ( "x$HOSTNAME" == "x/" ) {
+	if ( "x$HOSTNAME" eq "x/" ) {
 	foreach (split (/ /,"$HOSTS_PROTECTED $BLACKRIDGE") ){
 		print "Host is $_\n";
 		$host=$_;
@@ -3514,7 +3600,7 @@ sub set_hosts_protected_flag {
 sub recount_last_30_days_sshpsycho_attacks {
 
 	my $days_ago=0;
-	if ( $DEBUG  == 1 ) { print  "DEBUG-In recount_last_30_days_sshpsycho_attacks" ; `date`; }
+	if ( $DEBUG  == 1 ) { print  "DEBUG-In recount_last_30_days_sshpsycho_attacks" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 	while ( $days_ago < 31){
 		$days_ago++;
 		$YESTERDAY_YEAR=`date "+%Y" --date="$days_ago day ago"`;
@@ -3565,7 +3651,7 @@ sub really_count_sshpsycho_attacks {
 	my $ip_file=shift; # $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses"
 	my $count_data_filename=shift; #"current-sshpsycho-attack-count.data"
 
-	if ( "x$HOSTNAME" == "x/" ) {
+	if ( "x$HOSTNAME" eq "x/" ) {
 		$TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $ip_file |wc -l`;
 	}
 	else {
@@ -3654,8 +3740,8 @@ sub count_sshpsycho_attacks {
 # Main 
 #
 
-$TMP_DATE=`date`;
-print "Started LongTail.sh at: $TMP_DATE";
+$DEBUG_DATE=`date`;
+print "Started LongTail.sh at: $DEBUG_DATE";
 
 &init_variables;
 &read_local_config_file;
@@ -3664,9 +3750,9 @@ $DEBUG=1;
 $SEARCH_FOR="sshd";
 #
 # My processing of arguments sucks and needs to be fixed
-
+print "1\n";
 $arg=shift;
-if ( "x$arg" == "xREBUILD" ) {
+if ( "x$arg" eq "xREBUILD" ) {
 	$run_rebuild=1 ;
 	$SEARCH_FOR="sshd" ;
 	$HTML_DIR="$HTML_DIR/$SSH_HTML_TOP_DIR" ;
@@ -3674,59 +3760,68 @@ if ( "x$arg" == "xREBUILD" ) {
 	$HOSTNAME="/" ;
 }
 else{
-	if ( "x$arg" == "x" ) {
+	if ( "x$arg" eq "x" ) {
 		print "No parameters passed, assuming search for all ssh tries on all hosts\n" ;
 		$SEARCH_FOR="sshd" ;
 		$HTML_DIR="$HTML_DIR/$SSH_HTML_TOP_DIR" ;
 		$HTML_TOP_DIR=$SSH_HTML_TOP_DIR ;
 		$arg=shift;
 	}
-	if ( "x$arg" == "xssh" ) {
+	if ( "x$arg" eq "xssh" ) {
 		print "ssh passed, assuming search for all ssh tries on all hosts\n" ;
 		$SEARCH_FOR="sshd" ;
 		$HTML_DIR="$HTML_DIR/$SSH_HTML_TOP_DIR" ;
 		$HTML_TOP_DIR=$SSH_HTML_TOP_DIR ;
 		$arg=shift;
 	}
-	if ( "x$arg" == "x22" ) {
+	if ( "x$arg" eq "x22" ) {
 		print "22 passed, searching for just ssh port 22\n" ;
 		$SEARCH_FOR="sshd-22" ;
 		$HTML_DIR="$HTML_DIR/$SSH22_HTML_TOP_DIR" ;
 		$HTML_TOP_DIR=$SSH22_HTML_TOP_DIR ;
 		$arg=shift;
 	}
-	if ( "x$arg" == "x2222" ) {
+	if ( "x$arg" eq "x2222" ) {
 		print "2222 passed, searching for just ssh port 2222\n" ;
 		$SEARCH_FOR="sshd-2222" ;
 		$HTML_DIR="$HTML_DIR/$SSH2222_HTML_TOP_DIR" ;
 		$HTML_TOP_DIR=$SSH2222_HTML_TOP_DIR ;
 		$arg=shift;
 	}
-	if ( "x$arg" == "xtelnet" ) { ;
+	if ( "x$arg" eq "xtelnet" ) { ;
 		print "telnet passed, searching for telnet\n" ;
 		$SEARCH_FOR="telnet-honeypot" ;
 		$HTML_DIR="$HTML_DIR/$TELNET_HTML_TOP_DIR" ;
 		$HTML_TOP_DIR=$TELNET_HTML_TOP_DIR ;
 		$arg=shift;
 	}
-	
 	$HOSTNAME=$arg ;
 	if ( "x$HOSTNAME" ne "x" ) {
-		print "hostname set to $HOSTNAME\n" ;
-		$arg=shift;
+		if ( "x$arg" eq "xMIDNIGHT" ) {
+	    print "DEBUG Running midnight routines now\n" ;
+    	$MIDNIGHT=$START_HOUR ;
+			$HOSTNAME="/";
+			$SEARCH_FOR="sshd" ;
+			$HTML_DIR="$HTML_DIR/$SSH_HTML_TOP_DIR" ;
+			$HTML_TOP_DIR=$SSH_HTML_TOP_DIR ;
+  	} else {
+			print "hostname set to $HOSTNAME\n" ;
+			$arg=shift;
+		}
 	} else{
 		# I'm relying on "//" being the same as "/"
 		# in unix :-)
 		$HOSTNAME="/" ;
 	}
-	if ( "x$arg" == "xMIDNIGHT" ) {
+	if ( "x$arg" eq "xMIDNIGHT" ) {
 		print "DEBUG Running midnight routines now\n" ;
 		$MIDNIGHT=$START_HOUR ;
 	}
 }
 
 
-print "HTML_DIR/HOSTNAME is set to $HTML_DIR/$HOSTNAME";
+print "HTML_DIR/HOSTNAME is set to $HTML_DIR/$HOSTNAME\n";
+#exit;
 
 if ( ! -d "$HTML_DIR/$HOSTNAME" ) {
 	print "Can not find $HTML_DIR/$HOSTNAME making it  now\n";
@@ -3817,7 +3912,7 @@ print "DEBUG- Calling make_daily_attacks_chart\n";
 &make_daily_attacks_chart;
 
 if ( "x$HOSTNAME" eq "x/" ) {
-	if ( $SEARCH_FOR == "sshd" ) {
+	if ( $SEARCH_FOR eq "sshd" ) {
 		print "Doing blacklist efficiency tests now\n";
 		&make_header ("$HTML_DIR/blacklist_efficiency.shtml", "Blacklist Efficiency",  "" );
 
@@ -3834,8 +3929,11 @@ print "DEBUG blacklist_efficiency disabled for testing, turn this on again later
 		}
 
 		if ( $START_HOUR == $MIDNIGHT ) {
-			`awk '{print length, $0}' $HTML_DIR/all-password | sort -n | cut -d " " -f2- |tail -2000 >$HTML_DIR/2000-longest-passwords.txt`;
+			
+			if ( $DEBUG  == 1 ) { print "DEBUG-Finding 2000 longest passwords now:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
+			`awk '{print length, \$0}' $HTML_DIR/all-password | sort -n | cut -d " " -f2- |tail -2000 >$HTML_DIR/2000-longest-passwords.txt`;
 
+			if ( $DEBUG  == 1 ) { print "DEBUG-Password Analysis of All Passwords now\n" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 			&make_header ( "$HTML_DIR/password_analysis_all_passwords.shtml", "Password Analysis of All Passwords" , "" );
 			`$SCRIPT_DIR/LongTail_password_analysis_part_1.pl $HTML_DIR/all-password >> $HTML_DIR/password_analysis_all_passwords.shtml`;
 			&make_footer  ("$HTML_DIR/password_analysis_all_passwords.shtml");
@@ -3850,6 +3948,7 @@ print "DEBUG blacklist_efficiency disabled for testing, turn this on again later
 			`$SCRIPT_DIR/LongTail_password_analysis_part_2.pl $HTML_DIR/all-password >> $HTML_DIR/password_list_analysis_all_passwords.shtml`;
 			&make_footer  ("$HTML_DIR/password_list_analysis_all_passwords.shtml");
 
+			if ( $DEBUG  == 1 ) { print "DEBUG-First Occurence of an IP Address:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 			&make_header  ("$HTML_DIR/first_seen_ips.shtml", "First Occurence of an IP Address",  "" );
 			open (FILE, ">>$HTML_DIR/first_seen_ips.shtml");
 			print (FILE "</TABLE>\n");
@@ -3857,6 +3956,7 @@ print "DEBUG blacklist_efficiency disabled for testing, turn this on again later
 			`$SCRIPT_DIR/LongTail_find_first_password_use.pl ips >> $HTML_DIR/first_seen_ips.shtml`;
 			&make_footer  ("$HTML_DIR/first_seen_ips.shtml");
 
+			if ( $DEBUG  == 1 ) { print "DEBUG-First Occurence of an username:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 			&make_header  ("$HTML_DIR/first_seen_usernames.shtml", "First Occurence of an Username", "" );
 			open (FILE, " >> $HTML_DIR/first_seen_usernames.shtml");
 			print (FILE "</TABLE>\n");
@@ -3864,6 +3964,7 @@ print "DEBUG blacklist_efficiency disabled for testing, turn this on again later
 			`$SCRIPT_DIR/LongTail_find_first_password_use.pl usernames >> $HTML_DIR/first_seen_usernames.shtml`;
 			&make_footer  ("$HTML_DIR/first_seen_usernames.shtml");
 
+			if ( $DEBUG  == 1 ) { print "DEBUG-First Occurence of an password:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 			open (FILE, ">> $HTML_DIR/first_seen_passwords.shtml");
 			print (FILE "<PRE>\n");
 			close (FILE);
@@ -3871,10 +3972,12 @@ print "DEBUG blacklist_efficiency disabled for testing, turn this on again later
 			open (FILE, ">> $HTML_DIR/first_seen_passwords.shtml");
 			print (FILE "<\PRE>\n");
 			close (FILE);
-			if ( -e  "$HTML_DIR/first_seen_passwords.shtml.gz" ) {
-				unlink (" $HTML_DIR/first_seen_passwords.shtml.gz");
-			} 
+
+			&touch  ("$HTML_DIR/first_seen_passwords.shtml.gz");
+			unlink ("$HTML_DIR/first_seen_passwords.shtml.gz");
+
 			`gzip $HTML_DIR/first_seen_passwords.shtml`;
+			if ( $DEBUG  == 1 ) { print "DEBUG-Class C Hall Of Shame:" ; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; }
 			&make_header  ("$HTML_DIR/class_c_hall_of_shame.shtml", "Class C Hall Of Shame",  "Top 10 worst offending Class C subnets sorted by the number of attack patterns.  Class C subnets must have over 10,000 login attempts to make this list." );
 			`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl >>/$HTML_DIR/class_c_hall_of_shame.shtml`;
 			&make_footer  ("$HTML_DIR/class_c_hall_of_shame.shtml" );
@@ -3886,7 +3989,7 @@ print "DEBUG blacklist_efficiency disabled for testing, turn this on again later
 	}
 
 	if ( $START_HOUR == $MIDNIGHT ) {
-		print "Starting LongTail_class_c_hall_of_shame.pl now \n"; 
+		print "Starting midnight LongTail_class_c_hall_of_shame.pl now \n"; 
 		&make_header ("$HTML_DIR/class_c_list.shtml", "List of Class C ",  "Class C subnets sorted by the number of attack patterns.");
 		`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
 		&make_footer ("$HTML_DIR/class_c_list.shtml") 
@@ -3895,8 +3998,8 @@ print "DEBUG blacklist_efficiency disabled for testing, turn this on again later
 
 if ( "x$HOSTNAME" eq "x/" ) {
 	if ( $SEARCH_FOR eq "sshd" ) {
-		$TMP_DATE=`date`;
-		print "Starting sshPsycho analysis now :-) : $TMP_DATE" ; 
+		$DEBUG_DATE=`date`;
+		print "Starting sshPsycho analysis now :-) : $DEBUG_DATE" ; 
 		if ( $DEBUG  == 1 ) { print "DEBUG-Doing SSHPsycho report now\n" ; }
 		if ( ! -e "$HTML_DIR/SSHPsycho.shtml") {print "Warning: $HTML_DIR/SSHPsycho.shtml does not exist, this is ok.\n"; }
 		if ( ! -e "$HTML_DIR/attacks/sum2.data") {print "Warning: $HTML_DIR/SSHPsycho.shtml does not exist\nSSHPsycho counting will not be done\n"; }
@@ -3909,26 +4012,26 @@ if ( "x$HOSTNAME" eq "x/" ) {
 		else {
 			print "$HTML_DIR/SSHPsycho.shtml is younger than $HTML_DIR/attacks/sum2.data, not running SSHPsycho.shtml\n"
 		}
-		$TMP_DATE=`date`;
-		print "Done with sshPsycho analysis now: $TMP_DATE"; 
+		$DEBUG_DATE=`date`;
+		print "Done with sshPsycho analysis now: $DEBUG_DATE"; 
 	}
 } 
 
 
 chdir ("$HTML_DIR/historical");
 
-$TMP_DATE=`date`;
-print "Calling count_sshpsycho_attacks:$TMP_DATE "; 
+$DEBUG_DATE=`date`;
+print "Calling count_sshpsycho_attacks:$DEBUG_DATE "; 
 &count_sshpsycho_attacks;
-$TMP_DATE=`date`;
-print "Back from Calling count_sshpsycho_attacks: $TMP_DATE"; 
+$DEBUG_DATE=`date`;
+print "Back from Calling count_sshpsycho_attacks: $DEBUG_DATE"; 
 
-$TMP_DATE=`date`;
-print "Calling lock_down_files: $TMP_DATE"; 
+$DEBUG_DATE=`date`;
+print "Calling lock_down_files: $DEBUG_DATE"; 
 &lock_down_files ;
-$TMP_DATE=`date`;
-print "Back from lock_down_files: $TMP_DATE";
+$DEBUG_DATE=`date`;
+print "Back from lock_down_files: $DEBUG_DATE";
 
-$TMP_DATE=`date`;
-print "Done with LongTail.sh at:$TMP_DATE"
+$DEBUG_DATE=`date`;
+print "Done with LongTail.sh at:$DEBUG_DATE"
 
