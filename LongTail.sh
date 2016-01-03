@@ -3049,14 +3049,14 @@ if [ "x$HOSTNAME" == "x/" ] ;then
 			$SCRIPT_DIR/LongTail_find_first_password_use.pl usernames >> $HTML_DIR/first_seen_usernames.shtml
 			make_footer "$HTML_DIR/first_seen_usernames.shtml"
 
-			#make_header "$HTML_DIR/first_seen_passwords.shtml" "First Occurence of a Password"  "" 
-			#echo "</TABLE>" >> $HTML_DIR/first_seen_passwords.shtml
+			make_header "$HTML_DIR/first_seen_passwords.shtml" "First Occurence of a Password"  "" 
+			echo "</TABLE>" >> $HTML_DIR/first_seen_passwords.shtml
 			echo "<PRE>" >> $HTML_DIR/first_seen_passwords.shtml
 			$SCRIPT_DIR/LongTail_find_first_password_use.pl passwords >> $HTML_DIR/first_seen_passwords.shtml
 			echo "</PRE>" >> $HTML_DIR/first_seen_passwords.shtml
-			#make_footer "$HTML_DIR/first_seen_passwords.shtml"
+			make_footer "$HTML_DIR/first_seen_passwords.shtml"
 			if [ -e  $HTML_DIR/first_seen_passwords.shtml.gz ] ; then
-				/bin/rm $HTML_DIR/first_seen_passwords.shtml
+				/bin/rm $HTML_DIR/first_seen_passwords.shtml.gz
 			fi 
 			gzip $HTML_DIR/first_seen_passwords.shtml
 			make_header "$HTML_DIR/class_c_hall_of_shame.shtml" "Class C Hall Of Shame"  "Top 10 worst offending Class C subnets sorted by the number of attack patterns.  Class C subnets must have over 10,000 login attempts to make this list." 
