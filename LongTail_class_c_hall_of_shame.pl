@@ -77,6 +77,7 @@ sub this_month_hall_of_shame {
 		}
 	}
 	close (INPUT);
+	unlink ("/tmp/all_class_c.$$") ;
 }
 
 
@@ -140,6 +141,7 @@ sub this_year_hall_of_shame {
 		}
 	}
 	close (INPUT);
+	unlink ("/tmp/all_class_c.$$") ;
 }
 
 sub all_class_c {
@@ -283,7 +285,6 @@ sub all_class_c {
 # Main line of code
 #
 
-$|=1;
 $DEBUG=0;
 $YEAR=`date +%Y`;
 chomp $YEAR;
