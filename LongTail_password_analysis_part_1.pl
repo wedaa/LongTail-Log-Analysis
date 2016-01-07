@@ -52,6 +52,14 @@ while (<FILE>){
 	if ($_ =~ /20[0-9][0-9].+18[0-9][0-9]/i){$contains_two_years_separated++; $flag=1;}
 	if ($_ =~ /20[0-9][0-9].+19[0-9][0-9]/i){$contains_two_years_separated++; $flag=1;}
 	if ($_ =~ /20[0-9][0-9].+20[0-9][0-9]/i){$contains_two_years_separated++; $flag=1;}
+
+	if ($_ =~ /\.edu$/i) {$contains_domainname++; $flag=1;}
+	if ($_ =~ /\.com$/i) {$contains_domainname++; $flag=1;}
+	if ($_ =~ /\.net$/i) {$contains_domainname++; $flag=1;}
+	if ($_ =~ /\.org$/i) {$contains_domainname++; $flag=1;}
+	if ($_ =~ /\.cn$/i) {$contains_domainname++; $flag=1;}
+	if ($_ =~ /\.tv$/i) {$contains_domainname++; $flag=1;}
+
 	
 	if ($_ =~ /18[0-9][0-9]/i){$contains_year++; $flag=1;}
 	if ($_ =~ /19[0-9][0-9]/i){$contains_year++; $flag=1;}
@@ -89,6 +97,7 @@ print "<TR><TD>Only Uppercase letters</TD><TD>$only_uppercase\n";
 print "<TR><TD>Only numbers</TD><TD>$only_numbers\n";
 print "<TR><TD>numbers, periods, \"E\"</TD><TD>$contains_only_num_plus_period_e\n";
 print "<TR><TD>Only alphaNum</TD><TD>$contains_only_alphanum\n";
+print "<TR><TD>Ends with .edu|.com|.org|.net|.org|.tv|.cn</TD><TD>$contains_domainname (Thanks to <A href=\"http://www.netsec.ethz.ch/publications/papers/passwords15-abdou.pdf\">http://www.netsec.ethz.ch/publications/papers/passwords15-abdou.pdf</a> for the idea!)\n";
 print "<TR><TD>Only only non numeric/alpha</TD><TD>$contains_only_special_chars\n";
 print "<TR><TD>Contains a year</TD><TD>$contains_year\n";
 print "<TR><TD>Contains two years</TD><TD>$contains_two_years\n";
