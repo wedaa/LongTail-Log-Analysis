@@ -119,6 +119,12 @@ $count=1;
 while ($count <=$max_index){
 	if ($count <40){
 	print "<TR><TD>$count</TD><TD>$length_of_password[$count]</TD>\n";
+	if ($count == 8){
+		print "<TD>8 characters used to be the maximum password lenght for unix.</TD>\n";
+	}
+	if ($count == 32){
+		print "<TD>MD5 hashes are 32 characters!</TD>\n";
+	}
 	}
 	if ($count >= 40){
 		if ($length_of_password[$count] >0){
