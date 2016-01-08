@@ -2021,7 +2021,7 @@ function do_ssh {
 				tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/current-sshpsycho-2-attack-count.data`
 				echo "$tmp_attack_count $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data
 			else
-				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-attack-2-count.data
+				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-sshpsycho-2-attack-count.data
 			fi
 
 			if [ -e /$HTML_DIR/historical/$TMP_DATE/current-friends_of_sshpsycho-attack-count.data ] ; then
