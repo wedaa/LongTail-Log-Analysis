@@ -2062,51 +2062,62 @@ function http_attacks {
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "hostname is not set"
-echo "PROTOCOL is $PROTOCOL"
-		if [ $LONGTAIL -eq 1 ] ; then
-			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
-		fi
-
+		echo "PROTOCOL is $PROTOCOL"
+		#
+		# The sed expression is ugly and may not work everywhere and needs to be fixed
+		#
+		$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep -v xymonnet | sed 's/^....-..-..T.............. //' > $TMP_DIRECTORY/LongTail-messages.$$
 
 		if [ $REBUILD  != 1 ] ; then
-			$SCRIPT_DIR/catall.sh $MESSAGES | grep LongTail_apache |grep "$DATE"  > $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
+	 	/bin/cp $TMP_DIRECTORY/LongTail-messages.$$ $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
 
 			touch $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
 			/bin/rm $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
 			gzip $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
 			chmod 0000 $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
-		fi
+	fi
 	else
 		echo "hostname IS set to $HOSTNAME."
-		$SCRIPT_DIR/catall.sh $MESSAGES |awk '$2 == "'$HOSTNAME'" {print}' |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
-	fi
+		$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|awk '$1 == "'$HOSTNAME'" {print}'  | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep -v xymonnet | sed 's/^....-..-..T.............. //' > $TMP_DIRECTORY/LongTail-messages.$$
+	fi # if [ "x$HOSTNAME" == "x/" ]
 
 	#-------------------------------------------------------------------------
-	# Root
-	#
-	# This takes longer to run than "admin" passwords because there are so 
-	# many more root passwords to look at.
+	# webpages requested
 	#
 	# This will get sped up when I convert this whole thing to perl in
 	# Version 2.0
 	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-http_attack 1 " ; date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml" "Root Passwords" " " "Count" "Password"
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-webpages.shtml" "Webpages Requested" " " "Count" "Webpage"
 
-	cat $TMP_DIRECTORY/LongTail-messages.$$ |grep Username\:\ root |\
-	sed 's/^..*Password: //'|sed 's/^..*Password:$/ /' | sed 's/ /\&nbsp;/g'|\
-	sort -T $TMP_DIRECTORY |uniq -c|sort -T $TMP_DIRECTORY -nr |\
-	awk '{printf("<TR><TD>%d</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">%s</a> </TD></TR>\n",$1,$2,$2)}' \
-	>> $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml
+	cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep  |sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sed 's/ ..*$//'|sort |uniq -c |sort -nr |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-webpages.shtml
 
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml" "Top 20 Root Passwords" "" "Count" "Password"
-	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml"
-	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data
 
-	touch $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml.gz
-	/bin/rm $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml.gz
-	gzip $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-webpages.shtml" "Top 20 Webpages" "" "Count" "Webpage"
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-webpages.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-webpages.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-webpages.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-webpages.shtml"
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-webpages.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-webpages.data
+
+	#-------------------------------------------------------------------------
+	# shellshock webpages requested
+	#
+	# This will get sped up when I convert this whole thing to perl in
+	# Version 2.0
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-http_attack 1 " ; date; fi
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml" "Shellshock Attacks" " " "Count" "Webpage"
+
+	#cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep | grep \:\; |sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sort |uniq -c |sort -nr |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml
+
+	cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep | grep \:\; |sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sort |uniq -c |sort -nr |\
+sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/TR>/' >> $TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml
+
+
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.shtml" "Top 20 Webpages" "" "Count" "Webpage"
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.shtml"
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.data
+
 
 
 	#-------------------------------------------------------------------------
@@ -2119,7 +2130,7 @@ echo "PROTOCOL is $PROTOCOL"
 # I am now doing this for all hosts so that each host can have it's own image map
 # and (more importantly) each host's index.shtml can be a copy/paste of the main
 # index.shtml
-#	if [ "x$HOSTNAME" == "x/" ] ;then
+	if [ "x$HOSTNAME" == "x/" ] ;then
 #echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
 		echo "# http://longtail.it.marist.edu "> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# This is a sorted list of IP addresses that have tried to login" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
@@ -2135,17 +2146,16 @@ echo "PROTOCOL is $PROTOCOL"
 		RIGHT_NOW=`date`
 		echo "# This list was created on: $RIGHT_NOW" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
-		cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+		cat $TMP_DIRECTORY/LongTail-messages.$$  | awk '{print $3}' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		mv $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
 		$SCRIPT_DIR/LongTail_add_country_to_ip.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp > $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
-#echo "DEBUG writing map include file to $TMP_HTML_DIR/$FILE_PREFIX-map.html"
 		$SCRIPT_DIR/LongTail_make_map.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt > $TMP_HTML_DIR/$FILE_PREFIX-map.html
 		rm $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
-#	fi
+	fi
 
 	#
 	# Code to try and add the country to the ip-addresses.shtml page
-	cat $TMP_DIRECTORY/LongTail-messages.$$  | grep IP: |grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | sed 's/^.*IP: //'|sed 's/ Pass..*$//' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr   > $TMP_DIRECTORY/Longtail.tmpIP.$$
+	cat $TMP_DIRECTORY/LongTail-messages.$$  | awk '{print $3}' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr   > $TMP_DIRECTORY/Longtail.tmpIP.$$
 
 	cat $TMP_DIRECTORY/Longtail.tmpIP.$$ | /usr/local/etc/LongTail_add_country_to_ip.pl > $TMP_DIRECTORY/Longtail.tmpIP.$$-2 # Delete this line once the code works
 
@@ -2178,46 +2188,12 @@ echo "PROTOCOL is $PROTOCOL"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml"
 	
 	#-------------------------------------------------------------------------
-	# Figuring out most common non-root pairs
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-http_attack 7 Figuring out most common non-root pairs " ; date; fi
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml" "Non Root Pairs" " " "Count" "Account:Password"
-	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml" "Top 20 Non Root Pairs" " " "Count" "Account:Password"
-
-	if [ $FILE_PREFIX == "current" ] ;
-	then
-		if [ $DEBUG  == 1 ] ; then 
-			echo "DEBUG current non-root-pairs"
-			echo "DATE is $DATE"
-		fi
-		cat $TMP_DIRECTORY/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
-		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/' |sed 's/ /\&nbsp;/g'|\
-		sort -T $TMP_DIRECTORY |uniq -c|sort -T $TMP_DIRECTORY -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' \
-		>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
-
-		cat $TMP_DIRECTORY/LongTail-messages.$$ |\
-		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/' |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-account-password-pairs.data.gz
-	else
-		if [ $DEBUG  == 1 ] ; then 
-			echo "DEBUG Non-current non-root-pairs"
-			echo "DATE is $DATE"
-		fi
-		cat $TMP_DIRECTORY/LongTail-messages.$$ |egrep -v Username\:\ root\ \|Username\:\ admin\  |\
-		awk -F'Username: ' '/Username/{print $2}' | sed 's/ Password: /:/'|sed 's/ /\&nbsp;/g'|\
-		sort -T $TMP_DIRECTORY |uniq -c|sort -T $TMP_DIRECTORY -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' \
-		>> $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml
-	fi
-
-	cat  $TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml |grep -v HEADERLINE |head -20 >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml
-
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-non-root-pairs.shtml"
-	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-pairs.shtml"
-
-	#-------------------------------------------------------------------------
 	# Figuring out http-attacks-by-time-of-day
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-http_attack 7B Figuring out http-attacks-by-time-of-day " ; date; fi
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml" "Historical SSH Attacks By Time Of Day" "" "Count" "Hour of Day"
-	cat $TMP_DIRECTORY/LongTail-messages.$$ | grep Password | awk '{print $1}'| awk -FT '{print $2}' | awk -F: '{print $1}' |sort -T $TMP_DIRECTORY |uniq -c| awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml
+	cat $TMP_DIRECTORY/LongTail-messages.$$ | awk '{print $5}'| awk -F: '{print $2}' | awk -F: '{print $1}' |sort -T $TMP_DIRECTORY |uniq -c| awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml"
+exit
 
 	#-------------------------------------------------------------------------
 	# raw data compressed 
@@ -3990,6 +3966,13 @@ else
 		HTML_TOP_DIR=$TELNET_HTML_TOP_DIR
 		shift
 	fi
+	if [ "x$1" == "xhttp" ] ;then
+	        echo "http passed, searching for http"
+		SEARCH_FOR="http"
+		HTML_DIR="$HTML_DIR/$HTTP_HTML_TOP_DIR"
+		HTML_TOP_DIR=$HTTP_HTML_TOP_DIR
+		shift
+	fi
 	
 	HOSTNAME=$1
 	if [ "x$HOSTNAME" != "x" ] ;then
@@ -4076,11 +4059,14 @@ echo "SEARCH_FOR is $SEARCH_FOR"
 if [ $SEARCH_FOR == "http" ] ; then
 	echo "Searching for http attacks"
 	PROTOCOL="LongTail_apache"
-	create_historical_http_copies  $HTML_DIR
-	make_http_trends
+	echo "WARNING create_historical_http_copies disbled during development"
+	#create_historical_http_copies  $HTML_DIR
+	echo "WARNING make_http_trends disbled during development"
+	#make_http_trends
 	do_http
 	exit
 fi
+exit
 if [ $SEARCH_FOR == "sshd" ] ; then
 	echo "Searching for ssh attacks"
 	PROTOCOL=$SEARCH_FOR
