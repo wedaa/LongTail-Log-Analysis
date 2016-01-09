@@ -317,7 +317,7 @@ function make_header {
 	#echo "filename is $MAKE_HEADER_FILENAME"
 	touch $MAKE_HEADER_FILENAME
 	if [ ! -w $MAKE_HEADER_FILENAME ] ; then
-		echo "Can't write to $MAKE_HEADER_FILENAME, exiting now"
+		echo "Can not write to $MAKE_HEADER_FILENAME, exiting now"
 		exit
 	fi
 	shift
@@ -376,7 +376,7 @@ function make_footer {
 	#echo "filename is $MAKE_FOOTER_FILENAME"
 	touch $MAKE_FOOTER_FILENAME
 	if [ ! -w $MAKE_FOOTER_FILENAME ] ; then
-		echo "Can't write to $MAKE_FOOTER_FILENAME, exiting now"
+		echo "Can not write to $MAKE_FOOTER_FILENAME, exiting now"
 		exit
 	fi
 	echo "" >> $MAKE_FOOTER_FILENAME
@@ -2128,7 +2128,7 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 	# I need to make a temp file for this
 
 # I am now doing this for all hosts so that each host can have it's own image map
-# and (more importantly) each host's index.shtml can be a copy/paste of the main
+# and (more importantly) each hosts index.shtml can be a copy/paste of the main
 # index.shtml
 	if [ "x$HOSTNAME" == "x/" ] ;then
 #echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
@@ -2193,7 +2193,7 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml" "Historical SSH Attacks By Time Of Day" "" "Count" "Hour of Day"
 	cat $TMP_DIRECTORY/LongTail-messages.$$ | awk '{print $5}'| awk -F: '{print $2}' | awk -F: '{print $1}' |sort -T $TMP_DIRECTORY |uniq -c| awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml"
-exit
+
 
 	#-------------------------------------------------------------------------
 	# raw data compressed 
@@ -2424,7 +2424,7 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 	# I need to make a temp file for this
 
 # I am now doing this for all hosts so that each host can have it's own image map
-# and (more importantly) each host's index.shtml can be a copy/paste of the main
+# and (more importantly) each hosts index.shtml can be a copy/paste of the main
 # index.shtml
 #	if [ "x$HOSTNAME" == "x/" ] ;then
 #echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
@@ -3127,7 +3127,7 @@ function do_ssh {
 				tmp_attack_count=`cat /$HTML_DIR/historical/$TMP_DATE/todays-uniq-usernames.txt.count`
 				echo "$tmp_attack_count $TMP_DATE2" >> $HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data
 			else
-				#echo "Can't find /$HTML_DIR/historical/$TMP_DATE/todays-uniq-usernames.txt.count "
+				#echo "Can not find /$HTML_DIR/historical/$TMP_DATE/todays-uniq-usernames.txt.count "
 				echo "0 $TMP_DATE2" >> $HTML_DIR/last-30-days-todays-uniq-usernames-txt-count.data
 			fi
 
@@ -3439,6 +3439,104 @@ function protect_raw_data {
 #
 # This creates yesterdays data, once "yesterday" is over
 #
+function create_historical_http_copies {
+	TMP_HTML_DIR=$1
+	REBUILD=1
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_http_copies" ; date; fi
+
+	#if [ $START_HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq 14 ]; then
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Actually running create_historical_http_copies $START_HOUR -eq $MIDNIGHT) " ; date; fi
+		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
+		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
+		YESTERDAY_DAY=`date  +"%d" --date="1 day ago"`
+
+		cd  $TMP_HTML_DIR
+
+		mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
+		for dir in $HOSTS_PROTECTED $BLACKRIDGE ; do
+			if [ "x$HOSTNAME" == "x$dir" ] ; then
+				touch $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data.notfullday
+				echo $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/
+			fi
+		done
+		if [ -e $TMP_HTML_DIR/index-historical.shtml ] ; then
+			cp $TMP_HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/index.shtml
+		else
+			if [ -e $HTML_DIR/index-historical.shtml ] ; then
+				cp $HTML_DIR/index-historical.shtml $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/index.shtml
+			else 
+				echo "WARNING! CAN NOT FIND $TMP_HTML_DIR/index-historical.shtml OR $HTML_DIR/index-historical.shtml"
+				echo "This is not a deal breaker but your historical directories"
+				echo "will not have an index.shtml file"
+			fi
+		fi
+		# I do individual chmods so I don't do chmod's of thousands of files...
+		chmod a+rx $TMP_HTML_DIR/historical
+		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR
+		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH
+		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
+		chmod a+r  $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/*
+		echo "$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY" > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/date.html
+
+		# WAS this line for ssh #grep ssh $PATH_TO_VAR_LOG/$LOGFILE* | grep $YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$LOGFILE*  |grep $PROTOCOL |grep $YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY |grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep -v xymonnet | sed 's/^....-..-..T.............. //' > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
+
+
+
+		touch $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
+		/bin/rm $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
+		gzip $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
+		chmod 0000 $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
+
+
+		http_attacks   $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY $YESTERDAY_YEAR $PATH_TO_VAR_LOG "$YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY"      "$LOGFILE*" "current"
+
+		#
+		# Make IPs table and count for this day
+		#todays_ips.count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |awk '{print $3}' |sort -T $TMP_DIRECTORY -u  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips; 
+		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips.count;
+
+		# Make todays_honeypot.count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | awk '{print $1}' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt 
+	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt.count
+
+		# Make todays_webpages.count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sed 's/ ..*$//' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages 
+	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages.count
+
+		# Make todays shellshock count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \:\; |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock.count
+		
+
+
+#
+# Lets hope this is run before all-ips, all-password, and all-username are run
+		if [ ! -e $HTML_DIR/all-ips ] ; then 
+			echo "This must be the first time this was run, copying todays IPs to all-ips"
+			/bin/cp $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips $HTML_DIR/all-ips
+		fi
+		awk 'FNR==NR{a[$0]++;next}(!($0 in a))' $HTML_DIR/all-ips       $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips >$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt
+
+		if [ ! -e $HTML_DIR/all-webpages ] ; then 
+			echo "This must be the first time this was run, copying todays webpages to all-webpages"
+			/bin/cp $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages $HTML_DIR/all-webpages
+		fi
+		awk 'FNR==NR{a[$0]++;next}(!($0 in a))' $HTML_DIR/all-webpages $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages >$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-webpages.txt
+
+		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-webpages.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-webpages.txt.count
+		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt.count
+
+
+	fi
+}
+
+############################################################################
+# Create historical copies of the data
+#
+# This creates yesterdays data, once "yesterday" is over
+#
 function create_historical_copies {
 	TMP_HTML_DIR=$1
 	REBUILD=1
@@ -3470,7 +3568,7 @@ function create_historical_copies {
 				echo "will not have an index.shtml file"
 			fi
 		fi
-		# I do individual chmods so I don't do chmod's of thousands of files...
+		# I do individual chmods so I don't do chmods of thousands of files...
 		chmod a+rx $TMP_HTML_DIR/historical
 		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR
 		chmod a+rx $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH
@@ -4059,8 +4157,8 @@ echo "SEARCH_FOR is $SEARCH_FOR"
 if [ $SEARCH_FOR == "http" ] ; then
 	echo "Searching for http attacks"
 	PROTOCOL="LongTail_apache"
-	echo "WARNING create_historical_http_copies disbled during development"
-	#create_historical_http_copies  $HTML_DIR
+	create_historical_http_copies  $HTML_DIR
+exit
 	echo "WARNING make_http_trends disbled during development"
 	#make_http_trends
 	do_http
