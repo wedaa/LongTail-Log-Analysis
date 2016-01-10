@@ -3444,8 +3444,8 @@ function create_historical_http_copies {
 	REBUILD=1
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_http_copies" ; date; fi
 
-	#if [ $START_HOUR -eq $MIDNIGHT ]; then
-	if [ $START_HOUR -eq 14 ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	#if [ $START_HOUR -eq 14 ]; then
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Actually running create_historical_http_copies $START_HOUR -eq $MIDNIGHT) " ; date; fi
 		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
 		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
@@ -3479,16 +3479,13 @@ function create_historical_http_copies {
 		chmod a+r  $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/*
 		echo "$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY" > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/date.html
 
-		# WAS this line for ssh #grep ssh $PATH_TO_VAR_LOG/$LOGFILE* | grep $YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
 		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$LOGFILE*  |grep $PROTOCOL |grep $YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY |grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep -v xymonnet | sed 's/^....-..-..T.............. //' > $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
-
 
 
 		touch $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 		/bin/rm $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 		gzip $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
 		chmod 0000 $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
-
 
 		http_attacks   $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY $YESTERDAY_YEAR $PATH_TO_VAR_LOG "$YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY"      "$LOGFILE*" "current"
 
@@ -3497,6 +3494,13 @@ function create_historical_http_copies {
 		#todays_ips.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz |awk '{print $3}' |sort -T $TMP_DIRECTORY -u  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips; 
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips.count;
+
+		#
+		# overlap between todays IPs and ssh brute forcers
+		#
+		grep -F -f $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips  /var/www/html/honey/all-ips  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips_overlap_with_longtail_ssh.txt
+		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips_overlap_with_longtail_ssh.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips_overlap_with_longtail_ssh.count
+
 
 		# Make todays_honeypot.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | awk '{print $1}' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt 
@@ -3510,9 +3514,9 @@ function create_historical_http_copies {
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \:\; |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock.count
 		
 
-
-#
-# Lets hope this is run before all-ips, all-password, and all-username are run
+		#
+		# Lets hope this is run before all-ips, all-password, and all-username are run
+		#
 		if [ ! -e $HTML_DIR/all-ips ] ; then 
 			echo "This must be the first time this was run, copying todays IPs to all-ips"
 			/bin/cp $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips $HTML_DIR/all-ips
@@ -3527,7 +3531,6 @@ function create_historical_http_copies {
 
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-webpages.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-webpages.txt.count
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt.count
-
 
 	fi
 }
@@ -4158,7 +4161,6 @@ if [ $SEARCH_FOR == "http" ] ; then
 	echo "Searching for http attacks"
 	PROTOCOL="LongTail_apache"
 	create_historical_http_copies  $HTML_DIR
-exit
 	echo "WARNING make_http_trends disbled during development"
 	#make_http_trends
 	do_http
