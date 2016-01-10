@@ -22,6 +22,7 @@ LongTail Log Analysis Historical Page, All SSH Ports for
 <TR><TD>Number of IP addresses seen today</TD><TD><!--#include virtual="todays_ips.count" -->
 <TR><TD>Number of unique IP addresses seen today</TD><TD><!--#include virtual="todays-uniq-ips.txt.count" -->
 <TR><TD>Number of honeypots seen today</TD><TD><!--#include virtual="todays-honeypots.txt.count" -->
+<TR><TD>Number of IP addresses seen today that are also seen in all IPs seen with LongTail sshd </TD><TD><!--#include virtual="todays_ips_overlap_with_longtail_ssh.count" -->
 </TABLE>
 <BR><BR>
 
@@ -43,6 +44,8 @@ LongTail Log Analysis Historical Page, All SSH Ports for
 <A href="todays-uniq-ips.txt">Today's Uniq IPs</a>
 <BR>
 <a href="current-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<a href="todays_ips_overlap_with_longtail_ssh.txt">IPs that overlap with LongTail sshd</a>
 <BR>
 <BR>
 <a href="current-attacks-by-country.shtml">Attacks By Country</a>
