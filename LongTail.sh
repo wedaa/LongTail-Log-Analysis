@@ -461,10 +461,10 @@ function count_http_attacks {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/TODAY now" ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		if [ $LONGTAIL -eq 1 ] ; then
-				TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
-		fi
-		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
+		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
+		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | wc -l`
+	else
+		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |wc -l`
 	fi
 	echo $TODAY > $TMP_HTML_DIR/current-attack-count.data
 
@@ -572,6 +572,7 @@ function count_http_attacks {
 	LAST_MONTH_MAX=`echo $LAST_MONTH_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	LAST_MONTH_MIN=`echo $LAST_MONTH_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
+echo "DEBUG - EEE"
 	#
 	# THIS YEAR
 	#
@@ -602,6 +603,7 @@ function count_http_attacks {
 	YEAR_MAX=`echo $YEAR_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	YEAR_MIN=`echo $YEAR_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
+echo "DEBUG - DDD"
 
 	#
 	# EVERYTHING
@@ -632,6 +634,7 @@ function count_http_attacks {
 	EVERYTHING_MAX=`echo $EVERYTHING_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	EVERYTHING_MIN=`echo $EVERYTHING_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
+echo "DEBUG - CCC"
 
 	#
 	# Normalized data
@@ -668,12 +671,14 @@ function count_http_attacks {
 	NORMALIZED_MAX=`echo $NORMALIZED_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	NORMALIZED_MIN=`echo $NORMALIZED_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
+echo "DEBUG - BBB"
 
 	#
 	# This really needs to be sped up somehow
 	#
 	# Couting honeypots here
-	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	#if [ $START_HOUR -eq $MIDNIGHT ]; then
+	if [ $START_HOUR -eq 19 ]; then
 	if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "http" ] ; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now"; date ; fi
@@ -715,11 +720,13 @@ function count_http_attacks {
 		sed -i "s/Number of Honeypots This Month.*$/Number of Honeypots This Month:--> $THISMONTHUNIQUEHONEYPOTS/" $1/index-long.shtml
 		sed -i "s/Number of Honeypots This Year.*$/Number of Honeypots This Year:--> $THISYEARUNIQUEHONEYPOTS/" $1/index-long.shtml
 		sed -i "s/Number of Honeypots Since Logging Started.*$/Number of Honeypots Since Logging Started:--> $ALLUNIQUEHONEYPOTS/" $1/index-long.shtml
+echo "DEBUG-AAA-$THISMONTHUNIQUEHONEYPOTS $THISYEARUNIQUEHONEYPOTS $ALLUNIQUEHONEYPOTS $THISMONTHUNIQUEHONEYPOTS $THISYEARUNIQUEHONEYPOTS $ALLUNIQUEHONEYPOTS"
 
 	fi
 	fi
 	fi
 
+exit
 
 	# SOMEWHERE there is a bug which if the password is empty, that the
 	# line sent to syslog is "...Password:$", instead of "...Password: $"
@@ -2180,7 +2187,8 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 
 #WHOIS.PL
 
-	for IP in `cat $TMP_DIRECTORY/LongTail-messages.$$  |grep IP: | awk '{print $5}' |uniq |sort -T $TMP_DIRECTORY -u `; do   if [ "x${IP_ADDRESS[$IP]}" == "x" ] ; then $SCRIPT_DIR/whois.pl $IP ; else echo "Country: ${IP_ADDRESS[$IP]}"; fi  |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
+	for IP in `cat $TMP_DIRECTORY/LongTail-messages.$$  | awk '{print $3}' |uniq |sort -T $TMP_DIRECTORY -u `; do   if [ "x${IP_ADDRESS[$IP]}" == "x" ] ; then $SCRIPT_DIR/whois.pl $IP ; else echo "Country: ${IP_ADDRESS[$IP]}"; fi  |grep -i country|head -1|sed 's/:/: /g' ; done | awk '{print $NF}' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr | awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
+
 
 	sed -i -f $SCRIPT_DIR/translate_country_codes.sed  $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml
 	tail -20 $TMP_HTML_DIR/$FILE_PREFIX-attacks-by-country.shtml |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-attacks-by-country.shtml
@@ -2191,9 +2199,8 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 	# Figuring out http-attacks-by-time-of-day
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-http_attack 7B Figuring out http-attacks-by-time-of-day " ; date; fi
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml" "Historical SSH Attacks By Time Of Day" "" "Count" "Hour of Day"
-	cat $TMP_DIRECTORY/LongTail-messages.$$ | awk '{print $5}'| awk -F: '{print $2}' | awk -F: '{print $1}' |sort -T $TMP_DIRECTORY |uniq -c| awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml
+	cat $TMP_DIRECTORY/LongTail-messages.$$ | awk '{print $6}'| awk -F: '{print $2}' | sort -T $TMP_DIRECTORY |uniq -c| awk '{printf("<TR><TD>%d</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-http-attacks-by-time-of-day.shtml"
-
 
 	#-------------------------------------------------------------------------
 	# raw data compressed 
@@ -2598,6 +2605,63 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 
 }
 
+function make_http_trends {
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
+	#if [ $START_HOUR -eq 19 ]; then
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends" ; fi
+		#-----------------------------------------------------------------
+		# Now lets do some long term ssh reports....  Lets do a comparison of 
+		# top 20 non-root-passwords and top 20 root passwords
+		#-----------------------------------------------------------------
+		cd $HTML_DIR/historical 
+		make_header "$HTML_DIR/trends-in-webpages.shtml" "Trends In Webpages Requested From Most Common To 20th"  "Format is number of tries : password tried.  Entries In red are the first time that entry was seen in the top 20." "Date" "1" "2" "3" "4" "5" "6" "7" "8" "9" "10" "11" "12" "13" "14" "15" "16" "17" "18" "19" "20"
+		
+		TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-webpages" ; fi
+		for FILE in `find . -name 'current-top-20-webpages.shtml'|sort -T $TMP_DIRECTORY -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+			echo -n "$FILE $FILE"  |\
+			sed 's/current-top-20-webpages.shtml//g' |\
+			sed 's/\.\///g' |\
+			sed 's/^/<A HREF=\"historical\//' |\
+			sed 's/\/ /\/\">/' |\
+			sed 's/$/ <\/a>/' ; \
+			echo "</TD>"; grep TR $FILE |\
+			grep -v HEADERLINE | \
+			sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
+	
+		#
+		# code to color code NEW entries
+		#
+		tac $TMPFILE  |\
+		perl -e ' while (<>){
+		if (/<A HREF="historical/){print; next;}
+		if (/^<TD/){
+			$line=$_;
+			$tmp_line=$_;
+			$tmp_line =~ s/^..*">//;
+			$tmp_line =~ s/<\/a>.*$//;
+			
+			if (defined $password{"$tmp_line"}){
+				print $line;
+			}
+			else {
+				$line =~ s/<TD/<TD bgcolor=#FF0000/;
+				$password{"$tmp_line"}=1;
+				print $line;
+			}
+		}
+		else {
+			print;
+		}
+		}' |tac >> $HTML_DIR/trends-in-webpages.shtml
+		rm $TMPFILE
+	
+		make_footer "$HTML_DIR/trends-in-webpages.shtml"
+		sed -i 's/<TD>/<TD class="td-some-name">/g' $HTML_DIR/trends-in-webpages.shtml
+	
+		cd $HTML_DIR/historical 
+	fi
+}
 function make_trends {	
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends" ; fi
@@ -2813,7 +2877,7 @@ function do_http {
 	#-----------------------------------------------------------------
 	# Lets count the http attacks
 	echo "WARNING!!! count_http_attacks is disabled during development"
-	#count_http_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
+	count_http_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
 	
 	#----------------------------------------------------------------
 	# Lets check the http logs
@@ -2933,42 +2997,42 @@ function do_http {
 			touch last-30-days-ips-count.data
 		fi
 
-		for FILE in current*.data ; do 
-			if [ ! "$FILE" == "current-attack-count.data" ] ; then
-				MAP=`echo $FILE |sed 's/.data/.map/'`
-				GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
-				TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
-				TMP_TITLE=`for word in $TITLE; do printf '%s ' "${word^}"; done; echo`
-				TITLE=$TMP_TITLE
-				TITLE=`echo $TITLE | sed 's/Top 20 Admin Passwords/Top 20 Username \"admin\" Passwords/' `
-				if [ -s "$FILE" ] ; then
-					# Hack to make sure we use the real "top 20 non root accounts"
-					if [ "$FILE" == "current-top-20-non-root-accounts.data" ] ;
-					then
-						FILE="current-top-20-non-root-accounts-real.data"
-					fi
-					if [[ $FILE == *"accounts"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
-							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
-					fi
-					if [[ $FILE == *"password"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
-							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
-					fi
-				else #We have an empty file, deal with it here
-					echo "0 0" >$TMP_DIRECTORY/LongTail.data.$$
-					if [[ $FILE == *"accounts"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
-							echo "" >$MAP
-					fi
-					if [[ $FILE == *"password"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
-							echo "" >$MAP
-					fi
-					rm $TMP_DIRECTORY/LongTail.data.$$
-				fi
-			fi
-		done        
+#		for FILE in current*.data ; do 
+#			if [ ! "$FILE" == "current-attack-count.data" ] ; then
+#				MAP=`echo $FILE |sed 's/.data/.map/'`
+#				GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
+#				TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
+#				TMP_TITLE=`for word in $TITLE; do printf '%s ' "${word^}"; done; echo`
+#				TITLE=$TMP_TITLE
+#				TITLE=`echo $TITLE | sed 's/Top 20 Admin Passwords/Top 20 Username \"admin\" Passwords/' `
+#				if [ -s "$FILE" ] ; then
+#					# Hack to make sure we use the real "top 20 non root accounts"
+#					if [ "$FILE" == "current-top-20-non-root-accounts.data" ] ;
+#					then
+#						FILE="current-top-20-non-root-accounts-real.data"
+#					fi
+#					if [[ $FILE == *"accounts"* ]] ; then
+#						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+#							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
+#					fi
+#					if [[ $FILE == *"password"* ]] ; then
+#						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+#							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
+#					fi
+#				else #We have an empty file, deal with it here
+#					echo "0 0" >$TMP_DIRECTORY/LongTail.data.$$
+#					if [[ $FILE == *"accounts"* ]] ; then
+#						php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+#							echo "" >$MAP
+#					fi
+#					if [[ $FILE == *"password"* ]] ; then
+#						php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+#							echo "" >$MAP
+#					fi
+#					rm $TMP_DIRECTORY/LongTail.data.$$
+#				fi
+#			fi
+#		done        
 
 		
 		echo ""
@@ -2976,14 +3040,17 @@ function do_http {
 		#echo "midnight is set to $MIDNIGHT"
 		echo ""
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
+		#if [ $START_HOUR -eq 18 ]; then
+			/usr/local/etc/LongTail_make_30_days_imagemap.pl >30_days_imagemap.html
 			echo ""
 			echo "Making midnight Graphics now"
 			echo ""
 			for FILE in historical*.data last-*.data ; do 
+				echo "DEBUG FILE is $FILE";
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
 					GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
-					TITLE=`echo $FILE | sed 's/non-root-passwords/non-root-non-admin-passwords/' | sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
+					TITLE=`echo $FILE |  sed 's/last/Prior/'| sed 's/-/ /g' |sed 's/.data//'`
 					TMP_TITLE=`for word in $TITLE; do printf '%s ' "${word^}"; done; echo`
 					TITLE=$TMP_TITLE
 					TITLE=`echo $TITLE | sed 's/Top 20 Admin Passwords/Top 20 Username \"admin\" Passwords/' `
@@ -4161,8 +4228,7 @@ if [ $SEARCH_FOR == "http" ] ; then
 	echo "Searching for http attacks"
 	PROTOCOL="LongTail_apache"
 	create_historical_http_copies  $HTML_DIR
-	echo "WARNING make_http_trends disbled during development"
-	#make_http_trends
+	make_http_trends
 	do_http
 	exit
 fi
