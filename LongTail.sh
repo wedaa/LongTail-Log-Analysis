@@ -2877,7 +2877,7 @@ function do_http {
 	#-----------------------------------------------------------------
 	# Lets count the http attacks
 	echo "WARNING!!! count_http_attacks is disabled during development"
-	count_http_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
+	#count_http_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
 	
 	#----------------------------------------------------------------
 	# Lets check the http logs
@@ -3574,8 +3574,9 @@ function create_historical_http_copies {
 	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt.count
 
 		# Make todays_webpages.count
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sed 's/ ..*$//' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages 
-	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages.count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sed 's/ ..*$//' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_webpages 
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages 
+	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-attack-count.data
 
 		# Make todays shellshock count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \:\; |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock.count
@@ -4226,6 +4227,7 @@ fi
 echo "SEARCH_FOR is $SEARCH_FOR"
 if [ $SEARCH_FOR == "http" ] ; then
 	echo "Searching for http attacks"
+	MIDNIGHT=19
 	PROTOCOL="LongTail_apache"
 	create_historical_http_copies  $HTML_DIR
 	make_http_trends
