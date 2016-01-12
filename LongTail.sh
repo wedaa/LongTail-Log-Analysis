@@ -462,11 +462,12 @@ function count_http_attacks {
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
-		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | wc -l`
+		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | wc -l`
 	else
-		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |wc -l`
+		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL  |grep -iv xymon|awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |wc -l`
 	fi
 	echo $TODAY > $TMP_HTML_DIR/current-attack-count.data
+echo "DEBUG TODAY is $TODAY"
 
 	#
 	# THIS MONTH
@@ -478,7 +479,9 @@ function count_http_attacks {
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
+echo "TMP is TMP"
 	THIS_MONTH=`expr $TMP + $TODAY`
+echo "THIS_MONTH is $THIS_MONTH"
 	# OK, this may not be 100% secure, but it's close enough for now
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics" ;date; fi
 	#
@@ -490,6 +493,12 @@ function count_http_attacks {
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_http_attacks/This Month/Statistics now" ; fi
+echo ""
+echo "=============================================================================="
+echo ""
+echo "DEBUG MONTH webpages"
+echo "$TMP_YEAR/$TMP_MONTH/*/current-attack-count.data"
+ls -l $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data
 		cat $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort { $a <=> $b } @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;}; $n; print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
@@ -517,6 +526,8 @@ function count_http_attacks {
 	MONTH_MAX=`echo $MONTH_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	MONTH_MIN=`echo $MONTH_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
+echo "MONTH_SUM is $MONTH_SUM"
+#exit
 
 	#
 	# LAST MONTH
@@ -603,6 +614,8 @@ echo "DEBUG - EEE"
 	YEAR_MAX=`echo $YEAR_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	YEAR_MIN=`echo $YEAR_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
+echo "YEAR_SUM is $YEAR_SUM"
+
 echo "DEBUG - DDD"
 
 	#
@@ -671,6 +684,18 @@ echo "DEBUG - CCC"
 	NORMALIZED_MAX=`echo $NORMALIZED_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	NORMALIZED_MIN=`echo $NORMALIZED_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
+	sed -i "s/Hack Attempts Today:.*$/Hack Attempts Today:--> $TODAY/" $1/index.shtml
+	sed -i "s/Hack Attempts Today:.*$/Hack Attempts Today:--> $TODAY/" $1/index-long.shtml
+
+	sed -i "s/Hack Attempts This Month:.*$/Hack Attempts This Month:--> $THIS_MONTH/" $1/index.shtml
+	sed -i "s/Hack Attempts This Month:.*$/Hack Attempts This Month:--> $THIS_MONTH/" $1/index-long.shtml
+
+	sed -i "s/Hack Attempts This Year:.*$/Hack Attempts This Year:--> $THIS_YEAR/" $1/index.shtml
+	sed -i "s/Hack Attempts This Year:.*$/Hack Attempts This Year:--> $THIS_YEAR/" $1/index-long.shtml
+
+	sed -i "s/Hack Attempts Since Logging Started:.*$/Hack Attempts Since Logging Started:--> $TOTAL/" $1/index.shtml
+	sed -i "s/Hack Attempts Since Logging Started:.*$/Hack Attempts Since Logging Started:--> $TOTAL/" $1/index-long.shtml
+
 echo "DEBUG - BBB"
 
 	#
@@ -678,7 +703,7 @@ echo "DEBUG - BBB"
 	#
 	# Couting honeypots here
 	#if [ $START_HOUR -eq $MIDNIGHT ]; then
-	if [ $START_HOUR -eq 19 ]; then
+	if [ $START_HOUR -eq 22 ]; then
 	if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "http" ] ; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now"; date ; fi
@@ -725,8 +750,6 @@ echo "DEBUG-AAA-$THISMONTHUNIQUEHONEYPOTS $THISYEARUNIQUEHONEYPOTS $ALLUNIQUEHON
 	fi
 	fi
 	fi
-
-exit
 
 	# SOMEWHERE there is a bug which if the password is empty, that the
 	# line sent to syslog is "...Password:$", instead of "...Password: $"
@@ -783,7 +806,7 @@ exit
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Honeypots now"; date ; fi
 
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
 			cat $1/todays-honeypots.txt |wc -l  > todays-honeypots.txt.count
 	fi
 
@@ -796,7 +819,45 @@ exit
 		THISYEARUNIQUEIPSS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz           |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u |wc -l `
 		THISMONTHUNIQUEIPSS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u |wc -l `
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all ips now"; date ; fi
+
 		ALLUNIQUEIPSS=`cat all-ips |wc -l`
+echo "ALLUNIQUEIPSS=$ALLUNIQUEIPSS"
+#exit
+
+#############
+# New code
+honey_file="todays-honeypots.txt"
+#TMP=0
+#touch /$TMP_DIRECTORY/honeypots.$$
+#rm /$TMP_DIRECTORY/honeypots.$$
+#for FILE in  `find historical/$TMP_YEAR/$TMP_MONTH -name $honey_file` ; do
+#awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
+#done
+#THISMONTHUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
+#rm /$TMP_DIRECTORY/honeypots.$$
+#
+#TMP=0
+#touch /$TMP_DIRECTORY/honeypots.$$
+#rm /$TMP_DIRECTORY/honeypots.$$
+#for FILE in  `find historical/$TMP_YEAR/ -name $honey_file` ; do
+#awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
+#done
+#THISYEARUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
+#rm /$TMP_DIRECTORY/honeypots.$$
+#TMP=0
+#
+#touch /$TMP_DIRECTORY/honeypots.$$
+#rm /$TMP_DIRECTORY/honeypots.$$
+#for FILE in  `find historical/  -name $honey_file` ; do
+#awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
+#done
+#ALLUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
+#rm /$TMP_DIRECTORY/honeypots.$$
+#
+#THISMONTHUNIQUEHONEYPOTS=`echo $THISMONTHUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+#THISYEARUNIQUEHONEYPOTS=`echo $THISYEARUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+#ALLUNIQUEHONEYPOTS=`echo $ALLUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
+
 
 		THISMONTHUNIQUEIPSS=`echo $THISMONTHUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 		THISYEARUNIQUEIPSS=`echo $THISYEARUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -878,7 +939,7 @@ exit
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		make_header "$1/todays_honeypots.shtml" "Today's honeypots" "Count reflects log entries, not actual login attempts" "Entries in syslog" "Hostname" 
 
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > $1/todays-honeypots.txt
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep LongTail_apache |awk '{print $2}' | sort -T $TMP_DIRECTORY |uniq -c > $1/todays-honeypots.txt
 		cat $1/todays-honeypots.txt |wc -l  > $1/todays-honeypots.txt.count
 
 		HONEYPOTSTODAY=`cat $1/todays-honeypots.txt.count`
@@ -2877,7 +2938,7 @@ function do_http {
 	#-----------------------------------------------------------------
 	# Lets count the http attacks
 	echo "WARNING!!! count_http_attacks is disabled during development"
-	#count_http_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
+	count_http_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
 	
 	#----------------------------------------------------------------
 	# Lets check the http logs
@@ -3570,7 +3631,7 @@ function create_historical_http_copies {
 
 
 		# Make todays_honeypot.count
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | awk '{print $1}' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt 
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | awk '{print $1}' | sort -T $TMP_DIRECTORY |uniq -c  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt 
 	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-honeypots.txt.count
 
 		# Make todays_webpages.count
@@ -4227,7 +4288,7 @@ fi
 echo "SEARCH_FOR is $SEARCH_FOR"
 if [ $SEARCH_FOR == "http" ] ; then
 	echo "Searching for http attacks"
-	MIDNIGHT=19
+	MIDNIGHT=18
 	PROTOCOL="LongTail_apache"
 	create_historical_http_copies  $HTML_DIR
 	make_http_trends
