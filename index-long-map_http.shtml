@@ -1,0 +1,246 @@
+<HTML>
+<BODY bgcolor=#00f0FF>
+<link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
+<!--#include virtual="/honey/header.html" --> 
+<!--#include virtual="last-30-days-map.html" -->
+
+
+<H3>LongTail Log Analysis @ <!--#include virtual="/honey/institution.html" -->
+/ Historical Data<BR>All SSH Ports, <!--#include virtual="description.html" --></H3>
+<P>This page is updated hourly.
+Last updated on Wed Jan 13 16:49:30 EST 2016
+<BR>
+<BR>
+<table>
+<TR><TH>Last 30 Day's Attack Map  <a href="index-long.shtml">(Numbers View)</TH></TR>
+<TR><TD><div id="regions_div" style="width: 810; height: 380;"></div>
+</TABLE>
+
+<BR>
+<BR>
+<H2>SSH Brute Force Attempts</H2>
+<TABLE BORDER=0>
+<TR><TH colspan=2>Count of Last 30 Days Of Attacks (Bars are clickable)</TH>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"   alt="last-30-days-attack-count.png" usemap="#mapname" ><BR><BR>
+<TR><TH>Prior 30 Days</TH><TH>All</TH>
+<TR><TD><img src="last-30-days-top-20-root-passwords.png" alt="last-30-days-top-20-root-passwords" usemap=#last-30-days-top-20-root-passwords.map><BR><BR>
+<TD><img src="historical-top-20-root-passwords.png" alt="historical-top-20-root-passwords" usemap=#historical-top-20-root-passwords.map><BR><BR>
+<TR><TD><img src="last-30-days-top-20-admin-passwords.png" alt="last-30-days-top-20-admin-passwords" usemap=#last-30-days-top-20-admin-passwords.map><BR><BR>
+<TD><img src="historical-top-20-admin-passwords.png" alt="historical-top-20-admin-passwords" usemap=#historical-top-20-admin-passwords.map><BR><BR>
+<TR><TD><img src="last-30-days-top-20-non-root-accounts.png" alt="last-30-days-top-20-non-root-accounts" usemap=#last-30-days-top-20-non-root-accounts.map><BR><BR>
+<TD><img src="historical-top-20-non-root-accounts.png" alt="historical-top-20-non-root-accounts" usemap=#historical-top-20-non-root-accounts.map><BR><BR>
+<TR><TD><img src="last-30-days-top-20-non-root-passwords.png" alt="last-30-days-top-20-non-root-passwords" usemap=#last-30-days-top-20-non-root-passwords.map><BR><BR>
+<TD><img src="historical-top-20-non-root-passwords.png" alt="historical-top-20-non-root-passwords" usemap=#historical-top-20-non-root-passwords.map><BR><BR>
+<TR><TH Colspan=2><a href ="graphics.shtml">More Charts </a></TH></TR>
+<TR><TH Colspan=2><a href ="/honey/graphics_all.shtml">All Charts For ALL hosts </a></TH></TR>
+</TABLE>
+<map name="mapname">
+<!--#include virtual="/honey/30_days_imagemap.html" -->
+</map>
+<map name="current-top-20-root-passwords.map"> <!--#include virtual="/honey/current-top-20-root-passwords.map" --> </map>
+<map name="last-7-days-top-20-root-passwords.map"> <!--#include virtual="/honey/last-7-days-top-20-root-passwords.map" --> </map>
+<map name="current-top-20-admin-passwords.map"> <!--#include virtual="/honey/current-top-20-admin-passwords.map" --> </map>
+<map name="last-7-days-top-20-admin-passwords.map"> <!--#include virtual="/honey/last-7-days-top-20-admin-passwords.map" --> </map>
+<map name="current-top-20-non-root-accounts.map"> <!--#include virtual="/honey/current-top-20-non-root-accounts.map" --> </map>
+<map name="last-7-days-top-20-non-root-accounts.map"> <!--#include virtual="/honey/last-7-days-top-20-non-root-accounts.map" --> </map>
+<map name="current-top-20-non-root-passwords.map"> <!--#include virtual="/honey/current-top-20-non-root-passwords.map" --> </map>
+<map name="last-7-days-top-20-non-root-passwords.map"> <!--#include virtual="/honey/last-7-days-top-20-non-root-passwords.map" --> </map>
+
+
+
+<map name="last-30-days-top-20-root-passwords.map"> <!--#include virtual="/honey/last-30-days-top-20-root-passwords.map" --> </map>
+<map name="historical-top-20-root-passwords.map"> <!--#include virtual="/honey/historical-top-20-root-passwords.map" --> </map>
+<map name="last-30-days-top-20-admin-passwords.map"> <!--#include virtual="/honey/last-30-days-top-20-admin-passwords.map" --> </map>
+<map name="historical-top-20-admin-passwords.map"> <!--#include virtual="/honey/historical-top-20-admin-passwords.map" --> </map>
+<map name="last-30-days-top-20-non-root-accounts.map"> <!--#include virtual="/honey/last-30-days-top-20-non-root-accounts.map" --> </map>
+<map name="historical-top-20-non-root-accounts.map"> <!--#include virtual="/honey/historical-top-20-non-root-accounts.map" --> </map>
+<map name="last-30-days-top-20-non-root-passwords.map"> <!--#include virtual="/honey/last-30-days-top-20-non-root-passwords.map" --> </map>
+<map name="historical-top-20-non-root-passwords.map"> <!--#include virtual="/honey/historical-top-20-non-root-passwords.map" --> </map>
+
+
+<BR>
+<BR>
+<H3>Daily Trends</H3>
+<a href ="trends-in-root-passwords.shtml">Top 20 "root" Passwords</a>
+<BR>
+<a href ="trends-in-admin-passwords.shtml">Top 20 "admin" account Passwords</a>
+<BR>
+<a href ="trends-in-non-root-passwords.shtml">Top Non 20 "root"/"admin" account Passwords</a>
+<BR>
+<a href ="trends-in-accounts.shtml">Top 20 Accounts</a>
+<BR>
+<BR>
+<H3>Statistics</H3>
+<a href ="statistics.shtml">Attack Statistics <!--#include virtual="description.html" --></a>
+<BR>
+<a href ="/honey/statistics_all.shtml">Attack Statistics Broken Down By Site</a>
+<BR><BR>
+<a href ="more_statistics.shtml">Attack, Password, IP Address, Account Name Statistics <!--#include virtual="description.html" --> </a>
+<BR>
+<a href ="/honey/more_statistics_all.shtml">Attack, Password, IP Address, Account Name Statistics Broken Down By Site</a>
+<BR>
+<BR>
+<a href ="attacks_by_day.shtml">Attacks By Day, Calendar View</a>
+<BR>
+<BR>
+<HR>
+<H3>Today's Password Activity</H3>
+<a href ="todays-uniq-passwords.shtml">Passwords FIRST seen today</a>
+<BR>
+<BR>
+<a href ="current-root-passwords.shtml">"root" Passwords</a> (Restriced Access)
+<BR>
+<a href ="current-top-20-root-passwords.shtml">Top 20 "root" Passwords</a>
+<BR>
+<BR>
+<a href ="current-admin-passwords.shtml">"admin" account Passwords</a> (Restriced Access)
+<BR>
+<a href ="current-top-20-admin-passwords.shtml">Top 20 "admin" account Passwords</a>
+<BR>
+<BR>
+<a href ="current-non-root-passwords.shtml">Non "root"/"admin" account Passwords</a> (Restriced Access)
+<BR>
+<a href ="current-top-20-non-root-passwords.shtml">Top 20 Non "root"/"admin" account Passwords</a>
+<BR>
+<BR>
+<H3>Today's Username Activity</H3>
+<a href ="todays-uniq-username.shtml">Accounts FIRST seen today</a>
+<BR>
+<BR>
+<a href ="current-non-root-accounts.shtml">Accounts Tried</a>
+<BR>
+<a href ="current-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
+<BR>
+<BR>
+<a href ="current-non-root-pairs.shtml">Non "root"/"admin" account pairs</a>
+<BR>
+<a href ="current-top-20-non-root-pairs.shtml">Top 20 Non "root"/"admin" account pairs</a>
+<BR>
+<BR>
+<H3>Today's IP Address Activity</H3>
+<a href ="todays-uniq-ips.shtml">IP Addresses FIRST seen today</a> 
+<BR>
+<BR>
+<a href="current-ip-addresses.shtml">IP Addresses</a>
+<BR>
+<a href="current-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<a href="current-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
+<BR>
+<BR>
+<HR>
+<H3>Last 7 Days Password Activity</H3>
+<a href ="last-7-days-root-passwords.shtml.gz">"root" Passwords</a> (Restriced Access)
+<BR>
+<a href ="last-7-days-top-20-root-passwords.shtml">Top 20 "root" Passwords</a>
+<BR>
+<BR>
+<a href ="last-7-days-admin-passwords.shtml">"admin" account Passwords</a> (Restriced Access)
+<BR>
+<a href ="last-7-days-top-20-admin-passwords.shtml">Top 20 "admin" account Passwords</a>
+<BR>
+<BR>
+<a href ="last-7-days-non-root-passwords.shtml">Non "root"/"admin" account Passwords</a> (Restriced Access)
+<BR>
+<a href ="last-7-days-top-20-non-root-passwords.shtml">Top 20 Non "root"/"admin" account Passwords</a>
+<BR>
+<BR>
+<H3>Last 7 Days Username Activity</H3>
+<a href ="last-7-days-non-root-accounts.shtml">Accounts Tried</a>
+<BR>
+<a href ="last-7-days-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
+<BR>
+<BR>
+<a href ="last-7-days-non-root-pairs.shtml">Non "root"/"admin" account pairs</a> (Restriced Access)
+<BR>
+<a href ="last-7-days-top-20-non-root-pairs.shtml">Top 20 Non "root"/"admin" account pairs</a>
+<BR>
+<BR>
+<H3>Last 7 Days IP Address Activity</H3>
+<a href="last-7-days-ip-addresses.shtml">IP Addresses</a>
+<BR>
+<a href="last-7-days-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<a href="last-7-days-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
+<BR>
+<BR>
+<HR>
+<H3>Prior 30 Days Password Activity</H3>
+<a href ="last-30-days-root-passwords.shtml.gz">"root" Passwords</a> (Restriced Access)
+<BR>
+<a href ="last-30-days-top-20-root-passwords.shtml">Top 20 "root" Passwords</a>
+<BR>
+<BR>
+<a href ="last-30-days-admin-passwords.shtml">"admin" account Passwords</a> (Restriced Access)
+<BR>
+<a href ="last-30-days-top-20-admin-passwords.shtml">Top 20 "admin" account Passwords</a>
+<BR>
+<BR>
+<a href ="last-30-days-non-root-passwords.shtml">Non "root"/"admin" account Passwords</a> (Restriced Access)
+<BR>
+<a href ="last-30-days-top-20-non-root-passwords.shtml">Top 20 Non "root"/"admin" account Passwords </a>
+<BR>
+<BR>
+<H3>Prior 30 Days Username Activity</H3>
+<a href ="last-30-days-non-root-accounts.shtml">Accounts Tried</a>
+<BR>
+<a href ="last-30-days-top-20-non-root-accounts.shtml">Top 20 Accounts Tried</a>
+<BR>
+<BR>
+<a href ="last-30-days-non-root-pairs.shtml">Non "root"/"admin" account pairs</a> (Restriced Access)
+<BR>
+<a href ="last-30-days-top-20-non-root-pairs.shtml">Top 20 Non "root"/"admin" account pairs</a>
+<BR>
+<BR>
+
+<H3>Prior 30 Days IP Address Activity</H3>
+
+<a href="last-30-days-ip-addresses.shtml">IP Addresses</a>
+<BR>
+<a href="last-30-days-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<a href="last-30-days-attacks-by-country.shtml">Attacks By Country, By IP Address </a>
+<BR>
+<BR>
+<HR>
+<H3>Historical(ALL) Password Activity </H3>
+<a href ="historical-root-passwords.shtml.gz">Historical "root" Passwords</a> (Restriced Access)
+<BR>
+<a href ="historical-top-20-root-passwords.shtml">Historical Top 20 "root" Passwords</a>
+<BR>
+<a href ="historical-admin-passwords.shtml">Historical "admin" account Passwords</a> (Restriced Access)
+<BR>
+<a href ="historical-top-20-admin-passwords.shtml">Historical Top 20 "admin" account Passwords</a>
+<BR>
+<BR>
+<a href ="historical-non-root-passwords.shtml">Historical Non "root"/"admin" account Passwords</a> (Restriced Access)
+<BR>
+<a href ="historical-top-20-non-root-passwords.shtml">Historical Top 20 Non "root"/"admin" account Passwords</a>
+<BR>
+<BR>
+<H3>Historical(ALL) Account Activity </H3>
+<a href ="historical-non-root-accounts.shtml">Historical Accounts Tried</a>
+<BR>
+<a href ="historical-top-20-non-root-accounts.shtml">Historical Top 20 Accounts Tried</a>
+<BR>
+<BR>
+<a href ="historical-non-root-pairs.shtml">Historical Non "root"/"admin" account pairs</a> (Restriced Access)
+<BR>
+<a href ="historical-top-20-non-root-pairs.shtml">Historical Top 20 Non "root"/"admin" account pairs</a>
+<BR>
+<BR>
+<H3>Historical(ALL) IP Address Activity </H3>
+<a href="historical-ip-addresses.shtml">Historical IP Addresses</a>
+<BR>
+<a href="historical-top-20-ip-addresses.shtml">Historical Top 20 IP Addresses</a>
+<BR>
+<a href="historical-attacks-by-country.shtml">Historical Attacks By Country, By IP Address </a>
+<BR>
+<a href="historical-ssh-attacks-by-time-of-day.shtml">Historical Attacks By Time of Day </a>
+<BR>
+<BR>
+<HR>
+<a href="historical/">Long Term Historical Reports</A> This includes RAW input data more than 90 days old.
+
+<!--#include virtual="/honey/footer.html" --> 
+

@@ -1,0 +1,79 @@
+<HTML>
+<!--<BODY bgcolor=#000fff> -->
+<!-- <BODY bgcolor=#00f0FF> -->
+<link rel="stylesheet" type="text/css" href="/http/LongTail.css">
+<!--#include virtual="/http/header.html" --> 
+<!--#include virtual="/http/current-map.html" --> 
+
+<H3>LongTail Log Analysis @ <!--#include virtual="/honey/institution.html" -->
+/ Today's Data<BR>All SSH Ports,  <!--#include virtual="description.html" --></H3>
+<P>This page is updated hourly.
+Last updated on Wed Jan 13 16:49:30 EST 2016
+<BR>
+<BR>
+<table>
+<TR><TH>Today's Attack Map <a href="index.shtml">(Numbers View)</TH></TR>
+<TR><TD><div id="regions_div" style="width: 810; height: 380;"></div>
+</TABLE>
+<BR><BR>
+<TABLE BORDER=0>
+<TR><TH Colspan=2>Count of Last 30 Days Of Attacks (Bars are clickable)</TH>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"  alt="last-30-days-attack-count.png" usemap="#mapname"  ><BR><BR>
+</TABLE>
+<map name="mapname">
+<!--#include virtual="/http/30_days_imagemap.html" -->
+</map>
+
+<BR>
+<BR>
+<H3>Daily Trends</H3>
+<a href ="trends-in-webpages.shtml">Top 20 Attacks</a>
+<BR>
+<BR>
+<H3>Statistics</H3>
+<a href ="statistics.shtml">Attack Statistics <!--#include virtual="description.html" --> </a>
+<BR>
+<a href ="/http/statistics_all.shtml">Attack Statistics Broken Down By Site</a>
+<BR><BR>
+<a href ="more_statistics.shtml">Attack, Password, IP Address, Account Name Statistics <!--#include virtual="description.html" --> </a>
+<BR>
+<a href ="/http/more_statistics_all.shtml">Attack, Password, IP Address, Account Name Statistics Broken Down By Site</a>
+<BR>
+<BR>
+<a href ="attacks_by_day.shtml">Attacks By Day, Calendar view,  <!--#include virtual="description.html" --></a>
+<BR>
+<H3>Today's Activity</H3>
+<BR>
+<a href="current-http-attacks-by-time-of-day.shtml">Current Attacks by Time of Day</a>
+<BR>
+<BR>
+<BR>
+
+<a href="current-webpages.shtml">Current Webpages Requested</a>
+<BR>
+<a href="current-top-20-webpages.shtml">Current Top 20 Webpages Requested</a>
+<BR>
+<BR>
+
+<a href="current-shellshock.shtml">Current Shellshock Attacks</a>
+<BR>
+<a href="current-top-20-shellshock.shtml">Top 20 Current Shellshock Attacks</a>
+<BR>
+
+<BR>
+<a href="current-attacks-by-country.shtml">Attacks by Country</a>
+<BR>
+<a href="current-top-20-attacks-by-country.shtml">Top 20 Attacks by Country</a>
+<BR>
+<BR>
+
+<a href="current-raw-data.gz">Current Access Log(RESTRICTED)</a>
+<BR>
+
+<H3>Today's IP Address Activity</H3>
+<a href="current-ip-addresses.shtml">Current IP Addresses</a>
+<BR>
+<a href="current-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<BR>
+<!--#include virtual="/http/footer.html" --> 

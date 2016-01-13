@@ -1,0 +1,164 @@
+<HTML>
+<!--<BODY bgcolor=#000fff> -->
+<!-- <BODY bgcolor=#00f0FF> -->
+<link rel="stylesheet" type="text/css" href="/http/LongTail.css">
+<!--#include virtual="/http/header.html" --> 
+
+<H3>LongTail HTTP Log Analysis @ <!--#include virtual="/honey/institution.html" -->
+/ Today's Data<BR>Port 80  <!--#include virtual="description.html" --></H3>
+<P>This page is updated hourly.
+Last updated on Wed Jan 13 16:49:30 EST 2016
+<BR>
+<BR>
+<TABLE border=1>
+<TR><TH colspan=6>HTTP Hack Attempts <a href="index-map.shtml">(Map View)</a></TH></TR>
+<TR><TH>Description</TH><TH>Today</TH><TH>Never seen<BR>Before Today</TH><TH>This<BR>Month</TH><TH>This<BR>Year</TH><TH>Since Logging<BR>Started</TH>
+
+<TR><TH>Webpage Requests
+<TD>
+<!--Hack Attempts Today:--> 313
+</TD><TD> N/A
+</TD><TD>
+<!--Hack Attempts This Month:--> 5066
+</TD><TD>
+<!--Hack Attempts This Year:--> 5066
+</TD><TD>
+<!--Hack Attempts Since Logging Started:--> 7608
+</TR>
+
+<TR><TH>Unique 404 Requests</TH>
+<TD>
+<!--Unique 404 Requests Today:--> 0
+</TD><TD>
+<!--New 404 Requests Today:--> 0
+</TD><TD>
+<!--Unique 404 Requests This Month:--> 0
+</TD><TD>
+<!--Unique 404 Requests This Year:--> 0
+</TD><TD>
+<!--Unique 404 Requests Since Logging Started:--> 0
+</TD><TD>
+</TR>
+<TR><TH>Unique ShellShock </TH>
+<TD>
+<!--Unique ShellShock Today:--> 0
+</TD><TD>
+<!--New ShellShock Today:--> 0
+</TD><TD>
+<!--Unique ShellShock This Month:--> 0
+</TD><TD>
+<!--Unique ShellShock This Year:--> 0
+</TD><TD>
+<!--Unique ShellShock Since Logging Started:--> 0
+</TD><TD>
+</TR>
+<TR>
+<TH>Unique IPs </TH>
+<TD>
+<!--Unique IPs Today:--> 0
+</TD><TD>
+<!--New IPs Today:--> 0
+</TD><TD>
+<!--Unique IPs This Month:--> 0
+</TD><TD>
+<!--Unique IPs This Year:--> 0
+</TD><TD>
+<!--Unique IPs Since Logging Started:--> 0
+</TD><TD>
+</TR>
+<TR>
+<TH>Active Honeypots </TH>
+<TD><A href="/http/todays_honeypots.shtml">
+<!--Number of Honeypots Today:--> 5
+</a></TD><TD>
+<!--New Honeypots Today:--> 
+</TD><TD>
+<!--Number of Honeypots This Month:--> 7
+</TD><TD>
+<!--Number of Honeypots This Year:--> 7
+</TD><TD>
+<!--Number of Honeypots Since Logging Started:--> 7
+</TD><TD>
+</TR>
+
+</TABLE>
+<BR>
+<BR>
+<TABLE BORDER=0>
+<TR><TH Colspan=2>Count of Last 30 Days Of Attacks (Bars are clickable)</TH>
+<TR><TD Colspan=2><img src="last-30-days-attack-count.png"  alt="last-30-days-attack-count.png" usemap="#mapname"  ><BR><BR>
+
+<BR>
+<BR>
+<H3>Daily Trends</H3>
+<a href ="trends-in-webpages.shtml">Top 20 Attacks</a>
+<BR>
+<BR>
+<H3>Statistics</H3>
+<a href ="statistics.shtml">Attack Statistics <!--#include virtual="description.html" --> </a>
+<BR>
+<a href ="/http/statistics_all.shtml">Attack Statistics Broken Down By Site</a>
+<BR><BR>
+<a href ="more_statistics.shtml">Attack, Password, IP Address, Account Name Statistics <!--#include virtual="description.html" --> </a>
+<BR>
+<a href ="/http/more_statistics_all.shtml">Attack, Password, IP Address, Account Name Statistics Broken Down By Site</a>
+<BR>
+<BR>
+<a href ="attacks_by_day.shtml">Attacks By Day, Calendar view,  <!--#include virtual="description.html" --></a>
+<BR>
+<H3>Today's Activity</H3>
+<BR>
+<a href="current-access-log.shtml">Current Access Log</a>
+<BR>
+<a href="current-access-log-404.shtml">Current 404 requests</a>
+<BR>
+<a href="current-access-log-shell-shock.shtml">Current Shellshock access requests</a>
+<BR>
+<BR>
+<a href="current-attacks.shtml">Current Attacks</a>
+<BR>
+<a href="current-top-20-attacks.shtml">Top 20 Current Attacks</a>
+<BR>
+<BR>
+<a href="current-payloads.shtml">Top Payloads</a>
+<BR>
+<a href="current-top-20-payloads.shtml">Top 20 Payloads</a>
+<BR>
+<BR>
+<a href="current-country-access-log-404.shtml">current-country-access-log-404</a>
+<BR>
+<a href="current-country-access-log-shell-shock.shtml">current-country-access-log-shell-shock</a>
+<BR>
+<a href="current-country-open-proxy-log-404.shtml">current-country-open-proxy-log-404</a>
+<BR>
+<BR>
+<a href="current-open-proxy-log-404.shtml">current-open-proxy-log-404</a>
+<BR>
+<a href="current-ip-open-proxy-404.shtml">current-ip-open-proxy-404</a>
+<BR>
+<a href="current-top-20-ip-open-proxy-404.shtml">current-top-20-ip-open-proxy-404</a>
+<BR>
+<BR>
+<a href="current-rm-attempts.shtml">Current rm Attempts</a>
+<BR>
+<a href="current-top-20-rm-attempts.shtml">Top 20 rm Attempts</a>
+<BR>
+<BR>
+<a href="current-shellshock-webpages.shtml">current-shellshock-webpages</a>
+<BR>
+<a href="current-top-20-shellshock-webpages.shtml">current-top-20-shellshock-webpages</a>
+<BR>
+<a href="current-shellshock-not-using-perl.shtml">current-shellshock-not-using-perl</a>
+<BR>
+<a href="current-top-20-shellshock-not-using-perl.shtml">current-top-20-shellshock-not-using-perl</A>
+<BR>
+<BR>
+<H3>Today's IP Address Activity</H3>
+<a href="current-ip-access-log-shell-shock.shtml">Current IP Addresses</a>
+<BR>
+<a href="current-ip-access-log-404.shtml">404 Requests IP Addresses</a>
+<BR>
+<a href="current-top-20-ip-access-log-404.shtml">Top 20 404 Requests IP Addresses</a>
+<BR>
+<BR>
+<!--#include virtual="/http/footer.html" --> 
