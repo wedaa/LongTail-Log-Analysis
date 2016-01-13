@@ -75,6 +75,7 @@ fi
 
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
 HTML_DIR="/var/www/html/honey" # Where do we put the HTML files?
+HTTP_HTML_DIR="/var/www/html/http" # Where do we put the HTML files?
 DICT_DIR="/usr/local/dict"
 BOTS_DIR="/usr/local/etc/LongTail_botnets"
 
@@ -293,6 +294,21 @@ for dir in $HTML_DIR $OTHER_DIRS ; do
 		chown $OWNER $dir/$file	
 	done
 done
+
+echo ""
+echo "#############################################################"
+echo "Copying assorted html files for http honeypot now"
+echo ""
+echo "I have not tested this yet!  You should look at the directory with a browser"
+HTML_FILES="index-historical_http.shtml graphics_http.shtml index-long-map_http.shtml index-map_http.shtml index-long_http.shtml index_http.shtml "
+for file in $HTML_FILES ; do
+  echo "Copying $file now"
+  dest_file=`echo $file |sed 's/_http//'`
+echo "dest file is $dest_file"
+#  cp $file $HTTP_HTML_DIR.$dest_file
+done
+
+
 
 echo ""
 echo "#############################################################"
