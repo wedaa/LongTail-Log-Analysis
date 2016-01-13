@@ -218,7 +218,7 @@ function init_variables {
 		BLACKRIDGE="blackridge"
 		RESIDENTIAL_SITES="shepherd"
 		EDUCATIONAL_SITES="syrtest edub edu_c"
-		CLOUD_SITES="cloud_v cloud_c"
+		CLOUD_SITES="AWS cloud_v cloud_c"
 		BUSINESS_SITES=""
 	else
 		HOSTS_PROTECTED=""
@@ -696,8 +696,6 @@ echo "DEBUG - CCC"
 	sed -i "s/Hack Attempts Since Logging Started:.*$/Hack Attempts Since Logging Started:--> $TOTAL/" $1/index.shtml
 	sed -i "s/Hack Attempts Since Logging Started:.*$/Hack Attempts Since Logging Started:--> $TOTAL/" $1/index-long.shtml
 
-echo "DEBUG - BBB"
-
 	#
 	# This really needs to be sped up somehow
 	#
@@ -745,7 +743,6 @@ echo "DEBUG - BBB"
 		sed -i "s/Number of Honeypots This Month.*$/Number of Honeypots This Month:--> $THISMONTHUNIQUEHONEYPOTS/" $1/index-long.shtml
 		sed -i "s/Number of Honeypots This Year.*$/Number of Honeypots This Year:--> $THISYEARUNIQUEHONEYPOTS/" $1/index-long.shtml
 		sed -i "s/Number of Honeypots Since Logging Started.*$/Number of Honeypots Since Logging Started:--> $ALLUNIQUEHONEYPOTS/" $1/index-long.shtml
-echo "DEBUG-AAA-$THISMONTHUNIQUEHONEYPOTS $THISYEARUNIQUEHONEYPOTS $ALLUNIQUEHONEYPOTS $THISMONTHUNIQUEHONEYPOTS $THISYEARUNIQUEHONEYPOTS $ALLUNIQUEHONEYPOTS"
 
 	fi
 	fi
@@ -2679,16 +2676,17 @@ function make_http_trends {
 		
 		TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-doing trends-webpages" ; fi
-		for FILE in `find . -name 'current-top-20-webpages.shtml'|sort -T $TMP_DIRECTORY -nr ` ; do  echo "<TR>";echo -n "<TD>"; \
+		for FILE in `find . -name 'current-top-20-webpages.shtml'|sort -T $TMP_DIRECTORY -nr ` ; do  
+			echo "<TR>";echo -n "<TD>"; \
 			echo -n "$FILE $FILE"  |\
 			sed 's/current-top-20-webpages.shtml//g' |\
 			sed 's/\.\///g' |\
 			sed 's/^/<A HREF=\"historical\//' |\
 			sed 's/\/ /\/\">/' |\
-			sed 's/$/ <\/a>/' ; \
+			sed 's/$/ <\/a>/'  ;\
 			echo "</TD>"; grep TR $FILE |\
 			grep -v HEADERLINE | \
-			sed 's/<TR><TD>/<TD>/' |sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
+			sed 's/<TR><TD>/<TD>/' |sed 's/<title>//i'|sed 's/<.TD><TD>/:/' |sed 's/<.TR>//'; echo "</TR>" ; done >> $TMPFILE
 	
 		#
 		# code to color code NEW entries
@@ -2701,6 +2699,7 @@ function make_http_trends {
 			$tmp_line=$_;
 			$tmp_line =~ s/^..*">//;
 			$tmp_line =~ s/<\/a>.*$//;
+			($trash,$tmp_line) = split (/:/,$tmp_line,2);
 			
 			if (defined $password{"$tmp_line"}){
 				print $line;
@@ -3570,14 +3569,15 @@ function protect_raw_data {
 function create_historical_http_copies {
 	TMP_HTML_DIR=$1
 	REBUILD=1
+	DEBUG=1
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_http_copies" ; date; fi
 
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 	#if [ $START_HOUR -eq 14 ]; then
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Actually running create_historical_http_copies $START_HOUR -eq $MIDNIGHT) " ; date; fi
-		YESTERDAY_YEAR=`date  +"%Y" --date="1 day ago"`
+		YESTERDAY_YEAR=`date  +"%Y"  --date="1 day ago"`
 		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
-		YESTERDAY_DAY=`date  +"%d" --date="1 day ago"`
+		YESTERDAY_DAY=`date  +"%d"   --date="1 day ago"`
 
 		cd  $TMP_HTML_DIR
 
@@ -3662,6 +3662,7 @@ function create_historical_http_copies {
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt.count
 
 	fi
+
 }
 
 ############################################################################
@@ -4288,14 +4289,12 @@ fi
 echo "SEARCH_FOR is $SEARCH_FOR"
 if [ $SEARCH_FOR == "http" ] ; then
 	echo "Searching for http attacks"
-	MIDNIGHT=18
 	PROTOCOL="LongTail_apache"
+	#MIDNIGHT=16
 	create_historical_http_copies  $HTML_DIR
 	make_http_trends
 	do_http
-	exit
 fi
-exit
 if [ $SEARCH_FOR == "sshd" ] ; then
 	echo "Searching for ssh attacks"
 	PROTOCOL=$SEARCH_FOR
@@ -4317,8 +4316,6 @@ if [ $SEARCH_FOR == "telnet-honeypot" ] ; then
 	make_trends
 	do_ssh
 fi
-#echo "DEBUG-exiting now during tests"
-#exit
 
 set_permissions  $HTML_DIR 
 protect_raw_data $HTML_DIR
@@ -4418,9 +4415,11 @@ fi
 cd $HTML_DIR/historical
 TMP_DATE=`date +"%Y-%m-%d"`
 
-echo -n "Calling count_sshpsycho_attacks: "; date
-count_sshpsycho_attacks
-echo -n "Back from Calling count_sshpsycho_attacks: "; date
+if [ $SEARCH_FOR == "sshd" ] ; then
+	echo -n "Calling count_sshpsycho_attacks: "; date
+	count_sshpsycho_attacks
+	echo -n "Back from Calling count_sshpsycho_attacks: "; date
+fi
 
 echo -n "Calling lock_down_files: "; date
 lock_down_files 
