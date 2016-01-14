@@ -467,7 +467,6 @@ function count_http_attacks {
 		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL  |grep -iv xymon|awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |wc -l`
 	fi
 	echo $TODAY > $TMP_HTML_DIR/current-attack-count.data
-echo "DEBUG TODAY is $TODAY"
 
 	#
 	# THIS MONTH
@@ -479,9 +478,7 @@ echo "DEBUG TODAY is $TODAY"
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
-echo "TMP is TMP"
 	THIS_MONTH=`expr $TMP + $TODAY`
-echo "THIS_MONTH is $THIS_MONTH"
 	# OK, this may not be 100% secure, but it's close enough for now
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics" ;date; fi
 	#
@@ -2171,17 +2168,50 @@ function http_attacks {
 	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-http_attack 1 " ; date; fi
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml" "Shellshock Attacks" " " "Count" "Webpage"
 
-	#cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep | grep \:\; |sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sort |uniq -c |sort -nr |awk '{printf ("<TR><TD>%s</TD><TD>%s</TD></TR>\n",$1,$2)}' >> $TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml
-
 	cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep | grep \:\; |sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sort |uniq -c |sort -nr |\
 sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/TR>/' >> $TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml
-
 
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.shtml" "Top 20 Webpages" "" "Count" "Webpage"
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-shellshock.shtml"
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.shtml"
 	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-shellshock.data
+
+
+	#-------------------------------------------------------------------------
+	# wget webpages requested
+	#
+	# This will get sped up when I convert this whole thing to perl in
+	# Version 2.0
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-http_attack 1 " ; date; fi
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-wget.shtml" "wget requests" " " "Count" "Webpage"
+
+	cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep | grep wget\  |sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sort |uniq -c |sort -nr |\
+sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/TR>/' >> $TMP_HTML_DIR/$FILE_PREFIX-wget.shtml
+
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-wget.shtml" "Top 20 Webpages" "" "Count" "Webpage"
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-wget.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-wget.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-wget.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-wget.shtml"
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-wget.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-wget.data
+
+
+	#-------------------------------------------------------------------------
+	# 404 webpages requested
+	#
+	# This will get sped up when I convert this whole thing to perl in
+	# Version 2.0
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-http_attack 1 " ; date; fi
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-404.shtml" "404 Pages Requested " " " "Count" "Webpage"
+
+	cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep | grep \ 404\  |sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sort |uniq -c |sort -nr |\
+sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/TR>/' >> $TMP_HTML_DIR/$FILE_PREFIX-404.shtml
+
+	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-404.shtml" "Top 20 Webpages" "" "Count" "Webpage"
+	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-404.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-404.shtml
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-404.shtml"
+	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-top-20-404.shtml"
+	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-404.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-404.data
 
 
 
@@ -3639,8 +3669,20 @@ function create_historical_http_copies {
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages 
 	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-attack-count.data
 
+		# Make todays_404_webpages.count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \ 404\  | sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sed 's/ ..*$//' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_404_webpages 
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \ 404\  |sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_404_webpages 
+	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_404_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_404_webpages.count
+
 		# Make todays shellshock count
-		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \:\; |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock.count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \:\;  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_shellshock_webpages
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \:\;  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock_webpages
+		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock.count
+
+		# Make todays wget count
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep wget  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_wget_webpages
+		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep wget  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_wget_webpages
+		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_wget_webpages.count
 		
 
 		#
