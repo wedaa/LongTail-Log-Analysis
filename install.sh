@@ -73,6 +73,8 @@ fi
 #done
 
 
+
+
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
 HTML_DIR="/var/www/html/honey" # Where do we put the HTML files?
 HTTP_HTML_DIR="/var/www/html/http" # Where do we put the HTML files?
@@ -373,7 +375,7 @@ echo ""
 echo "#############################################################"
 echo "Checking for required programs now"
 echo ""
-for i in tar perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
+for i in cpan wget gunzip tar perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
 	echo -n "Checking for $i...  "
 	which $i >/dev/null
 	if [ $? -eq 0 ]; then
@@ -382,6 +384,25 @@ for i in tar perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ;
 		echo "$i not found, you need to install this"
 	fi
 done
+
+echo ""
+echo "#############################################################"
+echo "Installing geolocation public database now"
+echo ""
+
+cpan CPAN
+cpan Geo::IP
+cpan Socket6
+mkdir /usr/local/share/GeoIP
+mkdir /usr/local/share/GeoIP/backups # Will be used to store older copies of database files
+cd /usr/local/share/GeoIP
+wget geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+wget geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
+wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+gunzip -f GeoIP.dat.gz
+gunzip -f GeoLiteCity.dat.gz
+gunzip -f GeoIPv6.dat.gz
+
 
 echo ""
 echo "#############################################################"
