@@ -169,11 +169,11 @@ sub all_class_c {
 #OLD	system ("mv /tmp/all_class_c.$$.tmp /tmp/all_class_c.$$");
 #OLD
 #OLD	if ($DEBUG >0){print "DEBUG done with sort command at:";$TMP_DATE=`date`; print $TMP_DATE;}
-	print "</TABLE>\n";
-	print "<BR><BR>\n";
-	print "<TABLE BORDER=3>\n";
-	print "<TR><TH colspan=3>All Class C IP ranges Sorted By Number Of Attacks</TD></TR>\n";
-	print "<TR> <TH>Class C Address</TH> <TH>Number Of Attacks</TH> <TH>Number Of Login Attempts</TH> </TR> \n";
+	#Was doubleprinting header#print "</TABLE>\n";
+	#Was doubleprinting header#print "<BR><BR>\n";
+	#Was doubleprinting header#print "<TABLE BORDER=3>\n";
+	#Was doubleprinting header#print "<TR><TH colspan=3>All Class C IP ranges Sorted By Number Of Attacks</TD></TR>\n";
+	#Was doubleprinting header#print "<TR> <TH>Class C Address</TH> <TH>Number Of Attacks</TH> <TH>Number Of Login Attempts</TH> </TR> \n";
 #OLD#	foreach my $name (sort { $my_array{$b} <=> $my_array{$a} } keys %my_array) {
 #OLD	open (INPUT, "/tmp/all_class_c.$$") ;
 #OLD	if ($DEBUG >0){print "DEBUG Starting reading /tmp/all_class_c.$$ at:";$TMP_DATE=`date`; print $TMP_DATE;}
