@@ -20,6 +20,10 @@ download your own wordlists from
 You do NOT need wordlists to run LongTail, but it is interesting.
 No major functionality depends on them.
 
+LongTail is "easy" to install, but is "non-trivial" to install.
+AGAIN: Reasonable system administration skills are
+required to run and install this software.
+
 Licensing
 --------------
 LongTail is a /var/log/messages and access_log analyzer
@@ -344,13 +348,18 @@ Running rsyslog
 1) This has only been tested using rsyslog.  Not syslog, not
 syslog-ng.  I assume they will work too.
 
-2) If you are also logging to a remote host, and you are using 
+2) You must use the following line in your honeypot's (and if you are
+using a consolidation server's ) rsyslog.conf file.
+
+	$ActionFileDefaultTemplate RSYSLOG_FileFormat
+
+3) If you are also logging to a remote host, and you are using 
 a port OTHER than 514, AND you are running selinux, make sure
 you remember to run this command on BOTH hosts
 
 	semanage port -a -t syslogd_port_t -p tcp NewPortNumber
 
-3) This is the line I use on my honeypot to report to my consolidation
+4) This is the line I use on my honeypot to report to my consolidation
 master:
 
 	auth.* @@#.#.#.#:####
@@ -359,11 +368,6 @@ where #.#.#.# is the IP address of the receiving host and #### is the
 TCP Port where rsyslog is listening on the receiving host.  This way
 we are only sending SSH messages to the remote host, instead of
 filling it's logs with ALL the messages from the honeypot.
-
-4) You must use the following line in your honeypot's (and if you are
-using a consolidation server's ) rsyslog.conf file.
-
-	$ActionFileDefaultTemplate RSYSLOG_FileFormat
 
 5) Make sure you are using the lines in the rsyslog.conf file to 
 enable Reliable syslog reporting.
@@ -386,7 +390,8 @@ WARNING About System Hostnames
 System hostnames (as reported by the hostname command) should NOT be
 fully qualified, and MUST NOT include "-" (dash) characters.  I create
 files with hostnames in them and use the "." and "-" characters as
-delimeters.
+delimeters.  Fully qualified hostnames are bad also (longtail is good,
+longtail.it.marist.edu is BAD!).
 
 Files in the html directory that you should know about
 --------------
