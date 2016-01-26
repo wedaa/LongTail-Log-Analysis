@@ -127,6 +127,28 @@ function check_config {
 		exit
 	fi
 
+	rsyslog_format_check=`tail -1 $MESSAGES |awk '{print $1}'`
+	rsyslog_format_check_exit=0
+	if [ $rsyslog_format_check = "Jan" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Feb" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Mar" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Apr" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "May" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Jun" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Jul" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Aug" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Sep" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Oct" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Nov" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Dec" ] ; then rsyslog_format_check_exit=1 ; fi
+	
+	if [ $rsyslog_format_check_exit -eq 1 ] ; then
+		echo "$MESSAGES file appears to have the wrong style data stamp (monthName vs YYYY-MM-DD format) Please see the README again."
+		echo "rsyslog format line should be \"\$ActionFileDefaultTemplate RSYSLOG_FileFormat\""
+		echo "You will have to edit $MESSAGES by hand to fix the formating or start with a fresh $MESSAGES file"
+		exit
+	fi
+
 }
 
 ############################################################################
@@ -455,6 +477,211 @@ function count_http_attacks {
 	#fi
 
 
+	####################################################################################
+	#
+	# 404 Webpages requested
+	#
+	# TODAY
+	#
+	FILE_TO_SEARCH_FOR="todays_uniq_404_webpages.count"
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/TODAY now" ; date; fi
+	cd $PATH_TO_VAR_LOG
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
+		TODAY_404=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep ' 404 '|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq | wc -l`
+		#$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep ' 404 '|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq 
+	else
+echo "foo-3"
+		TODAY_404=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL  |grep ' 404 ' |grep -iv xymon|awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |uniq |wc -l`
+	fi
+	echo $TODAY_404 > $TMP_HTML_DIR/$FILE_TO_SEARCH_FOR 
+echo "TODAY'S 404 uniq count is is $TODAY_404"
+	#
+	# THIS MONTH
+	#
+	cd $TMP_HTML_DIR/historical/
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/This Month now" ;date;  fi
+	TMP=0
+	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name $FILE_TO_SEARCH_FOR` ; do
+		COUNT=`cat $FILE`
+echo "DEBUG file $FILE found"
+ls -l $FILE
+		(( TMP += $COUNT ))
+	done
+	THIS_MONTH_404=`expr $TMP + $TODAY_404`
+echo ""
+echo ""
+echo "this month is $TMP , today is $TODAY_404 "
+echo ""
+echo ""
+	#
+	# So there's a problem if it's the first day of the month and there's
+	# No real statistics yet.
+	#
+	# This fails on the first of the month
+	#
+
+	#
+	# LAST MONTH
+	#
+	cd $TMP_HTML_DIR/historical/
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in 404 requests/Last Month now" ; date ; fi
+#
+# Gotta fix this for the year boundary
+#
+	TMP_LAST_MONTH=`date "+%m" --date="last month"`
+	TMP_LAST_MONTH_YEAR=`date "+%Y" --date="last month"`
+	TMP=0
+	for FILE in  `find $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH -name $FILE_TO_SEARCH_FOR` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	LAST_MONTH_404=$TMP
+	# OK, this may not be 100% secure, but it's close enough for now
+	#
+	# THIS YEAR
+	#
+	# This was tested and works with 365 files :-)
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/This Year now" ; date; fi
+	TMP=0
+	for FILE in  `find $TMP_YEAR/ -name $FILE_TO_SEARCH_FOR` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	THIS_YEAR_404=`expr $TMP + $TODAY_404`
+
+	#
+	# EVERYTHING
+	#
+	# I have no idea where this breaks, but it's a big-ass number of files
+	TMP=0
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/everything" ;  date;fi
+	for FILE in  `find . -name $FILE_TO_SEARCH_FOR` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	TOTAL_404=`expr $TMP + $TODAY_404`
+	# OK, this may not be 100% secure, but it's close enough for now
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date;  fi
+	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
+
+	sed -i "s/Unique 404 Requests Today:.*$/Unique 404 Requests Today:--> $TODAY_404/" $1/index.shtml
+	sed -i "s/Unique 404 Requests Today:.*$/Unique 404 Requests Today:--> $TODAY_404/" $1/index-long.shtml
+
+	sed -i "s/Unique 404 Requests This Month:.*$/Unique 404 Requests This Month:--> $THIS_MONTH_404/" $1/index.shtml
+	sed -i "s/Unique 404 Requests This Month:.*$/Unique 404 Requests This Month:--> $THIS_MONTH_404/" $1/index-long.shtml
+
+	sed -i "s/Unique 404 Requests This Year:.*$/Unique 404 Requests This Year:--> $THIS_YEAR_404/" $1/index.shtml
+	sed -i "s/Unique 404 Requests This Year:.*$/Unique 404 Requests This Year:--> $THIS_YEAR_404/" $1/index-long.shtml
+
+	sed -i "s/Unique 404 Requests Since Logging Started:.*$/Unique 404 Requests Since Logging Started:--> $TOTAL_404/" $1/index.shtml
+	sed -i "s/Unique 404 Requests Since Logging Started:.*$/Unique 404 Requests Since Logging Started:--> $TOTAL_404/" $1/index-long.shtml
+
+
+	####################################################################################
+	#
+	# shellshock Webpages requested
+	#
+	# TODAY
+	#
+	FILE_TO_SEARCH_FOR="todays_uniq_shellshock_webpages.count"
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/TODAY now" ; date; fi
+	cd $PATH_TO_VAR_LOG
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
+		TODAY_shellshock=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep '\:\;'|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq | wc -l`
+		#$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep '\:\;'|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq 
+	else
+echo "foo-3"
+		TODAY_shellshock=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL  |grep '\:\;' |grep -iv xymon|awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |uniq |wc -l`
+	fi
+	echo $TODAY_shellshock > $TMP_HTML_DIR/$FILE_TO_SEARCH_FOR 
+echo "TODAY'S shellshock uniq count is is $TODAY_shellshock"
+	#
+	# THIS MONTH
+	#
+	cd $TMP_HTML_DIR/historical/
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/This Month now" ;date;  fi
+	TMP=0
+	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name $FILE_TO_SEARCH_FOR` ; do
+		COUNT=`cat $FILE`
+echo "DEBUG file $FILE found"
+ls -l $FILE
+		(( TMP += $COUNT ))
+	done
+	THIS_MONTH_shellshock=`expr $TMP + $TODAY_shellshock`
+echo ""
+echo ""
+echo "this month is $TMP , today is $TODAY_shellshock "
+echo ""
+echo ""
+	#
+	# So there's a problem if it's the first day of the month and there's
+	# No real statistics yet.
+	#
+	# This fails on the first of the month
+	#
+
+	#
+	# LAST MONTH
+	#
+	cd $TMP_HTML_DIR/historical/
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in shellshock requests/Last Month now" ; date ; fi
+#
+# Gotta fix this for the year boundary
+#
+	TMP_LAST_MONTH=`date "+%m" --date="last month"`
+	TMP_LAST_MONTH_YEAR=`date "+%Y" --date="last month"`
+	TMP=0
+	for FILE in  `find $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH -name $FILE_TO_SEARCH_FOR` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	LAST_MONTH_shellshock=$TMP
+	# OK, this may not be 100% secure, but it's close enough for now
+	#
+	# THIS YEAR
+	#
+	# This was tested and works with 365 files :-)
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/This Year now" ; date; fi
+	TMP=0
+	for FILE in  `find $TMP_YEAR/ -name $FILE_TO_SEARCH_FOR` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	THIS_YEAR_shellshock=`expr $TMP + $TODAY_shellshock`
+
+	#
+	# EVERYTHING
+	#
+	# I have no idea where this breaks, but it's a big-ass number of files
+	TMP=0
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/everything" ;  date;fi
+	for FILE in  `find . -name $FILE_TO_SEARCH_FOR` ; do
+		COUNT=`cat $FILE`
+		(( TMP += $COUNT ))
+	done
+	TOTAL_shellshock=`expr $TMP + $TODAY_shellshock`
+	# OK, this may not be 100% secure, but it's close enough for now
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date;  fi
+	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
+
+	sed -i "s/Unique ShellShock Today:.*$/Unique ShellShock Today:--> $TODAY_shellshock/" $1/index.shtml
+	sed -i "s/Unique ShellShock Today:.*$/Unique ShellShock Today:--> $TODAY_shellshock/" $1/index-long.shtml
+
+	sed -i "s/Unique ShellShock This Month:.*$/Unique ShellShock This Month:--> $THIS_MONTH_shellshock/" $1/index.shtml
+	sed -i "s/Unique ShellShock This Month:.*$/Unique ShellShock This Month:--> $THIS_MONTH_shellshock/" $1/index-long.shtml
+
+	sed -i "s/Unique ShellShock This Year:.*$/Unique ShellShock This Year:--> $THIS_YEAR_shellshock/" $1/index.shtml
+	sed -i "s/Unique ShellShock This Year:.*$/Unique ShellShock This Year:--> $THIS_YEAR_shellshock/" $1/index-long.shtml
+
+	sed -i "s/Unique ShellShock Since Logging Started:.*$/Unique ShellShock Since Logging Started:--> $TOTAL_shellshock/" $1/index.shtml
+	sed -i "s/Unique ShellShock Since Logging Started:.*$/Unique ShellShock Since Logging Started:--> $TOTAL_shellshock/" $1/index-long.shtml
+
+
+	####################################################################################
+	#
+	# Webpages requested
 	#
 	# TODAY
 	#
@@ -611,10 +838,6 @@ echo "DEBUG - EEE"
 	YEAR_MAX=`echo $YEAR_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	YEAR_MIN=`echo $YEAR_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
-echo "YEAR_SUM is $YEAR_SUM"
-
-echo "DEBUG - DDD"
-
 	#
 	# EVERYTHING
 	#
@@ -643,8 +866,6 @@ echo "DEBUG - DDD"
 	EVERYTHING_MEDIAN=`echo $EVERYTHING_MEDIAN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	EVERYTHING_MAX=`echo $EVERYTHING_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	EVERYTHING_MIN=`echo $EVERYTHING_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-
-echo "DEBUG - CCC"
 
 	#
 	# Normalized data
@@ -697,11 +918,10 @@ echo "DEBUG - CCC"
 	# This really needs to be sped up somehow
 	#
 	# Couting honeypots here
-	#if [ $START_HOUR -eq $MIDNIGHT ]; then
-	if [ $START_HOUR -eq 22 ]; then
+	if [ $START_HOUR -eq $MIDNIGHT ]; then
 	if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "http" ] ; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all http honeypots now"; date ; fi
 
 		honey_file="todays-honeypots.txt"
 		TMP=0
@@ -745,54 +965,6 @@ echo "DEBUG - CCC"
 	fi
 	fi
 
-	# SOMEWHERE there is a bug which if the password is empty, that the
-	# line sent to syslog is "...Password:$", instead of "...Password: $"
-	# Please note the missing space at the end of the line is the bug
-	# and now I need to code around it everyplace :-(
-	if [ ! -e all-password ] ; then
-		touch all-password
-	fi
-	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all passwords now"; date ; fi
-		zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //' |sed 's/^..*Password:$/ /' |sort -T $TMP_DIRECTORY -u > all-password
-		THISYEARUNIQUEPASSWORDS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u |wc -l `
-		THISMONTHUNIQUEPASSWORDS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u |wc -l `
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all passwords now"; date ; fi
-		ALLUNIQUEPASSWORDS=`cat all-password |wc -l`
-
-		THISMONTHUNIQUEPASSWORDS=`echo $THISMONTHUNIQUEPASSWORDS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-		THISYEARUNIQUEPASSWORDS=`echo $THISYEARUNIQUEPASSWORDS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-		ALLUNIQUEPASSWORDS=`echo $ALLUNIQUEPASSWORDS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-
-		sed -i "s/Unique Passwords This Month.*$/Unique Passwords This Month:--> $THISMONTHUNIQUEPASSWORDS/" $1/index.shtml
-		sed -i "s/Unique Passwords This Year.*$/Unique Passwords This Year:--> $THISYEARUNIQUEPASSWORDS/" $1/index.shtml
-		sed -i "s/Unique Passwords Since Logging Started.*$/Unique Passwords Since Logging Started:--> $ALLUNIQUEPASSWORDS/" $1/index.shtml
-		sed -i "s/Unique Passwords This Month.*$/Unique Passwords This Month:--> $THISMONTHUNIQUEPASSWORDS/" $1/index-long.shtml
-		sed -i "s/Unique Passwords This Year.*$/Unique Passwords This Year:--> $THISYEARUNIQUEPASSWORDS/" $1/index-long.shtml
-		sed -i "s/Unique Passwords Since Logging Started.*$/Unique Passwords Since Logging Started:--> $ALLUNIQUEPASSWORDS/" $1/index-long.shtml
-	fi
-	if [ "x$HOSTNAME" == "x/" ] ;then
-		if [ $KIPPO -eq 1 ] ; then
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt| sed 's/^..*\///' | sed 's/\].*$//'|sort -T $TMP_DIRECTORY -u |sed 's/^$/NO-PASSWORD-GIVEN/'> todays_passwords
-		else
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
-		fi
-	else
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u > todays_passwords
-	fi
-	TODAYSUNIQUEPASSWORDS=`cat todays_passwords |wc -l`
-	echo $TODAYSUNIQUEPASSWORDS  >todays_password.count
-	awk 'FNR==NR{a[$0]++;next}(!($0 in a))' all-password todays_passwords >todays-uniq-passwords.txt
-	PASSWORDSNEWTODAY=`cat todays-uniq-passwords.txt |wc -l`
-
-	make_header "$1/todays-uniq-passwords.shtml" "Passwords Never Seen Before Today"
-	echo "</TABLE>" >> $1/todays-uniq-passwords.shtml
-	echo "<HR>" >> $1/todays-uniq-passwords.shtml
-	cat todays-uniq-passwords.txt |\
-	awk '{printf("<BR><a href=\"https://www.google.com/search?q=&#34password+%s&#34\">%s</a> \n",$1,$1)}' >> $1/todays-uniq-passwords.shtml
-	make_footer "$1/todays-uniq-passwords.shtml"
-
-
 	#
 	# This really needs to be sped up somehow
 	#
@@ -803,55 +975,24 @@ echo "DEBUG - CCC"
 			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
 			cat $1/todays-honeypots.txt |wc -l  > todays-honeypots.txt.count
 	fi
-
+echo ""
+echo ""
+echo "http Getting all-ips now"
+echo ""
+echo ""
 	if [ ! -e all-ips ] ; then
 		touch all-ips
 	fi
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all IPs now"; date ; fi
-		zcat historical/*/*/*/current-raw-data.gz                                       |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -T $TMP_DIRECTORY -u > all-ips
-		THISYEARUNIQUEIPSS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz           |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u |wc -l `
-		THISMONTHUNIQUEIPSS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u |wc -l `
+		cat historical/*/*/*/todays_ips |sort -T $TMP_DIRECTORY -u > all-ips
+		THISYEARUNIQUEIPSS=`cat historical/$TMP_YEAR/*/*/todays_ips |sort -T $TMP_DIRECTORY -u |wc -l `
+		THISMONTHUNIQUEIPSS=`cat historical/$TMP_YEAR/$TMP_MONTH/*/todays_ips |sort -T $TMP_DIRECTORY -u |wc -l `
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all ips now"; date ; fi
 
 		ALLUNIQUEIPSS=`cat all-ips |wc -l`
 echo "ALLUNIQUEIPSS=$ALLUNIQUEIPSS"
 #exit
-
-#############
-# New code
-honey_file="todays-honeypots.txt"
-#TMP=0
-#touch /$TMP_DIRECTORY/honeypots.$$
-#rm /$TMP_DIRECTORY/honeypots.$$
-#for FILE in  `find historical/$TMP_YEAR/$TMP_MONTH -name $honey_file` ; do
-#awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
-#done
-#THISMONTHUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
-#rm /$TMP_DIRECTORY/honeypots.$$
-#
-#TMP=0
-#touch /$TMP_DIRECTORY/honeypots.$$
-#rm /$TMP_DIRECTORY/honeypots.$$
-#for FILE in  `find historical/$TMP_YEAR/ -name $honey_file` ; do
-#awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
-#done
-#THISYEARUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
-#rm /$TMP_DIRECTORY/honeypots.$$
-#TMP=0
-#
-#touch /$TMP_DIRECTORY/honeypots.$$
-#rm /$TMP_DIRECTORY/honeypots.$$
-#for FILE in  `find historical/  -name $honey_file` ; do
-#awk '{print $2}' $FILE |grep -v ^$  >> /$TMP_DIRECTORY/honeypots.$$
-#done
-#ALLUNIQUEHONEYPOTS=`sort -u /$TMP_DIRECTORY/honeypots.$$|grep -v ^$ | wc -l `
-#rm /$TMP_DIRECTORY/honeypots.$$
-#
-#THISMONTHUNIQUEHONEYPOTS=`echo $THISMONTHUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-#THISYEARUNIQUEHONEYPOTS=`echo $THISYEARUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-#ALLUNIQUEHONEYPOTS=`echo $ALLUNIQUEHONEYPOTS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
-
 
 		THISMONTHUNIQUEIPSS=`echo $THISMONTHUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 		THISYEARUNIQUEIPSS=`echo $THISYEARUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -866,13 +1007,9 @@ honey_file="todays-honeypots.txt"
 		sed -i "s/Unique IPs Since Logging Started.*$/Unique IPs Since Logging Started:--> $ALLUNIQUEIPSS/" $1/index-long.shtml
 	fi
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		if [ $KIPPO -eq 1 ] ; then
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*,.*,//' |sed 's/\]..*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
-		else
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|grep IP: |sed 's/^..*IP: //' |tr -cd '\11\12\40-\176'  |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u > todays_ips
-		fi
+			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |awk '{print $4}'|sort -T $TMP_DIRECTORY -u > todays_ips
 	else
-		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep IP: |sed 's/^..*IP: //' |tr -cd '\11\12\40-\176'  | sed 's/ .*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |awk '{print $4}' |sort -T $TMP_DIRECTORY -u > todays_ips
 	fi
 	TODAYSUNIQUEIPS=`cat todays_ips |wc -l`
 	echo $TODAYSUNIQUEIPS  >todays_ips.count
@@ -899,33 +1036,10 @@ honey_file="todays-honeypots.txt"
 	TODAYSUNIQUEIPS=`echo $TODAYSUNIQUEIPS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	IPSNEWTODAY=`echo $IPSNEWTODAY|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
-	sed -i "s/Login Attempts Today.*$/Login Attempts Today:--> $TODAY/" $1/index.shtml
-	sed -i "s/Login Attempts This Month.*$/Login Attempts This Month:--> $THIS_MONTH/" $1/index.shtml
-	sed -i "s/Login Attempts This Year.*$/Login Attempts This Year:--> $THIS_YEAR/" $1/index.shtml
-	sed -i "s/Login Attempts Since Logging Started.*$/Login Attempts Since Logging Started:--> $TOTAL/" $1/index.shtml
-
-	sed -i "s/Unique Passwords Today.*$/Unique Passwords Today:--> $TODAYSUNIQUEPASSWORDS/" $1/index.shtml
-	sed -i "s/New Passwords Today.*$/New Passwords Today:--> $PASSWORDSNEWTODAY/" $1/index.shtml
-
-	sed -i "s/Unique Usernames Today.*$/Unique Usernames Today:--> $TODAYSUNIQUEUSERNAMES/" $1/index.shtml
-	sed -i "s/New Usernames Today.*$/New Usernames Today:--> $USERNAMESNEWTODAY/" $1/index.shtml
 
 	sed -i "s/Unique IPs Today.*$/Unique IPs Today:--> $TODAYSUNIQUEIPS/" $1/index.shtml
 	sed -i "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/" $1/index.shtml
 
-	sed -i "s/Login Attempts Today.*$/Login Attempts Today:--> $TODAY/" $1/index-long.shtml
-	sed -i "s/Login Attempts This Month.*$/Login Attempts This Month:--> $THIS_MONTH/" $1/index-long.shtml
-	sed -i "s/Login Attempts This Year.*$/Login Attempts This Year:--> $THIS_YEAR/" $1/index-long.shtml
-	sed -i "s/Login Attempts Since Logging Started.*$/Login Attempts Since Logging Started:--> $TOTAL/" $1/index-long.shtml
-
-	sed -i "s/Unique Passwords Today.*$/Unique Passwords Today:--> $TODAYSUNIQUEPASSWORDS/" $1/index-long.shtml
-	sed -i "s/New Passwords Today.*$/New Passwords Today:--> $PASSWORDSNEWTODAY/" $1/index-long.shtml
-
-	sed -i "s/Unique Usernames Today.*$/Unique Usernames Today:--> $TODAYSUNIQUEUSERNAMES/" $1/index-long.shtml
-	sed -i "s/New Usernames Today.*$/New Usernames Today:--> $USERNAMESNEWTODAY/" $1/index-long.shtml
-
-	sed -i "s/Unique IPs Today.*$/Unique IPs Today:--> $TODAYSUNIQUEIPS/" $1/index-long.shtml
-	sed -i "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/" $1/index-long.shtml
 
 	#
 	# Count honeypots here
@@ -2189,6 +2303,10 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 	cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep | grep wget\  |sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sort |uniq -c |sort -nr |\
 sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/TR>/' >> $TMP_HTML_DIR/$FILE_PREFIX-wget.shtml
 
+	echo "#!/bin/sh" > $TMP_HTML_DIR/$FILE_PREFIX-wget.sh
+	echo "cd $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/malware" >> $TMP_HTML_DIR/$FILE_PREFIX-wget.sh
+	cat $TMP_DIRECTORY/LongTail-messages.$$ |grep -vf $SCRIPT_DIR/LongTail-exclude-webpages.grep | grep wget\  |sed 's/^..*wget //'|sed 's/;.*$//' |sed 's/ ..*$//' |sed 's/^/wget /'|sed 's/>.*$//' |sed 's/<.*$//'  |sort |uniq |sort -nr  >> $TMP_HTML_DIR/$FILE_PREFIX-wget.sh
+
 	make_header "$TMP_HTML_DIR/$FILE_PREFIX-top-20-wget.shtml" "Top 20 Webpages" "" "Count" "Webpage"
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-wget.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-wget.shtml
 	make_footer "$TMP_HTML_DIR/$FILE_PREFIX-wget.shtml"
@@ -2226,7 +2344,7 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 # and (more importantly) each hosts index.shtml can be a copy/paste of the main
 # index.shtml
 	if [ "x$HOSTNAME" == "x/" ] ;then
-#echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
+echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
 		echo "# http://longtail.it.marist.edu "> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# This is a sorted list of IP addresses that have tried to login" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# to a server related to LongTail." >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
@@ -2243,13 +2361,16 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		cat $TMP_DIRECTORY/LongTail-messages.$$  | awk '{print $3}' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		mv $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
+echo "Calling LongTail_add_country_to_ip.pl"
 		$SCRIPT_DIR/LongTail_add_country_to_ip.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp > $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
+echo "Calling LongTail_make_map.pl"
 		$SCRIPT_DIR/LongTail_make_map.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt > $TMP_HTML_DIR/$FILE_PREFIX-map.html
 		rm $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
 	fi
 
 	#
 	# Code to try and add the country to the ip-addresses.shtml page
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-http_attack 5a " ; date ; fi
 	cat $TMP_DIRECTORY/LongTail-messages.$$  | awk '{print $3}' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr   > $TMP_DIRECTORY/Longtail.tmpIP.$$
 
 	cat $TMP_DIRECTORY/Longtail.tmpIP.$$ | /usr/local/etc/LongTail_add_country_to_ip.pl > $TMP_DIRECTORY/Longtail.tmpIP.$$-2 # Delete this line once the code works
@@ -2259,6 +2380,7 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 	rm $TMP_DIRECTORY/Longtail.tmpIP.$$
 	rm $TMP_DIRECTORY/Longtail.tmpIP.$$-2
 
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-http_attack 5b " ; date ; fi
 	sed -i s/HONEY/$HTML_TOP_DIR/g $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml
 
 	grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.shtml |head -20 |grep -v HEADERLINE >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-ip-addresses.shtml
@@ -2399,6 +2521,7 @@ function ssh_attacks {
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "hostname is not set"
 echo "PROTOCOL is $PROTOCOL"
+		rsyslog_format_check=`tail -1 $MESSAGES |awk '{print $1}'`
 		if [ $LONGTAIL -eq 1 ] ; then
 #echo "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now"
 			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
@@ -2964,9 +3087,11 @@ function make_trends {
 
 function do_http {
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_http now" ; fi
+	if [ ! -d $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/malware ] ; then
+		mkdir $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/malware
+	fi
 	#-----------------------------------------------------------------
 	# Lets count the http attacks
-	echo "WARNING!!! count_http_attacks is disabled during development"
 	count_http_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
 	
 	#----------------------------------------------------------------
@@ -3180,7 +3305,6 @@ function do_ssh {
 	ssh_attacks $HTML_DIR $YEAR $PATH_TO_VAR_LOG "$DATE"  "$LOGFILE*" "current"
 	
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-	#if [ $START_HOUR -eq 16 ]; then
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh/last7,30,historical  now" ; fi
 		#----------------------------------------------------------------
 		# Lets check the ssh logs for the last 7 days
@@ -3603,7 +3727,6 @@ function create_historical_http_copies {
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_http_copies" ; date; fi
 
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-	#if [ $START_HOUR -eq 14 ]; then
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Actually running create_historical_http_copies $START_HOUR -eq $MIDNIGHT) " ; date; fi
 		YESTERDAY_YEAR=`date  +"%Y"  --date="1 day ago"`
 		YESTERDAY_MONTH=`date  +"%m" --date="1 day ago"`
@@ -3612,6 +3735,7 @@ function create_historical_http_copies {
 		cd  $TMP_HTML_DIR
 
 		mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY
+		mkdir -p $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/malware
 		for dir in $HOSTS_PROTECTED $BLACKRIDGE ; do
 			if [ "x$HOSTNAME" == "x$dir" ] ; then
 				touch $TMP_HTML_DIR/historical/$TMP_YEAR/$TMP_MONTH/$TMP_DAY/current-attack-count.data.notfullday
@@ -3666,16 +3790,19 @@ function create_historical_http_copies {
 
 		# Make todays_webpages.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sed 's/ ..*$//' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_webpages 
+		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_webpages |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_webpages.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages 
 	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-attack-count.data
 
 		# Make todays_404_webpages.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \ 404\  | sed 's/^..*\"GET\ /GET-/'| sed 's/^..*\"HEAD\ /HEAD-/'| sed 's/^..*\"POST\ /POST-/' | sed 's/^..*\"OPTIONS\ /OPTIONS-/'  | sed 's/^..*\"CONNECT\ /CONNECT-/'  | sed 's/^..*\"PROPFIND\ /PROPFIND-/'  |sed 's/ ..*$//' | sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_404_webpages 
+	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_404_webpages |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_404_webpages.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \ 404\  |sort -T $TMP_DIRECTORY -u > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_404_webpages 
 	cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_404_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_404_webpages.count
 
 		# Make todays shellshock count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \:\;  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_shellshock_webpages
+		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_shellshock_webpages |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_uniq_shellshock_webpages.count
 		zcat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-raw-data.gz | grep \:\;  > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock_webpages
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock_webpages | wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_shellshock.count
 
@@ -4332,7 +4459,7 @@ echo "SEARCH_FOR is $SEARCH_FOR"
 if [ $SEARCH_FOR == "http" ] ; then
 	echo "Searching for http attacks"
 	PROTOCOL="LongTail_apache"
-	#MIDNIGHT=16
+	#MIDNIGHT=21
 	create_historical_http_copies  $HTML_DIR
 	make_http_trends
 	do_http
@@ -4396,10 +4523,10 @@ if [ "x$HOSTNAME" == "x/" ] ;then
 			$SCRIPT_DIR/LongTail_password_analysis_part_2.pl $HTML_DIR/all-password >> $HTML_DIR/password_list_analysis_all_passwords.shtml
 			make_footer "$HTML_DIR/password_list_analysis_all_passwords.shtml"
 
-			make_header "$HTML_DIR/first_seen_ips.shtml" "First Occurence of an IP Address"  "" 
-			echo "</TABLE>" >> $HTML_DIR/first_seen_ips.shtml
-			$SCRIPT_DIR/LongTail_find_first_password_use.pl ips >> $HTML_DIR/first_seen_ips.shtml
-			make_footer "$HTML_DIR/first_seen_ips.shtml"
+#			make_header "$HTML_DIR/first_seen_ips.shtml" "First Occurence of an IP Address"  "" 
+#			echo "</TABLE>" >> $HTML_DIR/first_seen_ips.shtml
+#			$SCRIPT_DIR/LongTail_find_first_password_use.pl ips >> $HTML_DIR/first_seen_ips.shtml
+#			make_footer "$HTML_DIR/first_seen_ips.shtml"
 
 			make_header "$HTML_DIR/first_seen_usernames.shtml" "First Occurence of an Username"  "" 
 			echo "</TABLE>" >> $HTML_DIR/first_seen_usernames.shtml
@@ -4420,18 +4547,18 @@ if [ "x$HOSTNAME" == "x/" ] ;then
 			`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl >>/$HTML_DIR/class_c_hall_of_shame.shtml`;
 			make_footer "$HTML_DIR/class_c_hall_of_shame.shtml" 
 
-			make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
+			make_header "$HTML_DIR/class_c_list.shtml" "List of Class C subnets sorted by the number of attack patterns. "  ""
 			`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
 			make_footer "$HTML_DIR/class_c_list.shtml" 
 		fi
 	fi
 
-	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		echo -n "Starting LongTail_class_c_hall_of_shame.pl now "; date
-		make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
-		`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
-		make_footer "$HTML_DIR/class_c_list.shtml" 
-	fi
+#	if [ $START_HOUR -eq $MIDNIGHT ]; then
+#		echo -n "Starting LongTail_class_c_hall_of_shame.pl now "; date
+#		make_header "$HTML_DIR/class_c_list.shtml" "List of Class C "  "Class C subnets sorted by the number of attack patterns."
+#		`$SCRIPT_DIR/LongTail_class_c_hall_of_shame.pl  "ALL" >>/$HTML_DIR/class_c_list.shtml`;
+#		make_footer "$HTML_DIR/class_c_list.shtml" 
+#	fi
 
 
 fi
