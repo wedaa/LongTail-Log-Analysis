@@ -127,7 +127,7 @@ function check_config {
 		exit
 	fi
 
-	rsyslog_format_check=`tail -1 $MESSAGES |awk '{print $1}'`
+	rsyslog_format_check=`tail -1 $PATH_TO_VAR_LOG/$LOGFILE |awk '{print $1}'`
 	rsyslog_format_check_exit=0
 	if [ $rsyslog_format_check = "Jan" ] ; then rsyslog_format_check_exit=1 ; fi
 	if [ $rsyslog_format_check = "Feb" ] ; then rsyslog_format_check_exit=1 ; fi
@@ -143,9 +143,9 @@ function check_config {
 	if [ $rsyslog_format_check = "Dec" ] ; then rsyslog_format_check_exit=1 ; fi
 	
 	if [ $rsyslog_format_check_exit -eq 1 ] ; then
-		echo "$MESSAGES file appears to have the wrong style data stamp (monthName vs YYYY-MM-DD format) Please see the README again."
+		echo "$PATH_TO_VAR_LOG/$LOGFILE file appears to have the wrong style data stamp (monthName vs YYYY-MM-DD format) Please see the README again."
 		echo "rsyslog format line should be \"\$ActionFileDefaultTemplate RSYSLOG_FileFormat\""
-		echo "You will have to edit $MESSAGES by hand to fix the formating or start with a fresh $MESSAGES file"
+		echo "You will have to edit $PATH_TO_VAR_LOG/$LOGFILE by hand to fix the formating or start with a fresh $PATH_TO_VAR_LOG/$LOGFILE file"
 		exit
 	fi
 
