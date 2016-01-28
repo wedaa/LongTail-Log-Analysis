@@ -272,7 +272,7 @@ MY crontab entry looks like this one(See the file crontab.sample too):
 	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
 	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
 	#
-	5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; cat /var/log/messages | grep Csoftware  | awk '{print $6,$8,$10}' | sed 's/;//g' >> /var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
+	5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
 	55 3 * * * /usr/local/etc/LongTail_find_badguys_looking_for_passwords.sh >/tmp/LongTail_find_badguys_looking_for_passwords.out
 	#
 	# BlackRidge only stuff
