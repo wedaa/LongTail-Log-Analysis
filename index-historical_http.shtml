@@ -6,13 +6,13 @@
 <!--#include virtual="current-map.html" --> 
 
 <TITLE>LongTail Log Analysis @ <!--#include virtual="/honey/institution.html" -->
- Historical Page, All SSH Ports for
+ Historical Page, HTTP Requests for
 <!--#include virtual="date.html" --> 
 </TITLE>
 </HEAD>
 <BODY bgcolor=#00f0FF>
 <H3>
-LongTail Log Analysis Historical Page, All SSH Ports for 
+LongTail Log Analysis Historical Page, HTTP Requests for 
 <!--#include virtual="date.html" --> 
 </H3>
 <table>
