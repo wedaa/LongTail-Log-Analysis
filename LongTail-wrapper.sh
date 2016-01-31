@@ -9,6 +9,7 @@ print_divider
 START_HOUR=`date +%H` # This is used at the end of the program but we want to know it NOW
 if [ $START_HOUR -eq 0 ]; then
 	echo "It's MIDNIGHT, running midnight scripts"
+	date; /usr/local/etc/LongTail.sh http  ; print_divider # This runs first since it's fastest
 	date; /usr/local/etc/LongTail.sh 2222  ; print_divider # This runs first since it's fastest
 	date; /usr/local/etc/LongTail.sh  ; print_divider # This should still run at midnight
 	date; /usr/local/etc/LongTail.sh ssh blackridge MIDNIGHT ; print_divider
@@ -27,6 +28,7 @@ if [ $START_HOUR -eq 0 ]; then
 	date; /usr/local/etc/LongTail.sh 2222 edu_c MIDNIGHT ; print_divider
 	date; /usr/local/etc/LongTail.sh 2222 blackridge MIDNIGHT ; print_divider
 else
+	date; /usr/local/etc/LongTail.sh http ; print_divider
 	date; /usr/local/etc/LongTail.sh  ; print_divider
 	date; /usr/local/etc/LongTail.sh ssh blackridge ; print_divider
 	date; /usr/local/etc/LongTail.sh ssh erhp ; print_divider
