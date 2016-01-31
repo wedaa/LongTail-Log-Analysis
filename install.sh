@@ -117,7 +117,7 @@ echo "#############################################################"
 echo "Making other dirs now"
 echo ""
 
-OTHER_DIRS="$HTML_DIR/dashboard /usr/local/etc/black_lists /var/www/html/honey-2222 /var/www/html/honey-22 /var/www/html/telnet /var/www/html/ftp /var/www/html/rlogin  /var/www/html/honey/bots/ /var/www/html/honey/downloads/"
+OTHER_DIRS="$HTML_DIR/dashboard /usr/local/etc/black_lists /var/www/html/honey-2222 /var/www/html/honey-22 /var/www/html/telnet /var/www/html/ftp /var/www/html/rlogin  /var/www/html/honey/bots/ /var/www/html/honey/downloads/ /var/www/html/http"
 
 for dir in $SCRIPT_DIR $HTML_DIR  $DICT_DIR $OTHER_DIRS $BOTS_DIR; do
 	if [ -e $dir ] ; then
@@ -206,6 +206,7 @@ echo "Copying assorted /usr/local/etc/ programs now"
 echo ""
 PROGRAMS=" LongTail_rebuild_dashboard_index.pl \
 LongTail_find_badguys_looking_for_passwords.sh \
+LongTail_send_access_to_syslog.pl \
 LongTail_make_map.pl \
 LongTail_dashboard.pl \
 LongTail_import_Kippo_to_LongTail.pl \
