@@ -4,6 +4,18 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 fi
 
+if [ -d /usr/local/source/openssh ] ; then
+	echo "It looks like you have already installed the LongTail honeypots "
+	echo "on this server."
+	echo ""
+	echo "If you wish to reinstall or install a newer version of the "
+	echo "LongTail openssh honeypots, then you need to run the following"
+	echo "command:"
+	echo "   /bin/rm -rf /usr/local/source/openssh"
+	echo "and then run this script again."
+	exit;
+fi
+
 mkdir -p /usr/local/source/openssh
 cd /usr/local/source/openssh
 mkdir openssh-22
