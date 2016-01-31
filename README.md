@@ -28,7 +28,7 @@ Licensing
 --------------
 LongTail is a /var/log/messages and access_log analyzer
 
-Copyright (C) 2015 Eric Wedaa
+Copyright (C) 2015,2016 Eric Wedaa
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -47,10 +47,17 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 What LongTail does
 --------------
 Longtail analyzes your /var/log/messages files to report on 
-the ssh attacks against your server.  LongTail helps point out
-new hosts doing brute force attacks, new passwords and accounts
-being tried, and helps point out "Groups" of attackers that are
-sharing the same attack patterns.
+the ssh and http attacks against your server.  
+
+In terms of ssh, LongTail helps point out new hosts doing brute force 
+attacks, new passwords and accounts being tried, and helps point out 
+"Groups" of attackers that are sharing the same attack patterns.
+
+In terms of http, LongTail helps point out new vulnerabilities 
+that are being scanned for, and breaks out attacks that include
+wget commands as part of the attack so that you can download
+the malware that the bad guys are attempting to install on your
+webserver.
 
 LongTail generates 20 graphs per host being monitored to help
 boil down the statistics into a more usable form.  The 30 day
@@ -60,7 +67,13 @@ particular day's activities.
 LongTail pre-supposes that you have compiled your own openssh daemon 
 as described below.
 
-LongTail is currently for a single server, and up to 20 servers.  
+LongTail requires that you send your Apache httpd logs to syslog
+(as described later).  LongTail http honeypots MUST NOT run on the
+same server that you run the LongTail analytics software and 
+webpages on as the traffic from LongTail will add extra webpage
+requests to your http analysis that are actually valid requests.
+
+LongTail is currently for between a single server to 20 servers.  
 With 15 active servers the main analysis report program (
 LongTail_analyze_attacks.pl) takes over 7 minutes to run a single 
 pass (All hosts together) at night with 21 million records and 8 
@@ -143,6 +156,36 @@ selinux installed
 	semanage port -a -t ssh_port_t -p tcp 2222
 	semanage port -a -t ssh_port_t -p tcp <Whatever your big port # is>
 	semanage port -l | grep ssh # Shows ssh ports
+
+
+LongTail HTTP Honeypot setup
+--------------
+As of January 2016, LongTail now can analyze requests to an Apache
+http honeypt.
+
+LongTail currently uses the Apache httpd server as the honeypot.  The 
+current requirement is that there is only a single index.html file
+that you need to create yourself (which can be as simple as 
+"<HTML><BODY>This is my webserver" in order to track down which 
+IP addresses are doing blind attacks against webservers.  As LongTail 
+version 2 is completed, a separate set of downloadable webpages 
+is planned for development in order to attrack better attacks, payload
+delivery mechanisms, and malware.
+
+You will need to copy the perl script "LongTail_send_access_to_syslog.pl"
+to your webserver machine, preferrably in /usr/local/etc and do a 
+  chmod a+rx /usr/local/etc/LongTail_send_access_to_syslog.pl
+
+You will also need to install the perl syslog module with:
+  cpan Sys::Syslog
+
+And lastly, you need to add the following line to your httpd.conf file
+  #CustomLog "logs/access_log" combined # Install LongTail line AFTER this line
+  CustomLog |/usr/local/etc/LongTail_send_access_to_syslog.pl combined
+
+And then restart apache so the change takes effect.  You can test it
+by pointing your browser of choice to you honeypot, and then checking
+you /var/log/messages file to make sure that the request was logged to syslog.
 
 
 LongTail Prerequisites
@@ -254,6 +297,7 @@ MY crontab entry looks like this one(See the file crontab.sample too):
 	1 1 * * * /usr/local/etc/get_whois.sh > /tmp/get_whois.sh.out
 	1 2 * * * /usr/local/etc/LongTail_whois_analysis.pl > /var/www/html/honey/whois.shtml
 	10 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	1 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh http >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
 	10 0,2,4,6,8,10,12,14,16,18,20,22 * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail-wrapper.sh.out 2>> /tmp/LongTail-wrapper.sh.out
 	30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
 	#
