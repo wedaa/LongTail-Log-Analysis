@@ -132,7 +132,14 @@ while (<>){
 		#print "DEBUG Only one field, must be ip\n";
 		$ip = $trash;
 	}
-	$tmp_country_code=$ip_to_country{$ip};
+	if (defined($ip_to_country{$ip})){
+		$tmp_country_code=$ip_to_country{$ip};
+	}
+	else {
+		$tmp_country_code=`/usr/local/etc/whois.pl $ip`;
+		chomp $tmp_country_code;
+		($trash,$country)=split(/ /,$tmp_country_code);
+	}
 	$tmp_country_code=~ tr/A-Z/a-z/;
 	$_ =~ s/$ip/$ip $country_code{$tmp_country_code}/;
 	$tag="";
