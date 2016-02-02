@@ -73,6 +73,33 @@ fi
 #done
 
 
+#
+# Check for required software here
+#
+echo ""
+echo "#############################################################"
+echo "Checking for required programs now"
+echo ""
+abort=0
+for i in cpan wget gunzip tar perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
+	echo -n "Checking for $i...  "
+	which $i >/dev/null
+	if [ $? -eq 0 ]; then
+		echo "$i found"
+	else
+		echo "$i not found, you need to install this"
+		abort=1
+		abort_string="$abort_string $i"
+	fi
+done
+
+if [ $abort -eq 1 ] ; then
+	echo ""
+	echo "Please install the required software packages and re-run this script"
+	echo "Required programs are $abort_string"
+	exit
+fi
+
 
 
 SCRIPT_DIR="/usr/local/etc"    # Where do we put the scripts?
@@ -368,23 +395,6 @@ chmod a+rx $SCRIPT_DIR/LongTail_local_reports/*
 chown $OWNER $SCRIPT_DIR/LongTail_local_reports/*
 cd ..
 
-
-#
-# Check for required software here
-#
-echo ""
-echo "#############################################################"
-echo "Checking for required programs now"
-echo ""
-for i in cpan wget gunzip tar perl php find sort uniq grep egrep cat tac unzip bzcat zcat whois ; do
-	echo -n "Checking for $i...  "
-	which $i >/dev/null
-	if [ $? -eq 0 ]; then
-		echo "$i found"
-	else
-		echo "$i not found, you need to install this"
-	fi
-done
 
 echo ""
 echo "#############################################################"
