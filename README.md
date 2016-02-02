@@ -198,6 +198,15 @@ LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core com
 
 LongTail requires jpgraph, FancyBox, and TrueType fonts.  (See next sections.)
 
+Please note that LongTail seems to work best with UTF-8 character encoding
+on both the server, as well as for any terminal you are connecting to the 
+server with.  There have been reports of "funny" characters like " â€˜master.zipâ€™"
+(lets see if those show up in the README file.)
+
+Again, please use UTF-8 characters.
+
+
+
 FancyBox notes
 --------------
 I use FancyBox Version 2.1.5 and is available for non commercial use
