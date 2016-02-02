@@ -136,9 +136,12 @@ while (<>){
 		$tmp_country_code=$ip_to_country{$ip};
 	}
 	else {
-		$tmp_country_code=`/usr/local/etc/whois.pl $ip`;
-		chomp $tmp_country_code;
-		($trash,$country)=split(/ /,$tmp_country_code);
+		if ($ip =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/){
+			print (STDERR "ip is $ip\n");
+			$tmp_country_code=`/usr/local/etc/whois.pl $ip`;
+			chomp $tmp_country_code;
+			($trash,$country)=split(/ /,$tmp_country_code);
+		}
 	}
 	$tmp_country_code=~ tr/A-Z/a-z/;
 	$_ =~ s/$ip/$ip $country_code{$tmp_country_code}/;
