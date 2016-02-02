@@ -136,8 +136,7 @@ while (<>){
 		$tmp_country_code=$ip_to_country{$ip};
 	}
 	else {
-		if ($ip =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/){
-			print (STDERR "ip is $ip\n");
+		if ($ip =~ /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/){
 			$tmp_country_code=`/usr/local/etc/whois.pl $ip`;
 			chomp $tmp_country_code;
 			($trash,$country)=split(/ /,$tmp_country_code);
