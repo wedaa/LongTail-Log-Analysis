@@ -115,6 +115,7 @@ s/<TD>it<\/TD>/<TD>Italy<\/TD>/i
 s/<TD>jm<\/TD>/<TD>Jamaica<\/TD>/i
 s/<TD>jo<\/TD>/<TD>Jordan<\/TD>/i
 s/<TD>jp<\/TD>/<TD>Japan<\/TD>/i
+s/<TD>je<\/TD>/<TD>Jersey<\/TD>/i
 s/<TD>ke<\/TD>/<TD>Kenya<\/TD>/i
 s/<TD>kg<\/TD>/<TD>Kyrgyz Republic (Kyrgyzstan)<\/TD>/i
 s/<TD>kh<\/TD>/<TD>Cambodia, Kingdom of<\/TD>/i
