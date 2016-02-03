@@ -472,6 +472,15 @@ index-long.shtml: This shows the historical stats.  It should be in
 index-historical.shtml: This is the webpage that gets copied into 
 the historical directories (for instance, /var/www/html/honey/historical/2015/05/05/)
 
+KNOWN ERROR MESSAGES
+--------------
+"Illegal division by zero at -e line 1." will happen until you get enough data.
+
+"find: ‘2016/01’: No such file or directory"  This is from trying to 
+do a find on last month's data, which will happen until you have a 
+"last month" to look at.  Similar errors occur elsewhere looking for 
+last years data, etc.
+
 KNOWN ISSUES THAT HAVE YET TO BE DONE
 --------------
 
