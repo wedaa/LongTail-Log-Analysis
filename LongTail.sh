@@ -126,6 +126,10 @@ function check_config {
 		echo "Can not find HTML_DIR: $HTML_DIR, exiting now"
 		exit
 	fi
+	if [ ! -d $TMP_DIRECTORY ] ; then
+		echo "Can not find TMP_DIRECTORY: $TMP_DIRECTORY, exiting now"
+		exit
+	fi
 
 	rsyslog_format_check=`tail -1 $PATH_TO_VAR_LOG/$LOGFILE |awk '{print $1}'`
 	rsyslog_format_check_exit=0
@@ -1711,6 +1715,39 @@ function count_ssh_attacks {
 	TODAYSUNIQUEIPS=`echo $TODAYSUNIQUEIPS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	IPSNEWTODAY=`echo $IPSNEWTODAY|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
+	if [ $DEBUG  == 1 ] ; then 
+		echo "============================================"; 
+		echo "Extra debugging for CL"
+		echo ""
+		echo "s/Login Attempts Today.*$/Login Attempts Today:--> $TODAY/ $1/index.shtml"
+		echo "s/Login Attempts This Month.*$/Login Attempts This Month:--> $THIS_MONTH/ $1/index.shtml"
+		echo "s/Login Attempts This Year.*$/Login Attempts This Year:--> $THIS_YEAR/ $1/index.shtml"
+		echo "s/Login Attempts Since Logging Started.*$/Login Attempts Since Logging Started:--> $TOTAL/ $1/index.shtml"
+
+		echo "s/Unique Passwords Today.*$/Unique Passwords Today:--> $TODAYSUNIQUEPASSWORDS/ $1/index.shtml"
+		echo "s/New Passwords Today.*$/New Passwords Today:--> $PASSWORDSNEWTODAY/ $1/index.shtml"
+
+		echo "s/Unique Usernames Today.*$/Unique Usernames Today:--> $TODAYSUNIQUEUSERNAMES/ $1/index.shtml"
+		echo "s/New Usernames Today.*$/New Usernames Today:--> $USERNAMESNEWTODAY/ $1/index.shtml"
+
+		echo "s/Unique IPs Today.*$/Unique IPs Today:--> $TODAYSUNIQUEIPS/ $1/index.shtml"
+		echo "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/ $1/index.shtml"
+
+		echo "s/Login Attempts Today.*$/Login Attempts Today:--> $TODAY/ $1/index-long.shtml"
+		echo "s/Login Attempts This Month.*$/Login Attempts This Month:--> $THIS_MONTH/ $1/index-long.shtml"
+		echo "s/Login Attempts This Year.*$/Login Attempts This Year:--> $THIS_YEAR/ $1/index-long.shtml"
+		echo "s/Login Attempts Since Logging Started.*$/Login Attempts Since Logging Started:--> $TOTAL/ $1/index-long.shtml"
+
+		echo "s/Unique Passwords Today.*$/Unique Passwords Today:--> $TODAYSUNIQUEPASSWORDS/ $1/index-long.shtml"
+		echo "s/New Passwords Today.*$/New Passwords Today:--> $PASSWORDSNEWTODAY/ $1/index-long.shtml"
+
+		echo "s/Unique Usernames Today.*$/Unique Usernames Today:--> $TODAYSUNIQUEUSERNAMES/ $1/index-long.shtml"
+		echo "s/New Usernames Today.*$/New Usernames Today:--> $USERNAMESNEWTODAY/ $1/index-long.shtml"
+
+		echo "s/Unique IPs Today.*$/Unique IPs Today:--> $TODAYSUNIQUEIPS/ $1/index-long.shtml"
+		echo "s/New IPs Today.*$/New IPs Today:--> $IPSNEWTODAY/ $1/index-long.shtml"
+
+	fi
 	sed -i "s/Login Attempts Today.*$/Login Attempts Today:--> $TODAY/" $1/index.shtml
 	sed -i "s/Login Attempts This Month.*$/Login Attempts This Month:--> $THIS_MONTH/" $1/index.shtml
 	sed -i "s/Login Attempts This Year.*$/Login Attempts This Year:--> $THIS_YEAR/" $1/index.shtml
