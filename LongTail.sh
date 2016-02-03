@@ -2521,7 +2521,6 @@ function ssh_attacks {
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "hostname is not set"
 echo "PROTOCOL is $PROTOCOL"
-		rsyslog_format_check=`tail -1 $MESSAGES |awk '{print $1}'`
 		if [ $LONGTAIL -eq 1 ] ; then
 #echo "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now"
 			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
@@ -2805,7 +2804,9 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 	# read and run any LOCALLY WRITTEN reports
 	#
 	if [ $DEBUG == 1 ] ; then echo "Running ssh-local-reports"; fi
-	. $SCRIPT_DIR/Longtail-ssh-local-reports
+	if [ -x $SCRIPT_DIR/Longtail-ssh-local-reports ] ; then
+		. $SCRIPT_DIR/Longtail-ssh-local-reports
+	fi
 
 	# cd back to the original directory.  this should be the last command in 
 	# the function.
