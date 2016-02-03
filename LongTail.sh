@@ -484,7 +484,7 @@ function count_http_attacks {
 	# TODAY
 	#
 	FILE_TO_SEARCH_FOR="todays_uniq_404_webpages.count"
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/TODAY now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/TODAY now " ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
@@ -500,7 +500,7 @@ echo "TODAY'S 404 uniq count is is $TODAY_404"
 	# THIS MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/This Month now" ;date;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/This Month now " ;date;  fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name $FILE_TO_SEARCH_FOR` ; do
 		COUNT=`cat $FILE`
@@ -525,7 +525,7 @@ echo ""
 	# LAST MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in 404 requests/Last Month now" ; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in 404 requests/Last Month now " ; date ; fi
 #
 # Gotta fix this for the year boundary
 #
@@ -542,7 +542,7 @@ echo ""
 	# THIS YEAR
 	#
 	# This was tested and works with 365 files :-)
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/This Year now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/This Year now " ; date; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/ -name $FILE_TO_SEARCH_FOR` ; do
 		COUNT=`cat $FILE`
@@ -555,14 +555,14 @@ echo ""
 	#
 	# I have no idea where this breaks, but it's a big-ass number of files
 	TMP=0
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/everything" ;  date;fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/everything " ;  date;fi
 	for FILE in  `find . -name $FILE_TO_SEARCH_FOR` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	TOTAL_404=`expr $TMP + $TODAY_404`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics " ; date;  fi
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 
 	sed -i "s/Unique 404 Requests Today:.*$/Unique 404 Requests Today:--> $TODAY_404/" $1/index.shtml
@@ -585,7 +585,7 @@ echo ""
 	# TODAY
 	#
 	FILE_TO_SEARCH_FOR="todays_uniq_shellshock_webpages.count"
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/TODAY now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/TODAY now " ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
@@ -601,7 +601,7 @@ echo "TODAY'S shellshock uniq count is is $TODAY_shellshock"
 	# THIS MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/This Month now" ;date;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/This Month now " ;date;  fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name $FILE_TO_SEARCH_FOR` ; do
 		COUNT=`cat $FILE`
@@ -626,7 +626,7 @@ echo ""
 	# LAST MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in shellshock requests/Last Month now" ; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in shellshock requests/Last Month now " ; date ; fi
 #
 # Gotta fix this for the year boundary
 #
@@ -643,7 +643,7 @@ echo ""
 	# THIS YEAR
 	#
 	# This was tested and works with 365 files :-)
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/This Year now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/This Year now " ; date; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/ -name $FILE_TO_SEARCH_FOR` ; do
 		COUNT=`cat $FILE`
@@ -656,14 +656,14 @@ echo ""
 	#
 	# I have no idea where this breaks, but it's a big-ass number of files
 	TMP=0
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/everything" ;  date;fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/everything " ;  date;fi
 	for FILE in  `find . -name $FILE_TO_SEARCH_FOR` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	TOTAL_shellshock=`expr $TMP + $TODAY_shellshock`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics " ; date;  fi
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 
 	sed -i "s/Unique ShellShock Today:.*$/Unique ShellShock Today:--> $TODAY_shellshock/" $1/index.shtml
@@ -685,7 +685,7 @@ echo ""
 	#
 	# TODAY
 	#
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/TODAY now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/TODAY now " ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
@@ -699,7 +699,7 @@ echo ""
 	# THIS MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/This Month now" ;date;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/This Month now " ;date;  fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
@@ -707,7 +707,7 @@ echo ""
 	done
 	THIS_MONTH=`expr $TMP + $TODAY`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics" ;date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics " ;date; fi
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -716,7 +716,7 @@ echo ""
 	#
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_http_attacks/This Month/Statistics now" ; fi
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_http_attacks/This Month/Statistics now " ; fi
 echo ""
 echo "=============================================================================="
 echo ""
@@ -757,7 +757,7 @@ echo "MONTH_SUM is $MONTH_SUM"
 	# LAST MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/Last Month now" ; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/Last Month now " ; date ; fi
 #
 # Gotta fix this for the year boundary
 #
@@ -770,7 +770,7 @@ echo "MONTH_SUM is $MONTH_SUM"
 	done
 	LAST_MONTH=$TMP
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG Last month statistics" ;date ;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG Last month statistics " ;date ;  fi
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -780,7 +780,7 @@ echo "MONTH_SUM is $MONTH_SUM"
 	# Gotta do the date calculation to figure out "When" is last month
 	#
 	if [ -d $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/ ] ; then 
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_http_attacks/Last Month/statistics now" ; fi
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_http_attacks/Last Month/statistics now " ; fi
 		cat $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/*/current-attack-count.data|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort { $a <=> $b } @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "LAST_MONTH_COUNT=$n\nLAST_MONTH_SUM=$s\nLAST_MONTH_AVERAGE=$a\nLAST_MONTH_STD=$std\nLAST_MONTH_MEDIAN=$med\nLAST_MONTH_MAX=$m\nLAST_MONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
@@ -812,14 +812,14 @@ echo "DEBUG - EEE"
 	# THIS YEAR
 	#
 	# This was tested and works with 365 files :-)
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/This Year now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/This Year now " ; date; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/ -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	THIS_YEAR=`expr $TMP + $TODAY`
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics " ; date; fi
 	# OK, this may not be 100% secure, but it's close enough for now
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_http_attacks/This Year now/statistics" ; fi
@@ -843,14 +843,14 @@ echo "DEBUG - EEE"
 	#
 	# I have no idea where this breaks, but it's a big-ass number of files
 	TMP=0
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/everything" ;  date;fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/everything " ;  date;fi
 	for FILE in  `find . -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	TOTAL=`expr $TMP + $TODAY`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics " ; date;  fi
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_http_attacks/everything/statistics" ; fi
 	for FILE in  `find . -name current-attack-count.data` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort { $a <=> $b } @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "EVERYTHING_COUNT=$n\nEVERYTHING_SUM=$s\nEVERYTHING_AVERAGE=$a\nEVERYTHING_STD=$std\nEVERYTHING_MEDIAN=$med\nEVERYTHING_MAX=$m\nEVERYTHING_MIN=$mm";'  > $TMPFILE
@@ -874,7 +874,7 @@ echo "DEBUG - EEE"
 		# I have no idea where this breaks, but it's a big-ass number of files
 		cd $HTML_DIR
 		# OK, this may not be 100% secure, but it's close enough for now
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL Normalized statistics" ; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL Normalized statistics " ; date ; fi
 		TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 		for FILE in  `find */historical -name current-attack-count.data ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort { $a <=> $b } @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
 		. $TMPFILE
@@ -921,7 +921,7 @@ echo "DEBUG - EEE"
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 	if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "http" ] ; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all http honeypots now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all http honeypots now "; date ; fi
 
 		honey_file="todays-honeypots.txt"
 		TMP=0
@@ -970,7 +970,7 @@ echo "DEBUG - EEE"
 	#
 #2015-03-29T03:07:36-04:00 shepherd sshd-22[2766]: IP: 103.41.124.140 PassLog: Username: root Password: tommy007
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Honeypots now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Honeypots now "; date ; fi
 
 			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
 			cat $1/todays-honeypots.txt |wc -l  > todays-honeypots.txt.count
@@ -984,11 +984,11 @@ echo ""
 		touch all-ips
 	fi
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all IPs now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all IPs now "; date ; fi
 		cat historical/*/*/*/todays_ips |sort -T $TMP_DIRECTORY -u > all-ips
 		THISYEARUNIQUEIPSS=`cat historical/$TMP_YEAR/*/*/todays_ips |sort -T $TMP_DIRECTORY -u |wc -l `
 		THISMONTHUNIQUEIPSS=`cat historical/$TMP_YEAR/$TMP_MONTH/*/todays_ips |sort -T $TMP_DIRECTORY -u |wc -l `
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all ips now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all ips now "; date ; fi
 
 		ALLUNIQUEIPSS=`cat all-ips |wc -l`
 echo "ALLUNIQUEIPSS=$ALLUNIQUEIPSS"
@@ -1267,7 +1267,7 @@ function count_ssh_attacks {
 	#
 	# TODAY
 	#
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/TODAY now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/TODAY now " ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		if [ $LONGTAIL -eq 1 ] ; then
@@ -1290,7 +1290,7 @@ function count_ssh_attacks {
 	# THIS MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Month now" ;date;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Month now " ;date;  fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
@@ -1298,7 +1298,7 @@ function count_ssh_attacks {
 	done
 	THIS_MONTH=`expr $TMP + $TODAY`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics" ;date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics " ;date; fi
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -1307,7 +1307,7 @@ function count_ssh_attacks {
 	#
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Month/Statistics now" ; fi
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Month/Statistics now " ; fi
 		cat $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort { $a <=> $b } @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;}; $n; print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
@@ -1340,7 +1340,7 @@ function count_ssh_attacks {
 	# LAST MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/Last Month now" ; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/Last Month now " ; date ; fi
 #
 # Gotta fix this for the year boundary
 #
@@ -1353,7 +1353,7 @@ function count_ssh_attacks {
 	done
 	LAST_MONTH=$TMP
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG Last month statistics" ;date ;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG Last month statistics " ;date ;  fi
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -1394,14 +1394,14 @@ function count_ssh_attacks {
 	# THIS YEAR
 	#
 	# This was tested and works with 365 files :-)
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now " ; date; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/ -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	THIS_YEAR=`expr $TMP + $TODAY`
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics " ; date; fi
 	# OK, this may not be 100% secure, but it's close enough for now
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Year now/statistics" ; fi
@@ -1426,14 +1426,14 @@ function count_ssh_attacks {
 	#
 	# I have no idea where this breaks, but it's a big-ass number of files
 	TMP=0
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/everything" ;  date;fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/everything " ;  date;fi
 	for FILE in  `find . -name current-attack-count.data` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	TOTAL=`expr $TMP + $TODAY`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date;  fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics " ; date;  fi
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/everything/statistics" ; fi
 	for FILE in  `find . -name current-attack-count.data` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort { $a <=> $b } @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "EVERYTHING_COUNT=$n\nEVERYTHING_SUM=$s\nEVERYTHING_AVERAGE=$a\nEVERYTHING_STD=$std\nEVERYTHING_MEDIAN=$med\nEVERYTHING_MAX=$m\nEVERYTHING_MIN=$mm";'  > $TMPFILE
@@ -1458,7 +1458,7 @@ function count_ssh_attacks {
 		# I have no idea where this breaks, but it's a big-ass number of files
 		cd $HTML_DIR
 		# OK, this may not be 100% secure, but it's close enough for now
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL Normalized statistics" ; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL Normalized statistics " ; date ; fi
 		TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 		for FILE in  `find */historical -name current-attack-count.data ` ; do if [ ! -e $FILE.notfullday ] ; then cat $FILE ; fi ; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort { $a <=> $b } @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "NORMALIZED_COUNT=$n\nNORMALIZED_SUM=$s\nNORMALIZED_AVERAGE=$a\nNORMALIZED_STD=$std\nNORMALIZED_MEDIAN=$med\nNORMALIZED_MAX=$m\nNORMALIZED_MIN=$mm";'  > $TMPFILE
 		. $TMPFILE
@@ -1494,7 +1494,7 @@ function count_ssh_attacks {
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 	if [ "x$HOSTNAME" == "x/" ] ;then
 	if [ $SEARCH_FOR == "sshd" ] ; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all honeypots now "; date ; fi
 
 		#ALLUNIQUEHONEYPOTS=`zcat historical/*/*/*/current-raw-data.gz |egrep IP:\|sshd | awk '{print $2}' |sort -T $TMP_DIRECTORY -u  |wc -l`
 		#THISYEARUNIQUEHONEYPOTS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |egrep IP:\|sshd |awk '{print $2}'|sort -T $TMP_DIRECTORY -u |wc -l `
@@ -1551,11 +1551,11 @@ function count_ssh_attacks {
 		touch all-password
 	fi
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all passwords now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all passwords now "; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //' |sed 's/^..*Password:$/ /' |sort -T $TMP_DIRECTORY -u > all-password
 		THISYEARUNIQUEPASSWORDS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u |wc -l `
 		THISMONTHUNIQUEPASSWORDS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*Password:\ //'  |sed 's/^..*Password:$/ /'|sort -T $TMP_DIRECTORY -u |wc -l `
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all passwords now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all passwords now "; date ; fi
 		ALLUNIQUEPASSWORDS=`cat all-password |wc -l`
 
 		THISMONTHUNIQUEPASSWORDS=`echo $THISMONTHUNIQUEPASSWORDS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -1601,11 +1601,11 @@ function count_ssh_attacks {
 		touch all-username
 	fi
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Usernames now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Usernames now "; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /' |sort -T $TMP_DIRECTORY -u > all-username
 		THISYEARUNIQUEUSERNAMES=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u |wc -l `
 		THISMONTHUNIQUEUSERNAMES=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u |wc -l `
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all username now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all username now "; date ; fi
 		ALLUNIQUEUSERNAMES=`cat all-username |wc -l`
 
 		THISMONTHUNIQUEUSERNAMES=`echo $THISMONTHUNIQUEUSERNAMES|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -1648,7 +1648,7 @@ function count_ssh_attacks {
 	#
 #2015-03-29T03:07:36-04:00 shepherd sshd-22[2766]: IP: 103.41.124.140 PassLog: Username: root Password: tommy007
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Honeypots now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Honeypots now "; date ; fi
 
 			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep IP:\|sshd |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
 			cat $1/todays-honeypots.txt |wc -l  > todays-honeypots.txt.count
@@ -1658,11 +1658,11 @@ function count_ssh_attacks {
 		touch all-ips
 	fi
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all IPs now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all IPs now "; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz                                       |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -T $TMP_DIRECTORY -u > all-ips
 		THISYEARUNIQUEIPSS=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz           |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u |wc -l `
 		THISMONTHUNIQUEIPSS=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u |wc -l `
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all ips now"; date ; fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all ips now "; date ; fi
 		ALLUNIQUEIPSS=`cat all-ips |wc -l`
 
 		THISMONTHUNIQUEIPSS=`echo $THISMONTHUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -1965,7 +1965,7 @@ function todays_assorted_stats {
 	local file=$1
 	local outputfile=$2
 	if [ $DEBUG  == 1 ] ; then echo "============================================"; fi
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in todays_assorted_stats/This Month now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in todays_assorted_stats/This Month now " ; date; fi
 
 	#
 	# TODAY
@@ -1994,14 +1994,14 @@ function todays_assorted_stats {
 
 	THIS_MONTH=`expr $TMP + $TODAY`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics" ;date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this month statistics " ;date; fi
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
 	#
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
-		if [ $DEBUG  == 1 ] ; then echo -n  "DEBUG-in count_ssh_attacks/This Month/Statistics now" ; date ;fi
+		if [ $DEBUG  == 1 ] ; then echo -n  "DEBUG-in count_ssh_attacks/This Month/Statistics now " ; date ;fi
 		cat $TMP_YEAR/$TMP_MONTH/*/$file|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;}; $n; print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
@@ -2034,7 +2034,7 @@ function todays_assorted_stats {
 	# LAST MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/Last Month now" ; fi
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/Last Month now " ; fi
 #
 # Gotta fix this for the year boundary
 #
@@ -2047,7 +2047,7 @@ function todays_assorted_stats {
 	done
 	LAST_MONTH=$TMP
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG Last month statistics" ;date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG Last month statistics " ;date; fi
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -2057,7 +2057,7 @@ function todays_assorted_stats {
 	# Gotta do the date calculation to figure out "When" is last month
 	#
 	if [ -d $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/ ] ; then 
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/Last Month/statistics now" ; date ;fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/Last Month/statistics now " ; date ;fi
 		cat $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/*/$file|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "LAST_MONTH_COUNT=$n\nLAST_MONTH_SUM=$s\nLAST_MONTH_AVERAGE=$a\nLAST_MONTH_STD=$std\nLAST_MONTH_MEDIAN=$med\nLAST_MONTH_MAX=$m\nLAST_MONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
@@ -2088,17 +2088,17 @@ function todays_assorted_stats {
 	# THIS YEAR
 	#
 	# This was tested and works with 365 files :-)
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now " ; date; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/ -name $file` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	THIS_YEAR=`expr $TMP + $TODAY`
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics" ; date ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics " ; date ; fi
 	# OK, this may not be 100% secure, but it's close enough for now
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now/statistics" ; date ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now/statistics " ; date ; fi
 	for FILE in  `find $TMP_YEAR/ -name $file` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "YEAR_COUNT=$n\nYEAR_SUM=$s\nYEAR_AVERAGE=$a\nYEAR_STD=$std\nYEAR_MEDIAN=$med\nYEAR_MAX=$m\nYEAR_MIN=$mm";'  > $TMPFILE
 	. $TMPFILE
 	rm $TMPFILE
@@ -2120,14 +2120,14 @@ function todays_assorted_stats {
 	#
 	# I have no idea where this breaks, but it's a big-ass number of files
 	TMP=0
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/everything" ; date ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/everything " ; date ; fi
 	for FILE in  `find . -name $file` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
 	done
 	TOTAL=`expr $TMP + $TODAY`
 	# OK, this may not be 100% secure, but it's close enough for now
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics " ; date; fi
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/everything/statistics" ; fi
 	for FILE in  `find . -name $file` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "EVERYTHING_COUNT=$n\nEVERYTHING_SUM=$s\nEVERYTHING_AVERAGE=$a\nEVERYTHING_STD=$std\nEVERYTHING_MEDIAN=$med\nEVERYTHING_MAX=$m\nEVERYTHING_MIN=$mm";'  > $TMPFILE
@@ -2522,7 +2522,7 @@ function ssh_attacks {
 		echo "hostname is not set"
 echo "PROTOCOL is $PROTOCOL"
 		if [ $LONGTAIL -eq 1 ] ; then
-#echo "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now"
+#echo "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now "
 			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
 		fi
 		if [ $KIPPO -eq 1 ] ; then
@@ -3182,7 +3182,7 @@ function do_http {
 	
 	#-----------------------------------------------------------------
 	cd $HTML_DIR/
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Making Graphics now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Making Graphics now " ; date; fi
 	if [ $GRAPHS == 1 ] ; then
 		#
 		# Deal with creating empty 7-day, 30-day and historical files the 
@@ -3282,7 +3282,7 @@ function do_http {
 				fi
 			done # for FILE in historical*.data last-*.data
 		fi # if [ $START_HOUR -eq $MIDNIGHT ]
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Done Making Graphics now" ; date; fi
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Done Making Graphics now " ; date; fi
 	fi
 } # End of do_http
 
@@ -3296,7 +3296,7 @@ function do_http {
 # 2015-02-26T12:46:40.500085-05:00 shepherd telnet-honeypot[28001]: IP: 107.150.35.218 TelnetLog: Username:  Password: qwe123
 
 function do_ssh {
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh now" ; fi
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in do_ssh now " ; fi
 	#-----------------------------------------------------------------
 	# Lets count the ssh attacks
 	count_ssh_attacks $HTML_DIR $PATH_TO_VAR_LOG "$LOGFILE*"
@@ -3504,7 +3504,7 @@ function do_ssh {
 	
 	#-----------------------------------------------------------------
 	cd $HTML_DIR/
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Making Graphics now" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Making Graphics now " ; date; fi
 	if [ $GRAPHS == 1 ] ; then
 	#
 	# Deal with creating empty 7-day, 30-day and historical files the 
@@ -3670,7 +3670,7 @@ echo ""
 				fi
 			done        
 		fi
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Done Making Graphics now" ; date; fi
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-Done Making Graphics now " ; date; fi
 	fi    
 } # End of do_ssh
 
@@ -4163,7 +4163,7 @@ function count_sshpsycho_attacks {
 	
 	###########################################################################
 	
-	if [ $DEBUG  == 1 ] ; then echo -n  "DEBUG-Counting sshpsycho-2 attacks now"; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n  "DEBUG-Counting sshpsycho-2 attacks now "; date; fi
 	#echo -n "DEBUG counting sshpsycho-2 today: "; date
 	if [ "x$HOSTNAME" == "x/" ] ; then
 		#TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $SCRIPT_DIR/LongTail_sshPsycho_2_IP_addresses |wc -l`
@@ -4214,7 +4214,7 @@ function count_sshpsycho_attacks {
 	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG Done counting sshpsycho-2 doing sed commands: "; date; fi
 	
 	###########################################################################
-	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-Counting sshpsycho friends attacks now"; date ; fi
+	if [ $DEBUG  == 1 ] ; then  echo -n "DEBUG-Counting sshpsycho friends attacks now "; date ; fi
 	
 	if [ "x$HOSTNAME" == "x/" ] ; then
 		#TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" |grep IP: | grep -F -f $SCRIPT_DIR/LongTail_friends_of_sshPsycho_IP_addresses|wc -l`
