@@ -120,6 +120,68 @@ sub read_local_config_file {
 	}
 }
 
+sub check_config {
+	if ( $DEBUG  == 1 ) { print "DEBUG-in check_config\n" ; }
+
+  if ( ! -d "$PATH_TO_VAR_LOG" ){
+    print "$PATH_TO_VAR_LOG does not exist, exiting now\n";
+    exit;
+  }
+  if ( ! -e "$PATH_TO_VAR_LOG/$LOGFILE" ){
+    print "$PATH_TO_VAR_LOG/$LOGFILE does not exist, exiting now\n";
+    exit;
+  }
+  if ( ! -d "$PATH_TO_VAR_LOG_HTTPD" ){
+    print "$PATH_TO_VAR_LOG_HTTPD does not exist, exiting now\n";
+    exit;
+  }
+  if ( ! -d "$SCRIPT_DIR" ){
+    print "Can not find SCRIPT_DIR: $SCRIPT_DIR, exiting now\n";
+    exit;
+  }
+  if ( ! -d "$HTML_DIR" ){
+    print "Can not find HTML_DIR: $HTML_DIR, exiting now\n";
+    exit;
+  }
+  if ( ! -d "$TMP_DIRECTORY" ){
+    print "Can not find TMP_DIRECTORY $TMP_DIRECTORY, exiting now\n";
+    exit;
+  }
+
+	if ( ! -r "$PATH_TO_VAR_LOG/$LOGFILE" ){
+		print "Can not read $PATH_TO_VAR_LOG/$LOGFILE, please check file permissions\n";
+		print "Exiting now\n";
+		exit;
+	}
+
+	}
+  $rsyslog_format_check=`tail -1 $PATH_TO_VAR_LOG/$LOGFILE |awk '{print $1}'`;
+	chomp $rsyslog_format_check;
+  $rsyslog_format_check_exit=0;
+  if ( $rsyslog_format_check eq "Jan" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Feb" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Mar" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Apr" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "May" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Jun" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Jul" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Aug" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Sep" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Oct" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Nov" ){ $rsyslog_format_check_exit=1 ; }
+  if ( $rsyslog_format_check eq "Dec" ){ $rsyslog_format_check_exit=1 ; }
+
+  if ( $rsyslog_format_check_exit == 1 ){ 
+    print "$PATH_TO_VAR_LOG/$LOGFILE file appears to have the wrong style data stamp (monthName vs YYYY-MM-DD format) Please see the README again.\n";
+    print "rsyslog format line should be \"\$ActionFileDefaultTemplate RSYSLOG_FileFormat\"\n";
+    print "You will have to edit $PATH_TO_VAR_LOG/$LOGFILE by hand to fix the formating or start with a fresh $PATH_TO_VAR_LOG/$LOGFILE file\n";
+    exit;
+  }
+	if ( $DEBUG  == 1 ) { print "DEBUG-Done with check_config\n" ; }
+
+}
+
+
 # This sub is called as 
 # NEW_STRING=$(convert_kippo_to_longtail "$STRING")
 # STRING should look like
@@ -1270,14 +1332,14 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 	}
 
 	if ( "x$HOSTNAME" eq "x/" ) {
-		open (FILE, "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES|");
+		open (FILE, "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |");
 		open (OUTPUT, ">todays_passwords.tmp");
 		if ( $DEBUG  == 1 ) { print  "DEBUG-Getting todays passwords now "; $DEBUG_DATE=`date`; print "$DEBUG_DATE"; ; }
 		while (<FILE>){
 			if (/$PROTOCOL/){
 				if (/$TMP_DATE/){
 				if (/ Password: /){
-					#NOTYETCONVERTED grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |
+					#grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |
 					$_ =~ s/^..*Password:\ //;
 					$_ =~ s/^..*Password:$/ /;
 					chomp;
@@ -1351,29 +1413,36 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		`sed -i "s/Unique Usernames This Year.*\$/Unique Usernames This Year:--> $THISYEARUNIQUEUSERNAMES/" $TMP_HTML_DIR/index-long.shtml`;
 		`sed -i "s/Unique Usernames Since Logging Started.*\$/Unique Usernames Since Logging Started:--> $ALLUNIQUEUSERNAMES/" $TMP_HTML_DIR/index-long.shtml`;
 	}
-#	if ( "x$HOSTNAME" eq "x/" ) {
-#		if ( $KIPPO == 1 ) {
-#			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*\[//' | sed 's/\/..*$//' |sort -T $TMP_DIRECTORY -u > todays_username
-#		else
-#			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
-#		}
-#	else
-#		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's/^..*Username:\ //' |sed 's/ Password.:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u > todays_username
-#	}
+	if ( "x$HOSTNAME" eq "x/" ) {
+		if ( $KIPPO == 1 ) {
+			#NOTYETCONVERTED $SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*\[//' | sed 's/\/..*$//' |sort -T $TMP_DIRECTORY -u > todays_username
+			print "kippo not done, fix this\n";
+		} else {
+			`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's\/^..*Username:\\ \/\/' |sed 's\/ Password:.*$\//' |sort -T $TMP_DIRECTORY -u > todays_username`;
+		}
+	} else {
+		`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|sed 's\/^..*Username:\\ \/\/' |sed 's\/ Password:.*$\/' |sort -T $TMP_DIRECTORY -u > todays_username`;
+	}
 	$TODAYSUNIQUEUSERNAMES=`cat todays_username |wc -l`;
 	chomp $TODAYSUNIQUEUSERNAMES;
 	`echo $TODAYSUNIQUEUSERNAMES  >todays_username.count`;
+# 2016-01-04 this works ericw.
 	`awk 'FNR==NR{a[\$0]++;next}(!(\$0 in a))' all-username todays_username >todays-uniq-username.txt`;
 	$USERNAMESNEWTODAY=`cat todays-uniq-username.txt |wc -l`;
 	chomp $USERNAMESNEWTODAY;
 
 	&make_header("$TMP_HTML_DIR/todays-uniq-username.shtml", "Usernames Never Seen Before Today");
-#	print "</TABLE>" >> $TMP_HTML_DIR/todays-uniq-username.shtml
-#	print "<HR>" >> $TMP_HTML_DIR/todays-uniq-username.shtml
-#	cat todays-uniq-username.txt |\
-#	awk '{printf("<BR><a href=\"https://www.google.com/search?q=&#34username+%s&#34\">%s</a> \n",$1,$1)}' >> $TMP_HTML_DIR/todays-uniq-username.shtml
+	open (INPUT, "todays-uniq-username.txt");
+	open (OUTPUT, ">> $TMP_HTML_DIR/todays-uniq-username.shtml");
+	while (<INPUT>){
+		chomp;
+		print(OUTPUT "<BR><a href=\"https://www.google.com/search?q=&#34username+$_&#34\">$_</a> \n");
+	}
+	close (INPUT);
+	close (OUTPUT);
 	&make_footer("$TMP_HTML_DIR/todays-uniq-username.shtml");
 
+print "\n\n\nWARNING!!! I need to check todays uniq password and IP before moving on\n\n\n";
 
 
 	#
@@ -1408,15 +1477,16 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 		`sed -i "s/Unique IPs Since Logging Started.*\$/Unique IPs Since Logging Started:--> $ALLUNIQUEIPSS/" $TMP_HTML_DIR/index-long.shtml`;
 	}
 	#
-#NOTYETCONVERTED	if ( "x$HOSTNAME" eq "x/" ) {
-#NOTYETCONVERTED		if ( $KIPPO == 1 ) {
+	if ( "x$HOSTNAME" eq "x/" ) {
+		if ( $KIPPO == 1 ) {
+			print "Kippo code not converted yet\n";
 #NOTYETCONVERTED			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt |sed 's/^..*,.*,//' |sed 's/\]..*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
-#NOTYETCONVERTED		else
-#NOTYETCONVERTED			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//'|sort -T $TMP_DIRECTORY -u > todays_ips
-#NOTYETCONVERTED		}
-#NOTYETCONVERTED	else
-#NOTYETCONVERTED		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep IP: |sed 's/^..*IP: //' |sed 's/ .*$//' |sort -T $TMP_DIRECTORY -u > todays_ips
-#NOTYETCONVERTED	}
+		} else {
+			`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|grep IP: |sed 's\/^..*IP: \/\/' |sed 's\/ .*$\/\/'|sort -T $TMP_DIRECTORY -u > todays_ips`;
+		}
+	} else {
+		`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |grep IP: |sed 's\/^..*IP: \/\/' |sed 's\/ .*$\/\/' |sort -T $TMP_DIRECTORY -u > todays_ips`;
+	}
 	$TODAYSUNIQUEIPS=`cat todays_ips |wc -l`;
 	chomp $TODAYSUNIQUEIPS;
 	`echo $TODAYSUNIQUEIPS  >todays_ips.count`;
@@ -1426,11 +1496,11 @@ print "\n\nDEBUG Tried to chdir to $TMP_HTML_DIR/historical/\n\n";
 
 	&make_header ("$TMP_HTML_DIR/todays-uniq-ips.shtml", "IP Addresses Never Seen Before Today", " ", "Count", "IP Address", "Country", "WhoIS", "Blacklisted", "Attack Patterns");
 
-#NOTYETCONVERTED	for IP in `cat todays-uniq-ips.txt` ; do grep .TD.$IP..TD. current-ip-addresses.shtml >> $TMP_HTML_DIR/todays-uniq-ips.shtml; done
+	`for IP in \`cat todays-uniq-ips.txt\` ; do echo "TEST-\$IP-TEST"; grep .TD.\$IP..TD. current-ip-addresses.shtml >> $TMP_HTML_DIR/todays-uniq-ips.shtml; done`;
 
 	&make_footer ("$TMP_HTML_DIR/todays-uniq-ips.shtml");
 	`sed -i s/HONEY/$HTML_TOP_DIR/g $TMP_HTML_DIR/todays-uniq-ips.shtml`;
-
+print (STDERR "Gotta check todays-uniq-ips.shtml\n\n\n");
 	$TODAY=&commify($TODAY);
 
 	$TODAYSUNIQUEPASSWORDS=&commify( $TODAYSUNIQUEPASSWORDS);
@@ -2401,8 +2471,10 @@ print $tmp;
 		`mv $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp`;
 		`$SCRIPT_DIR/LongTail_add_country_to_ip.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp > $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt`;
 		`$SCRIPT_DIR/LongTail_make_map.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt > $TMP_HTML_DIR/$FILE_PREFIX-map.html`;
-		##print "DEBUG $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp\n";
-		#print "DEBUG $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.tmp.txt\n";
+		print "DEBUG $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp\n";
+		print "DEBUG $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.tmp.txt\n";
+#print "DEBUG FFFFFFFFFFFFFFF\n";
+#exit;
 	}
 
 	#
@@ -2800,13 +2872,19 @@ sub make_trends {
 sub do_ssh {
 	if ( $DEBUG  == 1 ) { print "DEBUG-in do_ssh now\n" ; }
 	#-----------------------------------------------------------------
-	# Lets count the ssh attacks
-#print "DEBUG &count_ssh_attacks disabled for testing, turn this on again!\n";
-	&count_ssh_attacks ("$HTML_DIR", "$PATH_TO_VAR_LOG", "$LOGFILE*");
-	
+#WAS	# Lets count the ssh attacks
+#WAS	&count_ssh_attacks ("$HTML_DIR", "$PATH_TO_VAR_LOG", "$LOGFILE*");
+#WAS	
+#WAS	#----------------------------------------------------------------
+#WAS	# Lets check the ssh logs
+#WAS	&ssh_attacks ("$HTML_DIR", "$YEAR", "$PATH_TO_VAR_LOG", "$DATE", "$LOGFILE*", "current");
 	#----------------------------------------------------------------
 	# Lets check the ssh logs
 	&ssh_attacks ("$HTML_DIR", "$YEAR", "$PATH_TO_VAR_LOG", "$DATE", "$LOGFILE*", "current");
+
+	# Lets count the ssh attacks
+	&count_ssh_attacks ("$HTML_DIR", "$PATH_TO_VAR_LOG", "$LOGFILE*");
+	
 
 	if ( $START_HOUR == $MIDNIGHT ) {
 	#if ( $START_HOUR == 16 ) {
@@ -3745,7 +3823,9 @@ print "Started LongTail.sh at: $DEBUG_DATE";
 
 &init_variables;
 &read_local_config_file;
+&check_config;
 $DEBUG=1;
+#$MIDNIGHT=0;
 
 $SEARCH_FOR="sshd";
 #
