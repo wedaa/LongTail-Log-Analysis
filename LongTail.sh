@@ -1287,9 +1287,22 @@ function count_ssh_attacks {
 		cat $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep
 		echo ""
 		echo ""
+		echo "this is what the LongTail-exclude-accounts.grep file looks like:"
+		cat $SCRIPT_DIR/LongTail-exclude-accounts.grep
+		echo ""
+		echo ""
 		echo "Command line command resembles the following:"
 		echo "TODAY=$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l";
 		echo ""
+		echo "Trying to get a count WITHOUT ignoring $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep and LongTail-exclude-accounts.grep"
+		echo "Assumes you are not analyzing kippo files"
+		TMP_TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | egrep Password|wc -l`
+		echo "LongTail found $TMP_TODAY login attempts.  If this is different from what you expected,"
+		echo "Please check LongTail-exclude-accounts.grep and LongTail-exclude-IPs-ssh.grep"
+		echo "to see if your grep patterns are ignoring valid"
+		echo ""
+		echo ""
+
 	fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
