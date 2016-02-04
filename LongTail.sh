@@ -52,8 +52,8 @@
 # LongTail.sh is not fully tested yet :-)
 #
 ############################################################################
-# This reads /usr/local/etc/LongTail.config.  If your file isn't there,
-# then this is the only place you need to edit.
+# This reads /usr/local/etc/LongTail.config.  If the file isn't there,
+# then you need to edit in the next subroutine, else edit that file.
 
 function read_local_config_file {
 	if [ -e "/usr/local/etc/LongTail.config" ] ; then
@@ -61,99 +61,6 @@ function read_local_config_file {
 	fi
 }
 
-# This function is called as 
-# NEW_STRING=$(convert_kippo_to_longtail "$STRING")
-# STRING should look like
-# 2015-05-10 18:05:31-0400 [SSHService ssh-userauth on HoneyPotTransport,16534,58.218.204.52] login attempt [root/skata1] failed
-function convert_kippo_to_longtail {
-  STRING=`echo $STRING |sed -e 's/ /T/' \
-  -e 's/.SSHService ssh-userauth on HoneyPotTransport,.*,//' \
-  -e 's/\]/ /' \
-  -e 's/\] failed$//' \
-  -e 's/\[//' \
-  -e 's/ / LOCALHOST sshd-22[9999]: IP: /' \
-  -e 's/login attempt/PassLog: Username:/' \
-  -e 's/\// Password: /'`
-  echo $STRING
-}
-
-
-function lock_down_files {
-	if [ "x$HOSTNAME" == "x/" ] ;then
-		if [ -d $HTML_DIR ] ; then 
-		cd $HTML_DIR
-
-		echo "Expect to see chmod warnings until you have run LongTail for at least 24 hours"
-			find . -name last-7-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA  \
-			-o -name last-7-days-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name last-30-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name last-30-days-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name historical-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name historical-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |\
-			xargs chmod go-r
-
-			find . -name todays_password -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name current-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name current-non-root-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name current-account-password-pairs.data.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name current-admin-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |\
-			xargs chmod go-r
-		fi
-	fi
-
-}
-############################################################################
-#
-# Make sure paths really exist
-function check_config {
-	if [ ! -d $PATH_TO_VAR_LOG ] ; then
-		echo "$PATH_TO_VAR_LOG does not exist, exiting now"
-		exit
-	fi
-	if [ ! -e $PATH_TO_VAR_LOG/$LOGFILE ] ; then
-		echo "$PATH_TO_VAR_LOG/$LOGFILE does not exist, exiting now"
-		exit
-	fi
-	if [ ! -d $PATH_TO_VAR_LOG_HTTPD ] ; then
-		echo "$PATH_TO_VAR_LOG_HTTPD does not exist, exiting now"
-		exit
-	fi
-	if [ ! -d $SCRIPT_DIR ] ; then
-		echo "Can not find SCRIPT_DIR: $SCRIPT_DIR, exiting now"
-		exit
-	fi
-	if [ ! -d $HTML_DIR ] ; then
-		echo "Can not find HTML_DIR: $HTML_DIR, exiting now"
-		exit
-	fi
-	if [ ! -d $TMP_DIRECTORY ] ; then
-		echo "Can not find TMP_DIRECTORY: $TMP_DIRECTORY, exiting now"
-		exit
-	fi
-
-	rsyslog_format_check=`tail -1 $PATH_TO_VAR_LOG/$LOGFILE |awk '{print $1}'`
-	rsyslog_format_check_exit=0
-	if [ $rsyslog_format_check = "Jan" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Feb" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Mar" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Apr" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "May" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Jun" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Jul" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Aug" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Sep" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Oct" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Nov" ] ; then rsyslog_format_check_exit=1 ; fi
-	if [ $rsyslog_format_check = "Dec" ] ; then rsyslog_format_check_exit=1 ; fi
-	
-	if [ $rsyslog_format_check_exit -eq 1 ] ; then
-		echo "$PATH_TO_VAR_LOG/$LOGFILE file appears to have the wrong style data stamp (monthName vs YYYY-MM-DD format) Please see the README again."
-		echo "rsyslog format line should be \"\$ActionFileDefaultTemplate RSYSLOG_FileFormat\""
-		echo "You will have to edit $PATH_TO_VAR_LOG/$LOGFILE by hand to fix the formating or start with a fresh $PATH_TO_VAR_LOG/$LOGFILE file"
-		exit
-	fi
-
-}
 
 ############################################################################
 # Assorted Variables, you should probably edit /usr/local/etc/LongTail.config
@@ -276,6 +183,106 @@ function init_variables {
 	REBUILD=0
 	MIDNIGHT=0
 	ONE_AM=1
+}
+
+# This function is called as 
+# NEW_STRING=$(convert_kippo_to_longtail "$STRING")
+# STRING should look like
+# 2015-05-10 18:05:31-0400 [SSHService ssh-userauth on HoneyPotTransport,16534,58.218.204.52] login attempt [root/skata1] failed
+function convert_kippo_to_longtail {
+  STRING=`echo $STRING |sed -e 's/ /T/' \
+  -e 's/.SSHService ssh-userauth on HoneyPotTransport,.*,//' \
+  -e 's/\]/ /' \
+  -e 's/\] failed$//' \
+  -e 's/\[//' \
+  -e 's/ / LOCALHOST sshd-22[9999]: IP: /' \
+  -e 's/login attempt/PassLog: Username:/' \
+  -e 's/\// Password: /'`
+  echo $STRING
+}
+
+
+function lock_down_files {
+	if [ "x$HOSTNAME" == "x/" ] ;then
+		if [ -d $HTML_DIR ] ; then 
+		cd $HTML_DIR
+
+		echo "Expect to see chmod warnings until you have run LongTail for at least 24 hours"
+			find . -name last-7-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA  \
+			-o -name last-7-days-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name last-30-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name last-30-days-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name historical-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name historical-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |\
+			xargs chmod go-r
+
+			find . -name todays_password -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name current-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name current-non-root-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name current-account-password-pairs.data.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+			-o -name current-admin-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |\
+			xargs chmod go-r
+		fi
+	fi
+
+}
+############################################################################
+#
+# Make sure paths really exist
+function check_config {
+	if [ ! -d $PATH_TO_VAR_LOG ] ; then
+		echo "$PATH_TO_VAR_LOG does not exist, exiting now"
+		exit
+	fi
+	if [ ! -e $PATH_TO_VAR_LOG/$LOGFILE ] ; then
+		echo "$PATH_TO_VAR_LOG/$LOGFILE does not exist, exiting now"
+		exit
+	fi
+	if [ ! -d $PATH_TO_VAR_LOG_HTTPD ] ; then
+		echo "$PATH_TO_VAR_LOG_HTTPD does not exist, exiting now"
+		exit
+	fi
+	if [ ! -d $SCRIPT_DIR ] ; then
+		echo "Can not find SCRIPT_DIR: $SCRIPT_DIR, exiting now"
+		exit
+	fi
+	if [ ! -d $HTML_DIR ] ; then
+		echo "Can not find HTML_DIR: $HTML_DIR, exiting now"
+		exit
+	fi
+	if [ ! -d $TMP_DIRECTORY ] ; then
+		echo "Can not find TMP_DIRECTORY: $TMP_DIRECTORY, exiting now"
+		exit
+	fi
+
+	if [ ! -r "$PATH_TO_VAR_LOG/$LOGFILE" ] ; then
+		echo "Can not read $PATH_TO_VAR_LOG/$LOGFILE, please check file permissions"
+		echo "Exiting now"
+		exit
+	fi
+
+	rsyslog_format_check=`tail -1 $PATH_TO_VAR_LOG/$LOGFILE |awk '{print $1}'`
+	rsyslog_format_check_exit=0
+	if [ $rsyslog_format_check = "Jan" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Feb" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Mar" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Apr" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "May" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Jun" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Jul" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Aug" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Sep" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Oct" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Nov" ] ; then rsyslog_format_check_exit=1 ; fi
+	if [ $rsyslog_format_check = "Dec" ] ; then rsyslog_format_check_exit=1 ; fi
+	
+	if [ $rsyslog_format_check_exit -eq 1 ] ; then
+		echo "$PATH_TO_VAR_LOG/$LOGFILE file appears to have the wrong style data stamp (monthName vs YYYY-MM-DD format) Please see the README again."
+		echo "rsyslog format line should be \"\$ActionFileDefaultTemplate RSYSLOG_FileFormat\""
+		echo "You will have to edit $PATH_TO_VAR_LOG/$LOGFILE by hand to fix the formating or start with a fresh $PATH_TO_VAR_LOG/$LOGFILE file"
+		exit
+	fi
+
 }
 
 ############################################################################
