@@ -6,7 +6,7 @@ echo "You need to edit this file for OWNER."
 echo ""
 echo "And then comment out the exit statement"
 
-exit
+#exit
 
 OWNER="wedaa" # What is the owner of the process running LongTail?
 
@@ -157,9 +157,9 @@ for dir in $SCRIPT_DIR $HTML_DIR  $DICT_DIR $OTHER_DIRS $BOTS_DIR; do
 		fi
 	else
 		mkdir -p $dir
-		chown $OWNER $dir
 		chmod a+rx $dir
 	fi
+	chown -R $OWNER $dir
 done
 
 if [ ! -d $SCRIPT_DIR/LongTail_local_reports ] ; then
