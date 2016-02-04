@@ -1279,12 +1279,27 @@ function count_ssh_attacks {
 	# TODAY
 	#
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/TODAY now " ; date; fi
+	if [ $DEBUG  == 1 ] ; then 
+		echo ""
+		echo ""
+		echo "DEBUG- CL Counting attacks now " ; 
+		echo "this is what the LongTail-exclude-IPs-ssh.grep file looks like:"
+		cat $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep
+		echo ""
+		echo ""
+		echo "Command line command resembles the following:"
+		echo "TODAY=$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l";
+		echo ""
+	fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG- CL No hostname passed " ; fi
 		if [ $LONGTAIL -eq 1 ] ; then
+			if [ $DEBUG  == 1 ] ; then echo "DEBUG- CL running analysis on LongTail data " ; fi
 				TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
 		fi
 		if [ $KIPPO -eq 1 ] ; then
+			if [ $DEBUG  == 1 ] ; then echo "DEBUG- CL running analysis on Kippo data " ; fi
 			TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep ssh |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep login\ attempt|wc -l`
 		fi
 	else # We were passed a hostname.  This should never happen with Kippo
@@ -1293,6 +1308,7 @@ function count_ssh_attacks {
 			echo "Exiting now"
 			exit
 		fi
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG- CL hostname -->$HOSTNAME<-- passed " ; fi
 		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep Password|wc -l`
 	fi
 	echo $TODAY > $TMP_HTML_DIR/current-attack-count.data
@@ -2292,7 +2308,7 @@ function http_attacks {
 	 	/bin/cp $TMP_DIRECTORY/LongTail-messages.$$ $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
 
 			touch $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
-			/bin/rm $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
+			/bin/rm -f $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
 			gzip $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
 			chmod 0000 $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
 	fi
@@ -2587,7 +2603,7 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 			$SCRIPT_DIR/catall.sh $MESSAGES | grep ssh |grep "$DATE"  > $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
 
 			touch $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
-			/bin/rm $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
+			/bin/rm -f $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
 			gzip $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
 			chmod 0000 $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages.gz
 		fi
@@ -2620,7 +2636,7 @@ ls -l $TMP_DIRECTORY/LongTail-messages.$$
 	cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml |grep -v HEADERLINE|sed -r 's/^<TR><TD>//' |sed 's/<.a> <.TD><.TR>//' |sed 's/<.TD><TD><a..*34">/ /' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data
 
 	touch $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml.gz
-	/bin/rm $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml.gz
+	/bin/rm -f $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml.gz
 	gzip $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml
 
 
@@ -3810,7 +3826,7 @@ function create_historical_http_copies {
 
 
 		touch $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
-		/bin/rm $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
+		/bin/rm -f $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 		gzip $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
 		chmod 0000 $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 
@@ -3931,7 +3947,7 @@ function create_historical_copies {
 		fi
 
 		touch $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
-		/bin/rm $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
+		/bin/rm -f $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 		gzip $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
 		chmod 0000 $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 
@@ -4585,7 +4601,7 @@ if [ "x$HOSTNAME" == "x/" ] ;then
 			echo "</PRE>" >> $HTML_DIR/first_seen_passwords.shtml
 			make_footer "$HTML_DIR/first_seen_passwords.shtml"
 			if [ -e  $HTML_DIR/first_seen_passwords.shtml.gz ] ; then
-				/bin/rm $HTML_DIR/first_seen_passwords.shtml.gz
+				/bin/rm -f $HTML_DIR/first_seen_passwords.shtml.gz
 			fi 
 			gzip $HTML_DIR/first_seen_passwords.shtml
 			make_header "$HTML_DIR/class_c_hall_of_shame.shtml" "Class C Hall Of Shame"  "Top 10 worst offending Class C subnets sorted by the number of attack patterns.  Class C subnets must have over 10,000 login attempts to make this list." 
