@@ -2058,7 +2058,7 @@ function todays_assorted_stats {
 	TMP_YEAR=`date "+%Y"`
 
 	cd $TMP_HTML_DIR/historical/
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/This Month now" ; fi
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in todays_assorted_stats/This Month now" ; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name $file` ; do
 		COUNT=`cat $FILE`
@@ -2074,7 +2074,7 @@ function todays_assorted_stats {
 	#
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
-		if [ $DEBUG  == 1 ] ; then echo -n  "DEBUG-in count_ssh_attacks/This Month/Statistics now " ; date ;fi
+		if [ $DEBUG  == 1 ] ; then echo -n  "DEBUG-in todays_assorted_stats/This Month/Statistics now " ; date ;fi
 		cat $TMP_YEAR/$TMP_MONTH/*/$file|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;}; $n; print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
@@ -2107,7 +2107,7 @@ function todays_assorted_stats {
 	# LAST MONTH
 	#
 	cd $TMP_HTML_DIR/historical/
-		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/Last Month now " ; fi
+		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in todays_assorted_stats/Last Month now " ; fi
 #
 # Gotta fix this for the year boundary
 #
@@ -2130,7 +2130,7 @@ function todays_assorted_stats {
 	# Gotta do the date calculation to figure out "When" is last month
 	#
 	if [ -d $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/ ] ; then 
-		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/Last Month/statistics now " ; date ;fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in todays_assorted_stats/Last Month/statistics now " ; date ;fi
 		cat $TMP_LAST_MONTH_YEAR/$TMP_LAST_MONTH/*/$file|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "LAST_MONTH_COUNT=$n\nLAST_MONTH_SUM=$s\nLAST_MONTH_AVERAGE=$a\nLAST_MONTH_STD=$std\nLAST_MONTH_MEDIAN=$med\nLAST_MONTH_MAX=$m\nLAST_MONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
@@ -2161,7 +2161,7 @@ function todays_assorted_stats {
 	# THIS YEAR
 	#
 	# This was tested and works with 365 files :-)
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now " ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in todays_assorted_stats/This Year now " ; date; fi
 	TMP=0
 	for FILE in  `find $TMP_YEAR/ -name $file` ; do
 		COUNT=`cat $FILE`
@@ -2171,7 +2171,7 @@ function todays_assorted_stats {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG this year statistics " ; date ; fi
 	# OK, this may not be 100% secure, but it's close enough for now
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/This Year now/statistics " ; date ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in todays_assorted_stats/This Year now/statistics " ; date ; fi
 	for FILE in  `find $TMP_YEAR/ -name $file` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "YEAR_COUNT=$n\nYEAR_SUM=$s\nYEAR_AVERAGE=$a\nYEAR_STD=$std\nYEAR_MEDIAN=$med\nYEAR_MAX=$m\nYEAR_MIN=$mm";'  > $TMPFILE
 	. $TMPFILE
 	rm $TMPFILE
@@ -2193,7 +2193,7 @@ function todays_assorted_stats {
 	#
 	# I have no idea where this breaks, but it's a big-ass number of files
 	TMP=0
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_ssh_attacks/everything " ; date ; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in todays_assorted_stats/everything " ; date ; fi
 	for FILE in  `find . -name $file` ; do
 		COUNT=`cat $FILE`
 		(( TMP += $COUNT ))
@@ -2202,7 +2202,7 @@ function todays_assorted_stats {
 	# OK, this may not be 100% secure, but it's close enough for now
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG ALL  statistics " ; date; fi
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_ssh_attacks/everything/statistics" ; fi
+	if [ $DEBUG  == 1 ] ; then echo "DEBUG-in todays_assorted_stats/everything/statistics" ; fi
 	for FILE in  `find . -name $file` ; do cat $FILE; done |perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;};print "EVERYTHING_COUNT=$n\nEVERYTHING_SUM=$s\nEVERYTHING_AVERAGE=$a\nEVERYTHING_STD=$std\nEVERYTHING_MEDIAN=$med\nEVERYTHING_MAX=$m\nEVERYTHING_MIN=$mm";'  > $TMPFILE
 	. $TMPFILE
 	rm $TMPFILE
@@ -2327,7 +2327,7 @@ function http_attacks {
 	fi
 	else
 		echo "hostname IS set to $HOSTNAME."
-		$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|awk '$1 == "'$HOSTNAME'" {print}'  | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep -v xymonnet | sed 's/^....-..-..T.............. //' > $TMP_DIRECTORY/LongTail-messages.$$
+		$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|awk '$2 == "'$HOSTNAME'" {print}'  | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep -v xymonnet | sed 's/^....-..-..T.............. //' > $TMP_DIRECTORY/LongTail-messages.$$
 	fi # if [ "x$HOSTNAME" == "x/" ]
 
 	#-------------------------------------------------------------------------
