@@ -7,7 +7,7 @@
 <H3>LongTail HTTP Log Analysis @ <!--#include virtual="/honey/institution.html" -->
 / Today's Data<BR>Port 80  <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Wed Jan 13 16:49:30 EST 2016
+Last updated on Thu Feb 11 15:53:38 EST 2016
 <BR>
 <BR>
 <TABLE border=1>
@@ -16,14 +16,14 @@ Last updated on Wed Jan 13 16:49:30 EST 2016
 
 <TR><TH>Wepage Requests 
 <TD>
-<!--Hack Attempts Today:--> 313
+<!--Hack Attempts Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--Hack Attempts This Month:--> 5066
+<!--Hack Attempts This Month:--> 0
 </TD><TD>
-<!--Hack Attempts This Year:--> 5066
+<!--Hack Attempts This Year:--> 0
 </TD><TD>
-<!--Hack Attempts Since Logging Started:--> 7608
+<!--Hack Attempts Since Logging Started:--> 0
 </TR>
 
 <TR><TH>Unique 404 Requests</TH>
@@ -69,15 +69,15 @@ Last updated on Wed Jan 13 16:49:30 EST 2016
 <TR>
 <TH>Active Honeypots </TH>
 <TD><A href="/http/todays_honeypots.shtml">
-<!--Number of Honeypots Today:--> 5
+<!--Number of Honeypots Today:--> 0
 </a></TD><TD>
 <!--New Honeypots Today:--> 
 </TD><TD>
-<!--Number of Honeypots This Month:--> 7
+<!--Number of Honeypots This Month:--> 0
 </TD><TD>
-<!--Number of Honeypots This Year:--> 7
+<!--Number of Honeypots This Year:--> 0
 </TD><TD>
-<!--Number of Honeypots Since Logging Started:--> 7
+<!--Number of Honeypots Since Logging Started:--> 0
 </TD><TD>
 </TR>
 
