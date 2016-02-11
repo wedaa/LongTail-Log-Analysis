@@ -2340,7 +2340,7 @@ function http_attacks {
 	# I hate making temporary files, but I have to so this doesn't take forever to run
 	#
 
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Making temp file now "  ;date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Making temp file for http now "  ;date; fi
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "hostname is not set"
@@ -2349,6 +2349,9 @@ function http_attacks {
 		# The sed expression is ugly and may not work everywhere and needs to be fixed
 		#
 		$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep -v xymonnet | sed 's/^....-..-..T.............. //' > $TMP_DIRECTORY/LongTail-messages.$$
+echo "foo-4"
+ls -l $TMP_DIRECTORY/LongTail-messages.$$
+
 
 		if [ $REBUILD  != 1 ] ; then
 	 	/bin/cp $TMP_DIRECTORY/LongTail-messages.$$ $TMP_HTML_DIR/historical/$YEAR_AT_START_OF_RUNTIME/$MONTH_AT_START_OF_RUNTIME/$DAY_AT_START_OF_RUNTIME/all_messages
@@ -2524,15 +2527,26 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 	# This is different from the temp file I make earlier as it does
 	# a grep for both Password AND password (Note the capitalization differences).
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-http_attack 8, gathering data for raw-data.gz " ; date; fi
+
+echo "DEBUG foo-1"
+ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
+
 	if [ $FILE_PREFIX == "current" ] ;
 	then
-	
+		if [ $DEBUG == 1 ] ; then echo "OBFUSCATE_IP_ADDRESSES is set to -->$OBFUSCATE_IP_ADDRESSES<--"; fi	
 		if [ $OBFUSCATE_IP_ADDRESSES -gt 0 ] ; then
-			cat $TMP_DIRECTORY/LongTail-messages.$$  |sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
+			if [ $DEBUG == 1 ] ; then echo "obfuscating addresses in file now"; fi
+			cat $TMP_DIRECTORY/LongTail-messages.$$  |\
+				sed -r 's/([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)[0-9]{1,3}/\1127/g'  |\
+				gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 		else
+			if [ $DEBUG == 1 ] ; then echo "copying file now"; fi
 			cat $TMP_DIRECTORY/LongTail-messages.$$ |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 		fi
+echo "DEBUG foo-2"
+ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
 		# Code do avoid doing this if REBUILD is set
+echo "DEBUG-XYQ REBUILD is ->$REBUILD<--"
 		if [ $REBUILD  != 1 ] ; then
 			echo "REBUILD NOT SET, copying .gz file now"
 			# Lets make sure we have one for today and this month and this year
@@ -2564,8 +2578,12 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 		fi 
 	fi
 
+echo "DEBUG foo-3"
+ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
 
-	if [ $DEBUG == 1 ] ; then echo -n "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz "; date ;fi
+
+
+	#if [ $DEBUG == 1 ] ; then echo -n "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz "; date ;fi
 	#
 	# I only need the count data for today, so there's no point counting 7, 30, or historical
 	#
@@ -2622,7 +2640,7 @@ function ssh_attacks {
 	# So we grep out Username:\ \  so my reports work
 	# It took 55 days for this bug to show up
 
-	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Making temp file now "  ;date; fi
+	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Making temp file for ssh now "  ;date; fi
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
 		echo "hostname is not set"
@@ -2895,8 +2913,7 @@ echo "PROTOCOL is $PROTOCOL"
 		fi 
 	fi
 
-
-	if [ $DEBUG == 1 ] ; then echo -n "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz "; date ;fi
+	#if [ $DEBUG == 1 ] ; then echo -n "Wrote to $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz "; date ;fi
 	#
 	# I only need the count data for today, so there's no point counting 7, 30, or historical
 	#
@@ -3831,7 +3848,7 @@ function create_historical_http_copies {
 	TMP_HTML_DIR=$1
 	REBUILD=1
 	#DEBUG=1
-	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_http_copies" ; date; fi
+	if [ $DEBUG  == 1 ] ; then echo "XXXXXXXXXXXXX"; echo ""; echo ""; echo "DEBUG-In create_historical_http_copies" ; date; fi
 
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-Actually running create_historical_http_copies $START_HOUR -eq $MIDNIGHT) " ; date; fi
@@ -3876,7 +3893,11 @@ function create_historical_http_copies {
 		gzip $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
 		chmod 0000 $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 
+echo "DEBUG calling http_attacks"
+echo "REBUILD is set to $REBUILD"
 		http_attacks   $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY $YESTERDAY_YEAR $PATH_TO_VAR_LOG "$YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY"      "$LOGFILE*" "current"
+#echo "DEBUG back from http_attacks"
+#exit
 
 		#
 		# Make IPs table and count for this day
@@ -3938,7 +3959,8 @@ function create_historical_http_copies {
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt.count
 
 	fi
-
+#echo "Exiting now during debug"
+#exit
 }
 
 ############################################################################
@@ -4429,6 +4451,12 @@ read_local_config_file
 check_config
 #DEBUG=1
 
+#This is for debugging my new options styles
+#OPTIONSTYLE="OldStyleOpts"
+OPTIONSTYLE="NewStyleOpts"
+#MIDNIGHT=15
+
+if [ $OPTIONSTYLE == "OldStyleOpts" ] ;then 
 SEARCH_FOR="sshd"
 
 if [ "x$1" == "xREBUILD" ] ;then
@@ -4496,6 +4524,135 @@ else
 	fi
 fi	
 
+else 
+HOSTNAME="" #Clear the hostname environmental variable
+
+if [ "$#" == "0" ] ;then
+	echo "No parameters passed, assuming search for all ssh tries on all hosts"
+	SEARCH_FOR="sshd"
+	HTML_DIR="$HTML_DIR/$SSH_HTML_TOP_DIR"
+	HTML_TOP_DIR=$SSH_HTML_TOP_DIR
+	shift
+else
+	while (( "$#" )) ; do
+		if [ $1 == "-h" ] || [ $1 == "-help" ] ; then
+			echo ""
+			echo ""
+			echo "Help screen"
+			echo "$0 -host <hostname> -midnight -debug -rebuild -protocol <protocol_to_search_for> -f <configuration_file>"
+			echo "Supported protocols are:"
+			echo "   ssh (All ports for ssh)"
+			echo "   22 (ssh only on port 22)"
+			echo "   2222 (ssh only on port 2222)"
+			echo "   http (apache honeypot)"
+			echo "   telnet (telnet on port 23)"
+			echo "-midnight runs and acts like it is now midnight and will create all of "
+			echo "   yesterdays files"
+			echo "-debug turns on extra debugging output"
+			echo "-rebuild Possibly dangerous, please create a backup of your entire "
+			echo "   /var/www/html/ directory first!"
+			echo "   rebuild recreates all files in the ssh (ONLY) historical directories.  "
+			echo "   This is mainly a development option."
+			echo "-host <hostname> creates reports only for <hostname>."
+			echo "   There must already be a /var/www/html/<protocol>/<hostname> directory"
+			echo "-f <configuration_file> Use <configuration_file> instead of "
+			echo "   /usr/local/etc/LongTail.config"
+			echo ""
+			echo ""
+			exit
+		fi
+		if [ $1 == "-f" ] ; then
+			shift
+			CONFIGURATION_FILE=$1
+			if [ -e "$CONFIGURATION_FILE" ] ; then
+				. $CONFIGURATION_FILE
+			else 
+				echo "Configuration file you specified does not exist, exiting now"
+				exit
+			fi
+			shift
+			continue
+		fi
+		if [ $1 == "-host" ] ; then
+			shift
+			HOSTNAME=$1
+			shift
+			continue
+		fi
+		if [ $1 == "-midnight" ] ; then
+			shift
+			MIDNIGHT=$START_HOUR
+			continue
+		fi
+		if [ $1 == "-debug" ] ; then
+			shift
+			DEBUG=1
+			continue
+		fi
+		if [ $1 == "-rebuild" ] ; then
+			shift
+			REBUILD=1
+			continue
+		fi
+		if [ $1 == "-protocol" ] ; then
+			shift
+			if [ $1 == "ssh" ] ; then
+				SEARCH_FOR="sshd"
+				HTML_DIR="$HTML_DIR/$SSH_HTML_TOP_DIR"
+				HTML_TOP_DIR=$SSH_HTML_TOP_DIR
+				shift
+				continue
+			fi
+			if [ $1 == "22" ] ; then
+				SEARCH_FOR="sshd-22"
+				HTML_DIR="$HTML_DIR/$SSH22_HTML_TOP_DIR"
+				HTML_TOP_DIR=$SSH22_HTML_TOP_DIR
+				shift
+				continue
+			fi
+			if [ $1 == "2222" ] ; then
+				SEARCH_FOR="sshd-2222"
+				HTML_DIR="$HTML_DIR/$SSH2222_HTML_TOP_DIR"
+				HTML_TOP_DIR=$SSH2222_HTML_TOP_DIR
+				shift
+				continue
+			fi
+			if [ $1 == "telnet" ] ; then
+				SEARCH_FOR="telnet-honeypot"
+				HTML_DIR="$HTML_DIR/$TELNET_HTML_TOP_DIR"
+				HTML_TOP_DIR=$TELNET_HTML_TOP_DIR
+				shift
+				continue
+			fi
+			if [ $1 == "http" ] ; then
+				SEARCH_FOR="http"
+				HTML_DIR="$HTML_DIR/$HTTP_HTML_TOP_DIR"
+				HTML_TOP_DIR=$HTTP_HTML_TOP_DIR
+				shift
+				continue
+			fi
+
+			echo "Option $1 for protocol not found, exiting now"
+			exit;
+		fi
+		echo "Option $1 not found, exiting now"
+		exit;
+	done
+	if [ "x$SEARCH_FOR" == "x" ] ;then
+		echo "You did not specify a protocol to search for, exiting now"
+		exit
+	fi
+fi
+if [ "x$HOSTNAME" != "x" ] ;then
+	echo "hostname set to $HOSTNAME"
+else
+	# I'm relying on "//" being the same as "/"
+	# in unix :-)
+	HOSTNAME="/"
+fi
+fi
+
+echo "opts are hostname=$HOSTNAME, midnight=$MIDNIGHT, search for=$SEARCH_FOR, debug=$DEBUG"
 
 declare -A IP_ADDRESS
 grep -v UNKNOWN $SCRIPT_DIR/ip-to-country |\
