@@ -7,23 +7,23 @@
 <H3>LongTail HTTP Log Analysis @ <!--#include virtual="/honey/institution.html" -->
 / Today's Data<BR>Port 80  <!--#include virtual="description.html" --></H3>
 <P>This page is updated hourly.
-Last updated on Wed Jan 13 16:49:30 EST 2016
+Last updated on Thu Feb 11 15:53:38 EST 2016
 <BR>
 <BR>
 <TABLE border=1>
-<TR><TH colspan=6>HTTP Hack Attempts <a href="index-map.shtml">(Map View)</a></TH></TR>
+<TR><TH colspan=6>HTTP Hack Attempts <a href="index-long-map.shtml">(Map View)</a></TH></TR>
 <TR><TH>Description</TH><TH>Today</TH><TH>Never seen<BR>Before Today</TH><TH>This<BR>Month</TH><TH>This<BR>Year</TH><TH>Since Logging<BR>Started</TH>
 
-<TR><TH>Webpage Requests
+<TR><TH>Wepage Requests 
 <TD>
-<!--Hack Attempts Today:--> 313
+<!--Hack Attempts Today:--> 0
 </TD><TD> N/A
 </TD><TD>
-<!--Hack Attempts This Month:--> 5066
+<!--Hack Attempts This Month:--> 0
 </TD><TD>
-<!--Hack Attempts This Year:--> 5066
+<!--Hack Attempts This Year:--> 0
 </TD><TD>
-<!--Hack Attempts Since Logging Started:--> 7608
+<!--Hack Attempts Since Logging Started:--> 0
 </TR>
 
 <TR><TH>Unique 404 Requests</TH>
@@ -69,15 +69,15 @@ Last updated on Wed Jan 13 16:49:30 EST 2016
 <TR>
 <TH>Active Honeypots </TH>
 <TD><A href="/http/todays_honeypots.shtml">
-<!--Number of Honeypots Today:--> 5
+<!--Number of Honeypots Today:--> 0
 </a></TD><TD>
 <!--New Honeypots Today:--> 
 </TD><TD>
-<!--Number of Honeypots This Month:--> 7
+<!--Number of Honeypots This Month:--> 0
 </TD><TD>
-<!--Number of Honeypots This Year:--> 7
+<!--Number of Honeypots This Year:--> 0
 </TD><TD>
-<!--Number of Honeypots Since Logging Started:--> 7
+<!--Number of Honeypots Since Logging Started:--> 0
 </TD><TD>
 </TR>
 
@@ -87,6 +87,11 @@ Last updated on Wed Jan 13 16:49:30 EST 2016
 <TABLE BORDER=0>
 <TR><TH Colspan=2>Count of Last 30 Days Of Attacks (Bars are clickable)</TH>
 <TR><TD Colspan=2><img src="last-30-days-attack-count.png"  alt="last-30-days-attack-count.png" usemap="#mapname"  ><BR><BR>
+</TABLE>
+<map name="mapname">
+<!--#include virtual="/http/30_days_imagemap.html" -->
+</map>
+
 
 <BR>
 <BR>
@@ -108,57 +113,134 @@ Last updated on Wed Jan 13 16:49:30 EST 2016
 <BR>
 <H3>Today's Activity</H3>
 <BR>
-<a href="current-access-log.shtml">Current Access Log</a>
-<BR>
-<a href="current-access-log-404.shtml">Current 404 requests</a>
-<BR>
-<a href="current-access-log-shell-shock.shtml">Current Shellshock access requests</a>
+<a href="current-http-attacks-by-time-of-day.shtml">Current Attacks by Time of Day</a>
 <BR>
 <BR>
-<a href="current-attacks.shtml">Current Attacks</a>
+<a href="current-webpages.shtml">Current Webpages Requested</a>
 <BR>
-<a href="current-top-20-attacks.shtml">Top 20 Current Attacks</a>
-<BR>
-<BR>
-<a href="current-payloads.shtml">Top Payloads</a>
-<BR>
-<a href="current-top-20-payloads.shtml">Top 20 Payloads</a>
+<a href="current-top-20-webpages.shtml">Current Top 20 Webpages Requested</a>
 <BR>
 <BR>
-<a href="current-country-access-log-404.shtml">current-country-access-log-404</a>
+<a href="current-shellshock.shtml">Current Shellshock Attacks</a>
 <BR>
-<a href="current-country-access-log-shell-shock.shtml">current-country-access-log-shell-shock</a>
-<BR>
-<a href="current-country-open-proxy-log-404.shtml">current-country-open-proxy-log-404</a>
+<a href="current-top-20-shellshock.shtml">Top 20 Current Shellshock Attacks</a>
 <BR>
 <BR>
-<a href="current-open-proxy-log-404.shtml">current-open-proxy-log-404</a>
+
+<a href="current-attacks-by-country.shtml">Attacks by Country</a>
 <BR>
-<a href="current-ip-open-proxy-404.shtml">current-ip-open-proxy-404</a>
-<BR>
-<a href="current-top-20-ip-open-proxy-404.shtml">current-top-20-ip-open-proxy-404</a>
-<BR>
-<BR>
-<a href="current-rm-attempts.shtml">Current rm Attempts</a>
-<BR>
-<a href="current-top-20-rm-attempts.shtml">Top 20 rm Attempts</a>
+<a href="current-top-20-attacks-by-country.shtml">Top 20 Attacks by Country</a>
 <BR>
 <BR>
-<a href="current-shellshock-webpages.shtml">current-shellshock-webpages</a>
+
+<a href="current-raw-data.gz">Current Access Log(RESTRICTED)</a>
 <BR>
-<a href="current-top-20-shellshock-webpages.shtml">current-top-20-shellshock-webpages</a>
-<BR>
-<a href="current-shellshock-not-using-perl.shtml">current-shellshock-not-using-perl</a>
-<BR>
-<a href="current-top-20-shellshock-not-using-perl.shtml">current-top-20-shellshock-not-using-perl</A>
-<BR>
-<BR>
+
 <H3>Today's IP Address Activity</H3>
-<a href="current-ip-access-log-shell-shock.shtml">Current IP Addresses</a>
+<a href="current-ip-addresses.shtml">Current IP Addresses</a>
 <BR>
-<a href="current-ip-access-log-404.shtml">404 Requests IP Addresses</a>
+<a href="current-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
 <BR>
-<a href="current-top-20-ip-access-log-404.shtml">Top 20 404 Requests IP Addresses</a>
+<BR>
+
+<HR>
+<BR>
+<H3>Last 7 days Activity</H3>
+<BR>
+<a href="last-7-days-http-attacks-by-time-of-day.shtml">Last 7 Days Attacks by Time of Day</a>
+<BR>
+<BR>
+<a href="last-7-days-webpages.shtml">Last 7 Days Webpages Requested</a>
+<BR>
+<a href="last-7-days-top-20-webpages.shtml">Last 7 Days Top 20 Webpages Requested</a>
+<BR>
+<BR>
+<a href="last-7-days-shellshock.shtml">Last 7 Days Shellshock Attacks</a>
+<BR>
+<a href="last-7-days-top-20-shellshock.shtml">Top 20 Last 7 Days Shellshock Attacks</a>
+<BR>
+<BR>
+
+<a href="last-7-days-attacks-by-country.shtml">Attacks by Country</a>
+<BR>
+<a href="last-7-days-top-20-attacks-by-country.shtml">Top 20 Attacks by Country</a>
+<BR>
+<BR>
+
+<a href="last-7-days-raw-data.gz">Last 7 Days Access Log(RESTRICTED)</a>
+<BR>
+
+<H3>Last 7 Days IP Address Activity</H3>
+<a href="last-7-days-ip-addresses.shtml">Last 7 Days IP Addresses</a>
+<BR>
+<a href="last-7-days-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<BR>
+
+<HR>
+<BR>
+<H3>Last 30 days Activity</H3>
+<BR>
+<a href="last-30-days-http-attacks-by-time-of-day.shtml">Last 30 Days Attacks by Time of Day</a>
+<BR>
+<BR>
+<a href="last-30-days-webpages.shtml">Last 30 Days Webpages Requested</a>
+<BR>
+<a href="last-30-days-top-20-webpages.shtml">Last 30 Days Top 20 Webpages Requested</a>
+<BR>
+<BR>
+<a href="last-30-days-shellshock.shtml">Last 30 Days Shellshock Attacks</a>
+<BR>
+<a href="last-30-days-top-20-shellshock.shtml">Top 20 Last 30 Days Shellshock Attacks</a>
+<BR>
+<BR>
+
+<a href="last-30-days-attacks-by-country.shtml">Attacks by Country</a>
+<BR>
+<a href="last-30-days-top-20-attacks-by-country.shtml">Top 20 Attacks by Country</a>
+<BR>
+<BR>
+
+<a href="last-30-days-raw-data.gz">Last 30 Days Access Log(RESTRICTED)</a>
+<BR>
+
+<H3>Last 30 Days IP Address Activity</H3>
+<a href="last-30-days-ip-addresses.shtml">Last 30 Days IP Addresses</a>
+<BR>
+<a href="last-30-days-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
+<BR>
+<BR>
+<HR>
+<BR>
+<H3>Historical Activity</H3>
+<BR>
+<a href="historical-http-attacks-by-time-of-day.shtml">Historical Attacks by Time of Day</a>
+<BR>
+<BR>
+<a href="historical-webpages.shtml">Historical Webpages Requested</a>
+<BR>
+<a href="historical-top-20-webpages.shtml">Historical Top 20 Webpages Requested</a>
+<BR>
+<BR>
+<a href="historical-shellshock.shtml">Historical Shellshock Attacks</a>
+<BR>
+<a href="historical-top-20-shellshock.shtml">Top 20 Historical Shellshock Attacks</a>
+<BR>
+<BR>
+
+<a href="historical-attacks-by-country.shtml">Attacks by Country</a>
+<BR>
+<a href="historical-top-20-attacks-by-country.shtml">Top 20 Attacks by Country</a>
+<BR>
+<BR>
+
+<a href="historical-raw-data.gz">Historical Access Log(RESTRICTED)</a>
+<BR>
+
+<H3>Historical IP Address Activity</H3>
+<a href="historical-ip-addresses.shtml">Historical IP Addresses</a>
+<BR>
+<a href="historical-top-20-ip-addresses.shtml">Top 20 IP Addresses</a>
 <BR>
 <BR>
 <!--#include virtual="/http/footer.html" --> 
