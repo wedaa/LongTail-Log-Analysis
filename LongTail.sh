@@ -208,20 +208,29 @@ function lock_down_files {
 		cd $HTML_DIR
 
 		echo "Expect to see chmod warnings until you have run LongTail for at least 24 hours"
-			find . -name last-7-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA  \
+		files=` find . -name last-7-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA  \
 			-o -name last-7-days-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
 			-o -name last-30-days-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
 			-o -name last-30-days-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
 			-o -name historical-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name historical-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |\
-			xargs chmod go-r
+			-o -name historical-non-root-pairs.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA `
+		if [ "X" = "X$files" ] ; then
+			echo "Not enough files to protect yet"
+		else
+			chmod go-r $files
+		fi
 
-			find . -name todays_password -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
+		files=`find . -name todays_password -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
 			-o -name current-root-passwords.shtml.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
 			-o -name current-non-root-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
 			-o -name current-account-password-pairs.data.gz -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA \
-			-o -name current-admin-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA |\
-			xargs chmod go-r
+			-o -name current-admin-passwords.shtml -mtime -$NUMBER_OF_DAYS_TO_PROTECT_RAW_DATA `
+		if [ "X" = "X$files" ] ; then
+			echo "Not enough files to protect yet"
+		else
+			chmod go-r $files
+		fi
+
 		fi
 	fi
 
@@ -502,11 +511,11 @@ function count_http_attacks {
 		TODAY_404=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep ' 404 '|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq | wc -l`
 		#$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep ' 404 '|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq 
 	else
-echo "foo-3"
+#echo "foo-3"
 		TODAY_404=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL  |grep ' 404 ' |grep -iv xymon|awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |uniq |wc -l`
 	fi
 	echo $TODAY_404 > $TMP_HTML_DIR/$FILE_TO_SEARCH_FOR 
-echo "TODAY'S 404 uniq count is is $TODAY_404"
+#echo "TODAY'S 404 uniq count is is $TODAY_404"
 	#
 	# THIS MONTH
 	#
@@ -515,16 +524,16 @@ echo "TODAY'S 404 uniq count is is $TODAY_404"
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name $FILE_TO_SEARCH_FOR` ; do
 		COUNT=`cat $FILE`
-echo "DEBUG file $FILE found"
-ls -l $FILE
+#echo "DEBUG file $FILE found"
+#ls -l $FILE
 		(( TMP += $COUNT ))
 	done
 	THIS_MONTH_404=`expr $TMP + $TODAY_404`
-echo ""
-echo ""
-echo "this month is $TMP , today is $TODAY_404 "
-echo ""
-echo ""
+#echo ""
+#echo ""
+#echo "this month is $TMP , today is $TODAY_404 "
+#echo ""
+#echo ""
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -595,7 +604,7 @@ echo ""
 	#
 	# TODAY
 	#
-	FILE_TO_SEARCH_FOR="todays_uniq_shellshock_webpages.count"
+	FILE_TO_SEARCH_FOR="todays_uniq_shellshock_webpages.count"
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/TODAY now " ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
@@ -607,7 +616,7 @@ echo "foo-3"
 		TODAY_shellshock=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL  |grep '\:\;' |grep -iv xymon|awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |uniq |wc -l`
 	fi
 	echo $TODAY_shellshock > $TMP_HTML_DIR/$FILE_TO_SEARCH_FOR 
-echo "TODAY'S shellshock uniq count is is $TODAY_shellshock"
+#echo "TODAY'S shellshock uniq count is is $TODAY_shellshock"
 	#
 	# THIS MONTH
 	#
@@ -616,16 +625,16 @@ echo "TODAY'S shellshock uniq count is is $TODAY_shellshock"
 	TMP=0
 	for FILE in  `find $TMP_YEAR/$TMP_MONTH -name $FILE_TO_SEARCH_FOR` ; do
 		COUNT=`cat $FILE`
-echo "DEBUG file $FILE found"
-ls -l $FILE
+#echo "DEBUG file $FILE found"
+#ls -l $FILE
 		(( TMP += $COUNT ))
 	done
 	THIS_MONTH_shellshock=`expr $TMP + $TODAY_shellshock`
-echo ""
-echo ""
-echo "this month is $TMP , today is $TODAY_shellshock "
-echo ""
-echo ""
+#echo ""
+#echo ""
+#echo "this month is $TMP , today is $TODAY_shellshock "
+#echo ""
+#echo ""
 	#
 	# So there's a problem if it's the first day of the month and there's
 	# No real statistics yet.
@@ -728,12 +737,12 @@ echo ""
 	TMPFILE=$(mktemp $TMP_DIRECTORY/output.XXXXXXXXXX)
 	if [ -e $TMP_YEAR/$TMP_MONTH ] ; then 
 		if [ $DEBUG  == 1 ] ; then echo "DEBUG-in count_http_attacks/This Month/Statistics now " ; fi
-echo ""
-echo "=============================================================================="
-echo ""
-echo "DEBUG MONTH webpages"
-echo "$TMP_YEAR/$TMP_MONTH/*/current-attack-count.data"
-ls -l $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data
+#echo ""
+#echo "=============================================================================="
+#echo ""
+#echo "DEBUG MONTH webpages"
+#echo "$TMP_YEAR/$TMP_MONTH/*/current-attack-count.data"
+#ls -l $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data
 		cat $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data|perl -e 'use List::Util qw(max min sum); @a=();while(<>){$sqsum+=$_*$_; push(@a,$_)}; $n=@a;$s=sum(@a);$a=$s/@a;$m=max(@a);$mm=min(@a);$std=sqrt($sqsum/$n-($s/$n)*($s/$n));$mid=int @a/2;@srtd=sort { $a <=> $b } @a;if(@a%2){$med=$srtd[$mid];}else{$med=($srtd[$mid-1]+$srtd[$mid])/2;}; $n; print "MONTH_COUNT=$n\nMONTH_SUM=$s\nMONTH_AVERAGE=$a\nMONTH_STD=$std\nMONTH_MEDIAN=$med\nMONTH_MAX=$m\nMONTH_MIN=$mm";'  > $TMPFILE
 		# Now we "source" the script to set environment varaibles we use later
 		. $TMPFILE
@@ -761,7 +770,7 @@ ls -l $TMP_YEAR/$TMP_MONTH/*/current-attack-count.data
 	MONTH_MAX=`echo $MONTH_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	MONTH_MIN=`echo $MONTH_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
-echo "MONTH_SUM is $MONTH_SUM"
+#echo "MONTH_SUM is $MONTH_SUM"
 #exit
 
 	#
@@ -818,7 +827,7 @@ echo "MONTH_SUM is $MONTH_SUM"
 	LAST_MONTH_MAX=`echo $LAST_MONTH_MAX | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	LAST_MONTH_MIN=`echo $LAST_MONTH_MIN | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 
-echo "DEBUG - EEE"
+#echo "DEBUG - EEE"
 	#
 	# THIS YEAR
 	#
@@ -986,11 +995,11 @@ echo "DEBUG - EEE"
 			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |awk '{print $2}' |grep -v longtail| sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
 			cat $1/todays-honeypots.txt |wc -l  > todays-honeypots.txt.count
 	fi
-echo ""
-echo ""
-echo "http Getting all-ips now"
-echo ""
-echo ""
+#echo ""
+#echo ""
+#echo "http Getting all-ips now"
+#echo ""
+#echo ""
 	if [ ! -e all-ips ] ; then
 		touch all-ips
 	fi
@@ -1002,7 +1011,7 @@ echo ""
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all ips now "; date ; fi
 
 		ALLUNIQUEIPSS=`cat all-ips |wc -l`
-echo "ALLUNIQUEIPSS=$ALLUNIQUEIPSS"
+#echo "ALLUNIQUEIPSS=$ALLUNIQUEIPSS"
 #exit
 
 		THISMONTHUNIQUEIPSS=`echo $THISMONTHUNIQUEIPSS|sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -1078,7 +1087,7 @@ echo "ALLUNIQUEIPSS=$ALLUNIQUEIPSS"
 	########################################################################################
 	# Make statistics.shtml webpage here
 	#
-	make_header "$1/statistics.shtml" "Assorted Statistics" "Analysis does not include today's numbers. Numbers rounded to two decimal places" "Time<BR>Frame" "Number<BR>of Days" "Total<BR>SSH attempts" "Average<BR>Per Day" "Std. Dev." "Median" "Max" "Min"
+	make_header "$1/statistics.shtml" "Assorted Statistics" "Analysis does not include today's numbers. Numbers rounded to two decimal places" "Time<BR>Frame" "Number<BR>of Days" "Total<BR>Webpages Requested" "Average<BR>Per Day" "Std. Dev." "Median" "Max" "Min"
 
 	echo "<TR><TD>So Far Today</TD><TD>1</TD><TD>$TODAY</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD><TD>N/A</TD></TR>" >>$1/statistics.shtml
 	echo "<TR><TD>This Month</TD><TD> $MONTH_COUNT</TD><TD> $MONTH_SUM</TD><TD> $MONTH_AVERAGE</TD><TD> $MONTH_STD</TD><TD> $MONTH_MEDIAN</TD><TD> $MONTH_MAX</TD><TD> $MONTH_MIN" >>$1/statistics.shtml
@@ -1091,8 +1100,21 @@ echo "ALLUNIQUEIPSS=$ALLUNIQUEIPSS"
 
 	cat $1/statistics.shtml > $1/more_statistics.shtml
 	todays_assorted_stats "todays_ips.count" $1/more_statistics.shtml
-	todays_assorted_stats "todays_password.count" $1/more_statistics.shtml
-	todays_assorted_stats "todays_username.count" $1/more_statistics.shtml
+	todays_assorted_stats "todays_ips_overlap_with_longtail_ssh.count" $1/more_statistics.shtml
+	todays_assorted_stats "todays-uniq-ips.txt.count" $1/more_statistics.shtml
+#	todays_assorted_stats "todays_password.count" $1/more_statistics.shtml
+#	todays_assorted_stats "todays_username.count" $1/more_statistics.shtml
+
+	todays_assorted_stats "todays_404_webpages.count" $1/more_statistics.shtml
+	todays_assorted_stats "todays_uniq_404_webpages.count" $1/more_statistics.shtml
+
+	todays_assorted_stats "todays_uniq_shellshock_webpages.count" $1/more_statistics.shtml
+	todays_assorted_stats "todays_shellshock.count" $1/more_statistics.shtml
+
+	todays_assorted_stats "todays_uniq_webpages.count" $1/more_statistics.shtml
+#	todays_assorted_stats "todays-uniq-webpages.txt.count" $1/more_statistics.shtml
+	todays_assorted_stats "todays_wget_webpages.count" $1/more_statistics.shtml
+
 
 	echo "<P>Normalized data is data that consists of only full days of attacks,<!--HEADERLINE --> " >> $1/more_statistics.shtml
 	echo "AND to servers that are NOT protected by firewalls or other kinds of <!--HEADERLINE -->" >> $1/more_statistics.shtml
@@ -2047,7 +2069,7 @@ function todays_assorted_stats {
 	if [ -e $TMP_HTML_DIR/$file ] ; then
 		TODAY=`cat $TMP_HTML_DIR/$file`
 	else
-		echo "$TMP_HTML_DIR/$file does not exist yet"
+		if [ $DEBUG  == 1 ] ; then  echo "$TMP_HTML_DIR/$file does not exist yet"; fi
 		TODAY=0
 	fi
 
@@ -2246,7 +2268,7 @@ function todays_assorted_stats {
 		NORMALIZED_AVERAGE=`printf '%.2f' $NORMALIZED_AVERAGE`
 		NORMALIZED_STD=`printf '%.2f' $NORMALIZED_STD`
 	fi
-	echo -n "Done with normalized data"; date
+	echo -n "Done with normalized data "; date
 
 	NORMALIZED_COUNT=`echo $NORMALIZED_COUNT | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
 	NORMALIZED_SUM=`echo $NORMALIZED_SUM | sed ':a;s/\B[0-9]\{3\}\>/,&/;ta'`
@@ -2417,7 +2439,7 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 # and (more importantly) each hosts index.shtml can be a copy/paste of the main
 # index.shtml
 	if [ "x$HOSTNAME" == "x/" ] ;then
-echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
+#echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
 		echo "# http://longtail.it.marist.edu "> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# This is a sorted list of IP addresses that have tried to login" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# to a server related to LongTail." >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
@@ -2434,9 +2456,9 @@ echo "DEBUG writing to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
 		echo "# " >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		cat $TMP_DIRECTORY/LongTail-messages.$$  | awk '{print $3}' |sort -T $TMP_DIRECTORY |uniq -c |sort -T $TMP_DIRECTORY -nr >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		mv $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
-echo "Calling LongTail_add_country_to_ip.pl"
+#echo "Calling LongTail_add_country_to_ip.pl"
 		$SCRIPT_DIR/LongTail_add_country_to_ip.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp > $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
-echo "Calling LongTail_make_map.pl"
+#echo "Calling LongTail_make_map.pl"
 		$SCRIPT_DIR/LongTail_make_map.pl $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt > $TMP_HTML_DIR/$FILE_PREFIX-map.html
 		rm $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt.tmp
 	fi
@@ -2608,7 +2630,7 @@ echo "PROTOCOL is $PROTOCOL"
   -e 's/login attempt/PassLog: Username:/' \
   -e 's/\// Password: /' \
   > $TMP_DIRECTORY/LongTail-messages.$$
-ls -l $TMP_DIRECTORY/LongTail-messages.$$
+#ls -l $TMP_DIRECTORY/LongTail-messages.$$
 		fi
 
 
@@ -3326,7 +3348,7 @@ function do_http {
 		
 		echo ""
 		echo "checking to see if we need to make midnight Graphics now"
-		#echo "midnight is set to $MIDNIGHT"
+		echo "midnight is set to $MIDNIGHT"
 		echo ""
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
 		#if [ $START_HOUR -eq 18 ]; then
@@ -3582,9 +3604,9 @@ function do_ssh {
 	#
 	# Deal with creating empty 7-day, 30-day and historical files the 
 	# first time this is run
-echo ""
-echo "Making Graphics now"
-echo ""
+	echo ""
+	echo "Making Graphics now"
+	echo ""
 	if [ ! -e last-7-days-top-20-admin-passwords.data ] ; then
 		touch current-attack-count.data
 		touch current_attackers_lifespan.data
@@ -3646,15 +3668,15 @@ echo ""
 		done        
 
 		
-echo ""
-echo "checking to see if we need to make midnight Graphics now"
-#echo "midnight is set to $MIDNIGHT"
-echo ""
+		echo ""
+		echo "checking to see if we need to make midnight Graphics now"
+		#echo "midnight is set to $MIDNIGHT"
+		echo ""
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
-		#if [ $START_HOUR -eq 12 ]; then
-echo ""
-echo "Making midnight Graphics now"
-echo ""
+			#if [ $START_HOUR -eq 12 ]; then
+			echo ""
+			echo "Making midnight Graphics now"
+			echo ""
 			for FILE in historical*.data last-*.data ; do 
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
@@ -3797,7 +3819,7 @@ function protect_raw_data {
 function create_historical_http_copies {
 	TMP_HTML_DIR=$1
 	REBUILD=1
-	DEBUG=1
+	#DEBUG=1
 	if [ $DEBUG  == 1 ] ; then echo "DEBUG-In create_historical_http_copies" ; date; fi
 
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
@@ -4103,7 +4125,7 @@ function rebuild {
 
 		awk 'FNR==NR{a[$0]++;next}(!($0 in a))' /tmp/LongTail.$$.passwords $HTML_DIR/historical/$DIRNAME/todays_password >$HTML_DIR/historical/$DIRNAME/todays-uniq-passwords.txt
 
-echo "looking at $HTML_DIR/historical/$DIRNAME/todays_username"
+#echo "looking at $HTML_DIR/historical/$DIRNAME/todays_username"
 #ls -l $HTML_DIR/historical/$DIRNAME/todays_username
 #wc -l $HTML_DIR/historical/$DIRNAME/todays_username
 
