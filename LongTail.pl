@@ -89,6 +89,7 @@ sub read_local_config_file {
 			#print "$_\n";;
 			($variable,$value)=split(/=/,$_);
 			#if ( $DEBUG  == 1 ) { print "DEBUG-variable=$variable,value=$value\n" ; }
+			if ($variable eq "PUBLIC_WEBSERVER"){$PUBLIC_WEBSERVER=$value;next;}
 			if ($variable eq "MIDNIGHT"){$MIDNIGHT=$value;next;}
 			if ($variable eq "GRAPHS"){$GRAPHS=$value;next;}
 			if ($variable eq "KIPPO"){$KIPPO=$value;next;}
@@ -220,6 +221,17 @@ sub lock_down_files {
 # configuration
 #
 sub init_variables {
+	# Is this a public webserver?  If so then we need to protect
+	# certain webpages so they are not seen by the badguys.  We
+	# have to do this in order to hide what the current "Hot" or
+	# "Desirable" account and password combinations are
+	#
+	# Do not assume that just because your page isn't indexed
+	# by Google that your webpage is private.
+	#
+	# Set it to 1 if it is public, or 0 if it is private.
+ $PUBLIC_WEBSERVER=1;
+
 	# Do you want Pretty graphs using jpgraph?  Set this to 1
 	# http://jpgraph.net/  JpGraph - Most powerful PHP-driven charts
 	$GRAPHS=1;
