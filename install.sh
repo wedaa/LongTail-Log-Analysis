@@ -6,7 +6,7 @@ echo "You need to edit this file for OWNER."
 echo ""
 echo "And then comment out the exit statement"
 
-#exit
+exit
 
 OWNER="wedaa" # What is the owner of the process running LongTail?
 
@@ -334,8 +334,8 @@ HTML_FILES="index-historical_http.shtml graphics_http.shtml index-long-map_http.
 for file in $HTML_FILES ; do
   echo "Copying $file now"
   dest_file=`echo $file |sed 's/_http//'`
-echo "dest file is $dest_file"
-#  cp $file $HTTP_HTML_DIR.$dest_file
+	echo "dest file is $dest_file"
+  cp $file $HTTP_HTML_DIR/$dest_file
 done
 
 
