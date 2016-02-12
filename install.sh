@@ -294,6 +294,8 @@ echo "#############################################################"
 echo "Copying assorted html files now"
 echo ""
 HTML_FILES="ip_addresses.shtml \
+contact_us.shtml \
+how_to_protect_yourself.shtml \
 index.shtml \
 botnet.shtml \
 last-30-days-map.html \
