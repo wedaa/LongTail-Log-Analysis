@@ -1,0 +1,21 @@
+<!--#include virtual="/honey/header.html" --> 
+<H3>Publishing IP addresses and European Union (EU) Privacy laws</H3>
+
+<P>LongTail publishes IP addresses of sites that have attempted to login
+to one of the LongTail honeypots.  While LongTail runs in the United
+States of America, and is not under their jurisdiction, we believe that
+publishing IP addresses is legal under the EU privacy laws.
+
+<P>In particular, the following three websites concur with this opinion
+<OL>
+<LI><A href="https://www.blocklist.de/en/index.html">www.blocklist.de</a>
+is run in Germany and actively publishes IP addresses of not just ssh
+attackers, but spammers as well.
+<LI><A href="http://www.out-law.com/page-8060">IP addresses and the Data Protection Act</a>, an article written in 2008 about IP addresses and personally 
+identifiable data which says we are OK since we are not tying the IP address
+to a person.
+<LI><A href="http://www.theregister.co.uk/2008/10/15/ip_address_personal_data_ruling/">IP addresses in server logs not personal data</A> which again states the same thing.
+</OL>
+
+<!--#include virtual="/honey/footer.html" --> 
+
