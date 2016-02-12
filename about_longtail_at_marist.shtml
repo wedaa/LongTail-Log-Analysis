@@ -1,0 +1,34 @@
+<!--#include virtual="/honey/header.html" --> 
+<P>LongTail At Marist is an intercollegiate security initiative
+to analyze SSH Brute force attacks and
+statistically analyze them.
+<P>Continuing cooperating institutions and companies are:
+<UL>
+<LI><a href="http://www.marist.edu">Marist College</A> in 
+Poughkeepsie, NY
+<LI><a href="http://www.bard.edu">Bard College</A> in 
+Annandale-on-Hudson, NY
+<LI><a href="http://www.newpaltz.edu/">SUNY New Paltz</a>
+in New Paltz, NY 
+</UL>
+<P>Special thanks to
+<UL>
+<LI><a href="http://www.renditioninfosec.com/">Rendition Infosec</a> for 
+their contribution of a 12 million line <A href="http://en.wikipedia.org/wiki/Kippo">Kippo </a>
+log file with 1.5 million login attempts.
+<LI>Thanks to Bob Martin for his contribution of 4.3 million lines of Kippo logs with 
+2.5 million Kippo Login attempts.
+<LI>A Huge thanks to AbdelRahman Abdou (Carleton University, Canada), David Barrera 
+(ETH Zurich, Switzerland), and Paul C. van Oorschot (Carleton University, Canada)
+for the contribution of over 17 million login attempts from 2014-2015 from their
+paper <A href="http://www.netsec.ethz.ch/publications/papers/passwords15-abdou.pdf">
+What Lies Beneath? Analyzing Automated SSH Bruteforce Attacks</a>  Their data pushes
+the first sign of SSHPsycyos well into 2014 as well as extending the age range of
+several other botnets and IP addresses.  
+</UL>
+
+<P>A HUGE thanks to <A href="https://elastichosts.com/?utm_source=marist.edu&utm_medium=referral&utm_campaign=thankyou">ElasticHosts cloud servers</a> which have been so helpful to LongTail.
+
+
+<!--#include virtual="/honey/footer.html" --> 
+
