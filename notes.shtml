@@ -2,7 +2,7 @@
 <H3>Assorted notes</H3>
 <a name="1"></a>
 [1] All Hosts merged together" means every host from each participating site
-has had their numbers added together.  Individual pages for each host are
+have had their numbers added together.  Individual pages for each host are
 available under the "SSH HOSTS ATTACKS ALL PORTS" drop down menu.  The same
 is similarly true for the other protocols being attacked
 <BR>
@@ -16,7 +16,7 @@ the slides.
 <a name="3"></a>
 [3]  These hosts are apparently associated with a group known as "SSHPsycho"
 (Also known as the "Hee Thai campaign" or  "Group 93") 
-which Cisco and Level 3 are trying to block them.  For more details, please 
+which Cisco and Level 3 have successfully blocked them.  For more details, please 
 see
 <UL>
 <LI> <A href="http://www.lightreading.com/security/security-strategies/level-3-cisco-team-to-squash-major-botnet/d/d-id/715018">http://www.lightreading.com/security/security-strategies/level-3-cisco-team-to-squash-major-botnet/d/d-id/715018</A></LI>
@@ -36,8 +36,39 @@ that have attacked more than once with the same attack pattern.
 [5]  "Associates of SSHPsycho Login Attempts" are hosts that are using certain 
 passwords so far only seen from SSHPsycho, and have several large (and similar) attack patterns.
 While these sites have not yet used the exact same pattern as an SSHPsycho 
-site, there are enough strong similarities that make them worth watching for
-future developments.
+site, there are enough <B>strong</B> similarities that make them worth watching for
+future developments.  While there are other attacks coming from the same class C
+subnets as these associates, LongTail is not yet including those attacks in the count
+of attacks from "Associates of SSHPsycho".
+
+<P>Subnets 222.186.134 and 222.186.21 have been added to this list based on 
+similar  accounts and 
+passwords being tried from those subnets as from sshPsycho, as well as similar attack
+strategies of large attacks coming multiple times from hosts in those subnets.
+At this point this decision is based on "Feel", rather than on hard statistical evidence.
+
+<BR>
+<BR>
+<a name="6"></a>
+[6] The link "Today's Root Password" is a link to a text file containing a "password"
+that changes daily.  This is an attempt to see if any of the sites scanning for password
+files "take the bait", and then actually use it.  Since the password contains a date, I 
+can measure that against when password was created, and how long it is until I see that
+same password in LongTail's log files.
+
+<BR>
+<BR>
+<a name="7"></a>
+[7]  I am calling the attackers coming from the class C networks 43.229.52*, 43.229.53*, 
+43.255.188*, and 43.255.189* "SSHPsycho-2".   This is based on their <b>extreme</b>
+similarities to SSHPsycho.  Mainly:
+<OL>
+<LI>An absolutely insane number of attacks coming from these IP addresses. (Just like SSHPsycho).
+<LI>Their location in China/Hong Kong. (Just like SSHPsycho).
+<LI>That they are only looking for root accounts (so far). (Just like SSHPsycho).
+<LI>That their ssh client string is PUTTY. (Just like SSHPsycho).
+<LI>That some of their "attack patterns" are exactly the same as SSHPsycho.
+</OL>
 
 
 <!--#include virtual="/honey/footer.html" --> 
