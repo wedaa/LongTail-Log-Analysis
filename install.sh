@@ -295,6 +295,7 @@ echo "Copying assorted html files now"
 echo ""
 HTML_FILES="ip_addresses.shtml \
 contact_us.shtml \
+about_longtail_at_marist.shtml \
 how_to_protect_yourself.shtml \
 index.shtml \
 botnet.shtml \
