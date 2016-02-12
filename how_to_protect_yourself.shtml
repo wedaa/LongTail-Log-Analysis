@@ -35,10 +35,12 @@ files /etc/hosts.allow and /etc/hosts.deny to tell ssh to accept
 only inbound ssh connections from certain hosts, and then deny
 all other inbound connections.
 
-<P>5) If you can't use hosts.allow and hosts.deny, then you can
+<P>5) If you can't use hosts.allow and hosts.deny to restrict
+inbound ssh from <b>known</B> hosts, then you can
 install software on your server to actively block inbound ssh
 attempts that appear to be attacks.  Two of the most popular
-are <A href="http://denyhosts.sourceforge.net/">DenyHosts</a> and <A href="http://www.fail2ban.org/wiki/index.php/Main_Page">Fail2Ban</A>.
+are <A href="http://denyhosts.sourceforge.net/">DenyHosts</a> and <A href="http://www.fail2ban.org/wiki/index.php/Main_Page">Fail2Ban</A>.  Both of these still use deny.hosts 
+to block inbound ssh from known "bad hosts".
 
 <P>6) If you have "enough" hosts, then you should probably purchase
 an <a href="https://en.wikipedia.org/wiki/Intrusion_prevention_system">Intrusion prevention systems</a>.
