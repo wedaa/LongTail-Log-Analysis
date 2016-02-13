@@ -4,9 +4,11 @@
 1 0 * * * /usr/local/etc/LongTail_make_fake_password.sh
 1 1 * * * /usr/local/etc/get_whois.sh > /tmp/get_whois.sh.out
 1 2 * * * /usr/local/etc/LongTail_whois_analysis.pl > /var/www/html/honey/whois.shtml
-10 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-1 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh -protocol http >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-10 0,2,4,6,8,10,12,14,16,18,20,22 * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail-wrapper.sh.out 2>> /tmp/LongTail-wrapper.sh.out
+#
+# Please note the gap between midnight and 2:00.  This is so if you ever get "LOTS"
+# of data that the midnight scripts will continue to run for you.  LOTS of data
+# means 30-40 million login attempts.
+10 0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23 * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail-wrapper.sh.out 2>> /tmp/LongTail-wrapper.sh.out
 30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
 #
 # Create and analyze attack patterns here
@@ -16,8 +18,8 @@
 # Analyze botnets here.  MUST be run after LongTail_analyze_attacks.pl is done
 # I run this by hand because it takes a long time and I want to watch what is
 # happening.
-#TEMP30 19 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
-#TEMP03 7 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
+#30 19 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
+#03 7 * * * /usr/local/etc/LongTail_botnets/LongTail_get_botnet_stats.pl  > /var/www/html/honey/botnet.shtml 
 #
 # LongTail Dashboard stuff
 #
@@ -27,22 +29,15 @@
 5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
 55 3 * * * /usr/local/etc/LongTail_find_badguys_looking_for_passwords.sh >/tmp/LongTail_find_badguys_looking_for_passwords.out
 #
-# BlackRidge only stuff
-# Run only if you do BlackRidge honeypots also
-#35 3 * * * /usr/local/etc/BlackRidge_make_30_day_ok_traffic.sh >/tmp/BlackRidge_make_30_day_ok_traffic.sh.out
-#
 # LongTail Dashboard counter
 #
 0,5,10,15,20,25,30,35,40,45,50,55 * * * * /usr/local/etc/LongTail_dashboard.pl >> /tmp/LongTail_dashboard.out
 #
-# Pull nmap files from shepherd (a little bit before running LongTail_get_botnet_stats.pl)
-# I can't run nmap at work, so I run it at home and pull the files to here
-# No, you can't pull from my home server :-)
+# Get NMAP results
 #
-#15 19 * * * wget -P /usr/local/etc/nmap -nv -nc -nH --cut-dirs=1   --no-parent --accept txt  -r http://XXX.XXX.XXX.XXX/nmap/ > /tmp/wget.out 2>&1
 #45 6 * * * wget -P /usr/local/etc/nmap -nv -nc -nH --cut-dirs=1   --no-parent --accept txt  -r http://XXX.XXX.XXX.XXX/nmap/ > /tmp/wget.out 2>&1
+45 * * * * /usr/local/etc/LongTail_nmap_hosts.sh >> /tmp/LongTail.nmap.out 2>> /tmp/LongTail.nmap.sh.out
 #
 #
 # Kick syslog at 10:00 every night because sometimes it "hangs"
 0 22 * * * /sbin/service rsyslog restart
-
