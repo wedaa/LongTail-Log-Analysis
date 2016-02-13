@@ -277,10 +277,21 @@ LongTail_find_ssh_probers.pl \
 whois.pl "
 
 for file in $PROGRAMS ; do
-#	echo $file
 	cp $file $SCRIPT_DIR
 	chmod a+rx $SCRIPT_DIR/$file
 	chown $OWNER $SCRIPT_DIR/$file
+done
+
+DONT_OVERWRITE_FILES="longtail.config \
+LongTail-wrapper.sh"
+for file in $DONT_OVERWRITE_FILES ; do
+	if [ -e $file ] ; then
+		echo "$file already exists, not overwriting the existing file"
+	else
+		cp $file $SCRIPT_DIR
+		chmod a+rx $SCRIPT_DIR/$file
+		chown $OWNER $SCRIPT_DIR/$file
+	fi
 done
 
 echo ""
