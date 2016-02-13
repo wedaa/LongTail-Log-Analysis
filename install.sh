@@ -13,6 +13,12 @@ OWNER="wedaa" # What is the owner of the process running LongTail?
 # DO NOT EDIT BELOW THIS LINE
 # I'm sorry, there is still stuff hard-coded in the programs
 # that reference these locations.
+
+if [[ $EUID -ne 0 ]]; then
+  echo "This script must be run as root" 1>&2
+  exit 1
+fi
+
 echo ""
 echo "#############################################################"
 echo "Checking for OS"
