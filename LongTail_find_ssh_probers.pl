@@ -2,7 +2,21 @@
 
 sub init {
 	local $count;
+	$DEBUG=0;
+	$date=`date`;
+	if ($DEBUG >0){print "Loading ip-to-country now: $date";}
+	open ("FILE", "/usr/local/etc/ip-to-country")|| die "Can not open /usr/local/etc/ip-to-country\nExiting now\n";
+	while (<FILE>){
+		chomp;
+		$_ =~ s/  / /g;
+		($ip,$country)=split (/ /,$_,2);
+		$ip_to_country{$ip}=$country;
+	}
+	close (FILE);
 
+
+	$date=`date`;
+	if ($DEBUG >0){print "Loading translate_country_codes now: $date";}
 	open ("FILE", "/usr/local/etc/translate_country_codes")|| die "Can not open /usr/local/etc/translate_country_codes\nExiting now\n";
 	while (<FILE>){
 		chomp;
@@ -12,15 +26,18 @@ sub init {
 		$country_code{$code}=$country;
 	}
 	close (FILE);
-	open ("FILE", "/usr/local/etc/ip-to-country")|| die "Can not open /usr/local/etc/ip-to-country\nExiting now\n";
-	while (<FILE>){
-		chomp;
-	$_ =~ s/  / /g;
-	($ip,$country)=split (/ /,$_,2);
-	$ip_to_country{$ip}=$country;
-	}
-	close (FILE);
 
+#	open ("FILE", "/usr/local/etc/ip-to-country")|| die "Can not open /usr/local/etc/ip-to-country\nExiting now\n";
+#	while (<FILE>){
+#		chomp;
+#	$_ =~ s/  / /g;
+#	($ip,$country)=split (/ /,$_,2);
+#	$ip_to_country{$ip}=$country;
+#	}
+#	close (FILE);
+
+	$date=`date`;
+	if ($DEBUG >0){print "Loading all-ips now: $date";}
 	open (FILE, "/var/www/html/honey/all-ips")||die "Can not open /var/www/html/honey/all-ips to read\n";
 	while (<FILE>){
 		chomp;
@@ -29,6 +46,8 @@ sub init {
 	}
 	close (FILE);
 
+	$date=`date`;
+	if ($DEBUG >0){print "making headers now: $date";}
 	open (OUT, ">/var/www/html/honey/historical_ssh_probes.shtml") ||die "can not open /var/www/html/honey/historical_ssh_probes.shtml\n";
 	open (OUT_2, ">/var/www/html/honey/historical_ssh_probes_sorted.shtml") ||die "can not open /var/www/html/honey/historical_probes_sorted.shtml\n";
 	open (OUT_3, ">/var/www/html/honey/todays_ssh_probes_sorted.shtml") ||die "can not open /var/www/html/honey/todays_ssh_probes_sorted.shtml\n";
@@ -67,12 +86,18 @@ sub init {
 	print (OUT "<P>$count IP addresses found that performed ssh login attempts\n");
 	print (OUT_2 "<P>$count IP addresses found that performed ssh login attempts\n");
 
-	`zcat /var/www/html/honey/historical/*/*/*/all_messages.gz |grep discon  |grep -v 'login attempt '|awk '{print \$1, \$7}'|sed 's/:\$//'|sort -T /data/tmp >/data/tmp/ssh_disconnect`;
+	$date=`date`;
+	if ($DEBUG >0){print "Making huge file /data/tmp/ssh_disconnect now: $date";}
+	`zcat /var/www/html/honey/historical/*/*/*/all_messages.gz |grep discon  |grep -v 'login attempt '|sed 's/^.var.log..messages://' |awk '{print \$1, \$7}'|sed 's/:\$//'|grep -v Username | sort -T /data/tmp >/data/tmp/ssh_disconnect`;
+	$date=`date`;
+	if ($DEBUG >0){print "Done making huge file /data/tmp/ssh_disconnect now: $date";}
 
 }
 
 sub pass_1{
 	local $count;
+	$date=`date`;
+	if ($DEBUG >0){print "In Pass_1 now: $date";}
 	open (FILE, "/data/tmp/ssh_disconnect")||die "Can not open data/tmp/ssh_disconnect to read\n";
 	open (OUTFILE, ">/data/tmp/ssh_disconnect.output.$$")||die "Can not open data/tmp/ssh_disconnect to write\n";
 	while (<FILE>){
@@ -113,11 +138,19 @@ sub pass_1{
 	close (OUT_2);
 	close (OUT_3);
 
+	$date=`date`;
+	if ($DEBUG >0){print "In Pass_1/Sorting now: $date";}
 	system ("sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n  /data/tmp/ssh_disconnect.output.$$|sed 's/^/<TR><TD>/' |sed 's/ /<\\/TD><TD>/g' | sed 's/\$/<\\/TD><\\/TR>/' >> /var/www/html/honey/historical_ssh_probes.shtml  ");
+	$date=`date`;
+	if ($DEBUG >0){print "In Pass_1/Sorting Part 2 now: $date";}
 	system ("awk '{print \$1, \$2}' /data/tmp/ssh_disconnect.output.$$ |sort -t . -k 1,1n -k 2,2n -k 3,3n -k 4,4n | uniq -c | awk '{print \$1, \$2, \$3 }' |sort -nr |sed 's/^/<TR><TD>/' |sed 's/ /<\\/TD><TD>/g' | sed 's/\$/<\\/TD><\\/TR>/' >> /var/www/html/honey/historical_ssh_probes_sorted.shtml  ");
 	$today=`date +%Y-%m-%d`;
 	chomp $today;
+	$date=`date`;
+	if ($DEBUG >0){print "In Pass_1/grep $today now: $date";}
 	system ("grep $today /var/www/html/honey/historical_ssh_probes.shtml  >>/var/www/html/honey/todays_ssh_probes_sorted.shtml");
+	$date=`date`;
+	if ($DEBUG >0){print "Done with Pass_1/grep $today now: $date";}
 }
 
 &init;
@@ -136,3 +169,5 @@ close (OUT_3);
 
 #unlink ("/data/tmp/ssh_disconnect");
 unlink ("/data/tmp/ssh_disconnect.output.$$");
+$date=`date`;
+if ($DEBUG >0){print "All done at: $date";}
