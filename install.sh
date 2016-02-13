@@ -282,7 +282,7 @@ for file in $PROGRAMS ; do
 	chown $OWNER $SCRIPT_DIR/$file
 done
 
-DONT_OVERWRITE_FILES="longtail.config \
+DONT_OVERWRITE_FILES="LongTail.config \
 LongTail-wrapper.sh"
 for file in $DONT_OVERWRITE_FILES ; do
 	if [ -e $file ] ; then
