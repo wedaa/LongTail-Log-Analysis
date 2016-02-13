@@ -74,7 +74,7 @@ sub init {
 sub pass_1{
 	local $count;
 	open (FILE, "/data/tmp/ssh_disconnect")||die "Can not open data/tmp/ssh_disconnect to read\n";
-	open (OUTFILE, ">/data/tmp/ssh_disconnect.output.$$")||die "Can not open data/tmp/ssh_disconnect to read\n";
+	open (OUTFILE, ">/data/tmp/ssh_disconnect.output.$$")||die "Can not open data/tmp/ssh_disconnect to write\n";
 	while (<FILE>){
 		chomp;
 		($date,$ip)=split(/ /,$_);
