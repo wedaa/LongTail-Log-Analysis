@@ -518,7 +518,7 @@ function count_http_attacks {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_404 requests/TODAY now " ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
+		#echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
 		TODAY_404=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep ' 404 '|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq | wc -l`
 		#$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep ' 404 '|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq 
 	else
@@ -619,11 +619,11 @@ function count_http_attacks {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_shellshock requests/TODAY now " ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
+		#echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
 		TODAY_shellshock=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep '\:\;'|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq | wc -l`
 		#$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep '\:\;'|grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep |uniq 
 	else
-echo "foo-3"
+#echo "foo-3"
 		TODAY_shellshock=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL  |grep '\:\;' |grep -iv xymon|awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |uniq |wc -l`
 	fi
 	echo $TODAY_shellshock > $TMP_HTML_DIR/$FILE_TO_SEARCH_FOR 
@@ -719,7 +719,7 @@ echo "foo-3"
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-in count_http_attacks/TODAY now " ; date; fi
 	cd $PATH_TO_VAR_LOG
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
+		#echo "$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep $TMP_DATE " 
 		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL |grep -iv xymon |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | wc -l`
 	else
 		TODAY=`$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep $PROTOCOL  |grep -iv xymon|awk '$2 == "'$HOSTNAME'" {print}'  |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |wc -l`
@@ -2343,14 +2343,14 @@ function http_attacks {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Making temp file for http now "  ;date; fi
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		echo "hostname is not set"
-		echo "PROTOCOL is $PROTOCOL"
+		if [ $DEBUG  == 1 ] ; then echo "hostname is not set" ; fi
+		if [ $DEBUG  == 1 ] ; then echo "PROTOCOL is $PROTOCOL" ; fi
 		#
 		# The sed expression is ugly and may not work everywhere and needs to be fixed
 		#
 		$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep |grep -v xymonnet | sed 's/^....-..-..T.............. //' > $TMP_DIRECTORY/LongTail-messages.$$
-echo "foo-4"
-ls -l $TMP_DIRECTORY/LongTail-messages.$$
+#echo "foo-4"
+#ls -l $TMP_DIRECTORY/LongTail-messages.$$
 
 
 		if [ $REBUILD  != 1 ] ; then
@@ -2528,8 +2528,8 @@ sed 's/^ *//'  | sed 's/^/<TR><TD>/' |sed 's/ /<\/TD><TD>/' |sed 's/$/<\/TD><\/T
 	# a grep for both Password AND password (Note the capitalization differences).
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-http_attack 8, gathering data for raw-data.gz " ; date; fi
 
-echo "DEBUG foo-1"
-ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
+#echo "DEBUG foo-1"
+#ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
 
 	if [ $FILE_PREFIX == "current" ] ;
 	then
@@ -2543,10 +2543,10 @@ ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
 			if [ $DEBUG == 1 ] ; then echo "copying file now"; fi
 			cat $TMP_DIRECTORY/LongTail-messages.$$ |gzip -c > $TMP_HTML_DIR/$FILE_PREFIX-raw-data.gz
 		fi
-echo "DEBUG foo-2"
-ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
+#echo "DEBUG foo-2"
+#ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
 		# Code do avoid doing this if REBUILD is set
-echo "DEBUG-XYQ REBUILD is ->$REBUILD<--"
+#echo "DEBUG-XYQ REBUILD is ->$REBUILD<--"
 		if [ $REBUILD  != 1 ] ; then
 			echo "REBUILD NOT SET, copying .gz file now"
 			# Lets make sure we have one for today and this month and this year
@@ -2578,8 +2578,8 @@ echo "DEBUG-XYQ REBUILD is ->$REBUILD<--"
 		fi 
 	fi
 
-echo "DEBUG foo-3"
-ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
+#echo "DEBUG foo-3"
+#ls -l  /var/www/html/http//historical/2016/02/10/current-raw-data.gz
 
 
 
@@ -2643,8 +2643,8 @@ function ssh_attacks {
 	if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Making temp file for ssh now "  ;date; fi
 
 	if [ "x$HOSTNAME" == "x/" ] ;then
-		echo "hostname is not set"
-echo "PROTOCOL is $PROTOCOL"
+		if [ $DEBUG  == 1 ] ; then echo "hostname is not set" ; fi
+		if [ $DEBUG  == 1 ] ; then echo "PROTOCOL is $PROTOCOL" ; fi
 		if [ $LONGTAIL -eq 1 ] ; then
 #echo "DEBUG Making tmp file $TMP_DIRECTORY/LongTail-messages.$$ now "
 			$SCRIPT_DIR/catall.sh $MESSAGES |grep $PROTOCOL |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | grep Password |sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
@@ -3374,18 +3374,14 @@ function do_http {
 #		done        
 
 		
-		echo ""
 		echo "checking to see if we need to make midnight Graphics now"
-		echo "midnight is set to $MIDNIGHT"
-		echo ""
 		if [ $START_HOUR -eq $MIDNIGHT ]; then
-		#if [ $START_HOUR -eq 18 ]; then
 			/usr/local/etc/LongTail_make_30_days_imagemap.pl >30_days_imagemap.html
 			echo ""
 			echo "Making midnight Graphics now"
 			echo ""
 			for FILE in historical*.data last-*.data ; do 
-				echo "DEBUG FILE is $FILE";
+				#echo "DEBUG FILE is $FILE";
 				if [ ! "$FILE" == "current-attack-count.data" ] ; then
 					MAP=`echo $FILE |sed 's/.data/.map/'`
 					GRAPHIC_FILE=`echo $FILE | sed 's/.data/.png/'`
@@ -3634,7 +3630,6 @@ function do_ssh {
 	# first time this is run
 	echo ""
 	echo "Making Graphics now"
-	echo ""
 	if [ ! -e last-7-days-top-20-admin-passwords.data ] ; then
 		touch current-attack-count.data
 		touch current_attackers_lifespan.data
@@ -3893,8 +3888,8 @@ function create_historical_http_copies {
 		gzip $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages
 		chmod 0000 $TMP_HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/all_messages.gz
 
-echo "DEBUG calling http_attacks"
-echo "REBUILD is set to $REBUILD"
+#echo "DEBUG calling http_attacks"
+#echo "REBUILD is set to $REBUILD"
 		http_attacks   $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY $YESTERDAY_YEAR $PATH_TO_VAR_LOG "$YESTERDAY_YEAR-$YESTERDAY_MONTH-$YESTERDAY_DAY"      "$LOGFILE*" "current"
 #echo "DEBUG back from http_attacks"
 #exit
