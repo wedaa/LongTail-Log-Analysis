@@ -88,7 +88,14 @@ sub init {
 
 	$date=`date`;
 	if ($DEBUG >0){print "Making huge file /data/tmp/ssh_disconnect now: $date";}
-	`zcat /var/www/html/honey/historical/*/*/*/all_messages.gz |grep discon  |grep -v 'login attempt '|sed 's/^.var.log..messages://' |awk '{print \$1, \$7}'|sed 's/:\$//'|grep -v Username | sort -T /data/tmp >/data/tmp/ssh_disconnect`;
+	`zcat /var/www/html/honey/historical/*/*/*/all_messages.gz |grep discon  |grep -v 'login attempt '|sed 's/^.var.log..messages://' |sed 's/.var.log..messages-........://' |awk '{print \$1, \$7}'|sed 's/:\$//'|grep -v Username | sort -T /data/tmp >/data/tmp/ssh_disconnect`;
+
+	$date=`date`;
+	if ($DEBUG >0){print "Making Adding Todays activity to /data/tmp/ssh_disconnect now: $date";}
+	$today=`date +%Y-%m-%d`;
+	chomp $today;
+	`grep $today /var/log/messages |grep sshd |grep discon  |grep -v 'login attempt ' | awk '{print \$1, \$7}'|sed 's/:\$//'|grep -v Username | sort -T /data/tmp >>/data/tmp/ssh_disconnect`;
+
 	$date=`date`;
 	if ($DEBUG >0){print "Done making huge file /data/tmp/ssh_disconnect now: $date";}
 
@@ -147,7 +154,7 @@ sub pass_1{
 	$today=`date +%Y-%m-%d`;
 	chomp $today;
 	$date=`date`;
-	if ($DEBUG >0){print "In Pass_1/grep $today now: $date";}
+	if ($DEBUG >0){print "In Pass_1/grep $today now: $date";print "grep $today /var/www/html/honey/historical_ssh_probes.shtml\n";}
 	system ("grep $today /var/www/html/honey/historical_ssh_probes.shtml  >>/var/www/html/honey/todays_ssh_probes_sorted.shtml");
 	$date=`date`;
 	if ($DEBUG >0){print "Done with Pass_1/grep $today now: $date";}
@@ -167,7 +174,8 @@ close (OUT);
 close (OUT_2);
 close (OUT_3);
 
-#unlink ("/data/tmp/ssh_disconnect");
+unlink ("/data/tmp/ssh_disconnect");
 unlink ("/data/tmp/ssh_disconnect.output.$$");
+#unlink ("/data/tmp/ssh_disconnect.today.$$");
 $date=`date`;
 if ($DEBUG >0){print "All done at: $date";}
