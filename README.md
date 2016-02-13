@@ -207,6 +207,20 @@ server with.  There have been reports of "funny" characters like " â€˜master
 Again, please use UTF-8 characters.
 
 
+LongTail Disk Space Requirements
+--------------
+LongTail uses disk space.  As of February, 2016, the data files and 
+reports for 64 million login entries compiled over 24 months requires
+26 Gigs of disk space.  For this amount of data you will need to have
+at least 10 Gigs of diskspace available in /data/tmp for all the temporary
+files that get created along the way.
+
+If you don't have a /data/tmp directory, please create one and make sure
+it has enough disk space.
+
+HOWEVER, if you're just starting out, and only running a single honeypot
+then 25 gigs of disk space for your server should be enough.
+
 
 FancyBox notes
 --------------
