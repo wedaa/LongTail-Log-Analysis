@@ -41,3 +41,8 @@
 #
 # Kick syslog at 10:00 every night because sometimes it "hangs"
 0 22 * * * /sbin/service rsyslog restart
+#
+#Get Tor exit nodes daily so we can x-ref http attacks and access to 
+#the reporting website
+5 0 * * * /usr/local/etc/LongTail_get_tor_addresses.sh >>/tmp/LongTail_get_tor_addresses.sh.out
+
