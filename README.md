@@ -161,7 +161,9 @@ selinux installed
 LongTail HTTP Honeypot setup
 --------------
 As of January 2016, LongTail now can analyze requests to an Apache
-http honeypt.
+http honeypt.  Please see section "Running everything on one server"
+if you are going to run ssh and http honeypots AND the reporting software
+on the same server!
 
 LongTail currently uses the Apache httpd server as the honeypot.  The 
 current requirement is that there is only a single index.html file
@@ -187,6 +189,12 @@ And then restart apache so the change takes effect.  You can test it
 by pointing your browser of choice to you honeypot, and then checking
 you /var/log/messages file to make sure that the request was logged to syslog.
 
+Running Everything On One Server
+--------------
+If you are going to run EVERYTHING on a single server, please run a
+second website at a HIGH port number with a different access.log and 
+error.log so that the bad guys don't find your reporting website.  I 
+would suggest running it at a port > 10000.
 
 LongTail Prerequisites
 --------------
