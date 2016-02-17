@@ -38,6 +38,12 @@ sub init {
 
 &init; 
 
+if ( ! -e "/usr/local/etc/LongTail_dont_send_email_to_these_addresses"){
+	print "There is no /usr/local/etc/LongTail_dont_send_email_to_these_addresses file.\n";
+	print "Please create one, even if it is totally empty\n";
+	exit;
+}
+
 if ( ! -e "/usr/local/etc/LongTail_dont_send_abuse_ips"){
 	print "There is no /usr/local/etc/LongTail_dont_send_abuse_ips file.\n";
 	print "Please create one, even if it is totally empty\n";
@@ -55,7 +61,7 @@ while (<INPUT>){
 	chomp;
 	if (/#/){next;}
 	$_ =~ s/^\s+//;
-#	print "==========================\n";
+	print "==========================\n";
 #	print "LINE is $_\n";
 	($num, $ip, $country)=split(/ /,$_);
 	print "$ip\n";
@@ -63,19 +69,25 @@ while (<INPUT>){
 	if ($country =~/Hong_Kong/){print "IP is in Hong Kong, skipping\n";next;}
 	if ($num <= $threshold){print "$num is less than the threshold of $threshold, skipping\n"; next;}
 	if ( -e "/usr/local/etc/whois.out/$ip" ){
-		$abuse_email =`cat /usr/local/etc/whois.out/$ip | grep abuse |grep mail |egrep -vi changed\\|remarks\\|\% | awk '{print \$NF}' |grep \\@ `;
+		$abuse_email =`cat /usr/local/etc/whois.out/$ip | grep abuse |grep mail |egrep -vi changed\\|remarks\\|\% | awk '{print \$NF}' |sed 's/:/: /g' |grep \\@ |grep -v -F -f /usr/local/etc/LongTail_dont_send_email_to_these_addresses`;
 		chomp $abuse_email;
 		# Try to find any email address
 		if ( $abuse_email eq ""){
-			$abuse_email =`cat /usr/local/etc/whois.out/$ip | grep mail |egrep -vi changed\\|remarks\\|\% | awk '{print \$NF}' |grep \\@ `;
+		print "looking for alternate email\n";
+			$abuse_email =`cat /usr/local/etc/whois.out/$ip | egrep mail\\|Tech-Contact |egrep -vi changed\\|remarks\\|\% |sed 's/:/: /g' | awk '{print \$NF}' |grep \\@ |grep -v -F -f /usr/local/etc/LongTail_dont_send_email_to_these_addresses`;
 		}
+		chomp $abuse_email;
+		$abuse_email =~ s/\r/,/g;
 		$abuse_email =~ s/\n/,/g;
 		$abuse_email =~ s/,$//g;
+		$abuse_email =~ s/^,//g;
+		$abuse_email =~ s/,,/,/g;
+		$abuse_email =~ s/,,/,/g;
 		chomp $abuse_email;
 		if ( $abuse_email ne ""){
 			if ($mail_sent{"$abuse_email"} != 1){
 				print "------------------------\n";
-				print "$ip\n$abuse_email\n";
+				print "$abuse_email\n";
 				$abuse_line=`grep $ip\  /var/www/html/honey/current-ip-addresses.txt`;
 				open (OUTPUT, ">email.$$");
 				print (OUTPUT "Please do not respond directly to this email as it is unmonitored.  Please send email to $MY_EMAIL instead.\n\n");
