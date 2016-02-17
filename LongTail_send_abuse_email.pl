@@ -66,14 +66,14 @@ while (<INPUT>){
 		$abuse_email =`cat /usr/local/etc/whois.out/$ip | grep abuse |grep mail |egrep -vi changed\\|remarks\\|\% | awk '{print \$NF}' |grep \\@ `;
 		chomp $abuse_email;
 		# Try to find any email address
-		if ( $abuse_email ne ""){
+		if ( $abuse_email eq ""){
 			$abuse_email =`cat /usr/local/etc/whois.out/$ip | grep mail |egrep -vi changed\\|remarks\\|\% | awk '{print \$NF}' |grep \\@ `;
 		}
+		$abuse_email =~ s/\n/,/g;
+		$abuse_email =~ s/,$//g;
 		chomp $abuse_email;
 		if ( $abuse_email ne ""){
 			if ($mail_sent{"$abuse_email"} != 1){
-				$abuse_email =~ s/\n/,/g;
-				$abuse_email =~ s/,$//g;
 				print "------------------------\n";
 				print "$ip\n$abuse_email\n";
 				$abuse_line=`grep $ip\  /var/www/html/honey/current-ip-addresses.txt`;
