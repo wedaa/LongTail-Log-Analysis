@@ -3,6 +3,8 @@
 sub init {
 	$MY_EMAIL="Myemail\@example.com";
 	$MY_NAME="My Name";
+	$MY_SITE="http://longtail.it.marist.edu";
+	$DEBUG=0;
 	chdir ("/tmp");
 	$YESTERDAY_YEAR=`date  +"%Y"  --date="1 day ago"`;
 	chomp $YESTERDAY_YEAR;
@@ -15,13 +17,14 @@ sub init {
 
 	$days_ago=1;
 	while ($days_ago < 8){
-		$DAYS_AGO_YEAR=`date  +"%Y"  --date="1 day ago"`;
+		$DAYS_AGO_YEAR=`date  +"%Y"  --date="$days_ago day ago"`;
 		chomp $DAYS_AGO_YEAR;
-		$DAYS_AGO_MONTH=`date  +"%m" --date="1 day ago"`;
+		$DAYS_AGO_MONTH=`date  +"%m" --date="$days_ago day ago"`;
 		chomp $DAYS_AGO_MONTH;
-		$DAYS_AGO_DAY=`date  +"%d"   --date="1 day ago"`;
+		$DAYS_AGO_DAY=`date  +"%d"   --date="$days_ago day ago"`;
 		chomp $DAYS_AGO_DAY;
 		if ( -e "/var/www/html/honey/historical/$DAYS_AGO_YEAR/$DAYS_AGO_MONTH/$DAYS_AGO_DAY/abuse_email_sent"){
+			if ($DEBUG > 0){print (STDERR "/var/www/html/honey/historical/$DAYS_AGO_YEAR/$DAYS_AGO_MONTH/$DAYS_AGO_DAY/abuse_email_sent\n");}
 			open (INPUT, "/var/www/html/honey/historical/$DAYS_AGO_YEAR/$DAYS_AGO_MONTH/$DAYS_AGO_DAY/abuse_email_sent");
 			while (<INPUT>){
 				chomp;
@@ -71,16 +74,21 @@ while (<INPUT>){
 				open (OUTPUT, ">email.$$");
 				print (OUTPUT "Please do not respond directly to this email as it is unmonitored.  Please send email to $MY_EMAIL instead.\n\n");
 
-				print (OUTPUT "We have received $num login attempts from IP address $ip yesterday against one or more of our honeypots.\n\n");
-				print (OUTPUT "We run a research project called LongTail (http://longtail.it.marist.edu ) which includes multiple honeypots.  \n\n");
+				print (OUTPUT "We have received $num ssh login attempts from IP address $ip yesterday against one or more of our honeypots.\n\n");
+				print (OUTPUT "We run a research project called LongTail ($MY_SITE ) which includes multiple honeypots.  \n\n");
 				print (OUTPUT "If you wish to no longer receive these emails, or have questions about LongTail, please email $MY_EMAIL\n\n");
-				print (OUTPUT "Yesterday's login attempts are available at http://longtail.it.marist.edu/honey/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-ip-addresses.txt\n\nThe prior 30 days of IP addresses that have tried to login to our honeypots is available at http://longtail.it.marist.edu/honey/last-30-days-ip-addresses.shtml\n\n");
+				print (OUTPUT "Yesterday's login attempts are available at $MY_SITE/honey/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/current-ip-addresses.txt\n\n");
+				print (OUTPUT "Today's login attempts are available at $MY_SITE/honey/current-ip-addresses.txt\n\nThe prior 30 days of IP addresses that have tried to login to our honeypots is available at $MY_SITE/honey/last-30-days-ip-addresses.shtml\n\n");
 				print (OUTPUT "This email is sent nightly.  You will not receive another email from us for at least 7 days, assuming we continue to have your host at $ip continue to attempt to login to our honeypots.\n\n");
 				print (OUTPUT "Please include this email in your request to no longer receive these emails.\n\n");
 				print (OUTPUT "SITE CODE=23ab67adc\n\n");
 				print (OUTPUT "Thanks for your help!\n\n");
 				print (OUTPUT "$MY_NAME\n$MY_EMAIL \n\n");
 				close (OUTPUT);
+				#
+				# Send the email here
+				#
+				print "Sending email to $abuse_email\n";
 				open (OUTPUT, ">>/var/www/html/honey/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/abuse_email_sent") || die "Can not write to /var/www/html/honey/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/abuse_email_sent, exiting now\n";
 				print (OUTPUT "$abuse_email\n");
 				close (OUTPUT);
