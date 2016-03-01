@@ -62,6 +62,8 @@ while (($password, $date) = each(%password_array)){
 		if ($search_for eq "IP Addresses"){
 			($password,$trash)=split(/ /,$password);
 		}
+		$password =~ s/</&LT;/g;
+		$password =~ s/>/&GT;/g;
 		print (OUTPUT "<TR><TD>$date&nbsp;</TD><TD>$password_last_seen_array{$password}&nbsp;</TD><TD align=left>$password</TD></TR>\n");
 	}
 	else {
