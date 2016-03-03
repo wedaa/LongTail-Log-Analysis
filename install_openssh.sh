@@ -1,6 +1,15 @@
 #!/bin/sh
+######################################################################
+# install_openssh.sh
+# Written by: Eric Wedaa
+# Version: 1.1
+# Last Update: 2016-03-03, added checking so we don't re-add startup
+#              lines to /etc/rc.local
+#
+#
+######################################################################
 if [[ $EUID -ne 0 ]]; then
-	echo "This script must be run as root" 1>&2
+	echo "Sorry, this script must be run as root" 1>&2
 	exit 1
 fi
 
@@ -60,8 +69,27 @@ cp sshd /usr/local/sbin/sshd-2222
 chmod a+rx sshd /usr/local/sbin/sshd-2222
 cd ..
 
-echo "/usr/local/sbin/sshd-22 -f /usr/local/etc/sshd_config-22 " >> /etc/rc.local
-echo "/usr/local/sbin/sshd-2222 -f /usr/local/etc/sshd_config-2222 " >> /etc/rc.local
+##################################################
+# check to see if it's already in /etc/rc.local
+grep ^\/usr\/local\/sbin\/sshd-22\  /etc/rc.local >/dev/null
+if [ $? -eq 0 ]; then
+    echo "sshd-22 already in /etc/rc.local"
+else
+	echo ""
+	echo "Adding startup line for sshd-22 to /etc/rc.local"
+	echo ""
+	echo "/usr/local/sbin/sshd-22 -f /usr/local/etc/sshd_config-22 " >> /etc/rc.local
+fi
+
+grep ^\/usr\/local\/sbin\/sshd-2222\  /etc/rc.local >/dev/null
+if [ $? -eq 0 ]; then
+    echo "sshd-2222 already in /etc/rc.local"
+else
+	echo ""
+	echo "Adding startup line for sshd-2222 to /etc/rc.local"
+	echo ""
+	echo "/usr/local/sbin/sshd-2222 -f /usr/local/etc/sshd_config-2222 " >> /etc/rc.local
+fi
 
 echo "Please edit /etc/ssh/sshd_config to change the port number to something"
 echo "other than port 22 (like something above 48000)."
