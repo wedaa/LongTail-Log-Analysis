@@ -6,6 +6,8 @@
 # Last Update: 2016-03-03, added checking so we don't re-add startup
 #              lines to /etc/rc.local
 #
+# LICENSE: GPLV2: Please see the README at 
+# https://github.com/wedaa/LongTail-Log-Analysis/blob/master/README.md
 #
 ######################################################################
 if [[ $EUID -ne 0 ]]; then
