@@ -913,4 +913,9 @@ unlink ("/$TMP_DIRECTORY/dictionaries.temp");
 unlink ("/$TMP_DIRECTORY/tmp.data");
 
 $TMP=`date`;
+#print "making tar file\n";
+chdir ("/var/www/html/honey/");
+`tar -czf attacks.tar.gz ./attacks`;
+`chmod a+r attacks.tar.gz`;
+#
 print "LongTail_analyze_attacks.pl Done at $TMP\n";
