@@ -2404,6 +2404,8 @@ sub ssh_attacks {
       $_ =~ s/^..*Password:$/ /;
       $_ =~ s/ /\&nbsp;/g;
       print (OUTPUT_ADMIN_PASSWORDS_TO_BE_SORTED $_);
+			print (OUTPUT_NON_ROOT_ACCOUNTS_TO_BE_SORTED "admin\n");
+#FOOOOO
     } else { # This is non root and non admin account territory...
 			$tmp_account=$original_line;
 			$tmp_account =~ s/^..*Username: //;
@@ -2443,13 +2445,13 @@ sub ssh_attacks {
 		chomp;
 		$_ =~ s/^\s+//; #Clear all the leading spaces :-)
 		@tmp=split(/ /,$_,2);
-		print (OUTPUT_ROOT_PASSWORDS "<TR><TD>$tmp[0]</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">$tmp[1]</a> </TD></TR>\n");
+		print (OUTPUT_ROOT_PASSWORDS "<TR><TD>$tmp[0]</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+$tmp[1]&#34\">$tmp[1]</a> </TD></TR>\n");
 	}
 	close (INPUT);
 	close (OUTPUT_ROOT_PASSWORDS);
 	unlink ("$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.tmp.data");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml", "Top 20 Root Passwords", "", "Count", "Password");
-	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml | head -21   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml`;
+	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml`;
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-root-passwords.shtml");
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml");
 	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data`;
@@ -2475,14 +2477,14 @@ print "DEBUG Just made $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data\n";
 		chomp;
 		$_ =~ s/^\s+//; #Clear all the leading spaces :-)
 		@tmp=split(/ /,$_,2);
-		print (OUTPUT_ADMIN_PASSWORDS "<TR><TD>$tmp[0]</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">$tmp[1]</a> </TD></TR>\n");
+		print (OUTPUT_ADMIN_PASSWORDS "<TR><TD>$tmp[0]</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+$tmp[1]&#34\">$tmp[1]</a> </TD></TR>\n");
 	}
 	close (INPUT);
 	close (OUTPUT_ADMIN_PASSWORDS);
 
 	unlink ("$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.tmp.data");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml", "Top 20 Admin Passwords", "", "Count", "Password");
-	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml | head -21   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml`;
+	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml`;
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-admin-passwords.shtml");
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml");
 	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-admin-passwords.data`;
@@ -2505,14 +2507,14 @@ print "DEBUG Just made $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data\n";
 		chomp;
 		$_ =~ s/^\s+//; #Clear all the leading spaces :-)
 		@tmp=split(/ /,$_,2);
-		print (OUTPUT_ROOT_PASSWORDS "<TR><TD>$tmp[0]</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">$tmp[1]</a> </TD></TR>\n");
+		print (OUTPUT_ROOT_PASSWORDS "<TR><TD>$tmp[0]</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+$tmp[1]&#34\">$tmp[1]</a> </TD></TR>\n");
 	}
 	close (INPUT);
 	close (OUTPUT_ROOT_PASSWORDS);
 
 	unlink ("$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.tmp.data");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml", "Top 20 Non-Root Passwords", "", "Count", "Password");
-	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml | head -21   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml`;
+	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml | head -20   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml`;
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-non-root-passwords.shtml");
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml");
 	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-passwords.data`;
@@ -2530,19 +2532,29 @@ print "DEBUG Just made $TMP_HTML_DIR/$FILE_PREFIX-top-20-root-passwords.data\n";
 		chomp;
 		$_ =~ s/^\s+//; #Clear all the leading spaces :-)
 		@tmp=split(/ /,$_,2);
-		print (OUTPUT_ROOT_PASSWORDS "<TR><TD>$tmp[0]</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+%s&#34\">$tmp[1]</a> </TD></TR>\n");
+		print (OUTPUT_ROOT_PASSWORDS "<TR><TD>$tmp[0]</TD><TD><a href=\"https://www.google.com/search?q=&#34default+password+$tmp[1]&#34\">$tmp[1]</a> </TD></TR>\n");
 	}
 	close (INPUT);
 	close (OUTPUT_ROOT_PASSWORDS);
 
 	unlink ("$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.tmp.data");
 	&make_header ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml", "Top 20 Non Root/Admin accounts", "", "Count", "Password");
-	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -21   >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml`;
+print "Tag-2\n";
+	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -20  >> $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml`;
+	`grep -v HEADERLINE $TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml | head -21 |grep -v '<TD>root<.TD>'  > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.shtml`;
+
+
+print "DEBUG starting with non-root-accounts now\n";
+print "DEBUG Directory is $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.data\n";
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-non-root-accounts.shtml");
 	&make_footer ("$TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml");
-	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data`;
 
-#print "DEBUG-done with non-root accounts\n";
+	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml      |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD><a..*34">\/ \/' |grep -v \^\$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data`;
+	`cat $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.shtml |grep -v HEADERLINE|sed -r 's\/^<TR><TD>\/\/' |sed 's\/<.a> <.TD><.TR>\/\/' |sed 's\/<.TD><TD>\/ \/'|sed 's\/<.TD><.TR>\/\/' |grep -v ^$ > $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.data`;
+$tmp=`ls -l $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.shtml  $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts.data $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.shtml  $TMP_HTML_DIR/$FILE_PREFIX-top-20-non-root-accounts-real.data`;
+print $tmp;
+print "DEBUG-done with non-root accounts\n";
+#exit;
 
 	#-------------------------------------------------------------------------
 	# This works but gives only IP addresses
@@ -3751,12 +3763,11 @@ sub really_count_sshpsycho_attacks {
 	my $name=shift; # "SSHPsycho"
 	my $ip_file=shift; # $SCRIPT_DIR/LongTail_sshPsycho_IP_addresses"
 	my $count_data_filename=shift; #"current-sshpsycho-attack-count.data"
-
 	if ( "x$HOSTNAME" eq "x/" ) {
 		$TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep "$TMP_DATE" |grep IP:  | grep -F -f $ip_file |wc -l`;
 	}
 	else {
-		$TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -F -f $ip_file |wc -l`
+		$TODAY=`zcat $HTML_DIR/current-raw-data.gz |grep $PROTOCOL |grep $HOSTNAME |grep "$TMP_DATE" |grep IP:  | grep -F -f $ip_file |wc -l`;
 	}
 	chomp $TODAY;
 
@@ -3851,6 +3862,7 @@ $DEBUG=1;
 #print "DEBUG DANGER MIDNIGHT IS SET TO 6\n";
 $MIDNIGHT=0;
 
+$HOSTNAME="/";
 $SEARCH_FOR="sshd";
 #
 # My processing of arguments sucks and needs to be fixed
