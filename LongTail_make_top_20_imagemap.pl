@@ -70,6 +70,7 @@ while (<FILE>){
 	$line_count++;
 	chomp;
 	($count, $password)=split (/ /,$_);
+	$password =~ s/\&nbsp;\[preauth\]//;
 	if ($line_count <21){
 	print "<area shape=\"rect\" coords=\"$x,0,$x_20,220\" href=\"http://www.google.com/search?q=&#34$searchfor+$password&#34\" alt=\"$DATE\" title=\"$DATE\" >\n";
 	}
