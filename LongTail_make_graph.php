@@ -33,6 +33,7 @@ if ($myfile) {
 	while (($buffer = fgets($myfile, 4096)) !== false) {
 		list($count,$account) = explode(" ",$buffer);
 		$account = chop($account);
+		$account = str_replace("&nbsp;[preauth]","",$account);
 		if (strpos($file, 'non-root-accounts.data') !== false) {
 			// print "non-root-accounts.data found\n";
 			if ("$account" != "root"){
