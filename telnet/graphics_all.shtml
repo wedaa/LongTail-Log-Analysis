@@ -1,0 +1,72 @@
+<HTML><!--HEADERLINE -->
+<HEAD><!--HEADERLINE -->
+<META http-equiv="pragma" content="no-cache"><!--HEADERLINE -->
+<TITLE>LongTail Log Analysis Data Graphs</TITLE> <!--HEADERLINE -->
+<style> /* HEADERLINE */ 
+.td-some-name /* HEADERLINE */ 
+{ /* HEADERLINE */ 
+  white-space:nowrap; /* HEADERLINE */ 
+  vertical-align:top; /* HEADERLINE */ 
+} /* HEADERLINE */ 
+</style> <!--HEADERLINE --> 
+</HEAD><!--HEADERLINE -->
+<BODY BGCOLOR=#00f0FF><!--HEADERLINE -->
+<link rel="stylesheet" type="text/css" href="/honey/LongTail.css">
+<!--#include virtual="/honey/header.html" -->
+<H1>LongTail Log Analysis Data Graphs<BR><!--#include virtual="description.html" --></H1><!--HEADERLINE -->
+<BR>
+<BR>
+<TABLE BORDER=0>
+<TR><TH></TH><TH Colspan=2>Prior 30 Days Attack counts</TH>
+<TR><TH>All Hosts</TH><TD Colspan=2><img src="last-30-days-attack-count.png"><BR><BR>
+<TR></TR>
+<TR><TH></TH><TH Colspan=2>Prior 30 Days IP Address counts</TH>
+<TR><TH>All Hosts</TH><TD Colspan=2><img src="last-30-days-ips-count.png"><BR><BR>
+<TR></TR>
+<TR><TH></TH><TH Colspan=2>Prior 30 Days Password counts</TH>
+<TR><TH>All Hosts</TH><TD Colspan=2><img src="last-30-days-password-count.png"><BR><BR>
+<TR></TR>
+<TR><TH></TH><TH Colspan=2>Prior 30 Days Username counts</TH>
+<TR><TH>All Hosts</TH><TD Colspan=2><img src="last-30-days-username-count.png"><BR><BR>
+<TR></TR>
+</TABLE>
+<BR>
+<TABLE>
+<TR><TH colspan=4>Root Passwords</TH></TR>
+<TR><TH>All Hosts Today</TH><TH>All Hosts Prior 7 Days</TH><TH>All Hosts Prior 30 Days</TH><TH>All Hosts Historical</TH>
+<TR><TD><img src="current-top-20-root-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-root-passwords.png"><BR><BR>
+<TD><img src="last-30-days-top-20-root-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-root-passwords.png"><BR><BR>
+
+<!--   Admin Passwords  -->
+<TR></TR>
+<TR><TH colspan=4>Admin Passwords</TH></TR>
+<TR><TH>All Hosts Today</TH><TH>All Hosts Prior 7 Days</TH><TH>All Hosts Prior 30 Days</TH><TH>All Hosts Historical</TH>
+<TR><TD><img src="current-top-20-admin-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-admin-passwords.png"><BR><BR>
+<TD><img src="last-30-days-top-20-admin-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-admin-passwords.png"><BR><BR>
+
+<!--   Non root accounts  -->
+<TR></TR>
+<TR><TH colspan=4>Non Root Accounts</TH></TR>
+<TR><TH>All Hosts Today</TH><TH>All Hosts Prior 7 Days</TH><TH>All Hosts Prior 30 Days</TH><TH>All Hosts Historical</TH>
+<TR><TD><img src="current-top-20-non-root-accounts.png"><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-accounts.png"><BR><BR>
+<TD><img src="last-30-days-top-20-non-root-accounts.png"><BR><BR>
+<TD><img src="historical-top-20-non-root-accounts.png"><BR><BR>
+
+<!--   Non root passwords  -->
+<TR></TR>
+<TR><TH colspan=4>Non Root Passwords</TH></TR>
+<TR><TH>All Hosts Today</TH><TH>All Hosts Prior 7 Days</TH><TH>All Hosts Prior 30 Days</TH><TH>All Hosts Historical</TH>
+<TR><TD><img src="current-top-20-non-root-passwords.png"><BR><BR>
+<TD><img src="last-7-days-top-20-non-root-passwords.png"><BR><BR>
+<TD><img src="last-30-days-top-20-non-root-passwords.png"><BR><BR>
+<TD><img src="historical-top-20-non-root-passwords.png"><BR><BR>
+
+</TABLE>
+
+
+<!--#include virtual="/honey/footer.html" -->
