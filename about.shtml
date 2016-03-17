@@ -45,6 +45,9 @@ access to attack patterns.
 share historical data with you after the 90 day window of Marist 
 College only access has passed.
 
+<H3>SSH Communications Security Corporation Has Contributed to the LongTail SSH Honeypot</H3>
+<P>John Walsh of SSH Communications Security Corporation <A HREF=http://www.ssh.com>www.ssh.com</A> has now contributed code to the LongTail project to enhance the abilities of the LongTail SSH honeypot so that it can now analyze attacks using SSH keys.  While there have been anecdotal stories about SSH attacks using stolen SSH keys, but the LongTail SSH honeypot is the first honeypot and set of analytics tools to show these attacks on a realtime basis.
+
 
 <H3> Thanks To All These People</H3>
 
