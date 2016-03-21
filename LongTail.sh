@@ -2776,9 +2776,9 @@ function ssh_attacks {
 # and (more importantly) each hosts index.shtml can be a copy/paste of the main
 # index.shtml
 #	if [ "x$HOSTNAME" == "x/" ] ;then
-echo ""
-echo "DEBUG writing ip text file to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
-echo ""
+#echo ""
+#echo "DEBUG writing ip text file to $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt"
+#echo ""
 		echo "# http://longtail.it.marist.edu "> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# This is a sorted list of IP addresses that have tried to login" >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
 		echo "# to a server related to LongTail." >> $TMP_HTML_DIR/$FILE_PREFIX-ip-addresses.txt
@@ -3689,17 +3689,40 @@ function do_ssh {
 							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 					fi
 					if [[ $FILE == *"password"* ]] ; then
+#echo "DEBUG Doing passwords"
 						php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
-							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
+						if [ $PROTOCOL_2 == "KeyLog" ] ; then
+							TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'
+							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "SSH Keys" "Number of Tries" "standard"> $GRAPHIC_FILE
+						fi
+						if [ $PROTOCOL_2 == "Key2222Log" ] ; then
+							TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'
+							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "SSH Keys" "Number of Tries" "standard"> $GRAPHIC_FILE
+						fi
+						$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 					fi
 				else #We have an empty file, deal with it here
 					echo "0 0" >$TMP_DIRECTORY/LongTail.data.$$
 					if [[ $FILE == *"accounts"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+						php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
 							echo "" >$MAP
 					fi
 					if [[ $FILE == *"password"* ]] ; then
-						php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+#echo "DEBUG Doing Not enough data for today for passwords.  PROTOCOL_2 is $PROTOCOL_2, FILE is $FILE, TITLE is $TITLE"
+						php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+						if [[ $PROTOCOL_2 == "KeyLog" ]] ; then
+#echo "DEBUG remaking graphic for KeyLog"
+							TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today 
+For $TITLE" "SSH Keys" "Number of Tries" "standard"> $GRAPHIC_FILE
+						fi
+						if [[ $PROTOCOL_2 == "Key2222Log" ]] ; then
+							TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ For $TITLE" "SSH Keys" "Number of Tries" "standard"> $GRAPHIC_FILE
+						fi
 							echo "" >$MAP
 					fi
 					rm $TMP_DIRECTORY/LongTail.data.$$
@@ -3751,6 +3774,14 @@ function do_ssh {
 						fi
 						if [[ $FILE == *"password"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+							if [ $PROTOCOL_2 == "KeyLog" ] ; then
+								TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+								php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "SSH Keys" "Number of Tries" "standard"> $GRAPHIC_FILE
+							fi
+							if [ $PROTOCOL_2 == "Key2222Log" ] ; then
+								TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+								php /usr/local/etc/LongTail_make_graph.php $FILE "$TITLE" "SSH Keys" "Number of Tries" "standard"> $GRAPHIC_FILE
+							fi
 							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-username-count.data"* ]] ; then
@@ -3759,6 +3790,14 @@ function do_ssh {
 						fi
 						if [[ $FILE == *"last-30-days-password-count.data"* ]] ; then
 							php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
+							if [ $PROTOCOL_2 == "KeyLog" ] ; then
+								TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+								php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique SSH Keys" "" "" "wide"> $GRAPHIC_FILE
+							fi
+							if [ $PROTOCOL_2 == "Key2222Log" ] ; then
+								TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+								php /usr/local/etc/LongTail_make_graph.php $FILE "Last 30 Days Count of Unique SSH Keys" "" "" "wide"> $GRAPHIC_FILE
+							fi
 							$SCRIPT_DIR/LongTail_make_top_20_imagemap.pl  $FILE  >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-ips-count.data"* ]] ; then
@@ -3778,23 +3817,48 @@ function do_ssh {
 						echo "0 0" >$TMP_DIRECTORY/LongTail.data.$$
 						echo "" > $file.map
 						if [[ $FILE == *"accounts"* ]] ; then
-							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
+							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ For $TITLE" "Accounts" "Number of Tries" "standard"> $GRAPHIC_FILE
 							echo "" >$MAP
 						fi
 						if [[ $FILE == *"password"* ]] ; then
-							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ For $TITLE" "Passwords" "Number of Tries" "standard"> $GRAPHIC_FILE
+							if [ $PROTOCOL_2 == "KeyLog" ] ; then
+								TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+								php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ For $TITLE" "SSH Keys" "Number of Tries" "standard"> $GRAPHIC_FILE
+							fi
+							if [ $PROTOCOL_2 == "Key2222Log" ] ; then
+								TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+								php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ For $TITLE" "SSH Keys" "Number of Tries" "standard"> $GRAPHIC_FILE
+							fi
 							echo "" >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-username-count.data"* ]] ; then
-							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today for Unique Usernames" "" "" "wide"> $GRAPHIC_FILE
+							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ for Unique Usernames" "" "" "wide"> $GRAPHIC_FILE
 							echo "" >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-password-count.data"* ]] ; then
-							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today for Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
+							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ for Unique Passwords" "" "" "wide"> $GRAPHIC_FILE
+							if [ $PROTOCOL_2 == "KeyLog" ] ; then
+								TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+								php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ for Unique SSH Keys" "" "" "wide"> $GRAPHIC_FILE
+							fi
+							if [ $PROTOCOL_2 == "Key2222Log" ] ; then
+								TITLE=`echo $TITLE | sed 's/Passwords/SSH-Keys/'`
+								php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ for Unique SSH Keys" "" "" "wide"> $GRAPHIC_FILE
+							fi
 							echo "" >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-ips-count.data"* ]] ; then
-							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today for Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE
+							php /usr/local/etc/LongTail_make_graph.php $TMP_DIRECTORY/LongTail.data.$$ "Not Enough Data Today
+ for Unique IP addresses" "" "" "wide"> $GRAPHIC_FILE
 							echo "" >$MAP
 						fi
 						if [[ $FILE == *"last-30-days-attack-count.data"* ]] ; then
