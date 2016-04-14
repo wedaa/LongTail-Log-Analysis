@@ -245,6 +245,7 @@ sub create_attack_logs {
 		$username="";
 		$password="";
 		if ((/ IP: /o) && ((/ PassLog: /o)   || (/ Pass2222Log: /o)  ) ){
+#if (/shepherd/){print "DEBUG $_\n";}
 			($timestamp,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
 			($date,$time)=split(/T/,$timestamp);
 			($year,$month,$day)=split(/-/,$date);
@@ -278,6 +279,7 @@ sub create_attack_logs {
 				if ( $attack_filename ne $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip} ){
 					#print "n";
 					close (IP_FILE);
+#Can not write to /var/www/html/honey//attacks//59.47.5.230.shepherd.1-/var/log/messages:2016.03.13.03.38.40
 					open (IP_FILE,">>$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}") || die "Can not write to $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
 					$attack_filename = "$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}";
 				}
@@ -306,11 +308,17 @@ sub sort_attack_files {
 	open (PIPE, "find . -type f |") || die "can not open pipe to cleanup files\n";
 	while (<PIPE>){
 		chomp;
+		`/bin/cp $_ /var/www/html/honey/attacks-unsorted/$_.unsorted`;
 		`sort $_ --output $_`;
 	}
 	close (PIPE);
 	$tmp=`date`;
 	if ($DEBUG){print "Done Sorting attack files now at $tmp.\n";}
+	if ( -e "/var/www/html/honey/attacks-unsorted.tar.gz"){
+		unlink ("/var/www/html/honey/attacks-unsorted.tar.gz ");
+	}
+	#`tar -czf /var/www/html/honey/attacks-unsorted.tar.gz /var/www/html/honey/attacks-unsorted`;
+	#`chmod a+r /var/www/html/honey/attacks-unsorted.tar.gz`;
 }
 
 
@@ -917,5 +925,4 @@ $TMP=`date`;
 chdir ("/var/www/html/honey/");
 `tar -czf attacks.tar.gz ./attacks`;
 `chmod a+r attacks.tar.gz`;
-#
 print "LongTail_analyze_attacks.pl Done at $TMP\n";
