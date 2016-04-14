@@ -245,6 +245,7 @@ function lock_down_files {
 		else
 			chmod go-r $files
 		fi
+		chmod ugo-r /var/www/html/honey/historical_ssh_probes_sorted.shtml
 
 		fi
 	fi
