@@ -196,6 +196,8 @@ second website at a HIGH port number with a different access.log and
 error.log so that the bad guys don't find your reporting website.  I 
 would suggest running it at a port > 10000.
 
+If LongTail_apache.conf
+
 LongTail Prerequisites
 --------------
 LongTail requires other software packages to run.  RHEL, CentOS, Fedora Core commands follow:
