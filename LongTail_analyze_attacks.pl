@@ -88,6 +88,8 @@ sub init {
 #exit;
 	$honey_dir=$HTML_DIR;
 	$attacks_dir="$HTML_DIR/attacks/";
+	#$attacks_dir_purdue is to make special attack files for Purdue to analyze
+	$attacks_dir_purdue="$HTML_DIR/attacks_purdue/";
 	$DATE=`date`;
 	$DEBUG=1;
 	$REBUILD_ALL=0;
@@ -245,6 +247,7 @@ sub create_attack_logs {
 		$username="";
 		$password="";
 		if ((/ IP: /o) && ((/ PassLog: /o)   || (/ Pass2222Log: /o)  ) ){
+			$original_line=$_;
 #if (/shepherd/){print "DEBUG $_\n";}
 			($timestamp,$hostname,$process,$IP_FLAG,$ip,$PASSLOG_FLAG,$USERNAME_FLAG,$username,$PASSWORD_FLAG,$password)=split(/ +/,$_);
 			($date,$time)=split(/T/,$timestamp);
@@ -279,11 +282,16 @@ sub create_attack_logs {
 				if ( $attack_filename ne $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip} ){
 					#print "n";
 					close (IP_FILE);
+					#close (PURDUE);
+#random error message to watch out for
 #Can not write to /var/www/html/honey//attacks//59.47.5.230.shepherd.1-/var/log/messages:2016.03.13.03.38.40
 					open (IP_FILE,">>$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}") || die "Can not write to $attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
+					#open (PURDUE,">>$attacks_dir_purdue/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}") || die "Can not write to $attacks_dir_purdue/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}\n";
 					$attack_filename = "$attacks_dir/$ip.$hostname.$ip_number_of_attacks{$ip}-$ip_date_of_attacks{$ip}";
 				}
 				print (IP_FILE "$username ->$password<-\n");
+				#print (PURDUE "$original_line\n");
+				
 			}
 		}
 	}
