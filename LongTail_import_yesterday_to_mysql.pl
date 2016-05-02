@@ -3,9 +3,6 @@
 # and you must download the latest databases after the second tuesday
 # of each month
 #
-# 2016-05-02 Bug fix so that it only counts SSH attacks, instead
-#            of ALL attacks (including http and telnet, etc).
-#
 # yum install cpan
 #cpan Geo::IP
 #cpan Socket6
