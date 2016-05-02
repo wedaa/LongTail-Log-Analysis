@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 
+# 2016-05-02 Bug fix so that it only counts SSH attacks, instead
+#            of ALL attacks (including http and telnet, etc).
+#
 # Rebuilds dashboard images a day at a time
 #
 # Called as:
@@ -145,40 +148,42 @@ while ($minute_count < 1441){
 open (FILE, "zcat $file|sort|");
 while (<FILE>){
 	if (/IP:/){
-		chomp;
-		$time = $_;
-		$time =~ s/ ..*$//;
-		$time =~ s/^.*T//;
-		$time =~ s/:..$//;
-		($log_hour , $log_minute)=split(/:/,$time);
-		$minute_number=($log_hour*60)+$log_minute;
+		if (( /PassLog/)||(/Pass2222Log/)){ # Look at only ssh
+			chomp;
+			$time = $_;
+			$time =~ s/ ..*$//;
+			$time =~ s/^.*T//;
+			$time =~ s/:..$//;
+			($log_hour , $log_minute)=split(/:/,$time);
+			$minute_number=($log_hour*60)+$log_minute;
 
 
-		$password=$_;
-		$password=~ s/^..*Password: //;
-		#print "password is $password\n";
-		$password_array{$password}=1;
-		$size=keys (%password_array);
-		$time_password_count[$minute_number]=$size;
+			$password=$_;
+			$password=~ s/^..*Password: //;
+			#print "password is $password\n";
+			$password_array{$password}=1;
+			$size=keys (%password_array);
+			$time_password_count[$minute_number]=$size;
 
-		$username=$_;
-		$username=~ s/^..*Username: //;
-		$username=~ s/ Password:.*$//;
-		#print "username is $username\n";
-		$username_array{$username}=1;
-		$size=keys (%username_array);
-		$time_username_count[$minute_number]=$size;
+			$username=$_;
+			$username=~ s/^..*Username: //;
+			$username=~ s/ Password:.*$//;
+			#print "username is $username\n";
+			$username_array{$username}=1;
+			$size=keys (%username_array);
+			$time_username_count[$minute_number]=$size;
 
-		$ip=$_;
-		$ip =~ s/^..*IP: //;
-		$ip =~ s/ Pass..*$//;
-		#print "ip is $ip\n";
-		$ip_array{$ip}=1;
-		$size=keys (%ip_array);
-		$time_ip_count[$minute_number] = $size ;
-#print "DEBUG-loading time_ip_count array, minute is $minute_number, ip size is $size\n";
-
-		$time_attacks[$minute_number]++;
+			$ip=$_;
+			$ip =~ s/^..*IP: //;
+			$ip =~ s/ Pass..*$//;
+			#print "ip is $ip\n";
+			$ip_array{$ip}=1;
+			$size=keys (%ip_array);
+			$time_ip_count[$minute_number] = $size ;
+	#print "DEBUG-loading time_ip_count array, minute is $minute_number, ip size is $size\n";
+	
+			$time_attacks[$minute_number]++;
+		}
 	}
 }
 close (FILE);
