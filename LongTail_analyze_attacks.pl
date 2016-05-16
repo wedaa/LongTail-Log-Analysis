@@ -316,7 +316,7 @@ sub sort_attack_files {
 	open (PIPE, "find . -type f |") || die "can not open pipe to cleanup files\n";
 	while (<PIPE>){
 		chomp;
-		`/bin/cp $_ /var/www/html/honey/attacks-unsorted/$_.unsorted`;
+		#`/bin/cp $_ /var/www/html/honey/attacks-unsorted/$_.unsorted`;
 		`sort $_ --output $_`;
 	}
 	close (PIPE);
@@ -566,6 +566,7 @@ sub show_lifetime_of_ips {
 	open (FILE_UNFORMATTED, ">$TMP_DIRECTORY/current_attackers_lifespan.tmp") || die "Can not write to $TMP_DIRECTORY/current_attackers_lifespan.tmp\n";
 	while (<FILE>){
 		chomp;
+		$original_line=$_;
 		($ip1,$ip2,$ip3,$ip4,$line_year,$line_month,$line_day,$line_hour,$line_minute,$line_second)=split(/\.|-/,$_);
 		$this_ip="$ip1.$ip2.$ip3.$ip4";
 		if ( $this_ip ne $prior_ip){
@@ -575,7 +576,25 @@ sub show_lifetime_of_ips {
 				$first_used="$year/$month/$day $hour:$minute:$second";
 	
 				($year,$month,$day,$hour,$minute,$second)=split(/\./,$last_used);
-				$epoch_last=timelocal($second,$minute,$hour,$day,$month-1,$year);
+				if ( ( $year < 2014 ) || 
+					( $month < 0) ||
+					( $month > 12 )||
+					( $day < 0) ||
+					( $day > 31 )||
+					( $hour < 0) ||
+					( $hour > 24 )||
+					( $minute < 0) ||
+					( $minute > 59 )||
+					( $second < 0) ||
+					( $second > 59 ) ) {
+					$epoch_last=0;
+					print "ERROR in time for original_line: $original_line\n";
+					print "ERROR in last_used: $last_used\n";
+					print "Error in $year,$month,$day,$hour,$minute,$second\n";
+				}
+				else {
+					$epoch_last=timelocal($second,$minute,$hour,$day,$month-1,$year);
+				}
 				$last_used="$year/$month/$day $hour:$minute:$second";
 	
 				$lifetime=$epoch_last-$epoch_first;
@@ -817,7 +836,25 @@ sub create_dict_webpage {
 			$last_seen_epoch=0;
 			($tmp,$date_string)=split(/-/,$file);
 			($year,$month,$day,$hour,$minute,$second)=split(/\./,$date_string);
-			$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
+			if ( ( $year < 2014 ) || 
+				( $month < 0) ||
+				( $month > 12 )||
+				( $day < 0) ||
+				( $day > 31 )||
+				( $hour < 0) ||
+				( $hour > 24 )||
+				( $minute < 0) ||
+				( $minute > 59 )||
+				( $second < 0) ||
+				( $second > 59 ) ) {
+				$epoch_last=0;
+				print "ERROR in time for original_line: $original_line\n";
+				print "ERROR in last_used: $last_used\n";
+				print "Error in $year,$month,$day,$hour,$minute,$second\n";
+			}
+			else {
+				$epoch=timelocal($second,$minute,$hour,$day,$month-1,$year);
+			}
 			if ($first_seen_epoch == 0){$first_seen_epoch=$epoch};
 			if ($epoch > $last_seen_epoch ){$last_seen_epoch=$epoch};
 			if ($epoch < $first_seen_epoch ){$first_seen_epoch=$epoch};
