@@ -330,14 +330,14 @@ MY crontab entry looks like this one(See the file crontab.sample too):
 	1 0 * * * /usr/local/etc/LongTail_make_fake_password.sh
 	1 1 * * * /usr/local/etc/get_whois.sh > /tmp/get_whois.sh.out
 	1 2 * * * /usr/local/etc/LongTail_whois_analysis.pl > /var/www/html/honey/whois.shtml
-	10 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-	1 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh http >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
-	10 0,2,4,6,8,10,12,14,16,18,20,22 * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail-wrapper.sh.out 2>> /tmp/LongTail-wrapper.sh.out
-	30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>> /tmp/LongTail_find_ssh_probers.pl.out
+	10 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh  >> /tmp/LongTail.sh.out 2>&1 tmp/LongTail.sh.out
+	1 3,5,7,9,11,13,15,17,19,21,23 * * * /usr/local/etc/LongTail.sh http >> /tmp/LongTail.sh.out 2>&1 tmp/LongTail.sh.out
+	10 0,2,4,6,8,10,12,14,16,18,20,22 * * * /usr/local/etc/LongTail-wrapper.sh  >> /tmp/LongTail-wrapper.sh.out 2>&1 tmp/LongTail-wrapper.sh.out
+	30 * * * * /usr/local/etc/LongTail_find_ssh_probers.pl  >> /tmp/LongTail_find_ssh_probers.pl.out 2>&1 tmp/LongTail_find_ssh_probers.pl.out
 	#
 	# Create and analyze attack patterns here
 	#
-	45 5,17 * * * /usr/local/etc/LongTail_analyze_attacks.pl rebuild >> /data/tmp/LongTail_analyze_attacks.pl.out 2>> /tmp/LongTail_analyze_attacks.pl.out
+	45 5,17 * * * /usr/local/etc/LongTail_analyze_attacks.pl rebuild >> /data/tmp/LongTail_analyze_attacks.pl.out 2>&1 tmp/LongTail_analyze_attacks.pl.out
 	#
 	# Analyze botnets here.  MUST be run after LongTail_analyze_attacks.pl is done
 	# I run this by hand because it takes a long time and I want to watch what is
@@ -347,7 +347,7 @@ MY crontab entry looks like this one(See the file crontab.sample too):
 	#
 	# LongTail Dashboard stuff
 	#
-	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>> /tmp/LongTail.sh.out
+	55 0 * * * /usr/local/etc/LongTail_rebuild_dashboard_index.pl  >> /tmp/LongTail.sh.out 2>&1 tmp/LongTail.sh.out
 	1 1 1 * * /usr/local/etc/LongTail_rebuild_last_month_dashboard_charts.sh  >>/tmp/LongTail_rebuild_dash.out
 	#
 	5 * * * * grep Attack /var/log/messages |awk '{print $6,$10,$14}' |sort |uniq |sed 's/;//g' >>/var/www/html/honey/clients.data; sort -u /var/www/html/honey/clients.data > /tmp/clients.data; /bin/mv /tmp/clients.data /var/www/html/honey/clients.data
