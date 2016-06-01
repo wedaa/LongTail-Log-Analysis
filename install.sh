@@ -504,7 +504,7 @@ echo "      /usr/local/etc/LongTail.sh -midnight"
 echo "to both test your installation, and to finish creating all the ssh related webpages"
 echo ""
 echo "If you are also running the (BETA) HTTP honeypot and analysis"
-echo "tools, please also run:
+echo "tools, please also run:"
 echo "      /usr/local/etc/LongTail.sh -protocol http "
 echo "and"
 echo "      /usr/local/etc/LongTail.sh -protocol http -midnight"
