@@ -138,9 +138,9 @@ sub pass_1{
 	close (OUTFILE);
 	print (OUT "<P>$count IP addresses found that performed ssh probes without performing an ssh login attempt\n");
 	print (OUT_2 "<P>$count IP addresses found that performed ssh probes without performing an ssh login attempt\n");
-	print (OUT "<TABLE border=1><TR><TH>IP Address</TH><TH>Country</TH><TH>Date Seen</TH></TR>\n");
+	print (OUT "<TABLE border=1><TR><TH>IP Address</TH><TH>Country</TH><TH>Date and Time Seen</TH></TR>\n");
 	print (OUT_2 "<TABLE border=1><TR><TH># Of Times Seen</TH><TH>IP Address</TH><TH>Country</TH></TR>\n");
-	print (OUT_3 "<TABLE border=1><TR><TH>IP Address</TH><TH>Country</TH><TH>Date Seen</TH></TR>\n");
+	print (OUT_3 "<TABLE border=1><TR><TH>IP Address</TH><TH>Country</TH><TH>Date and Time Seen</TH></TR>\n");
 	close (OUT);
 	close (OUT_2);
 	close (OUT_3);
