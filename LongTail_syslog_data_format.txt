@@ -1,0 +1,23 @@
+YYYY-MM-DDTHH:MM:SS<.milliseconds(optional)>-HH-MM(GMT offset)  honeypotName process_name: IP: IP_ADDRESS PassLog: Username:  <Username tried> Password: <Password tried>
+
+All data is single space delimited
+
+Field  1 is a date/time stamp.  Date is YYYY-MM-DD, followed by a "T"  character, followed by a time stamp HH:MM:SS.milliseconds (milliseconds  is optional), a "dash" character, and then a GMT offset.  
+Field 2 is the honeypot name
+Field 3 is the sshd process name
+Field 4 is a string "IP:"
+Field 5 is the IPv4 ip address
+Field 6 is a string indicating which type of honeypot
+   PassLog indicates port 22
+   Pass2222Log indicates port 2222
+Field 7 is a string "Username:"
+Field 8 is the username attempted
+Field 9 is the string "Password:"
+Field 10 is the password tried (Might be blank, 1-n spaces, or a password)
+
+examples below:
+2016-04-19T05:40:58-04:00 ecdal2 sshd-22[9306]: IP: 183.3.202.102 PassLog: Username: root Password: sunbird
+2016-04-19T05:40:58-04:00 AWS sshd-22[24509]: IP: 183.3.202.106 PassLog: Username: root Password: gemini123
+2016-04-19T05:40:59-04:00 ecdal2 sshd-22[9306]: IP: 183.3.202.102 PassLog: Username: root Password: 1234asdf
+2016-04-19T05:40:59-04:00 edu_c sshd-22[26957]: IP: 222.186.34.200 PassLog: Username: root Password: anna
+2016-04-19T05:40:59-04:00 ecdal2 sshd-22[9306]: IP: 183.3.202.102 PassLog: Username: root Password: gandalf1
