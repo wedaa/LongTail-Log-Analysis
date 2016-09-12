@@ -3,11 +3,12 @@
 #
 
 while ($filename =shift){
-print "$filename\n";
+#print "$filename\n";
 	$command = "cat ";
-	if (/.bz2/){$command="bzcat "};
-	if (/.bz/){$command="bzcat "};
-	if (/.gz/){$command="zcat "};
+
+	if ($filename =~ /.bz2/){$command="bzcat "};
+	if ($filename =~ /.bz/){$command="bzcat "};
+	if ($filename =~ /.gz/){$command="zcat "};
 	open (INPUT, "$command $filename|");
 	while (<INPUT>){
 		if (/ IP: /){
@@ -25,6 +26,7 @@ print "$filename\n";
 			$_ =~ s/busybox/BUSYBOX/g;
 			$_ =~ s/rm /RM /g;
 			$_ =~ s/cd /CD /g;
+			$_ =~ s/chmod /CHMOD /g;
 		}
 		print;
 	}
