@@ -34,7 +34,7 @@ mkdir openssh-2222
 
 ######################################################
 cd openssh-22
-wget http://mirrors.nycbug.org/pub/OpenBSD/OpenSSH/portable/openssh-6.7p1.tar.gz
+wget http://ftp4.usa.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-6.7p1.tar.gz
 tar -xf openssh-6.7p1.tar.gz
 mv openssh-6.7p1 openssh-6.7p1-22
 cd openssh-6.7p1-22
@@ -54,7 +54,7 @@ cd ..
 ######################################################
 cd /usr/local/source/openssh
 cd openssh-2222
-wget http://mirrors.nycbug.org/pub/OpenBSD/OpenSSH/portable/openssh-6.7p1.tar.gz
+wget http://ftp4.usa.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-6.7p1.tar.gz
 tar -xf openssh-6.7p1.tar.gz
 mv openssh-6.7p1 openssh-6.7p1-2222
 cd openssh-6.7p1-2222
