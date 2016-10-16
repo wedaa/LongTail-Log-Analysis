@@ -238,6 +238,7 @@ echo "#############################################################"
 echo "Copying assorted /usr/local/etc/ programs now"
 echo ""
 PROGRAMS=" LongTail_rebuild_dashboard_index.pl \
+LongTail_list_accounts_by_ip.perl \
 LongTail_find_badguys_looking_for_passwords.sh \
 LongTail_send_access_to_syslog.pl \
 LongTail_make_map.pl \
