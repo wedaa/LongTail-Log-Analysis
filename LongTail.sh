@@ -144,6 +144,7 @@ function init_variables {
 	RLOGIN_HTML_TOP_DIR="rlogin" #NO slashes please, it breaks sed
 	FTP_HTML_TOP_DIR="ftp" #NO slashes please, it breaks sed
 	HTTP_HTML_TOP_DIR="http" #NO slashes please, it breaks sed
+	SDN_HTML_TOP_DIR="sdn" #NO slashes please, it breaks sed
 	SSH22_KEYS_HTML_TOP_DIR="ssh-keys"
 	
 	# This is for my personal debugging, just leave them
@@ -1683,6 +1684,11 @@ function count_ssh_attacks {
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Usernames now "; date ; fi
 		zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /' |sort -T $TMP_DIRECTORY -u > all-username
+		# This works but does not deal with unicode charsets #zcat historical/*/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$//' |sed 's/ Password:.*$//' |sort -T $TMP_DIRECTORY -u > all-username
+		# This works AND does deal with unicode charsets 
+		# Backed out change zcat historical/*/*/*/current-raw-data.gz |grep IP: | perl -e 'while (<>){$_ =~ s/^.*Username: //; $_ =~ s/ Password:.*$//; print $_;}' |sort -T $TMP_DIRECTORY -u > all-username
+		
+
 		THISYEARUNIQUEUSERNAMES=`zcat historical/$TMP_YEAR/*/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u |wc -l `
 		THISMONTHUNIQUEUSERNAMES=`zcat historical/$TMP_YEAR/$TMP_MONTH/*/current-raw-data.gz |grep IP: |sed 's/^..*Username:\ //' |sed 's/ Password:$/ /' |sed 's/ Password:.*$/ /'|sort -T $TMP_DIRECTORY -u |wc -l `
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Done Getting all username now "; date ; fi
@@ -1729,9 +1735,13 @@ function count_ssh_attacks {
 #2015-03-29T03:07:36-04:00 shepherd sshd-22[2766]: IP: 103.41.124.140 PassLog: Username: root Password: tommy007
 	if [ $START_HOUR -eq $MIDNIGHT ]; then
 		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG-Getting all Honeypots now "; date ; fi
+		if [ $DEBUG  == 1 ] ; then set -x; fi
 
-			$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep $PROTOCOL |awk '{print $2}' | sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
-			cat $1/todays-honeypots.txt |wc -l  > todays-honeypots.txt.count
+		$SCRIPT_DIR/catall.sh $PATH_TO_VAR_LOG/$MESSAGES |grep "$TMP_DATE" | grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep  |egrep $PROTOCOL |awk '{print $2}' | sort -T $TMP_DIRECTORY |uniq -c > todays-honeypots.txt
+		cat $1/todays-honeypots.txt |wc -l  > todays-honeypots.txt.count
+		if [ $DEBUG  == 1 ] ; then ls -l todays-honeypots.txt todays-honeypots.txt.count ; fi
+		#if [ $DEBUG  == 1 ] ; then set +x;  fi
+		if [ $DEBUG  == 1 ] ; then echo -n "DEBUG- todays-honeypots.txt.count is:"; cat todays-honeypots.txt.count; fi
 	fi
 
 	if [ ! -e all-ips ] ; then
@@ -2683,6 +2693,20 @@ function ssh_attacks {
 	else
 		echo "hostname IS set to $HOSTNAME."
 		$SCRIPT_DIR/catall.sh $MESSAGES |awk '$2 == "'$HOSTNAME'" {print}' |grep $PROTOCOL |grep $PROTOCOL_2 |grep "$DATE"|grep -F -vf $SCRIPT_DIR/LongTail-exclude-IPs-ssh.grep | grep -F -vf $SCRIPT_DIR/LongTail-exclude-accounts.grep | sed 's/Username:\ \ /Username: NO-USERNAME-PROVIDED /'  > $TMP_DIRECTORY/LongTail-messages.$$
+	fi
+
+	#-------------------------------------------------------------------------
+	# List accounts tried by IP using LongTail_list_accounts_by_ip.perl
+	# 
+	# I am NOT doing historical, as that's worthless :-)
+	# Code added 2016-10-30 by ericw eric wedaa
+	#
+	if [ ! "$FILE_PREFIX" == "historical" ] ; then
+		if [ "x$HOSTNAME" == "x/" ] ;then
+			make_header "$TMP_HTML_DIR/$FILE_PREFIX-accounts_by_ip.shtml" "Accounts used by IP address" "" "IP Address" "Country" "Count" "Account"
+			$SCRIPT_DIR/LongTail_list_accounts_by_ip.perl -i "$TMP_DIRECTORY/LongTail-messages.$$" -o "$TMP_HTML_DIR/$FILE_PREFIX-accounts_by_ip.shtml" -t "$TMP_DIRECTORY"
+			make_footer "$TMP_HTML_DIR/$FILE_PREFIX-accounts_by_ip.shtml"
+		fi
 	fi
 
 	#-------------------------------------------------------------------------
@@ -4150,11 +4174,17 @@ function create_historical_copies {
 # NEW STUFF May 27th...
 #
 # Lets hope this is run before all-ips, all-password, and all-username are run
+echo "DEBUG for jonathon"
+ls -l $HTML_DIR/all-ips       $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips 
 		awk 'FNR==NR{a[$0]++;next}(!($0 in a))' $HTML_DIR/all-ips       $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_ips >$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-ips.txt
 
+ls -l  $HTML_DIR/all-password $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_password
 		awk 'FNR==NR{a[$0]++;next}(!($0 in a))' $HTML_DIR/all-password $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_password >$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-passwords.txt
 
+echo "This is where the problem is"
+ls -l  $HTML_DIR/all-username $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_username
 		awk 'FNR==NR{a[$0]++;next}(!($0 in a))' $HTML_DIR/all-username $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays_username >$HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-usernames.txt
+ls -l $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-usernames.txt
 
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-passwords.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-passwords.txt.count
 		cat $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-usernames.txt |wc -l > $HTML_DIR/historical/$YESTERDAY_YEAR/$YESTERDAY_MONTH/$YESTERDAY_DAY/todays-uniq-usernames.txt.count
@@ -4719,6 +4749,13 @@ else
 				shift
 				continue
 			fi
+			if [ $1 == "SDNLog" ] ; then
+				SEARCH_FOR="SDNLog"
+				HTML_DIR="$HTML_DIR/$SDN_HTML_TOP_DIR"
+				HTML_TOP_DIR=$SDN_HTML_TOP_DIR
+				shift
+				continue
+			fi
 
 			echo "Option $1 for protocol not found, exiting now"
 			exit;
@@ -4860,6 +4897,19 @@ if [ $SEARCH_FOR == "TelnetLog" ] ; then
 	PROTOCOL_2="TelnetLog"
 	create_historical_copies  $HTML_DIR
 	make_trends
+	do_ssh
+fi
+
+if [ $SEARCH_FOR == "SDNLog" ] ; then
+	echo "Searching for SDN webpage attacks"
+	PROTOCOL=$SEARCH_FOR
+	PROTOCOL_2="SDNLog"
+echo "DEBUG PROTOCOL=$PROTOCOL, PROTOCOL_2=$PROTOCOL_2"
+echo "DEBUG calling create_historical_copies"
+	create_historical_copies  $HTML_DIR
+echo "DEBUG Calling make_trends"
+	make_trends
+echo "DEBUG calling do_ssh"
 	do_ssh
 fi
 
