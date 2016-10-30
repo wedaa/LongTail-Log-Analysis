@@ -12,7 +12,21 @@
 # Initial notes:
 # cat /var/log/messages |grep sshd |grep IP: |awk '{print $5,$8}' |sort |uniq -c |sort -k2V 
 #
+# Please see show_help routine (immediately below) for usage instructions
 #
+
+######################################################################
+
+sub show_help {
+	print "mandatory arguments are -i <filename> -o <filename> -t <directoryName>\n";
+	print "where -i is input file, -o is output file, and -t is a directory to store temporary files and a sort location\n";
+	print "Minimal checking is done in this version, as it will eventually\n";
+	print "be folded into LongTail.pl\n\n";
+	print "\n";
+	print "Input file is assumed to be the temp file created by longtail, there is NO ERROR CHECKING DONE ON INPUT\n";
+	print "Filenames must be fully qualified, such as /tmp/LongTail.$$, not just LongTail.$$\n";
+	exit 0;
+}
 
 sub init_ip_to_country{
 	open ("FILE", "/usr/local/etc/translate_country_codes")|| die "Can not open /usr/local/etc/translate_country_codes\nExiting now\n";
@@ -129,18 +143,6 @@ sub init_ip_to_country{
 
 
 ######################################################################
-
-sub show_help {
-	print "mandatory arguments are -i <filename> -o <filename> -t <directoryName>\n";
-	print "where -i is input file, -o is output file, and -t is a directory to store temporary files and a sort location\n";
-	print "Minimal checking is done in this version, as it will eventually\n";
-	print "be folded into LongTail.pl\n\n";
-	print "\n";
-	print "Input file is assumed to be the temp file created by longtail\n";
-	exit 0;
-}
-
-######################################################################
 sub process_args {
 	#
 	# My processing of arguments sucks and needs to be fixed
@@ -214,7 +216,8 @@ sub list_accounts_by_ip {
 # input line looks like this:
 # 2016-10-16T03:45:04-04:00 syrtest sshd-22[1636]: IP: 116.31.116.40 PassLog: Username: root Password: metallica
 #
-	open (FILE, $INPUT_FILE)|| die "can not open $INPUT_FILE\n";
+	#open (FILE, $INPUT_FILE)|| die "can not open $INPUT_FILE\n";
+	open (FILE, "/usr/local/etc/catall.sh $INPUT_FILE|")|| die "can not open $INPUT_FILE\n";
 	open (OUT, ">$TMPDIR/LongTail.$$")|| die "Can not write to $TMPDIR/LongTail.$$\n";
 	while (<FILE>){
 		chomp;
@@ -230,6 +233,7 @@ sub list_accounts_by_ip {
 	unlink ("$TMPDIR/LongTail.$$.sorted");
 
 	open (FILE, "$TMPDIR/LongTail.$$.uniqed") || die "This is wierd, can not open $TMPDIR/LongTail.$$.uniqed\n";
+	open (OUTFILE, ">>$OUTPUT_FILE") || die "This is wierd, can not open $OUTPUT_FILE\n";
 	while (<FILE>){
 		chomp;
 		@words=split(/\s+/,$_,4);
@@ -239,10 +243,15 @@ sub list_accounts_by_ip {
 		}
 		else {
 			if ($ip =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/){
+				if ($DEBUG >0){print "Calling /usr/local/etc/whois.pl $ip now\n";}
 				#print (STDERR "ip is $ip\n");
 				$tmp_country_code=`/usr/local/etc/whois.pl $ip`;
 				chomp $tmp_country_code;
-				($trash,$country)=split(/ /,$tmp_country_code);
+				if ($DEBUG >0){print "tmp_country_code is -->$tmp_country_code<--\n";}
+				#$ip_to_country{$ip}=1;
+				($trash,$tmp_country_code)=split(/ /,$tmp_country_code);
+				if ($DEBUG >0){print "tmp_country_code NOW is -->$tmp_country_code<--\n";}
+				$ip_to_country{$ip}=$tmp_country_code
 			}
 		}
 		$tmp_country_code=~ tr/A-Z/a-z/;
@@ -260,16 +269,21 @@ sub list_accounts_by_ip {
 		#	print "$_\n";
 		#}
 
-		print "<TR><TD>$words[2]</TD><TD>$country_code{$tmp_country_code} $tag</TD><TD>$words[1]</TD><TD>$words[3]</TD></TR>\n";
+		print (OUTFILE "<TR><TD>$words[2]</TD><TD>$country_code{$tmp_country_code} $tag</TD><TD>$words[1]</TD><TD>$words[3]</TD></TR>\n");
 	}
 	close (FILE);
+	close (OUTFILE);
 	unlink ("$TMPDIR/LongTail.$$.uniqued");
 }
 
 
 ######################################################################
+$DEBUG=0;
+if ($DEBUG >0 ){print "calling process_args now\n";}
 &process_args;
+if ($DEBUG >0 ){print "calling init_ip_to_country now\n";}
 &init_ip_to_country;
 #print "Input file is $INPUT_FILE\n";
 #print "output file is $OUTPUT_FILE\n";
+if ($DEBUG >0 ){print "calling list_accounts_by_ip now\n";}
 &list_accounts_by_ip;
