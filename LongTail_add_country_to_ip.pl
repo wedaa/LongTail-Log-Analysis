@@ -4,6 +4,7 @@
 #   2801 119.147.84.181
 
 sub init {
+$DEBUG=0;
 #	if ($0) {
 #		print "DEBUG found an arg --> $0\n";
 #	}
@@ -20,6 +21,7 @@ sub init {
 		$country_code{$code}=$country;
 	}
 	close (FILE);
+if ($DEBUG){ print "Done loading /usr/local/etc/translate_country_codes\n";}
 
 	open ("FILE", "/usr/local/etc/ip-to-country")|| die "Can not open /usr/local/etc/ip-to-country\nExiting now\n";
 	while (<FILE>){
@@ -29,6 +31,7 @@ sub init {
 		$ip_to_country{$ip}=$country;
 	}
 	close (FILE);
+if ($DEBUG){print "Done loading /usr/local/etc/ip-to-country\n";}
 
 	open ("FILE", "/usr/local/etc/LongTail_sshPsycho_IP_addresses")|| die "Can not open /usr/local/etc/LongTail_sshPsycho_IP_addresses\nExiting now\n";
 	while (<FILE>){
@@ -45,6 +48,7 @@ sub init {
 		}
 	}
 	close (FILE);
+if ($DEBUG){print "Done loading /usr/local/etc/LongTail_sshPsycho_IP_addresses\n";}
 
 	open ("FILE", "/usr/local/etc/LongTail_sshPsycho_2_IP_addresses")|| die "Can not open /usr/local/etc/LongTail_sshPsycho_IP_addresses\nExiting now\n";
 	while (<FILE>){
@@ -61,6 +65,7 @@ sub init {
 		}
 	}
 	close (FILE);
+if ($DEBUG){print "Done loading /usr/local/etc/LongTail_sshPsycho_2_IP_addresses\n";}
 
 	open ("FILE", "/usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses")|| die "Can not open /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses\nExiting now\n";
 	while (<FILE>){
@@ -77,6 +82,7 @@ sub init {
 		}
 	}
 	close (FILE);
+if ($DEBUG){print "Done loading /usr/local/etc/LongTail_friends_of_sshPsycho_IP_addresses\n";}
 
 	open ("FILE", "/usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses")|| die "Can not open /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses\nExiting now\n";
 	while (<FILE>){
@@ -93,6 +99,7 @@ sub init {
 		}
 	}
 	close (FILE);
+if ($DEBUG){print "Done loading /usr/local/etc/LongTail_associates_of_sshPsycho_IP_addresses\n";}
 
 	if ( -d "/usr/local/etc/LongTail_botnets"){
 			open (FIND, "find /usr/local/etc/LongTail_botnets -type f -print|sort |") || die "Can not run find command\n";
@@ -121,13 +128,21 @@ sub init {
 			}
 			close (FIND);
 		}
+		if ($DEBUG){print "Done loading /usr/local/etc/LongTail_botnets\n";}
 }
 # <A HREF="/honey/ip_attacks.shtml#109.161.137.122">109.161.137.122</A> 
 
+$DEBUG=0;
 &init;
+if ($DEBUG > 0 ) {print "DEBUG back from init\n";}
 while (<>){
 	chomp;
-	($trash,$count,$ip)=split (/\s+/,$_,3);
+	# Sometimes I feed bad data, more than three fields and it breaks things
+	# So I have to account for extra fields which get slammed into $more_trash
+	# and then delete the extra crap.
+	($trash,$count,$ip,$more_trash)=split (/\s+/,$_,4);
+	$_ ="$trash $count $ip";
+	# If there's only one field I assume it's an IP address
 	if ( ($count eq "") && ($ip eq "") ) {
 		#print "DEBUG Only one field, must be ip\n";
 		$ip = $trash;
@@ -136,7 +151,8 @@ while (<>){
 		$tmp_country_code=$ip_to_country{$ip};
 	}
 	else {
-		if ($ip =~ /^(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})$/){
+		if ($ip =~ /(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})/){
+			#print (STDERR "ip is $ip\n");
 			$tmp_country_code=`/usr/local/etc/whois.pl $ip`;
 			chomp $tmp_country_code;
 			($trash,$country)=split(/ /,$tmp_country_code);
